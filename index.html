@@ -1,0 +1,762 @@
+ <!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameHub - Ваш портал в мир игр</title>
+    <style>
+        /* --- ГЛОБАЛЬНЫЕ СТИЛИ И ПЕРЕМЕННЫЕ --- */
+        :root {
+            --primary-bg: #1a1a2e;
+            --secondary-bg: #16213e;
+            --card-bg: #0f3460;
+            --accent-color: #e94560;
+            --text-color: #ffffff;
+            --subtle-text: #a0a0c0;
+            --border-color: #537895;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background-color: var(--primary-bg);
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        /* --- КОНТЕЙНЕРЫ И СЕКЦИИ --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        section {
+            padding: 60px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            color: var(--text-color);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            width: 80px;
+            height: 4px;
+            background: var(--accent-color);
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        /* --- ШАПКА САЙТА (HEADER) --- */
+        header {
+            background-color: var(--secondary-bg);
+            padding: 15px 0;
+            border-bottom: 2px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 25px;
+        }
+
+        nav a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        nav a:hover, nav a.active {
+            background-color: var(--accent-color);
+            color: var(--text-color);
+        }
+
+        /* --- ГЕРОЙ-БЛОК (HERO) --- */
+        .hero {
+            height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: linear-gradient(rgba(22, 33, 62, 0.8), rgba(26, 26, 46, 0.9)), url('https://placehold.co/1920x1080/0f3460/e94560?text=GameHub+BG') no-repeat center center/cover;
+        }
+
+        .hero-content h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(0,0,0,0.7);
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: var(--subtle-text);
+        }
+
+        .cta-button {
+            background-color: var(--accent-color);
+            color: var(--text-color);
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            text-decoration: none;
+            border-radius: 50px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            font-weight: bold;
+        }
+
+        .cta-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px var(--accent-color);
+        }
+        
+        /* --- СЕТКА ИГР (GAME GRID) --- */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .game-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        .game-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .game-card-content {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-card-content h3 {
+            margin-top: 0;
+            color: var(--text-color);
+        }
+        
+        .game-card-content p {
+            color: var(--subtle-text);
+            flex-grow: 1;
+            margin-bottom: 20px;
+        }
+
+        .play-button {
+            background-color: var(--accent-color);
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .play-button:hover {
+            background-color: #d43d51;
+        }
+        
+        /* --- МОДАЛЬНОЕ ОКНО ДЛЯ ИГР --- */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: var(--secondary-bg);
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            width: 90%;
+            max-width: 800px;
+            border-radius: 15px;
+            position: relative;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        #modal-title {
+            font-size: 1.8rem;
+            color: var(--accent-color);
+        }
+        
+        .close-button {
+            color: var(--subtle-text);
+            font-size: 35px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .close-button:hover, .close-button:focus {
+            color: var(--text-color);
+        }
+        
+        #game-content {
+            min-height: 450px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        /* --- СТИЛИ ДЛЯ ИГР --- */
+        
+        /* Змейка */
+        #snake-canvas {
+            background-color: #0c1a2e;
+            border: 2px solid var(--accent-color);
+            border-radius: 5px;
+        }
+        #snake-score {
+            font-size: 1.5rem;
+            margin-top: 10px;
+        }
+        
+        /* Крестики-нолики */
+        #tictactoe-board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 5px;
+        }
+        .ttt-cell {
+            width: 100px;
+            height: 100px;
+            background-color: var(--card-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .ttt-cell:hover {
+            background-color: #1f487e;
+        }
+        #ttt-status {
+            margin-top: 20px;
+            font-size: 1.5rem;
+        }
+        
+        /* Кликер */
+        #clicker-game {
+            text-align: center;
+        }
+        #clicker-score {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+        #click-button {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 5px solid var(--accent-color);
+            background: var(--card-bg);
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        #click-button:active {
+            transform: scale(0.95);
+        }
+        #upgrade-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            background-color: #1abc9c;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        /* --- ФУТЕР --- */
+        footer {
+            background-color: var(--secondary-bg);
+            text-align: center;
+            padding: 30px 0;
+            border-top: 2px solid var(--border-color);
+            margin-top: 60px;
+        }
+        
+        /* --- АДАПТИВНОСТЬ --- */
+        @media (max-width: 768px) {
+            .hero-content h1 { font-size: 3rem; }
+            nav ul { display: none; } /* Скрываем меню на мобилках для простоты */
+            .modal-content { width: 95%; margin: 10% auto; }
+            #tictactoe-board {
+                grid-template-columns: repeat(3, 80px);
+                grid-template-rows: repeat(3, 80px);
+            }
+            .ttt-cell { width: 80px; height: 80px; font-size: 2.5rem; }
+        }
+
+        @media (max-width: 480px) {
+            .hero-content h1 { font-size: 2.5rem; }
+            .hero-content p { font-size: 1rem; }
+            .section-title { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Шапка сайта -->
+    <header>
+        <div class="container">
+            <a href="#" class="logo">GameHub</a>
+            <nav>
+                <ul>
+                    <li><a href="#games" class="active">Игры</a></li>
+                    <li><a href="#about">О нас</a></li>
+                    <li><a href="#news">Новости</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Главный экран -->
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Мир развлечений ждет тебя</h1>
+                <p>Браузерные игры на любой вкус. Играй бесплатно без скачивания!</p>
+                <a href="#games" class="cta-button">Выбрать игру</a>
+            </div>
+        </section>
+
+        <!-- Каталог игр -->
+        <section id="games" class="container">
+            <h2 class="section-title">Каталог игр</h2>
+            <div class="game-grid">
+                <!-- Карточка игры 1: Змейка -->
+                <div class="game-card">
+                    <img src="https://placehold.co/600x400/3498db/ffffff?text=Змейка" alt="Змейка">
+                    <div class="game-card-content">
+                        <h3>Змейка</h3>
+                        <p>Вечная классика. Управляйте змейкой, собирайте еду и становитесь длиннее, но не врежьтесь в себя!</p>
+                        <button class="play-button" data-game="snake">Играть</button>
+                    </div>
+                </div>
+
+                <!-- Карточка игры 2: Крестики-нолики -->
+                <div class="game-card">
+                    <img src="https://placehold.co/600x400/e74c3c/ffffff?text=X+O" alt="Крестики-нолики">
+                    <div class="game-card-content">
+                        <h3>Крестики-нолики</h3>
+                        <p>Соберите три своих знака в ряд по горизонтали, вертикали или диагонали. Игра для двух игроков.</p>
+                        <button class="play-button" data-game="tictactoe">Играть</button>
+                    </div>
+                </div>
+
+                <!-- Карточка игры 3: Кликер -->
+                <div class="game-card">
+                    <img src="https://placehold.co/600x400/2ecc71/ffffff?text=Кликер" alt="Кликер">
+                    <div class="game-card-content">
+                        <h3>Кликер-мания</h3>
+                        <p>Нажимайте на кнопку, чтобы заработать очки. Покупайте улучшения, чтобы зарабатывать еще больше!</p>
+                        <button class="play-button" data-game="clicker">Играть</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Другие секции (заглушки) -->
+        <section id="about" class="container">
+            <h2 class="section-title">О нас</h2>
+            <p style="text-align: center; max-width: 800px; margin: 0 auto; color: var(--subtle-text);">GameHub — это проект, созданный энтузиастами для энтузиастов. Мы верим, что простые и увлекательные игры могут скрасить любой день. Наша миссия — предоставить качественные браузерные игры, доступные каждому в один клик. Все наши игры абсолютно бесплатны и не требуют установки. Просто выберите игру и начните веселье!</p>
+        </section>
+        
+        <section id="news" class="container">
+            <h2 class="section-title">Новости</h2>
+            <p style="text-align: center; color: var(--subtle-text);">Здесь скоро появятся новости о новых играх и обновлениях!</p>
+        </section>
+    </main>
+
+    <!-- Футер -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 GameHub. Все права защищены. Создано с любовью к играм.</p>
+        </div>
+    </footer>
+
+    <!-- Модальное окно для игр -->
+    <div id="game-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Название Игры</h2>
+                <span class="close-button">&times;</span>
+            </div>
+            <div id="game-content">
+                <!-- Содержимое игры будет загружено сюда с помощью JavaScript -->
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // --- ГЛАВНЫЙ СКРИПТ УПРАВЛЕНИЯ САЙТОМ ---
+
+        const modal = document.getElementById('game-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const gameContent = document.getElementById('game-content');
+        const closeButton = document.querySelector('.close-button');
+        const playButtons = document.querySelectorAll('.play-button');
+
+        let activeGameInterval = null; // Для остановки игрового цикла (например, у змейки)
+
+        // Открытие модального окна
+        playButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const gameId = button.getAttribute('data-game');
+                loadGame(gameId);
+                modal.style.display = 'block';
+            });
+        });
+
+        // Закрытие модального окна
+        const closeModal = () => {
+            modal.style.display = 'none';
+            gameContent.innerHTML = ''; // Очищаем контент
+            if (activeGameInterval) {
+                clearInterval(activeGameInterval);
+                activeGameInterval = null;
+            }
+            document.removeEventListener('keydown', activeGameKeyListener);
+        };
+        
+        closeButton.addEventListener('click', closeModal);
+        window.addEventListener('click', (event) => {
+            if (event.target == modal) {
+                closeModal();
+            }
+        });
+        
+        let activeGameKeyListener = null;
+
+        // Загрузчик игр
+        function loadGame(gameId) {
+            gameContent.innerHTML = ''; // Очистка перед загрузкой
+            switch (gameId) {
+                case 'snake':
+                    modalTitle.textContent = 'Змейка';
+                    initSnakeGame();
+                    break;
+                case 'tictactoe':
+                    modalTitle.textContent = 'Крестики-нолики';
+                    initTicTacToeGame();
+                    break;
+                case 'clicker':
+                    modalTitle.textContent = 'Кликер-мания';
+                    initClickerGame();
+                    break;
+            }
+        }
+
+        // --- ЛОГИКА ИГР ---
+
+        // 1. ИГРА "ЗМЕЙКА"
+        function initSnakeGame() {
+            gameContent.innerHTML = `
+                <canvas id="snake-canvas" width="400" height="400"></canvas>
+                <div id="snake-score">Счет: 0</div>
+            `;
+            
+            const canvas = document.getElementById('snake-canvas');
+            const scoreEl = document.getElementById('snake-score');
+            const ctx = canvas.getContext('2d');
+            
+            const gridSize = 20;
+            let snake = [{ x: 10, y: 10 }];
+            let food = {};
+            let score = 0;
+            let direction = 'right';
+            let changingDirection = false;
+
+            function generateFood() {
+                food = {
+                    x: Math.floor(Math.random() * (canvas.width / gridSize)),
+                    y: Math.floor(Math.random() * (canvas.height / gridSize))
+                };
+                if (snake.some(segment => segment.x === food.x && segment.y === food.y)) {
+                    generateFood();
+                }
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                // Draw snake
+                snake.forEach(segment => {
+                    ctx.fillStyle = 'lightgreen';
+                    ctx.strokeStyle = 'darkgreen';
+                    ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize, gridSize);
+                    ctx.strokeRect(segment.x * gridSize, segment.y * gridSize, gridSize, gridSize);
+                });
+                // Draw food
+                ctx.fillStyle = 'red';
+                ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize, gridSize);
+            }
+            
+            function update() {
+                changingDirection = false;
+                const head = { x: snake[0].x, y: snake[0].y };
+                if (direction === 'right') head.x++;
+                if (direction === 'left') head.x--;
+                if (direction === 'up') head.y--;
+                if (direction === 'down') head.y++;
+
+                // Wall collision
+                if (head.x < 0 || head.x * gridSize >= canvas.width || head.y < 0 || head.y * gridSize >= canvas.height) {
+                    resetGame();
+                    return;
+                }
+                
+                // Self collision
+                for (let i = 1; i < snake.length; i++) {
+                    if (head.x === snake[i].x && head.y === snake[i].y) {
+                        resetGame();
+                        return;
+                    }
+                }
+
+                snake.unshift(head);
+                
+                // Food collision
+                if (head.x === food.x && head.y === food.y) {
+                    score++;
+                    scoreEl.textContent = 'Счет: ' + score;
+                    generateFood();
+                } else {
+                    snake.pop();
+                }
+                
+                draw();
+            }
+            
+            function resetGame() {
+                snake = [{ x: 10, y: 10 }];
+                score = 0;
+                scoreEl.textContent = 'Счет: 0';
+                direction = 'right';
+                generateFood();
+            }
+
+            activeGameKeyListener = (e) => {
+                if (changingDirection) return;
+                changingDirection = true;
+                const keyPressed = e.key;
+                if ((keyPressed === 'ArrowLeft' || keyPressed.toLowerCase() === 'a') && direction !== 'right') direction = 'left';
+                if ((keyPressed === 'ArrowUp' || keyPressed.toLowerCase() === 'w') && direction !== 'down') direction = 'up';
+                if ((keyPressed === 'ArrowRight' || keyPressed.toLowerCase() === 'd') && direction !== 'left') direction = 'right';
+                if ((keyPressed === 'ArrowDown' || keyPressed.toLowerCase() === 's') && direction !== 'up') direction = 'down';
+            };
+            
+            document.addEventListener('keydown', activeGameKeyListener);
+            
+            generateFood();
+            activeGameInterval = setInterval(update, 100);
+        }
+
+        // 2. ИГРА "КРЕСТИКИ-НОЛИКИ"
+        function initTicTacToeGame() {
+            gameContent.innerHTML = `
+                <div id="tictactoe-board"></div>
+                <div id="ttt-status">Ход игрока X</div>
+                <button id="ttt-restart" style="margin-top: 15px; padding: 10px; font-size: 1rem; cursor: pointer;">Начать заново</button>
+            `;
+            
+            const boardEl = document.getElementById('tictactoe-board');
+            const statusEl = document.getElementById('ttt-status');
+            const restartBtn = document.getElementById('ttt-restart');
+            
+            let board = ['', '', '', '', '', '', '', '', ''];
+            let currentPlayer = 'X';
+            let gameActive = true;
+            
+            const winConditions = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
+                [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
+                [0, 4, 8], [2, 4, 6]             // diagonals
+            ];
+
+            function handleCellClick(e) {
+                const cell = e.target;
+                const index = parseInt(cell.getAttribute('data-index'));
+
+                if (board[index] !== '' || !gameActive) {
+                    return;
+                }
+
+                board[index] = currentPlayer;
+                cell.textContent = currentPlayer;
+                
+                checkResult();
+            }
+            
+            function checkResult() {
+                let roundWon = false;
+                for (let i = 0; i < winConditions.length; i++) {
+                    const [a, b, c] = winConditions[i];
+                    if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                        roundWon = true;
+                        break;
+                    }
+                }
+
+                if (roundWon) {
+                    statusEl.textContent = `Игрок ${currentPlayer} победил!`;
+                    gameActive = false;
+                    return;
+                }
+                
+                if (!board.includes('')) {
+                    statusEl.textContent = 'Ничья!';
+                    gameActive = false;
+                    return;
+                }
+
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                statusEl.textContent = `Ход игрока ${currentPlayer}`;
+            }
+
+            function restartGame() {
+                board = ['', '', '', '', '', '', '', '', ''];
+                currentPlayer = 'X';
+                gameActive = true;
+                statusEl.textContent = `Ход игрока ${currentPlayer}`;
+                document.querySelectorAll('.ttt-cell').forEach(cell => cell.textContent = '');
+            }
+
+            for (let i = 0; i < 9; i++) {
+                const cell = document.createElement('div');
+                cell.classList.add('ttt-cell');
+                cell.setAttribute('data-index', i);
+                cell.addEventListener('click', handleCellClick);
+                boardEl.appendChild(cell);
+            }
+            
+            restartBtn.addEventListener('click', restartGame);
+        }
+        
+        // 3. ИГРА "КЛИКЕР"
+        function initClickerGame() {
+            gameContent.innerHTML = `
+                <div id="clicker-game">
+                    <div id="clicker-score">0</div>
+                    <button id="click-button">Кликай!</button>
+                    <button id="upgrade-button">Купить авто-клик (Стоимость: 10)</button>
+                    <div id="autoclick-info" style="margin-top: 10px;">Авто-кликов в сек: 0</div>
+                </div>
+            `;
+            
+            const scoreEl = document.getElementById('clicker-score');
+            const clickBtn = document.getElementById('click-button');
+            const upgradeBtn = document.getElementById('upgrade-button');
+            const autoClickInfo = document.getElementById('autoclick-info');
+            
+            let score = 0;
+            let upgradeCost = 10;
+            let autoClicksPerSecond = 0;
+
+            clickBtn.addEventListener('click', () => {
+                score++;
+                updateScore();
+            });
+
+            upgradeBtn.addEventListener('click', () => {
+                if (score >= upgradeCost) {
+                    score -= upgradeCost;
+                    autoClicksPerSecond++;
+                    upgradeCost = Math.ceil(upgradeCost * 1.5);
+                    updateScore();
+                    updateUpgradeButton();
+                }
+            });
+            
+            function updateScore() {
+                scoreEl.textContent = score;
+            }
+
+            function updateUpgradeButton() {
+                upgradeBtn.textContent = `Купить авто-клик (Стоимость: ${upgradeCost})`;
+                autoClickInfo.textContent = `Авто-кликов в сек: ${autoClicksPerSecond}`;
+            }
+
+            activeGameInterval = setInterval(() => {
+                score += autoClicksPerSecond;
+                updateScore();
+            }, 1000);
+            
+            updateScore();
+            updateUpgradeButton();
+        }
+    </script>
+
+</body>
+</html>
