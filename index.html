@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Mini Games</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #111;
+    color: white;
+    text-align: center;
+}
+
+.screen {
+    display: none;
+    padding: 20px;
+}
+
+button {
+    padding: 15px 25px;
+    font-size: 18px;
+    border: none;
+    border-radius: 12px;
+    margin: 10px;
+    cursor: pointer;
+}
+
+.menu button { background: #2ea6ff; color: white; }
+
+#catchBtn {
+    position: absolute;
+    background: #ff5252;
+    color: white;
+}
+
+.full {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+</style>
+</head>
+
+<body>
+
+<!-- МЕНЮ -->
+<div id="menu" class="screen menu" style="display:block">
+    <h1>🎮 Mini Games</h1>
+    <button onclick="openGame('catch')">🏃 Поймай кнопку</button><br>
+    <button onclick="openGame('clicker')">⚡ Кликер</button><br>
+    <button onclick="openGame('reaction')">👀 Реакция</button>
+</div>
+
+<!-- ИГРА 1 -->
+<div id="catch" class="screen">
+    <h2>🏃 Поймай кнопку</h2>
+    <p>Очки: <span id="catchScore">0</span></p>
+    <button onclick="back()">⬅ Назад</button>
+    <div id="catchBtn" onclick="catchHit()">ПОЙМАЙ</div>
+</div>
+
+<!-- ИГРА 2 -->
+<div id="clicker" class="screen">
+    <h2>⚡ Кликер</h2>
+    <p>Очки: <span id="clickScore">0</span></p>
+    <p>Время: <span id="clickTime">10</span></p>
+    <button onclick="clickHit()">НАЖИМАЙ!</button><br><br>
+    <button onclick="startClicker()">▶ Старт</button>
+    <button onclick="back()">⬅ Назад</button>
+</div>
+
+<!-- ИГРА 3 -->
+<div id="reaction" class="screen full" onclick="reactionClick()">
+    <h2 id="reactionText">Нажми, когда станет зелёным</h2>
+</div>
+
+<script>
+Telegram.WebApp.ready();
+
+function openGame(id) {
+    document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+    document.getElementById(id).style.display = 'block';
+    if (id === 'catch') moveCatch();
+    if (id === 'reaction') startReaction();
+}
+
+function back() {
+    document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+    document.getElementById('menu').style.display = 'block';
+}
+
+/* ---------- ИГРА 1 ---------- */
+let catchScore = 0;
+function moveCatch() {
+    const btn = document.getElementById('catchBtn');
+    btn.style.left = Math.random() * (window.innerWidth - 100) + 'px';
+    btn.style.top = Math.random() * (window.innerHeight - 100) + 'px';
+}
+function catchHit() {
+    catchScore++;
+    document.getElementById('catchScore').innerText = catchScore;
+    moveCatch();
+    Telegram.WebApp.HapticFeedback.impactOccurred("light");
+}
+
+/* ---------- ИГРА 2 ---------- */
+let clickScore = 0, clickTime = 10, clickTimer;
+function startClicker() {
+    clickScore = 0;
+    clickTime = 10;
+    document.getElementById('clickScore').innerText = clickScore;
+    document.getElementById('clickTime').innerText = clickTime;
+
+    clearInterval(clickTimer);
+    clickTimer = setInterval(() => {
+        clickTime--;
+        document.getElementById('clickTime').innerText = clickTime;
+        if (clickTime <= 0) clearInterval(clickTimer);
+    }, 1000);
+}
+function clickHit() {
+    if (clickTime > 0) {
+        clickScore++;
+        document.getElementById('clickScore').innerText = clickScore;
+    }
+}
+
+/* ---------- ИГРА 3 ---------- */
+let canClick = false, startTime;
+function startReaction() {
+    document.body.style.background = '#111';
+    document.getElementById('reactionText').innerText = 'Жди...';
+    canClick = false;
+
+    setTimeout(() => {
+        document.body.style.background = 'green';
+        document.getElementById('reactionText').innerText = 'ЖМИ!';
+        startTime = Date.now();
+        canClick = true;
+    }, Math.random() * 3000 + 2000);
+}
+function reactionClick() {
+    if (!canClick) return;
+    let time = Date.now() - startTime;
+    alert('⏱ ' + time + ' мс');
+    Telegram.WebApp.HapticFeedback.notificationOccurred("success");
+    back();
+}
+</script>
+
+</body>
+</html>
