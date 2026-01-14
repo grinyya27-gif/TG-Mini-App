@@ -4,6 +4,19 @@
  */
 
 "use strict";
+// Аварийный таймер: убирает экран загрузки через 3 секунды в любом случае
+setTimeout(() => {
+    const loader = document.getElementById('app-curtain') || 
+                   document.getElementById('preloader') || 
+                   document.querySelector('[id*="load"]');
+    if (loader) {
+        loader.style.display = 'none';
+        console.log("Загрузка убрана принудительно");
+    }
+    // Показываем основной блок игры
+    const app = document.getElementById('app');
+    if (app) app.style.display = 'block';
+}, 3000);
 
 // Функция, которая физически убирает заставку
 function forceHideLoader() {
@@ -1293,4 +1306,5 @@ const AppLauncher = {
 
 // Запуск при полной загрузке страницы
 window.onload = () => AppLauncher.run();
+
 
