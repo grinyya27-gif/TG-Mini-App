@@ -125,6 +125,7 @@
                 <div class="info-box">
                     <h3>Рудник</h3>
                     <p>Доход: +<span id="mine-reward">1</span> 🪙</p>
+                    <p style="color: #2ecc71;">Шанс на 💎: <span id="mine-chance">1</span>%</p>
                 </div>
             </div>
         </div>
@@ -145,7 +146,7 @@
                 <div class="icon-box">⛏️</div>
                 <div class="info-box">
                     <h3>Железная кирка</h3>
-                    <p>+4 к доходу в руднике</p>
+                    <p>+4 к золоту и шанс 💎 2%</p>
                 </div>
                 <div id="price-pickaxe" class="price-tag">150 🪙</div>
             </div>
@@ -181,7 +182,7 @@
         tg.expand();
 
         let stats = {
-            gold: 50, // Дадим немного на старт
+            gold: 50,
             emeralds: 0,
             hasRod: false,
             hasPickaxe: false
@@ -197,13 +198,23 @@
 
         function doWork(type) {
             if (type === 'port') {
-                let reward = stats.hasRod ? 7 : 2; // 2 базово + 5 если есть удочка
+                let reward = stats.hasRod ? 7 : 2;
                 stats.gold += reward;
             } else {
-                let reward = stats.hasPickaxe ? 5 : 1; // 1 базово + 4 если есть кирка
+                // ЛОГИКА РУДНИКА
+                let reward = stats.hasPickaxe ? 5 : 1;
                 stats.gold += reward;
-                if (Math.random() < 0.10) {
+
+                // Расчет шанса изумруда (0.01 = 1%, 0.02 = 2%)
+                let chance = stats.hasPickaxe ? 0.02 : 0.01;
+                
+                if (Math.random() < chance) {
                     stats.emeralds += 1;
+                    tg.showPopup({
+                        title: 'Находка!',
+                        message: 'Вы нашли редкий изумруд в шахте!',
+                        buttons: [{type: 'ok'}]
+                    });
                     tg.HapticFeedback.notificationOccurred('success');
                 }
             }
@@ -236,11 +247,10 @@
             document.getElementById('gold').innerText = stats.gold;
             document.getElementById('emeralds').innerText = stats.emeralds;
             
-            // Обновляем текст наград на кнопках работы
             document.getElementById('port-reward').innerText = stats.hasRod ? 7 : 2;
             document.getElementById('mine-reward').innerText = stats.hasPickaxe ? 5 : 1;
+            document.getElementById('mine-chance').innerText = stats.hasPickaxe ? 2 : 1;
 
-            // Обновляем список предметов в профиле
             let items = [];
             if (stats.hasRod) items.push("Удочка");
             if (stats.hasPickaxe) items.push("Кирка");
