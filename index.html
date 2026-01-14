@@ -49,18 +49,29 @@
         </div>
 
         <div id="screen-shop" class="screen">
-            <h2 class="title">Лавка</h2>
-            <div class="card">
-                <div class="card-icon">🎋</div>
-                <div class="card-info"><h3>Удочка</h3><p>Порт: +5 🪙</p></div>
-                <button id="btn-rod1" class="buy-btn" onclick="game.buy('rod1', 100)">100</button>
-            </div>
-            <div class="card" style="margin-top:10px">
-                <div class="card-icon">🔨</div>
-                <div class="card-info"><h3>Кирка</h3><p>Рудник: +4 🪙 | 2% 💎</p></div>
-                <button id="btn-pick1" class="buy-btn" onclick="game.buy('pick1', 150)">150</button>
-            </div>
+    <h2 class="title">Лавка инструментов</h2>
+    
+    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+        <div class="shop-tab active" id="tab-rods" onclick="game.filterShop('rods')" style="flex:1; text-align:center; padding:8px; background:#222; border-radius:6px; font-size:0.8em; cursor:pointer;">Удочки</div>
+        <div class="shop-tab" id="tab-picks" onclick="game.filterShop('picks')" style="flex:1; text-align:center; padding:8px; background:#222; border-radius:6px; font-size:0.8em; cursor:pointer;">Кирки</div>
+    </div>
+
+    <div id="shop-content-rods">
+        <div class="card">
+            <div class="card-icon">🎋</div>
+            <div class="card-info"><h3>Удочка</h3><p>Порт: +5 🪙</p></div>
+            <button id="btn-rod1" class="buy-btn" onclick="game.buy('rod1', 100)">100</button>
         </div>
+    </div>
+
+    <div id="shop-content-picks" style="display:none;">
+        <div class="card">
+            <div class="card-icon">🔨</div>
+            <div class="card-info"><h3>Кирка</h3><p>Рудник: +4 🪙 | 2% 💎</p></div>
+            <button id="btn-pick1" class="buy-btn" onclick="game.buy('pick1', 150)">150</button>
+        </div>
+    </div>
+</div>
 
         <div id="screen-bank" class="screen">
             <h2 class="title">Банк</h2>
@@ -94,3 +105,4 @@
     <script src="script.js"></script>
 </body>
 </html>
+
