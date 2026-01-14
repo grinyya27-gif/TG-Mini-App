@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>War Strategy Pro</title>
+    <title>War Saga: Mobile</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
             --bg-dark: #0f0f0f;
             --bg-card: #1a1a1a;
             --accent-red: #e63946;
-            --accent-red-glow: rgba(230, 57, 70, 0.4);
             --text-main: #f1faee;
             --gray-text: #a8a8a8;
         }
@@ -18,65 +17,59 @@
         body {
             background-color: var(--bg-dark);
             color: var(--text-main);
-            font-family: 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             margin: 0; padding: 0;
             display: flex; flex-direction: column;
             height: 100vh; overflow: hidden;
         }
 
-        /* HEADER & EXP */
+        /* HEADER */
         .header {
             background: #000;
             padding: 10px 15px;
             border-bottom: 1px solid var(--accent-red);
         }
-        .res-row { display: flex; justify-content: space-around; margin-bottom: 10px; font-size: 1.2em; font-weight: bold; }
-        .exp-bar-bg { width: 100%; height: 8px; background: #222; border-radius: 4px; overflow: hidden; }
+        .res-row { display: flex; justify-content: space-around; margin-bottom: 10px; font-size: 1.1em; font-weight: bold; }
+        .exp-bar { width: 100%; height: 6px; background: #222; border-radius: 3px; overflow: hidden; }
         #exp-fill { height: 100%; background: var(--accent-red); width: 0%; transition: 0.4s; box-shadow: 0 0 10px var(--accent-red); }
-        .lvl-label { display: block; text-align: center; font-size: 0.7em; color: var(--accent-red); margin-top: 5px; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* MAIN CONTENT */
-        .main-content { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 80px; }
-        .screen { display: none; flex-direction: column; gap: 15px; }
+        /* CONTENT */
+        .main-content { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 90px; }
+        .screen { display: none; flex-direction: column; gap: 12px; }
         .screen.active { display: flex; }
 
-        /* SHOP CATEGORIES */
-        .shop-tabs { display: flex; gap: 10px; margin-bottom: 10px; }
-        .shop-tab { flex: 1; padding: 8px; background: #222; border: 1px solid #333; color: var(--gray-text); border-radius: 6px; font-size: 0.8em; text-align: center; cursor: pointer; }
-        .shop-tab.active { background: var(--accent-red); color: white; border-color: var(--accent-red); }
+        .title { font-size: 1.3em; color: var(--accent-red); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
 
         /* CARDS */
         .card {
             background: var(--bg-card);
-            border-radius: 12px;
+            border-radius: 10px;
             padding: 15px;
             display: flex; align-items: center; gap: 15px;
             border: 1px solid #2a2a2a;
-            position: relative;
+            transition: 0.2s;
         }
-        .card:active { border-color: var(--accent-red); }
-        .card-icon { font-size: 2.2em; }
+        .card:active { border-color: var(--accent-red); transform: scale(0.98); }
+        .card-icon { font-size: 2em; }
         .card-info { flex: 1; }
-        .card-info h3 { margin: 0; font-size: 1em; color: #fff; }
-        .card-info p { margin: 4px 0 0 0; font-size: 0.75em; color: var(--gray-text); line-height: 1.2; }
-        
-        .buy-btn {
-            background: var(--accent-red);
-            color: white; border: none; padding: 8px 12px;
-            border-radius: 6px; font-weight: bold; font-size: 0.8em;
-            cursor: pointer;
-        }
-        .buy-btn.bought { background: #333; color: #666; cursor: default; }
+        .card-info h3 { margin: 0; font-size: 1em; }
+        .card-info p { margin: 4px 0 0 0; font-size: 0.75em; color: var(--gray-text); }
 
         /* BOTTOM NAV */
         .nav {
             position: fixed; bottom: 0; width: 100%;
             background: #000; border-top: 1px solid #222;
             display: flex; padding: 10px 0;
+            padding-bottom: env(safe-area-inset-bottom);
         }
-        .nav-item { flex: 1; text-align: center; color: #555; font-size: 0.7em; }
+        .nav-item { flex: 1; text-align: center; color: #555; font-size: 0.65em; text-transform: uppercase; }
         .nav-item.active { color: var(--accent-red); }
-        .nav-item span { display: block; font-size: 1.8em; margin-bottom: 3px; }
+        .nav-item span { display: block; font-size: 1.6em; margin-bottom: 3px; }
+
+        /* SUB-SCREENS (Локации внутри карты) */
+        .sub-screen { display: none; }
+        .sub-screen.active { display: block; }
+        .back-btn { color: var(--accent-red); margin-bottom: 10px; cursor: pointer; font-size: 0.9em; }
 
         .hidden { display: none !important; }
     </style>
@@ -88,80 +81,82 @@
             <div>🪙 <span id="gold">50</span></div>
             <div>💎 <span id="emeralds">0</span></div>
         </div>
-        <div class="exp-bar-bg">
-            <div id="exp-fill"></div>
-        </div>
-        <span class="lvl-label">Уровень <span id="lvl">1</span> | <span id="xp-text">0/100</span> XP</span>
+        <div class="exp-bar"><div id="exp-fill"></div></div>
+        <div style="text-align:center; font-size:0.7em; color:var(--accent-red); margin-top:4px;">LVL <span id="lvl">1</span></div>
     </div>
 
     <div class="main-content">
         
-        <div id="screen-work" class="screen active">
+        <div id="screen-map" class="screen active">
+            <h2 class="title">Карта Мира</h2>
+            <div class="card" onclick="game.openLocation('tavern')">
+                <div class="card-icon">🍺</div>
+                <div class="card-info"><h3>Таверна "Хмельной рыцарь"</h3><p>Слухи, квесты и отдых</p></div>
+            </div>
+            <div class="card" onclick="game.openLocation('camp')">
+                <div class="card-icon">⛺</div>
+                <div class="card-info"><h3>Военный лагерь</h3><p>Тренировки и наемники</p></div>
+            </div>
+            <div class="card" onclick="game.openLocation('stable')">
+                <div class="card-icon">🐎</div>
+                <div class="card-info"><h3>Конюшня</h3><p>Лошади для путешествий</p></div>
+            </div>
+            <div class="card" onclick="game.openLocation('blacksmith')">
+                <div class="card-icon">⚔️</div>
+                <div class="card-info"><h3>Оружейник</h3><p>Мечи, топоры, копья</p></div>
+            </div>
+            <div class="card" onclick="game.openLocation('armorer')">
+                <div class="card-icon">🛡️</div>
+                <div class="card-info"><h3>Бронник</h3><p>Шлемы и латы</p></div>
+            </div>
+        </div>
+
+        <div id="screen-work" class="screen">
+            <h2 class="title">Заработок</h2>
             <div class="card" onclick="game.doWork('port')">
                 <div class="card-icon">🎣</div>
-                <div class="card-info">
-                    <h3>Рыболовный порт</h3>
-                    <p>Доход: +<span id="port-gold">2</span> 🪙 | +5 XP</p>
-                </div>
+                <div class="card-info"><h3>Порт</h3><p>Доход: +<span id="p-gold">2</span> 🪙</p></div>
             </div>
             <div class="card" onclick="game.doWork('mine')">
                 <div class="card-icon">⛏️</div>
-                <div class="card-info">
-                    <h3>Темный рудник</h3>
-                    <p>Доход: +<span id="mine-gold">1</span> 🪙 | +10 XP</p>
-                    <p style="color:var(--accent-red)">Шанс на 💎: <span id="mine-chance">1</span>%</p>
-                </div>
+                <div class="card-info"><h3>Рудник</h3><p>Доход: +<span id="m-gold">1</span> 🪙</p></div>
             </div>
         </div>
 
         <div id="screen-shop" class="screen">
-            <div class="shop-tabs">
-                <div class="shop-tab active" onclick="game.filterShop('rods', this)">Удочки</div>
-                <div class="shop-tab" onclick="game.filterShop('pickaxes', this)">Кирки</div>
-            </div>
+            <h2 class="title">Городская лавка</h2>
+            <p style="color:var(--gray-text)">Здесь продаются расходные материалы.</p>
+        </div>
 
-            <div id="shop-rods" class="shop-cat">
-                <div class="card">
-                    <div class="card-icon">🎋</div>
-                    <div class="card-info"><h3>Бамбук. удочка</h3><p>Доход порта: +5 🪙</p></div>
-                    <button id="btn-rod1" class="buy-btn" onclick="game.buy('rod1', 100)">100</button>
-                </div>
-                <div style="margin-top:10px" class="card">
-                    <div class="card-icon">🎣</div>
-                    <div class="card-info"><h3>Проф. снасть</h3><p>Доход порта: +15 🪙</p></div>
-                    <button id="btn-rod2" class="buy-btn" onclick="game.buy('rod2', 500)">500</button>
-                </div>
-            </div>
-
-            <div id="shop-pickaxes" class="shop-cat hidden">
-                <div class="card">
-                    <div class="card-icon">🔨</div>
-                    <div class="card-info"><h3>Ржавая кирка</h3><p>Золото: +4 | Шанс 💎: 2%</p></div>
-                    <button id="btn-pick1" class="buy-btn" onclick="game.buy('pick1', 150)">150</button>
-                </div>
-                <div style="margin-top:10px" class="card">
-                    <div class="card-icon">💎</div>
-                    <div class="card-info"><h3>Алмазный бур</h3><p>Золото: +12 | Шанс 💎: 5%</p></div>
-                    <button id="btn-pick2" class="buy-btn" onclick="game.buy('pick2', 800)">800</button>
-                </div>
+        <div id="screen-bank" class="screen">
+            <h2 class="title">Королевский Банк</h2>
+            <div class="card">
+                <div class="card-icon">🏦</div>
+                <div class="card-info"><h3>Сейф</h3><p>Ваше золото под защитой.</p></div>
             </div>
         </div>
 
         <div id="screen-profile" class="screen">
+            <h2 class="title">Ваш Герой</h2>
             <div class="card">
-                <div class="card-icon">🛡️</div>
-                <div class="card-info">
-                    <h3 id="user-name">Воин</h3>
-                    <p id="rank-text">Статус: Новичок</p>
-                    <p>Всего кликов: <span id="total-clicks">0</span></p>
-                </div>
+                <div class="card-icon">🎖️</div>
+                <div class="card-info"><h3 id="user-name">Воин</h3><p>Уровень: <span id="lvl-p">1</span></p></div>
             </div>
         </div>
+
+        <div id="screen-location" class="screen">
+            <div class="back-btn" onclick="game.setTab('map')">← Вернуться на карту</div>
+            <h2 id="loc-title" class="title">Локация</h2>
+            <div id="loc-content"></div>
+        </div>
+
     </div>
 
     <nav class="nav">
-        <div class="nav-item active" onclick="game.setTab('work', this)"><span>⚔️</span>Работа</div>
+        <div class="nav-item active" onclick="game.setTab('map', this)"><span>🗺️</span>Карта</div>
+        <div class="nav-item" onclick="game.setTab('work', this)"><span>⚒️</span>Работа</div>
         <div class="nav-item" onclick="game.setTab('shop', this)"><span>💰</span>Лавка</div>
+        <div class="nav-item" onclick="game.setTab('bank', this)"><span>🏦</span>Банк</div>
         <div class="nav-item" onclick="game.setTab('profile', this)"><span>👤</span>Герой</div>
     </nav>
 
@@ -170,95 +165,53 @@
         tg.expand();
 
         const game = {
-            gold: 50, emeralds: 0, 
-            lvl: 1, xp: 0, nextLvlXp: 100,
-            clicks: 0,
+            gold: 50, emeralds: 0, lvl: 1, xp: 0, nextLvlXp: 100,
             inventory: [],
-
-            updateUI() {
-                document.getElementById('gold').innerText = Math.floor(this.gold);
-                document.getElementById('emeralds').innerText = this.emeralds;
-                document.getElementById('lvl').innerText = this.lvl;
-                document.getElementById('xp-text').innerText = `${this.xp}/${this.nextLvlXp}`;
-                document.getElementById('exp-fill').style.width = (this.xp / this.nextLvlXp * 100) + '%';
-                document.getElementById('total-clicks').innerText = this.clicks;
-
-                // Награды на экране работы
-                let portPlus = this.inventory.includes('rod2') ? 15 : (this.inventory.includes('rod1') ? 5 : 0);
-                let minePlus = this.inventory.includes('pick2') ? 12 : (this.inventory.includes('pick1') ? 4 : 0);
-                let chance = this.inventory.includes('pick2') ? 5 : (this.inventory.includes('pick1') ? 2 : 1);
-
-                document.getElementById('port-gold').innerText = 2 + portPlus;
-                document.getElementById('mine-gold').innerText = 1 + minePlus;
-                document.getElementById('mine-chance').innerText = chance;
-            },
-
-            doWork(type) {
-                this.clicks++;
-                if (type === 'port') {
-                    let bonus = this.inventory.includes('rod2') ? 15 : (this.inventory.includes('rod1') ? 5 : 0);
-                    this.gold += (2 + bonus);
-                    this.addXp(5);
-                } else {
-                    let bonus = this.inventory.includes('pick2') ? 12 : (this.inventory.includes('pick1') ? 4 : 0);
-                    let chance = this.inventory.includes('pick2') ? 0.05 : (this.inventory.includes('pick1') ? 0.02 : 0.01);
-                    this.gold += (1 + bonus);
-                    if (Math.random() < chance) {
-                        this.emeralds++;
-                        tg.HapticFeedback.notificationOccurred('success');
-                    }
-                    this.addXp(10);
-                }
-                tg.HapticFeedback.impactOccurred('medium');
-                this.updateUI();
-            },
-
-            addXp(amount) {
-                this.xp += amount;
-                if (this.xp >= this.nextLvlXp) {
-                    this.xp -= this.nextLvlXp;
-                    this.lvl++;
-                    // Умная прогрессия уровня: каждый уровень на 40% сложнее предыдущего + базовый прирост
-                    this.nextLvlXp = Math.floor(this.nextLvlXp * 1.4 + 50);
-                    tg.showPopup({ title: 'УРОВЕНЬ ПОВЫШЕН!', message: `Вы достигли ${this.lvl} уровня!`, buttons: [{type: 'ok'}] });
-                }
-            },
-
-            buy(id, price) {
-                if (this.gold >= price && !this.inventory.includes(id)) {
-                    this.gold -= price;
-                    this.inventory.push(id);
-                    const btn = document.getElementById('btn-' + id);
-                    btn.innerText = "КУПЛЕНО";
-                    btn.classList.add('bought');
-                    tg.HapticFeedback.notificationOccurred('success');
-                    this.updateUI();
-                } else if (this.inventory.includes(id)) {
-                    tg.showAlert("У вас уже есть этот предмет!");
-                } else {
-                    tg.showAlert("Недостаточно золота!");
-                }
-            },
 
             setTab(name, el) {
                 document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
                 document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
                 document.getElementById('screen-' + name).classList.add('active');
-                el.classList.add('active');
+                if(el) el.classList.add('active');
+                tg.HapticFeedback.impactOccurred('light');
             },
 
-            filterShop(cat, el) {
-                document.querySelectorAll('.shop-cat').forEach(c => c.classList.add('hidden'));
-                document.querySelectorAll('.shop-tab').forEach(t => t.classList.remove('active'));
-                document.getElementById('shop-' + cat).classList.remove('hidden');
-                el.classList.add('active');
+            openLocation(id) {
+                const titles = {
+                    tavern: "Таверна", camp: "Военный лагерь", 
+                    stable: "Конюшня", blacksmith: "Оружейник", armorer: "Бронник"
+                };
+                document.getElementById('loc-title').innerText = titles[id];
+                document.getElementById('loc-content').innerHTML = `<p style="color:var(--gray-text)">Вы посетили ${titles[id]}. Пока здесь ведутся строительные работы...</p>`;
+                this.setTab('location');
+            },
+
+            doWork(type) {
+                if (type === 'port') this.gold += 2;
+                else this.gold += 1;
+                this.xp += 10;
+                if(this.xp >= this.nextLvlXp) {
+                    this.lvl++;
+                    this.xp = 0;
+                    this.nextLvlXp = Math.floor(this.nextLvlXp * 1.5);
+                    tg.showAlert("Новый уровень!");
+                }
+                tg.HapticFeedback.impactOccurred('medium');
+                this.updateUI();
+            },
+
+            updateUI() {
+                document.getElementById('gold').innerText = this.gold;
+                document.getElementById('emeralds').innerText = this.emeralds;
+                document.getElementById('lvl').innerText = this.lvl;
+                document.getElementById('lvl-p').innerText = this.lvl;
+                document.getElementById('exp-fill').style.width = (this.xp / this.nextLvlXp * 100) + '%';
             }
         };
 
         if (tg.initDataUnsafe?.user) {
             document.getElementById('user-name').innerText = tg.initDataUnsafe.user.first_name;
         }
-
         game.updateUI();
     </script>
 </body>
