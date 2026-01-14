@@ -632,3 +632,4 @@ h1, h2, h3 {
     z-index: 10000;
     transition: opacity 0.5s ease; /* Важно для функции hideLoader */
 }
+
