@@ -66,21 +66,30 @@
 
         <div id="screen-work" class="screen active">
             <h2 class="title">Работа</h2>
-            <div class="card" onclick="game.doWork('port')">
-                <div class="card-icon">🎣</div>
-                <div class="card-info">
-                    <h3>Порт</h3>
-                    <p>Доход: +<span id="p-gold">2</span> 🪙 | +5 XP</p>
-                </div>
-            </div>
-            <div class="card" onclick="game.doWork('mine')">
-                <div class="card-icon">⛏️</div>
-                <div class="card-info">
-                    <h3>Рудник</h3>
-                    <p>Доход: +<span id="m-gold">1</span> 🪙 | +8 XP</p>
-                    <p style="color:var(--accent-red)">Шанс 💎: <span id="m-chance">1</span>%</p>
-                </div>
-            </div>
+<div class="card" onclick="game.doWork('port')">
+    <div class="card-icon">🎣</div>
+    <div class="card-info"><h3>Порт</h3><p>Доход: +<span id="p-gold">2</span> 🪙</p></div>
+</div>
+<div class="card" onclick="game.doWork('mine')">
+    <div class="card-icon">⛏️</div>
+    <div class="card-info"><h3>Рудник</h3><p>Доход: +<span id="m-gold">1</span> 🪙</p></div>
+</div>
+
+<div id="work-farm" class="card" style="opacity: 0.5;" onclick="game.doWork('farm')">
+    <div class="card-icon">🌾</div>
+    <div class="card-info">
+        <h3>Ферма <span style="font-size: 0.7em; color: var(--accent-red)" id="farm-lock">(Ур. 15)</span></h3>
+        <p>Доход: +15 🪙 | +12 XP</p>
+    </div>
+</div>
+
+<div id="work-hunt" class="card" style="opacity: 0.5;" onclick="game.doWork('hunt')">
+    <div class="card-icon">🏹</div>
+    <div class="card-info">
+        <h3>Охота <span style="font-size: 0.7em; color: var(--accent-red)" id="hunt-lock">(Ур. 25)</span></h3>
+        <p id="hunt-desc">Нужен лук!</p>
+    </div>
+</div>
         </div>
 
         <div id="screen-shop" class="screen">
@@ -108,6 +117,20 @@
                     <button id="btn-rod3" class="buy-btn" onclick="game.buy('rod3', 1200)">1200</button>
                 </div>
             </div>
+            <div class="shop-tab" id="tab-weapons" onclick="game.filterShop('weapons')" style="flex:1; text-align:center; padding:8px; background:#222; border-radius:6px; font-size:0.8em; cursor:pointer;">Оружие</div>
+
+<div id="shop-content-weapons" style="display:none;">
+    <div class="card">
+        <div class="card-icon">🏹</div>
+        <div class="card-info"><h3>Охотничий лук</h3><p>Для охоты: +50 🪙</p></div>
+        <button id="btn-bow1" class="buy-btn" onclick="game.buy('bow1', 10000)">10k</button>
+    </div>
+    <div class="card" style="margin-top:10px">
+        <div class="card-icon">💘</div>
+        <div class="card-info"><h3>Стальной арбалет</h3><p>Для охоты: +100 🪙</p></div>
+        <button id="btn-bow2" class="buy-btn" onclick="game.buy('bow2', 100000)">100k</button>
+    </div>
+</div>
 
             <div id="shop-content-picks" style="display:none;">
                 <div class="card">
@@ -174,3 +197,4 @@
     <script src="script.js"></script>
 </body>
 </html>
+
