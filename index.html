@@ -521,4 +521,170 @@ if (document.readyState === 'loading') {
     gameEngine.init();
 }
 </script>
+<section id="scr-shop" class="screen">
+    <h2 class="ancient-heading">Королевская Лавка</h2>
+    
+    <div class="quest-card">
+        <div class="quest-body">
+            <div class="quest-icon-frame">🗡️</div>
+            <div class="quest-info">
+                <h3>Стальной Гладиус</h3>
+                <p>Эффект: <span class="gold-text">+2 к золоту</span> за клик</p>
+            </div>
+            <button class="buy-btn" id="buy-sword" onclick="gameEngine.buyItem('sword', 250)">250</button>
+        </div>
+    </div>
+
+    <div class="quest-card">
+        <div class="quest-body">
+            <div class="quest-icon-frame">📜</div>
+            <div class="quest-info">
+                <h3>Фолиант Мудрости</h3>
+                <p>Эффект: <span class="gold-text">+50% к опыту</span></p>
+            </div>
+            <button class="buy-btn" id="buy-book" onclick="gameEngine.buyItem('book', 500)">500</button>
+        </div>
+    </div>
+</section>
+
+<section id="scr-hero" class="screen">
+    <h2 class="ancient-heading">Летопись Героя</h2>
+    <div class="quest-card" style="border-left: 5px solid var(--emerald);">
+        <div class="quest-body">
+            <div class="quest-icon-frame" id="hero-avatar">👤</div>
+            <div class="quest-info">
+                <h3 id="hero-name">Великий Воин</h3>
+                <p>Звание: <span id="hero-rank" class="gold-text">Рекрут</span></p>
+                <p>Предметов: <span id="hero-inv-count">0</span></p>
+            </div>
+        </div>
+    </div>
+
+    <h3 class="medieval-title" style="font-size: 0.9em; margin-top: 20px;">Инвентарь</h3>
+    <div id="inventory-list" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px;">
+        </div>
+</section>
+
+<div id="event-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:10000; justify-content:center; align-items:center; padding:20px;">
+    <div class="quest-card" style="width:100%; max-width:400px; background:var(--iron); border:2px solid var(--gold);">
+        <div class="quest-body" style="flex-direction:column; text-align:center;">
+            <div id="event-icon" style="font-size:4em; margin-bottom:15px;">📜</div>
+            <h2 id="event-title" class="medieval-title">Случайная встреча</h2>
+            <p id="event-desc" style="margin-bottom:20px; line-height:1.4;">Вы встретили странствующего торговца...</p>
+            <button class="buy-btn" onclick="gameEngine.closeEvent()">ПРИНЯТЬ</button>
+        </div>
+    </div>
+</div>
+// Добавь эти свойства в state внутри gameEngine
+state: {
+    gold: 50,
+    gems: 0,
+    lvl: 1,
+    xp: 0,
+    nextXp: 100,
+    inventory: [],
+    clickCount: 0, // Счетчик для событий
+    rank: "Рекрут"
+},
+
+// Добавь/Замени эти методы в gameEngine:
+
+execute(task, event) {
+    let goldGain = 0;
+    let xpGain = 0;
+
+    // Расчет наград
+    if (task === 'port') { goldGain = 2; xpGain = 5; }
+    else if (task === 'mine') { goldGain = 1; xpGain = 8; }
+    else if (task === 'farm') {
+        if (this.state.lvl < 15) return this.alert("Уровень слишком мал!");
+        goldGain = 10; xpGain = 15;
+    }
+
+    // БОНУСЫ ПРЕДМЕТОВ
+    if (this.state.inventory.includes('sword')) goldGain += 2;
+    if (this.state.inventory.includes('book')) xpGain = Math.floor(xpGain * 1.5);
+
+    // Обновление состояния
+    this.state.gold += goldGain;
+    this.state.clickCount++;
+    this.addXp(xpGain);
+    
+    this.showPopup(event, `+${goldGain} 🪙`);
+    
+    // ПРОВЕРКА СЛУЧАЙНОГО СОБЫТИЯ (каждые 15-25 кликов)
+    if (this.state.clickCount >= (15 + Math.random() * 10)) {
+        this.triggerRandomEvent();
+        this.state.clickCount = 0;
+    }
+
+    this.updateUI();
+    this.save();
+},
+
+triggerRandomEvent() {
+    const events = [
+        { title: "Засада!", desc: "На вас напали разбойники. Вы потеряли 5 золотых в потасовке.", icon: "⚔️", gold: -5 },
+        { title: "Благословение", desc: "Старый монах благословил ваш путь. Вы получили 20 опыта.", icon: "✨", xp: 20 },
+        { title: "Кошелек", desc: "Вы нашли оброненный кем-то кошель с монетами!", icon: "💰", gold: 15 },
+        { title: "Кристалл", desc: "Среди камней вы заметили странный блеск...", icon: "💎", gems: 1 }
+    ];
+
+    const ev = events[Math.floor(Math.random() * events.length)];
+    
+    document.getElementById('event-title').innerText = ev.title;
+    document.getElementById('event-desc').innerText = ev.desc;
+    document.getElementById('event-icon').innerText = ev.icon;
+    document.getElementById('event-modal').style.display = 'flex';
+
+    if (ev.gold) this.state.gold = Math.max(0, this.state.gold + ev.gold);
+    if (ev.xp) this.addXp(ev.xp);
+    if (ev.gems) this.state.gems += ev.gems;
+    
+    tg.HapticFeedback.notificationOccurred('warning');
+},
+
+closeEvent() {
+    document.getElementById('event-modal').style.display = 'none';
+    this.updateUI();
+},
+
+buyItem(id, price) {
+    if (this.state.inventory.includes(id)) return this.alert("Артефакт уже у вас!");
+    if (this.state.gold >= price) {
+        this.state.gold -= price;
+        this.state.inventory.push(id);
+        this.alert("Вы приобрели ценный артефакт!");
+        this.updateUI();
+        this.save();
+    } else {
+        this.alert("Не хватает золота в казне!");
+    }
+},
+
+updateUI() {
+    // Старые обновления
+    document.getElementById('gold-val').innerText = Math.floor(this.state.gold);
+    document.getElementById('gem-val').innerText = this.state.gems;
+    document.getElementById('lvl-num').innerText = this.state.lvl;
+    document.getElementById('exp-bar-fill').style.width = (this.state.xp / this.state.nextXp * 100) + "%";
+
+    // Обновление профиля
+    document.getElementById('hero-rank').innerText = this.getRank();
+    document.getElementById('hero-inv-count').innerText = this.state.inventory.length;
+    
+    // Отрисовка инвентаря
+    const invDiv = document.getElementById('inventory-list');
+    invDiv.innerHTML = '';
+    const icons = { sword: '🗡️', book: '📜' };
+    this.state.inventory.forEach(item => {
+        invDiv.innerHTML += `<div class="quest-icon-frame" style="width:45px; height:45px; font-size:1.2em;">${icons[item]}</div>`;
+    });
+
+    // Блокировка кнопок покупки
+    if (this.state.inventory.includes('sword')) document.getElementById('buy-sword').innerText = "ВЛАДЕЕТЕ";
+    if (this.state.inventory.includes('book')) document.getElementById('buy-book').innerText = "ВЛАДЕЕТЕ";
+    
+    if (this.state.lvl >= 15) document.getElementById('card-farm').classList.remove('locked-overlay');
+}
 
