@@ -1,3 +1,4 @@
+alert("Скрипт запущен!");
 // Функция, которая физически убирает черный экран
 function forceStartGame() {
     console.log("Принудительный запуск игры...");
@@ -25,3 +26,4 @@ window.addEventListener('load', () => {
     // Пробуем мягко закрыть заставку через 2 секунды
     setTimeout(forceStartGame, 2000);
 });
+
