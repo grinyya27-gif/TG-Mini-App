@@ -22,38 +22,25 @@ const game = {
         tg.HapticFeedback.impactOccurred('light');
     },
 
-    // Фильтр в лавке (удочки/кирки)
+    // Фильтр в лавке (удочки/кирки/оружие)
     filterShop(category) {
-        const rodsContent = document.getElementById('shop-content-rods');
-        const picksContent = document.getElementById('shop-content-picks');
-        const rodsTab = document.getElementById('tab-rods');
-        const picksTab = document.getElementById('tab-picks');
+        // Прячем все контейнеры контента
+        const contents = ['rods', 'picks', 'weapons'];
+        contents.forEach(type => {
+            const el = document.getElementById('shop-content-' + type);
+            if (el) el.style.display = 'none';
+            const tab = document.getElementById('tab-' + type);
+            if (tab) tab.classList.remove('active');
+        });
 
-        if (rodsContent) rodsContent.style.display = 'none';
-        if (picksContent) picksContent.style.display = 'none';
-        if (rodsTab) rodsTab.classList.remove('active');
-        if (picksTab) picksTab.classList.remove('active');
-        
-        if (category === 'rods') {
-            rodsContent.style.display = 'block';
-            rodsTab.classList.add('active');
-        } else {
-            picksContent.style.display = 'block';
-            picksTab.classList.add('active');
-        }
+        // Показываем нужный
+        const activeContent = document.getElementById('shop-content-' + category);
+        const activeTab = document.getElementById('tab-' + category);
+        if (activeContent) activeContent.style.display = 'block';
+        if (activeTab) activeTab.classList.add('active');
+
         tg.HapticFeedback.impactOccurred('light');
     },
-    filterShop(category) {
-    document.getElementById('shop-content-rods').style.display = 'none';
-    document.getElementById('shop-content-picks').style.display = 'none';
-    document.getElementById('shop-content-weapons').style.display = 'none'; // Скрыть оружие
-    
-    document.querySelectorAll('.shop-tab').forEach(t => t.classList.remove('active'));
-    
-    document.getElementById('shop-content-' + category).style.display = 'block';
-    document.getElementById('tab-' + category).classList.add('active');
-    tg.HapticFeedback.impactOccurred('light');
-},
 
     // === ЛОГИКА ЗАГРУЗКИ ===
     startLoading() {
@@ -82,7 +69,7 @@ const game = {
         let streak = parseInt(localStorage.getItem('bonusStreak') || "0");
         const todayStr = now.toDateString();
 
-        if (lastDate === todayStr) return; // Уже получал сегодня
+        if (lastDate === todayStr) return;
 
         const yesterday = new Date();
         yesterday.setDate(yesterday.getDate() - 1);
@@ -102,8 +89,8 @@ const game = {
     },
 
     giveDailyReward(day) {
-        let reward = 5 + (day - 1) * 3; // Базовая прогрессия
-        if (day === 10) reward = 50; // Супер-приз на 10 день
+        let reward = 5 + (day - 1) * 3;
+        if (day === 10) reward = 50;
         
         this.emeralds += reward;
         
@@ -121,56 +108,46 @@ const game = {
         tg.HapticFeedback.impactOccurred('light');
     },
 
-    // === ИГРОВАЯ ЛОГИКА ===
+    // === ИГРОВАЯ ЛОГИКА (РАБОТА) ===
     doWork(type) {
         if (type === 'port') {
             let bonus = 0;
             if (this.inventory.includes('rod3')) bonus = 40;
             else if (this.inventory.includes('rod2')) bonus = 15;
             else if (this.inventory.includes('rod1')) bonus = 5;
-            
             this.gold += (2 + bonus);
             this.addXp(5);
-        } else {
+        } 
+        else if (type === 'mine') {
             let bonus = 0;
             let chance = 0.01;
             if (this.inventory.includes('pick3')) { bonus = 25; chance = 0.08; }
             else if (this.inventory.includes('pick2')) { bonus = 12; chance = 0.04; }
             else if (this.inventory.includes('pick1')) { bonus = 4; chance = 0.02; }
-            
             this.gold += (1 + bonus);
-            if(Math.random() < chance) { 
-                this.emeralds++; 
-                tg.HapticFeedback.notificationOccurred('success'); 
-            }
+            if(Math.random() < chance) { this.emeralds++; tg.HapticFeedback.notificationOccurred('success'); }
             this.addXp(8);
         }
+        else if (type === 'farm') {
+            if (this.lvl < 15) return tg.showAlert("Нужен 15 уровень!");
+            this.gold += 15;
+            this.addXp(12);
+        }
+        else if (type === 'hunt') {
+            if (this.lvl < 25) return tg.showAlert("Нужен 25 уровень!");
+            if (!this.inventory.includes('bow1') && !this.inventory.includes('bow2')) {
+                return tg.showAlert("Вам нужен лук или арбалет из лавки!");
+            }
+            let income = this.inventory.includes('bow2') ? 100 : 50;
+            this.gold += income;
+            this.addXp(20);
+        }
+
         tg.HapticFeedback.impactOccurred('medium');
         this.updateUI();
     },
-    doWork(type) {
-    if (type === 'farm') {
-        if (this.lvl < 15) return tg.showAlert("Нужен 15 уровень!");
-        this.gold += 15; this.addXp(12);
-    } 
-    else if (type === 'hunt') {
-        if (this.lvl < 25) return tg.showAlert("Нужен 25 уровень!");
-        if (!this.inventory.includes('bow1') && !this.inventory.includes('bow2')) {
-            return tg.showAlert("Купите лук в лавке!");
-        }
-        let bonus = this.inventory.includes('bow2') ? 100 : 50;
-        this.gold += bonus; this.addXp(20);
-    }
-    // ... логика для порта и рудника остается ...
-    else if (type === 'port') { /* старый код порта */ }
-    else if (type === 'mine') { /* старый код рудника */ }
-    
-    tg.HapticFeedback.impactOccurred('medium');
-    this.updateUI();
-},
 
     addXp(val) {
-        // Бонус опыта от оружия
         let swordBonus = this.inventory.includes('sword1') ? 2 : 0;
         this.xp += (val + swordBonus);
 
@@ -220,7 +197,7 @@ const game = {
         document.getElementById('xp-text').innerText = this.xp + "/" + this.nextXp;
         document.getElementById('exp-fill').style.width = (this.xp / this.nextXp * 100) + "%";
         
-        // Обновление цифр дохода на кнопках
+        // Обновление цифр дохода порта/рудника
         const pG = 2 + (this.inventory.includes('rod3') ? 40 : (this.inventory.includes('rod2') ? 15 : (this.inventory.includes('rod1') ? 5 : 0)));
         const mG = 1 + (this.inventory.includes('pick3') ? 25 : (this.inventory.includes('pick2') ? 12 : (this.inventory.includes('pick1') ? 4 : 0)));
         const mC = (this.inventory.includes('pick3') ? 8 : (this.inventory.includes('pick2') ? 4 : (this.inventory.includes('pick1') ? 2 : 1)));
@@ -229,6 +206,21 @@ const game = {
         if(document.getElementById('m-gold')) document.getElementById('m-gold').innerText = mG;
         if(document.getElementById('m-chance')) document.getElementById('m-chance').innerText = mC;
         
+        // Визуальная разблокировка работ по уровню
+        if (this.lvl >= 15) {
+            const farm = document.getElementById('work-farm');
+            if(farm) { farm.style.opacity = "1"; document.getElementById('farm-lock').innerText = ""; }
+        }
+        if (this.lvl >= 25) {
+            const hunt = document.getElementById('work-hunt');
+            if(hunt) { 
+                hunt.style.opacity = "1"; 
+                document.getElementById('hunt-lock').innerText = ""; 
+                let bowText = this.inventory.includes('bow2') ? "Доход: 100 🪙" : (this.inventory.includes('bow1') ? "Доход: 50 🪙" : "Нужен лук!");
+                document.getElementById('hunt-desc').innerText = bowText;
+            }
+        }
+
         // Пометка купленных кнопок
         this.inventory.forEach(itemId => {
             const btn = document.getElementById('btn-' + itemId);
@@ -243,17 +235,14 @@ const game = {
     }
 };
 
-// === ИНИЦИАЛИЗАЦИЯ ПРИ ЗАПУСКЕ ===
+// === ИНИЦИАЛИЗАЦИЯ ===
 if(tg.initDataUnsafe?.user) {
     document.getElementById('user-name').innerText = tg.initDataUnsafe.user.first_name;
 }
 
-// Запуск систем
 game.updateUI();
 game.startLoading();
 
-// Проверка бонуса через 3 секунды после анимации
 setTimeout(() => {
     game.checkDaily();
 }, 3000);
-
