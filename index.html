@@ -575,17 +575,6 @@ if (document.readyState === 'loading') {
         </div>
     </div>
 </div>
-// Добавь эти свойства в state внутри gameEngine
-state: {
-    gold: 50,
-    gems: 0,
-    lvl: 1,
-    xp: 0,
-    nextXp: 100,
-    inventory: [],
-    clickCount: 0, // Счетчик для событий
-    rank: "Рекрут"
-},
 
 // Добавь/Замени эти методы в gameEngine:
 
@@ -687,4 +676,5 @@ updateUI() {
     
     if (this.state.lvl >= 15) document.getElementById('card-farm').classList.remove('locked-overlay');
 }
+
 
