@@ -2,30 +2,64 @@ const tg = window.Telegram.WebApp;
 tg.expand();
 
 const game = {
-    gold: 50, emeralds: 0, lvl: 1, xp: 0, nextXp: 100,
+    // Данные игрока
+    gold: 50,
+    emeralds: 0,
+    lvl: 1,
+    xp: 0,
+    nextXp: 100,
     inventory: [],
 
+    // Переключение основных вкладок меню
     setTab(id, el) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        document.getElementById('screen-' + id).classList.add('active');
+        
+        const targetScreen = document.getElementById('screen-' + id);
+        if (targetScreen) targetScreen.classList.add('active');
         if (el) el.classList.add('active');
+        
         tg.HapticFeedback.impactOccurred('light');
     },
 
-    openLocation(id) {
-        tg.showAlert("Вы прибыли в локацию: " + id + ". Скоро здесь появятся уникальные функции!");
+    // Переключение категорий ВНУТРИ лавки
+    filterShop(category) {
+        const rodsContent = document.getElementById('shop-content-rods');
+        const picksContent = document.getElementById('shop-content-picks');
+        const rodsTab = document.getElementById('tab-rods');
+        const picksTab = document.getElementById('tab-picks');
+
+        // Прячем всё
+        if (rodsContent) rodsContent.style.display = 'none';
+        if (picksContent) picksContent.style.display = 'none';
+        
+        // Убираем подсветку кнопок
+        if (rodsTab) rodsTab.classList.remove('active');
+        if (picksTab) picksTab.classList.remove('active');
+        
+        // Показываем нужную категорию
+        if (category === 'rods' && rodsContent && rodsTab) {
+            rodsContent.style.display = 'block';
+            rodsTab.classList.add('active');
+        } else if (category === 'picks' && picksContent && picksTab) {
+            picksContent.style.display = 'block';
+            picksTab.classList.add('active');
+        }
+        tg.HapticFeedback.impactOccurred('light');
     },
 
+    // Логика работы
     doWork(type) {
         if (type === 'port') {
-            let b = this.inventory.includes('rod1') ? 5 : 0;
-            this.gold += (2 + b); this.addXp(5);
+            let bonus = this.inventory.includes('rod1') ? 5 : 0;
+            this.gold += (2 + bonus); 
+            this.addXp(5);
         } else {
-            let b = this.inventory.includes('pick1') ? 4 : 0;
-            let c = this.inventory.includes('pick1') ? 0.02 : 0.01;
-            this.gold += (1 + b);
-            if(Math.random() < c) { 
+            let bonus = this.inventory.includes('pick1') ? 4 : 0;
+            let chance = this.inventory.includes('pick1') ? 0.02 : 0.01;
+            this.gold += (1 + bonus);
+            
+            if(Math.random() < chance) { 
                 this.emeralds++; 
                 tg.HapticFeedback.notificationOccurred('success'); 
             }
@@ -35,88 +69,100 @@ const game = {
         this.updateUI();
     },
 
+    // Система опыта
     addXp(val) {
         this.xp += val;
         if(this.xp >= this.nextXp) {
-            this.xp -= this.nextXp; this.lvl++;
+            this.xp -= this.nextXp; 
+            this.lvl++;
+            // Умное увеличение сложности уровня
             this.nextXp = Math.floor(this.nextXp * 1.6 + 50);
             tg.showAlert("Уровень повышен до " + this.lvl + "!");
+            tg.HapticFeedback.notificationOccurred('warning');
         }
     },
 
+    // Покупка предметов
     buy(id, price) {
         if(this.gold >= price && !this.inventory.includes(id)) {
-            this.gold -= price; this.inventory.push(id);
-            const btn = document.getElementById('btn-'+id);
+            this.gold -= price; 
+            this.inventory.push(id);
+            
+            // Визуально помечаем кнопку покупки
+            const btn = document.getElementById('btn-' + id);
             if (btn) {
                 btn.innerText = "КУПЛЕНО";
                 btn.classList.add('bought');
             }
+            
+            tg.HapticFeedback.notificationOccurred('success');
             this.updateUI();
         } else if (this.inventory.includes(id)) {
-            tg.showAlert("Уже куплено!");
+            tg.showAlert("Этот предмет уже в инвентаре!");
         } else { 
             tg.showAlert("Недостаточно золота!"); 
         }
     },
 
+    // Банковский обмен
     exchange() {
         if(this.emeralds >= 1) {
-            this.emeralds--; this.gold += 500;
+            this.emeralds--; 
+            this.gold += 500;
             this.updateUI();
             tg.showAlert("Обмен завершен! +500 золота.");
+            tg.HapticFeedback.impactOccurred('heavy');
         } else { 
-            tg.showAlert("У вас нет изумрудов!"); 
+            tg.showAlert("У вас нет изумрудов для обмена!"); 
         }
     },
 
+    // Локации на карте
+    openLocation(id) {
+        const titles = {
+            tavern: "Таверна", camp: "Лагерь", 
+            stable: "Конюшня", blacksmith: "Оружейник", armorer: "Бронник"
+        };
+        tg.showAlert("Добро пожаловать в " + (titles[id] || id) + "! Здесь скоро будет контент.");
+    },
+
+    // Обновление всех данных на экране
     updateUI() {
+        // Ресурсы
         document.getElementById('gold').innerText = Math.floor(this.gold);
         document.getElementById('emeralds').innerText = this.emeralds;
+        
+        // Опыт и Уровень
         document.getElementById('lvl').innerText = this.lvl;
         document.getElementById('xp-text').innerText = this.xp + "/" + this.nextXp;
-        document.getElementById('exp-fill').style.width = (this.xp/this.nextXp*100) + "%";
+        document.getElementById('exp-fill').style.width = (this.xp / this.nextXp * 100) + "%";
         
-        // Обновление наград на кнопках
-        const pGoldText = document.getElementById('p-gold');
-        const mGoldText = document.getElementById('m-gold');
-        const mChanceText = document.getElementById('m-chance');
+        // Информация на кнопках работы (динамическое обновление дохода)
+        const pGold = document.getElementById('p-gold');
+        const mGold = document.getElementById('m-gold');
+        const mChance = document.getElementById('m-chance');
 
-        if(pGoldText) pGoldText.innerText = this.inventory.includes('rod1') ? 7 : 2;
-        if(mGoldText) mGoldText.innerText = this.inventory.includes('pick1') ? 5 : 1;
-        if(mChanceText) mChanceText.innerText = this.inventory.includes('pick1') ? 2 : 1;
+        if(pGold) pGold.innerText = this.inventory.includes('rod1') ? 7 : 2;
+        if(mGold) mGold.innerText = this.inventory.includes('pick1') ? 5 : 1;
+        if(mChance) mChance.innerText = this.inventory.includes('pick1') ? 2 : 1;
         
-        let i = [];
-        if(this.inventory.includes('rod1')) i.push("Удочка");
-        if(this.inventory.includes('pick1')) i.push("Кирка");
-        document.getElementById('inv').innerText = i.length ? i.join(", ") : "пусто";
+        // Инвентарь в профиле
+        let itemsNames = [];
+        if(this.inventory.includes('rod1')) itemsNames.push("Удочка");
+        if(this.inventory.includes('pick1')) itemsNames.push("Кирка");
+        
+        const invDisplay = document.getElementById('inv');
+        if (invDisplay) {
+            invDisplay.innerText = itemsNames.length ? itemsNames.join(", ") : "пусто";
+        }
     }
 };
 
-// Инициализация имени
+// Привязка имени пользователя Telegram
 if(tg.initDataUnsafe?.user) {
-    document.getElementById('user-name').innerText = tg.initDataUnsafe.user.first_name;
+    const userName = document.getElementById('user-name');
+    if (userName) userName.innerText = tg.initDataUnsafe.user.first_name;
 }
 
+// Первый запуск интерфейса
 game.updateUI();
-filterShop(category) {
-    // Скрываем все разделы лавки
-    document.getElementById('shop-content-rods').style.display = 'none';
-    document.getElementById('shop-content-picks').style.display = 'none';
-    
-    // Снимаем выделение со всех табов
-    document.getElementById('tab-rods').classList.remove('active');
-    document.getElementById('tab-picks').classList.remove('active');
-    
-    // Показываем нужный раздел и выделяем таб
-    if (category === 'rods') {
-        document.getElementById('shop-content-rods').style.display = 'block';
-        document.getElementById('tab-rods').classList.add('active');
-    } else {
-        document.getElementById('shop-content-picks').style.display = 'block';
-        document.getElementById('tab-picks').classList.add('active');
-    }
-    tg.HapticFeedback.impactOccurred('light');
-},
-
-
