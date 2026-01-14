@@ -321,3 +321,204 @@
 
     </body>
 </html>
+<script>
+/**
+ * WAR SAGA: OVERLORD CORE ENGINE
+ * Версия: 2.0.1 (Стабильная для GitHub Pages)
+ */
+
+const gameEngine = {
+    // --- ДАННЫЕ ИГРОКА ---
+    state: {
+        gold: 50,
+        gems: 0,
+        lvl: 1,
+        xp: 0,
+        nextXp: 100,
+        inventory: [],
+        location: 'capital',
+        lastDaily: null
+    },
+
+    // --- ИНИЦИАЛИЗАЦИЯ ---
+    init() {
+        console.log("War Saga Engine: Инициализация...");
+        
+        try {
+            // Пытаемся загрузить сохранение
+            this.load();
+            
+            // Настройка Telegram WebApp
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.ready();
+                window.Telegram.WebApp.expand();
+            }
+
+            // Запуск прогресс-бара загрузки
+            this.handleLoading();
+            
+        } catch (e) {
+            console.error("Ошибка инициализации:", e);
+            document.getElementById('boot-status').innerText = "Ошибка летописи!";
+        }
+    },
+
+    handleLoading() {
+        const bar = document.getElementById('boot-progress');
+        const status = document.getElementById('boot-status');
+        const loader = document.getElementById('loader');
+        let p = 0;
+
+        const messages = [
+            "Разжигание кузниц...",
+            "Сбор налогов...",
+            "Заточка мечей...",
+            "Подготовка пиров...",
+            "Благословение богов..."
+        ];
+
+        const interval = setInterval(() => {
+            p += Math.floor(Math.random() * 15) + 5;
+            if (p > 100) p = 100;
+
+            bar.style.width = p + "%";
+            status.innerText = messages[Math.floor(p / 25)] || "Почти готово...";
+
+            if (p === 100) {
+                clearInterval(interval);
+                setTimeout(() => {
+                    loader.style.opacity = "0";
+                    setTimeout(() => loader.style.display = "none", 500);
+                    this.updateUI();
+                }, 600);
+            }
+        }, 120);
+    },
+
+    // --- СИСТЕМА ПЕРЕКЛЮЧЕНИЯ ЭКРАНОВ ---
+    switchTab(tabId, el) {
+        // Убираем активные классы
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+
+        // Включаем нужный экран
+        const target = document.getElementById('scr-' + tabId);
+        if (target) {
+            target.classList.add('active');
+            if (el) el.classList.add('active');
+            
+            // Хэптик-отклик (вибрация)
+            if (window.Telegram && window.Telegram.WebApp.HapticFeedback) {
+                window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+            }
+        }
+    },
+
+    // --- ОСНОВНАЯ МЕХАНИКА (КЛИКИ/РАБОТА) ---
+    execute(task, event) {
+        let goldGain = 0;
+        let xpGain = 0;
+
+        // Логика вознаграждений
+        if (task === 'port') {
+            goldGain = 2;
+            xpGain = 5;
+        } else if (task === 'mine') {
+            goldGain = 1;
+            xpGain = 8;
+            if (Math.random() < 0.03) {
+                this.state.gems += 1;
+                this.showPopup(event, "+1 💎", "emerald-text");
+            }
+        } else if (task === 'farm') {
+            if (this.state.lvl < 15) return this.alert("Нужен уровень 15!");
+            goldGain = 10;
+            xpGain = 15;
+        }
+
+        // Начисление
+        this.state.gold += goldGain;
+        this.addXp(xpGain);
+        
+        // Эффект вылетающего текста
+        this.showPopup(event, `+${goldGain} 🪙`);
+        
+        this.updateUI();
+        this.save();
+
+        if (window.Telegram && window.Telegram.WebApp.HapticFeedback) {
+            window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+        }
+    },
+
+    addXp(amt) {
+        this.state.xp += amt;
+        if (this.state.xp >= this.state.nextXp) {
+            this.state.lvl++;
+            this.state.xp -= this.state.nextXp;
+            this.state.nextXp = Math.floor(this.state.nextXp * 1.5);
+            this.alert(`Уровень повышен! Теперь вы на ступени ${this.state.lvl}`);
+        }
+    },
+
+    // --- ВИЗУАЛЬНЫЕ ЭФФЕКТЫ ---
+    showPopup(e, text, extraClass = "") {
+        const el = document.createElement('div');
+        el.className = `dmg-text ${extraClass}`;
+        el.innerText = text;
+        
+        // Позиция клика
+        const x = e.clientX || (e.touches ? e.touches[0].clientX : window.innerWidth / 2);
+        const y = e.clientY || (e.touches ? e.touches[0].clientY : window.innerHeight / 2);
+        
+        el.style.left = x + "px";
+        el.style.top = y + "px";
+        
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 1000);
+    },
+
+    // --- ОБНОВЛЕНИЕ ИНТЕРФЕЙСА ---
+    updateUI() {
+        document.getElementById('gold-val').innerText = Math.floor(this.state.gold);
+        document.getElementById('gem-val').innerText = this.state.gems;
+        document.getElementById('lvl-num').innerText = this.state.lvl;
+        
+        const prog = (this.state.xp / this.state.nextXp) * 100;
+        document.getElementById('exp-bar-fill').style.width = prog + "%";
+
+        // Разблокировка карточек
+        if (this.state.lvl >= 15) {
+            document.getElementById('card-farm').classList.remove('locked-overlay');
+        }
+    },
+
+    // --- СОХРАНЕНИЯ ---
+    save() {
+        localStorage.setItem('WAR_SAGA_DATA', JSON.stringify(this.state));
+    },
+
+    load() {
+        const raw = localStorage.getItem('WAR_SAGA_DATA');
+        if (raw) {
+            this.state = JSON.parse(raw);
+        }
+    },
+
+    alert(msg) {
+        if (window.Telegram && window.Telegram.WebApp.showAlert) {
+            window.Telegram.WebApp.showAlert(msg);
+        } else {
+            alert(msg);
+        }
+    }
+};
+
+// ГАРАНТИРОВАННЫЙ ЗАПУСК
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => gameEngine.init());
+} else {
+    gameEngine.init();
+}
+</script>
+
