@@ -342,3 +342,214 @@
 
 </body>
 </html>
+<script>
+// Инициализация Telegram WebApp
+const tg = window.Telegram.WebApp;
+tg.expand();
+
+// Основной объект игры
+const game = {
+    // --- СОСТОЯНИЕ (Data) ---
+    gold: 50,
+    emeralds: 0,
+    lvl: 1,
+    xp: 0,
+    nextXp: 100,
+    inventory: [],
+    
+    // --- СИСТЕМА ЗАГРУЗКИ ---
+    init() {
+        this.loadProgress();
+        this.updateUI();
+        
+        // Эмуляция загрузки древнего мира
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += Math.random() * 25;
+            if (progress > 100) progress = 100;
+            document.getElementById('load-progress').style.width = progress + '%';
+            
+            if (progress === 100) {
+                clearInterval(interval);
+                setTimeout(() => {
+                    document.getElementById('loader').style.opacity = '0';
+                    setTimeout(() => {
+                        document.getElementById('loader').style.display = 'none';
+                    }, 800);
+                }, 500);
+            }
+        }, 150);
+
+        // Получение имени из Telegram
+        if (tg.initDataUnsafe?.user) {
+            const name = tg.initDataUnsafe.user.first_name;
+            // Можно использовать для профиля
+        }
+    },
+
+    // --- НАВИГАЦИЯ ---
+    setTab(screenId, navEl) {
+        // Скрыть все экраны
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        // Деактивировать кнопки навигации
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        
+        // Активировать нужный
+        document.getElementById('screen-' + screenId).classList.add('active');
+        if (navEl) navEl.classList.add('active');
+        
+        // Легкая вибрация при переключении
+        tg.HapticFeedback.impactOccurred('light');
+    },
+
+    // --- ЭКОНОМИКА И РАБОТА ---
+    doWork(type, event) {
+        let gainGold = 0;
+        let gainXp = 0;
+
+        switch(type) {
+            case 'port':
+                gainGold = 2;
+                gainXp = 5;
+                break;
+            case 'mine':
+                gainGold = 1;
+                gainXp = 8;
+                // Шанс найти изумруд
+                if (Math.random() < 0.02) {
+                    this.emeralds += 1;
+                    this.notify("Вы нашли изумруд в руде!", "💎");
+                }
+                break;
+            case 'farm':
+                if (this.lvl < 15) return this.notify("Нужен 15 уровень!", "🚫");
+                gainGold = 10;
+                gainXp = 15;
+                break;
+        }
+
+        // Бонусы от снаряжения
+        if (this.inventory.includes('sword1')) gainXp *= 2;
+
+        this.gold += gainGold;
+        this.addXp(gainXp);
+        
+        // Визуальный эффект клика
+        this.spawnFloatingText(event, `+${gainGold} 🪙`);
+        
+        this.updateUI();
+        this.saveProgress();
+        tg.HapticFeedback.impactOccurred('medium');
+    },
+
+    // --- СИСТЕМА ОПЫТА ---
+    addXp(amount) {
+        this.xp += amount;
+        if (this.xp >= this.nextXp) {
+            this.lvl++;
+            this.xp -= this.nextXp;
+            this.nextXp = Math.floor(this.nextXp * 1.6);
+            this.notify(`Уровень повышен! Теперь вы: ${this.getRank()}`, "👑");
+            tg.HapticFeedback.notificationOccurred('success');
+        }
+    },
+
+    getRank() {
+        if (this.lvl < 5) return "Рекрут";
+        if (this.lvl < 10) return "Воин";
+        if (this.lvl < 20) return "Рыцарь";
+        return "Лорд";
+    },
+
+    // --- МАГАЗИН ---
+    buy(itemId, price) {
+        if (this.inventory.includes(itemId)) {
+            return this.notify("Уже во владении!", "⚔️");
+        }
+        if (this.gold >= price) {
+            this.gold -= price;
+            this.inventory.push(itemId);
+            this.updateUI();
+            this.saveProgress();
+            this.notify("Предмет куплен!", "📜");
+            tg.HapticFeedback.notificationOccurred('success');
+        } else {
+            this.notify("Недостаточно золота!", "❌");
+            tg.HapticFeedback.notificationOccurred('error');
+        }
+    },
+
+    // --- ВИЗУАЛЬНЫЕ ЭФФЕКТЫ ---
+    spawnFloatingText(e, text) {
+        const floating = document.createElement('div');
+        floating.innerText = text;
+        floating.style.position = 'fixed';
+        floating.style.left = (e.clientX || e.touches[0].clientX) + 'px';
+        floating.style.top = (e.clientY || e.touches[0].clientY) + 'px';
+        floating.style.color = 'var(--gold)';
+        floating.style.fontWeight = 'bold';
+        floating.style.pointerEvents = 'none';
+        floating.style.zIndex = '9999';
+        floating.animate([
+            { transform: 'translateY(0)', opacity: 1 },
+            { transform: 'translateY(-100px)', opacity: 0 }
+        ], { duration: 1000, easing: 'ease-out' });
+        
+        document.body.appendChild(floating);
+        setTimeout(() => floating.remove(), 1000);
+    },
+
+    notify(text, icon = "") {
+        // Простой alert через Telegram SDK
+        tg.showAlert(`${icon} ${text}`);
+    },
+
+    // --- ИНТЕРФЕЙС ---
+    updateUI() {
+        document.getElementById('gold').innerText = Math.floor(this.gold);
+        document.getElementById('emeralds').innerText = this.emeralds;
+        document.getElementById('lvl').innerText = this.lvl;
+        
+        const progressPercent = (this.xp / this.nextXp) * 100;
+        document.getElementById('exp-fill').style.width = progressPercent + '%';
+
+        // Проверка блокировок
+        if (this.lvl >= 15) {
+            document.getElementById('card-farm').classList.remove('locked');
+            document.getElementById('card-farm').querySelector('p').innerText = "Награда: +10 🪙";
+        }
+
+        // Кнопки в магазине
+        if (this.inventory.includes('sword1')) {
+            const btn = document.getElementById('btn-sword1');
+            btn.innerText = "ВЫДАНО";
+            btn.style.background = "#333";
+            btn.style.borderColor = "#555";
+        }
+    },
+
+    // --- СОХРАНЕНИЕ (LocalStorage) ---
+    saveProgress() {
+        const data = {
+            gold: this.gold,
+            emeralds: this.emeralds,
+            lvl: this.lvl,
+            xp: this.xp,
+            nextXp: this.nextXp,
+            inventory: this.inventory
+        };
+        localStorage.setItem('war_saga_save', JSON.stringify(data));
+    },
+
+    loadProgress() {
+        const saved = localStorage.getItem('war_saga_save');
+        if (saved) {
+            const data = JSON.parse(saved);
+            Object.assign(this, data);
+        }
+    }
+};
+
+// Старт
+window.onload = () => game.init();
+</script>
