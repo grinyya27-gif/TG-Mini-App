@@ -17,6 +17,16 @@
         <p style="color: var(--gray-text); font-size: 0.7em; margin-top: 10px; text-transform: uppercase; letter-spacing: 2px;">Загрузка мира...</p>
     </div>
 
+    <div id="daily-modal" class="modal-overlay">
+        <div class="daily-card">
+            <h2 class="title" style="border:none; padding:0;">Ежедневный Бонус</h2>
+            <p id="daily-day-text" style="color:var(--gray-text);">День 1</p>
+            <span id="daily-reward-icon" class="reward-icon">💎</span>
+            <h3 id="daily-reward-text">+5 Изумрудов</h3>
+            <button class="buy-btn" style="width:100%; margin-top:15px;" onclick="game.closeDaily()">Забрать</button>
+        </div>
+    </div>
+
     <div class="header">
         <div class="res-row">
             <div>🪙 <span id="gold">50</span></div>
