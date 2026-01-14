@@ -1,143 +1,85 @@
-const tg = window.Telegram.WebApp;
-tg.expand();
+// Ждем, пока вся структура страницы (DOM) будет готова
+document.addEventListener('DOMContentLoaded', () => {
 
-// Класс управления игрой
-class WarGame {
-    constructor() {
-        this.state = JSON.parse(localStorage.getItem('war_game_save')) || {
-            gold: 500,
-            emeralds: 10,
-            power: 10,
-            armor: 5,
-            hp: 100,
-            maxHp: 100,
-            lvl: 1,
-            exp: 0,
-            inventory: []
-        };
-        
-        this.init();
-    }
+    // --- 1. ИНИЦИАЛИЗАЦИЯ TELEGRAM WEB APP ---
+    // Получаем объект WebApp от Telegram
+    const tg = window.Telegram.WebApp;
 
-    init() {
-        this.updateUI();
-        if (tg.initDataUnsafe?.user) {
-            document.getElementById('username').innerText = tg.initDataUnsafe.user.first_name;
-        }
-        
-        document.getElementById('start-btn').onclick = () => {
-            document.getElementById('splash-screen').classList.add('hidden');
-            document.getElementById('main-menu').classList.remove('hidden');
-            this.log("Вы вошли в игру. Удачной охоты!");
-        };
-    }
+    // Расширяем приложение на всю высоту, чтобы избежать "отскока" при прокрутке
+    tg.expand();
 
-    // Сохранение
-    save() {
-        localStorage.setItem('war_game_save', JSON.stringify(this.state));
-        this.updateUI();
-    }
+    // --- 2. ПОЛУЧЕНИЕ ЭЛЕМЕНТОВ СТРАНИЦЫ ---
+    const splashScreen = document.getElementById('splash-screen');
+    const mainScreen = document.getElementById('main-game-screen');
+    const startGameBtn = document.getElementById('start-game-btn');
+    const tutorialPopup = document.getElementById('tutorial-popup');
+    const closeTutorialBtn = document.getElementById('close-tutorial-btn');
+    const menuButtons = document.querySelectorAll('.menu-button');
 
-    updateUI() {
-        document.getElementById('gold').innerText = this.state.gold;
-        document.getElementById('emeralds').innerText = this.state.emeralds;
-        document.getElementById('power').innerText = this.state.power;
-        document.getElementById('armor').innerText = this.state.armor;
-        document.getElementById('hp').innerText = `${this.state.hp}/${this.state.maxHp}`;
-        document.getElementById('user-level').innerText = `Уровень ${this.state.lvl}`;
-    }
+    // --- 3. ФУНКЦИЯ ОБРАБОТКИ НАЧАЛА ИГРЫ ---
+    const handleStartGame = () => {
+        console.log('Нажата кнопка "Начать игру"');
 
-    log(msg) {
-        const logBox = document.getElementById('game-log');
-        const entry = document.createElement('div');
-        entry.className = 'log-entry';
-        entry.innerText = `[${new Date().toLocaleTimeString()}] ${msg}`;
-        logBox.prepend(entry);
-    }
-
-    // Система локаций
-    goTo(loc) {
-        const modal = document.getElementById('modal');
-        const title = document.getElementById('modal-title');
-        const body = document.getElementById('modal-body');
-        
-        modal.classList.remove('hidden');
-        tg.HapticFeedback.impactOccurred('medium');
-
-        switch(loc) {
-            case 'traktir':
-                title.innerText = "🍻 Трактир «У Хромого Орка»";
-                body.innerHTML = `
-                    <p>Здесь можно найти подработку или отдохнуть.</p>
-                    <button class="btn-red" onclick="game.action('work')">Мыть полы (+10 🪙)</button>
-                    <button class="btn-red" onclick="game.action('drink')">Выпить эля (-20 🪙, +20 ❤️)</button>
-                `;
-                break;
-            case 'shop':
-                title.innerText = "🛒 Имперский Магазин";
-                body.innerHTML = `
-                    <p>Товары высшего качества:</p>
-                    <button class="btn-red" onclick="game.buy('power', 100, 5)">Сила +5 (100 🪙)</button>
-                    <button class="btn-red" onclick="game.buy('hp_max', 200, 50)">Макс HP +50 (200 🪙)</button>
-                `;
-                break;
-            case 'arena':
-                title.innerText = "🏟️ Гладиаторская Арена";
-                body.innerHTML = `
-                    <p>Сразитесь за славу и золото!</p>
-                    <button class="btn-red" onclick="game.action('fight')">Найти противника (Риск!)</button>
-                `;
-                break;
-        }
-    }
-
-    action(type) {
-        if (type === 'work') {
-            this.state.gold += 10;
-            this.log("Вы вымыли полы и получили 10 золотых.");
-        } else if (type === 'drink') {
-            if (this.state.gold >= 20) {
-                this.state.gold -= 20;
-                this.state.hp = Math.min(this.state.maxHp, this.state.hp + 20);
-                this.log("Эль восстановил ваши силы.");
-            }
-        } else if (type === 'fight') {
-            let win = Math.random() > 0.4;
-            if (win) {
-                let prize = 50 + (this.state.lvl * 10);
-                this.state.gold += prize;
-                this.state.exp += 20;
-                this.log(`Победа! Вы получили ${prize} золотых.`);
-            } else {
-                this.state.hp -= 30;
-                this.log("Поражение... Вы едва ушли живым.");
-                if (this.state.hp <= 0) {
-                    this.state.hp = 10;
-                    this.log("Вы потеряли сознание и очнулись в канаве.");
-                }
-            }
-        }
-        this.save();
-        this.closeModal();
-    }
-
-    buy(stat, cost, value) {
-        if (this.state.gold >= cost) {
-            this.state.gold -= cost;
-            if (stat === 'power') this.state.power += value;
-            if (stat === 'hp_max') this.state.maxHp += value;
-            this.log(`Покупка совершена!`);
-            this.save();
-            this.closeModal();
+        // --- Имитация создания аккаунта ---
+        // Проверяем, доступны ли данные пользователя Telegram
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            const user = tg.initDataUnsafe.user;
+            console.log('Создание аккаунта для пользователя:', user);
+            console.log('ID:', user.id);
+            console.log('Имя:', user.first_name);
+            console.log('Ник:', user.username);
+            // Здесь в будущем будет логика сохранения данных игрока на сервере,
+            // привязанная к user.id
         } else {
-            alert("Недостаточно золота!");
+            console.log('Данные пользователя Telegram не найдены. Создаем локальный аккаунт.');
+            // В качестве запасного варианта для отладки вне Telegram
         }
-    }
 
-    closeModal() {
-        document.getElementById('modal').classList.add('hidden');
-    }
-}
+        // --- Переход между экранами ---
+        splashScreen.classList.remove('active');
+        mainScreen.classList.add('active');
 
-// Запуск
-const game = new WarGame();
+        // --- Показ обучения ---
+        // Проверяем, было ли обучение показано ранее (используем localStorage)
+        if (!localStorage.getItem('tutorial_completed')) {
+            setTimeout(() => {
+                tutorialPopup.classList.add('active');
+            }, 500); // Небольшая задержка для плавного появления
+        }
+    };
+
+    // --- 4. ФУНКЦИЯ ЗАКРЫТИЯ ОБУЧЕНИЯ ---
+    const handleCloseTutorial = () => {
+        tutorialPopup.classList.remove('active');
+        // Записываем в localStorage, что обучение пройдено
+        localStorage.setItem('tutorial_completed', 'true');
+        console.log('Обучение завершено и сохранено.');
+    };
+    
+    // --- 5. ОБРАБОТКА НАЖАТИЙ НА КНОПКИ МЕНЮ ---
+    const handleMenuClick = (event) => {
+        const action = event.target.dataset.action;
+        if (action) {
+            console.log(`Нажата кнопка меню: ${action}`);
+            
+            // Виброотклик от Telegram для ощущения "нативности"
+            tg.HapticFeedback.impactOccurred('light');
+
+            // В будущем здесь будет открываться соответствующий раздел игры
+            alert(`Вы вошли в: ${event.target.textContent}`);
+        }
+    };
+
+    // --- 6. НАЗНАЧЕНИЕ ОБРАБОТЧИКОВ СОБЫТИЙ ---
+    startGameBtn.addEventListener('click', handleStartGame);
+    closeTutorialBtn.addEventListener('click', handleCloseTutorial);
+    menuButtons.forEach(button => {
+        button.addEventListener('click', handleMenuClick);
+    });
+
+    // --- 7. ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ ---
+    // Уведомляем Telegram, что приложение готово к отображению
+    tg.ready();
+    console.log('Приложение готово!');
+
+});
