@@ -2,66 +2,53 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WAR-Game: Empire</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>WAR-Game</title>
+    <!-- Подключаем файл со стилями -->
     <link rel="stylesheet" href="style.css">
+    <!-- Скрипт от Telegram для работы Mini App -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-    <div id="splash-screen" class="screen">
-        <div class="logo-area">
-            <h1 class="game-title">WAR-<span>GAME</span></h1>
-            <div class="loader"></div>
-        </div>
-        <button id="start-btn" class="btn-main">ВСТУПИТЬ В БОЙ</button>
-    </div>
 
-    <div id="main-menu" class="screen hidden">
-        <header class="top-bar">
-            <div class="user-card">
-                <div class="avatar" id="user-photo"></div>
-                <div class="user-meta">
-                    <b id="username">Loading...</b>
-                    <small id="user-level">Уровень 1</small>
-                </div>
+    <!-- Основной контейнер приложения -->
+    <div id="app">
+
+        <!-- 1. Стартовый экран (Splash Screen) -->
+        <div id="splash-screen" class="screen active">
+            <h1 class="game-title"><span>WAR</span>-Game</h1>
+            <button id="start-game-btn" class="main-button">Начать игру</button>
+        </div>
+
+        <!-- 2. Главный игровой экран (скрыт по умолчанию) -->
+        <div id="main-game-screen" class="screen">
+            <h2>Меню</h2>
+            <div class="menu-grid">
+                <button class="menu-button" data-action="inn">Трактир</button>
+                <button class="menu-button" data-action="shop">Магазин</button>
+                <button class="menu-button" data-action="tavern">Таверна</button>
+                <button class="menu-button" data-action="port">Порт</button>
+                <button class="menu-button" data-action="armorer">Бронник</button>
+                <button class="menu-button" data-action="swordsmith">Мечник</button>
+                <button class="menu-button" data-action="stables">Конюшня</button>
+                <button class="menu-button" data-action="stats">Статистика</button>
+                <button class="menu-button" data-action="faq">FAQ</button>
             </div>
-            <div class="wallet">
-                <div class="res gold"><span class="icon">🪙</span> <span id="gold">0</span></div>
-                <div class="res emerald"><span class="icon">💎</span> <span id="emeralds">0</span></div>
+        </div>
+
+        <!-- 3. Окно обучения (скрыто по умолчанию) -->
+        <div id="tutorial-popup" class="popup">
+            <div class="popup-content">
+                <h3>Добро пожаловать, рыцарь!</h3>
+                <p>Это мир "WAR-Game". Ваш путь начинается здесь. Исследуйте меню, чтобы найти приключения, улучшить снаряжение и стать легендой.</p>
+                <p>Начните с **Трактира**, чтобы узнать последние слухи, или посетите **Магазин**, чтобы подготовиться к бою.</p>
+                <button id="close-tutorial-btn" class="main-button">Вперед, к славе!</button>
             </div>
-        </header>
-
-        <div class="stats-bar">
-            <div class="stat-item">⚔️ <span id="power">10</span></div>
-            <div class="stat-item">🛡️ <span id="armor">5</span></div>
-            <div class="stat-item">❤️ <span id="hp">100/100</span></div>
         </div>
 
-        <div class="game-log" id="game-log">
-            <div class="log-entry">Добро пожаловать в WAR-Game...</div>
-        </div>
-
-        <nav class="menu-grid">
-            <button class="m-btn" onclick="game.goTo('traktir')">🍺 <span>Трактир</span></button>
-            <button class="m-btn" onclick="game.goTo('shop')">🛒 <span>Магазин</span></button>
-            <button class="m-btn" onclick="game.goTo('tavern')">🎭 <span>Таверна</span></button>
-            <button class="m-btn" onclick="game.goTo('port')">⚓ <span>Порт</span></button>
-            <button class="m-btn" onclick="game.goTo('arena')">🏟️ <span>Арена</span></button>
-            <button class="m-btn" onclick="game.goTo('blacksmith')">⚔️ <span>Кузня</span></button>
-            <button class="m-btn" onclick="game.goTo('stables')">🐎 <span>Конюшня</span></button>
-            <button class="m-btn" onclick="game.showStats()">📊 <span>Герой</span></button>
-        </nav>
     </div>
 
-    <div id="modal" class="modal hidden">
-        <div class="modal-content">
-            <span class="close-modal" onclick="game.closeModal()">&times;</span>
-            <h2 id="modal-title">Заголовок</h2>
-            <hr>
-            <div id="modal-body"></div>
-        </div>
-    </div>
-
+    <!-- Подключаем наш основной файл со скриптами -->
     <script src="script.js"></script>
 </body>
 </html>
