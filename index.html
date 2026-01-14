@@ -3,140 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>War Saga Mobile</title>
+    <title>War Saga: Medieval RPG</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=MedievalSharp&family=Almendra:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
 
     <div id="loading-screen">
-        <h1>WAR-GAME</h1>
-        <div class="load-bar">
+        <div class="magic-seal">
+            <div class="seal-inner"></div>
+            <h1>WAR SAGA</h1>
+        </div>
+        <div class="load-bar-ancient">
             <div id="load-progress"></div>
         </div>
-        <p>Загрузка мира...</p>
+        <p class="loading-text">Пробуждение древних сил...</p>
     </div>
 
     <div id="daily-modal" class="modal-overlay">
-        <div class="daily-card">
-            <h2 class="title">Ежедневный Бонус</h2>
-            <p id="daily-day-text">День 1</p>
-            <span id="daily-reward-icon" class="reward-icon">💎</span>
-            <h3 id="daily-reward-text">+5 Изумрудов</h3>
-            <button class="buy-btn" onclick="game.closeDaily()">Забрать</button>
+        <div class="parchment-scroll">
+            <div class="scroll-top"></div>
+            <div class="scroll-content">
+                <h2 class="medieval-title">Милость Короля</h2>
+                <p id="daily-day-text">День 1</p>
+                <div class="reward-box">
+                    <span id="daily-reward-icon" class="reward-icon">💎</span>
+                    <h3 id="daily-reward-text">+5 Изумрудов</h3>
+                </div>
+                <button class="ancient-btn" onclick="game.closeDaily()">ПРИНЯТЬ</button>
+            </div>
+            <div class="scroll-bottom"></div>
         </div>
     </div>
 
-    <div class="header">
-        <div class="res-row">
-            <div>🪙 <span id="gold">50</span></div>
-            <div>💎 <span id="emeralds">0</span></div>
+    <header class="royal-header">
+        <div class="currency-board">
+            <div class="res-slot gold-slot">
+                <span class="icon">🪙</span>
+                <span id="gold" class="value">50</span>
+            </div>
+            <div class="res-slot emerald-slot">
+                <span class="icon">💎</span>
+                <span id="emeralds" class="value">0</span>
+            </div>
         </div>
-        <div class="exp-container">
-            <div id="exp-fill"></div>
-        </div>
-        <div class="lvl-info">УРОВЕНЬ <span id="lvl">1</span> | <span id="xp-text">0/100</span> XP</div>
-    </div>
 
-    <div class="main-content">
+        <div class="hero-stats">
+            <div class="lvl-circle">
+                <span id="lvl">1</span>
+                <label>УР.</label>
+            </div>
+            <div class="exp-container-medieval">
+                <div class="exp-label-top">Опыт Королевства: <span id="xp-text">0/100</span></div>
+                <div class="exp-bar-ancient">
+                    <div id="exp-fill"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-scroll">
         
         <div id="screen-map" class="screen">
-            <h2 class="title">Карта</h2>
-            <div class="card" onclick="game.openLocation('tavern')">
-                <span>🍺</span>
-                <div><h3>Таверна</h3><p>Квесты и отдых</p></div>
-            </div>
-            <div class="card" onclick="game.openLocation('camp')">
-                <span>⛺</span>
-                <div><h3>Лагерь</h3><p>Войска и тренировки</p></div>
-            </div>
-            <div class="card" onclick="game.setTab('blacksmith-shop')">
-                <span>⚔️</span>
-                <div><h3>Оружейник</h3><p>Опыт за работу</p></div>
+            <h2 class="medieval-title">Величие Мира</h2>
+            <div class="location-grid">
+                <div class="loc-stone" onclick="game.openLocation('tavern')">
+                    <div class="loc-icon">🍺</div>
+                    <span>Таверна</span>
+                </div>
+                <div class="loc-stone" onclick="game.openLocation('camp')">
+                    <div class="loc-icon">⛺</div>
+                    <span>Лагерь</span>
+                </div>
+                <div class="loc-stone" onclick="game.setTab('blacksmith-shop')">
+                    <div class="loc-icon">⚔️</div>
+                    <span>Кузница</span>
+                </div>
+                <div class="loc-stone locked">
+                    <div class="loc-icon">🏰</div>
+                    <span>Замок</span>
+                </div>
             </div>
         </div>
 
         <div id="screen-work" class="screen active">
-            <h2 class="title">Работа</h2>
-            <div class="card" onclick="game.doWork('port')">
-                <div class="card-icon">🎣</div>
-                <div class="card-info"><h3>Порт</h3><p>Доход: +<span id="p-gold">2</span> 🪙</p></div>
+            <h2 class="medieval-title">Ратные Труды</h2>
+            
+            <div class="ancient-card" onclick="game.doWork('port')">
+                <div class="card-ornament"></div>
+                <div class="card-body">
+                    <div class="card-icon-frame">🎣</div>
+                    <div class="card-text">
+                        <h3>Рыбацкая Гавань</h3>
+                        <p>Награда: <span class="gold-text">+<span id="p-gold">2</span> 🪙</span></p>
+                    </div>
+                </div>
             </div>
-            <div class="card" onclick="game.doWork('mine')">
-                <div class="card-icon">⛏️</div>
-                <div class="card-info"><h3>Рудник</h3><p>Доход: +<span id="m-gold">1</span> 🪙</p></div>
+
+            <div class="ancient-card" onclick="game.doWork('mine')">
+                <div class="card-ornament"></div>
+                <div class="card-body">
+                    <div class="card-icon-frame">⛏️</div>
+                    <div class="card-text">
+                        <h3>Тайные Рудники</h3>
+                        <p>Награда: <span class="gold-text">+<span id="m-gold">1</span> 🪙</span></p>
+                    </div>
+                </div>
             </div>
-            <div id="work-farm" class="card locked-work" onclick="game.doWork('farm')">
-                <div class="card-icon">🌾</div>
-                <div class="card-info"><h3>Ферма</h3><p id="farm-lock">(Ур. 15)</p></div>
+
+            <div id="work-farm" class="ancient-card locked-work" onclick="game.doWork('farm')">
+                <div class="card-ornament"></div>
+                <div class="card-body">
+                    <div class="card-icon-frame">🌾</div>
+                    <div class="card-text">
+                        <h3>Ферма Лорда</h3>
+                        <p id="farm-lock">Уровень 15</p>
+                    </div>
+                </div>
             </div>
-            <div id="work-hunt" class="card locked-work" onclick="game.doWork('hunt')">
-                <div class="card-icon">🏹</div>
-                <div class="card-info"><h3>Охота</h3><p id="hunt-lock">(Ур. 25 + Лук)</p></div>
+
+            <div id="work-hunt" class="ancient-card locked-work" onclick="game.doWork('hunt')">
+                <div class="card-ornament"></div>
+                <div class="card-body">
+                    <div class="card-icon-frame">🏹</div>
+                    <div class="card-text">
+                        <h3>Королевская Охота</h3>
+                        <p id="hunt-lock">Уровень 25 + Лук</p>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div id="screen-shop" class="screen">
-            <h2 class="title">Лавка</h2>
-            <div class="shop-nav">
-                <button id="tab-rods" class="shop-tab active" onclick="game.filterShop('rods')">Удочки</button>
-                <button id="tab-picks" class="shop-tab" onclick="game.filterShop('picks')">Кирки</button>
-                <button id="tab-weapons" class="shop-tab" onclick="game.filterShop('weapons')">Оружие</button>
+            <h2 class="medieval-title">Арсенал</h2>
+            <div class="shop-tabs-ancient">
+                <button id="tab-rods" class="ancient-tab active" onclick="game.filterShop('rods')">Снасти</button>
+                <button id="tab-picks" class="ancient-tab" onclick="game.filterShop('picks')">Инструмент</button>
+                <button id="tab-weapons" class="ancient-tab" onclick="game.filterShop('weapons')">Оружие</button>
             </div>
 
-            <div id="shop-content-rods">
-                <div class="card">
-                    <div class="card-icon">🎣</div>
-                    <div class="card-info"><h3>Спиннинг</h3><p>+15 🪙</p></div>
-                    <button id="btn-rod2" class="buy-btn" onclick="game.buy('rod2', 450)">450</button>
+            <div id="shop-content-rods" class="shop-list">
+                <div class="ancient-card">
+                    <div class="card-body">
+                        <div class="card-icon-frame">🎣</div>
+                        <div class="card-text">
+                            <h3>Спиннинг Эльфов</h3>
+                            <p>+15 🪙 дохода</p>
+                        </div>
+                        <button id="btn-rod2" class="buy-btn-ancient" onclick="game.buy('rod2', 450)">450</button>
+                    </div>
                 </div>
             </div>
-
-            <div id="shop-content-picks" style="display:none;">
-                <div class="card">
-                    <div class="card-icon">⛏️</div>
-                    <div class="card-info"><h3>Кирка Края</h3><p>+25 🪙</p></div>
-                    <button id="btn-pick3" class="buy-btn" onclick="game.buy('pick3', 2000)">2000</button>
-                </div>
             </div>
-
-            <div id="shop-content-weapons" style="display:none;">
-                <div class="card">
-                    <div class="card-icon">🏹</div>
-                    <div class="card-info"><h3>Лук</h3><p>Для охоты</p></div>
-                    <button id="btn-bow1" class="buy-btn" onclick="game.buy('bow1', 10000)">10k</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="screen-bank" class="screen">
-            <h2 class="title">Банк</h2>
-            <div class="card">
-                <div class="card-icon">💎</div>
-                <div class="card-info"><h3>Обменник</h3><p>1 💎 = 500 🪙</p></div>
-                <button class="buy-btn" onclick="game.exchange()">Обмен</button>
-            </div>
-        </div>
 
         <div id="screen-profile" class="screen">
-            <h2 class="title">Профиль</h2>
-            <div class="card">
-                <div class="card-icon">👤</div>
-                <div class="card-info">
-                    <h3 id="user-name">Воин</h3>
-                    <p>Предметов: <span id="inv">0</span></p>
+            <h2 class="medieval-title">Летопись Героя</h2>
+            <div class="profile-frame">
+                <div class="avatar-box">👤</div>
+                <div class="hero-info">
+                    <h3 id="user-name">Рыцарь</h3>
+                    <p class="rank-title">Звание: Новобранец</p>
+                    <p>Трофеи в сумке: <span id="inv">0</span></p>
                 </div>
             </div>
         </div>
 
-    </div>
+    </main>
 
-    <nav class="nav">
-        <div class="nav-item" onclick="game.setTab('map', this)"><span>🗺️</span>Мир</div>
-        <div class="nav-item active" onclick="game.setTab('work', this)"><span>⛏️</span>Работа</div>
-        <div class="nav-item" onclick="game.setTab('shop', this)"><span>💰</span>Лавка</div>
-        <div class="nav-item" onclick="game.setTab('bank', this)"><span>🏦</span>Банк</div>
-        <div class="nav-item" onclick="game.setTab('profile', this)"><span>👤</span>Герой</div>
+    <nav class="royal-nav">
+        <div class="nav-btn" onclick="game.setTab('map', this)">
+            <span class="nav-icon">🗺️</span>
+            <span class="nav-text">Мир</span>
+        </div>
+        <div class="nav-btn active" onclick="game.setTab('work', this)">
+            <span class="nav-icon">⚔️</span>
+            <span class="nav-text">Битва</span>
+        </div>
+        <div class="nav-btn" onclick="game.setTab('shop', this)">
+            <span class="nav-icon">💰</span>
+            <span class="nav-text">Лавка</span>
+        </div>
+        <div class="nav-btn" onclick="game.setTab('profile', this)">
+            <span class="nav-icon">👤</span>
+            <span class="nav-text">Герой</span>
+        </div>
     </nav>
 
     <script src="script.js"></script>
