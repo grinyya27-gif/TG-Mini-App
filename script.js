@@ -168,6 +168,24 @@ const game = {
 if(tg.initDataUnsafe?.user) {
     const userName = document.getElementById('user-name');
     if (userName) userName.innerText = tg.initDataUnsafe.user.first_name;
-}
+startLoading() {
+        const progress = document.getElementById('load-progress');
+        const screen = document.getElementById('loading-screen');
+        let width = 0;
+        
+        const interval = setInterval(() => {
+            width += Math.random() * 30;
+            if (width > 100) {
+                width = 100;
+                clearInterval(interval);
+                setTimeout(() => {
+                    screen.style.opacity = '0';
+                    setTimeout(() => screen.style.display = 'none', 500);
+                }, 500);
+            }
+            if (progress) progress.style.width = width + '%';
+        }, 300);
+    }}
 
 game.updateUI();
+
