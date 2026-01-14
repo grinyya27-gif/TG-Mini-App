@@ -74,21 +74,40 @@
             </div>
 
             <div id="shop-content-rods">
-                <div class="card">
-                    <div class="card-icon">🎋</div>
-                    <div class="card-info"><h3>Бамбуковая удочка</h3><p>Доход в порту: +5 🪙</p></div>
-                    <button id="btn-rod1" class="buy-btn" onclick="game.buy('rod1', 100)">100</button>
-                </div>
-            </div>
+    <div class="card">
+        <div class="card-icon">🎋</div>
+        <div class="card-info"><h3>Бамбуковая удочка</h3><p>Доход: +5 🪙</p></div>
+        <button id="btn-rod1" class="buy-btn" onclick="game.buy('rod1', 100)">100</button>
+    </div>
+    <div class="card" style="margin-top:10px">
+        <div class="card-icon">🎣</div>
+        <div class="card-info"><h3>Спиннинг мастера</h3><p>Доход: +15 🪙</p></div>
+        <button id="btn-rod2" class="buy-btn" onclick="game.buy('rod2', 450)">450</button>
+    </div>
+    <div class="card" style="margin-top:10px">
+        <div class="card-icon">🔱</div>
+        <div class="card-info"><h3>Легендарный трезубец</h3><p>Доход: +40 🪙</p></div>
+        <button id="btn-rod3" class="buy-btn" onclick="game.buy('rod3', 1200)">1200</button>
+    </div>
+</div>
 
-            <div id="shop-content-picks" style="display:none;">
-                <div class="card">
-                    <div class="card-icon">🔨</div>
-                    <div class="card-info"><h3>Железная кирка</h3><p>Рудник: +4 🪙 | 2% 💎</p></div>
-                    <button id="btn-pick1" class="buy-btn" onclick="game.buy('pick1', 150)">150</button>
-                </div>
-            </div>
-        </div>
+<div id="shop-content-picks" style="display:none;">
+    <div class="card">
+        <div class="card-icon">🔨</div>
+        <div class="card-info"><h3>Железная кирка</h3><p>Доход: +4 | 💎 2%</p></div>
+        <button id="btn-pick1" class="buy-btn" onclick="game.buy('pick1', 150)">150</button>
+    </div>
+    <div class="card" style="margin-top:10px">
+        <div class="card-icon">⚙️</div>
+        <div class="card-info"><h3>Титановый бур</h3><p>Доход: +12 | 💎 4%</p></div>
+        <button id="btn-pick2" class="buy-btn" onclick="game.buy('pick2', 600)">600</button>
+    </div>
+    <div class="card" style="margin-top:10px">
+        <div class="card-icon">🌌</div>
+        <div class="card-info"><h3>Кирка Края</h3><p>Доход: +25 | 💎 8%</p></div>
+        <button id="btn-pick3" class="buy-btn" onclick="game.buy('pick3', 2000)">2000</button>
+    </div>
+</div>
 
         <div id="screen-bank" class="screen">
             <h2 class="title">Королевский Банк</h2>
@@ -125,3 +144,4 @@
     <script src="script.js"></script>
 </body>
 </html>
+
