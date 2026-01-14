@@ -99,4 +99,24 @@ if(tg.initDataUnsafe?.user) {
 }
 
 game.updateUI();
+filterShop(category) {
+    // Скрываем все разделы лавки
+    document.getElementById('shop-content-rods').style.display = 'none';
+    document.getElementById('shop-content-picks').style.display = 'none';
+    
+    // Снимаем выделение со всех табов
+    document.getElementById('tab-rods').classList.remove('active');
+    document.getElementById('tab-picks').classList.remove('active');
+    
+    // Показываем нужный раздел и выделяем таб
+    if (category === 'rods') {
+        document.getElementById('shop-content-rods').style.display = 'block';
+        document.getElementById('tab-rods').classList.add('active');
+    } else {
+        document.getElementById('shop-content-picks').style.display = 'block';
+        document.getElementById('tab-picks').classList.add('active');
+    }
+    tg.HapticFeedback.impactOccurred('light');
+},
+
 
