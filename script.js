@@ -9,241 +9,231 @@ const game = {
     xp: 0,
     nextXp: 100,
     inventory: [],
+    lastWheelSpin: 0, // Время последнего вращения колеса
+
+    // === ИНИЦИАЛИЗАЦИЯ ===
+    init() {
+        this.loadProgress(); // Загружаем данные из памяти
+        this.updateUI();
+        this.startLoading();
+        
+        if(tg.initDataUnsafe?.user) {
+            document.getElementById('user-name').innerText = tg.initDataUnsafe.user.first_name;
+        }
+
+        setTimeout(() => this.checkDaily(), 3000);
+    },
 
     // === СИСТЕМА НАВИГАЦИИ ===
     setTab(id, el) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         
-        const targetScreen = document.getElementById('screen-' + id);
-        if (targetScreen) targetScreen.classList.add('active');
+        const target = document.getElementById('screen-' + id);
+        if (target) target.classList.add('active');
         if (el) el.classList.add('active');
         
         tg.HapticFeedback.impactOccurred('light');
     },
 
     filterShop(category) {
-        const types = ['rods', 'picks', 'weapons'];
-        types.forEach(type => {
-            const content = document.getElementById('shop-content-' + type);
-            const tab = document.getElementById('tab-' + type);
-            if (content) content.style.display = 'none';
-            if (tab) tab.classList.remove('active');
+        ['rods', 'picks', 'weapons'].forEach(type => {
+            document.getElementById('shop-content-' + type).style.display = 'none';
+            document.getElementById('tab-' + type).classList.remove('active');
         });
-
-        const activeContent = document.getElementById('shop-content-' + category);
-        const activeTab = document.getElementById('tab-' + category);
-        if (activeContent) activeContent.style.display = 'block';
-        if (activeTab) activeTab.classList.add('active');
-        
-        tg.HapticFeedback.impactOccurred('light');
+        document.getElementById('shop-content-' + category).style.display = 'block';
+        document.getElementById('tab-' + category).classList.add('active');
     },
 
-    // === ЛОГИКА ЗАГРУЗКИ ===
-    startLoading() {
-        const progress = document.getElementById('load-progress');
-        const screen = document.getElementById('loading-screen');
-        let width = 0;
-        
-        const interval = setInterval(() => {
-            width += Math.random() * 25;
-            if (width > 100) {
-                width = 100;
-                clearInterval(interval);
-                setTimeout(() => {
-                    screen.style.opacity = '0';
-                    setTimeout(() => screen.style.display = 'none', 500);
-                }, 500);
-            }
-            if (progress) progress.style.width = width + '%';
-        }, 200);
+    // === ВИЗУАЛЬНЫЕ ЭФФЕКТЫ (ВЫЛЕТАЮЩИЕ ЦИФРЫ) ===
+    spawnText(e, text) {
+        const el = document.createElement('div');
+        el.className = 'click-anim';
+        el.innerText = text;
+        el.style.left = e.pageX + 'px';
+        el.style.top = e.pageY + 'px';
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 800);
     },
 
-    // === ЕЖЕДНЕВНЫЕ БОНУСЫ ===
-    checkDaily() {
-        const now = new Date();
-        const lastDate = localStorage.getItem('lastBonusDate');
-        let streak = parseInt(localStorage.getItem('bonusStreak') || "0");
-        const todayStr = now.toDateString();
-
-        if (lastDate === todayStr) return;
-
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-        
-        if (lastDate === yesterday.toDateString()) {
-            streak++;
-        } else {
-            streak = 1;
-        }
-
-        if (streak > 10) streak = 1;
-        localStorage.setItem('lastBonusDate', todayStr);
-        localStorage.setItem('bonusStreak', streak);
-        this.giveDailyReward(streak);
-    },
-
-    giveDailyReward(day) {
-        let reward = 5 + (day - 1) * 3;
-        if (day === 10) reward = 50;
-        
-        this.emeralds += reward;
-        document.getElementById('daily-day-text').innerText = "День " + day;
-        document.getElementById('daily-reward-text').innerText = (day === 10) ? "СУПЕР-ПРИЗ: 50 Изумрудов" : "+" + reward + " Изумрудов";
-        document.getElementById('daily-reward-icon').innerText = (day === 10) ? "🎡" : "💎";
-        document.getElementById('daily-modal').style.display = 'flex';
-        
-        tg.HapticFeedback.notificationOccurred('success');
-        this.updateUI();
-    },
-
-    closeDaily() {
-        document.getElementById('daily-modal').style.display = 'none';
-        tg.HapticFeedback.impactOccurred('light');
-    },
-
-    // === ИГРОВАЯ ЛОГИКА (РАБОТА) ===
-    doWork(type) {
+    // === ЛОГИКА РАБОТЫ ===
+    doWork(type, event) {
         let earnedGold = 0;
         let earnedXp = 0;
 
         if (type === 'port') {
-            let bonus = 0;
-            if (this.inventory.includes('rod3')) bonus = 40;
-            else if (this.inventory.includes('rod2')) bonus = 15;
-            else if (this.inventory.includes('rod1')) bonus = 5;
+            let bonus = this.inventory.includes('rod3') ? 40 : (this.inventory.includes('rod2') ? 15 : (this.inventory.includes('rod1') ? 5 : 0));
             earnedGold = 2 + bonus;
             earnedXp = 5;
-        } 
-        else if (type === 'mine') {
-            let bonus = 0;
-            let chance = 0.01;
-            if (this.inventory.includes('pick3')) { bonus = 25; chance = 0.08; }
-            else if (this.inventory.includes('pick2')) { bonus = 12; chance = 0.04; }
-            else if (this.inventory.includes('pick1')) { bonus = 4; chance = 0.02; }
+        } else if (type === 'mine') {
+            let bonus = this.inventory.includes('pick3') ? 25 : (this.inventory.includes('pick2') ? 12 : (this.inventory.includes('pick1') ? 4 : 0));
             earnedGold = 1 + bonus;
             earnedXp = 8;
-            if(Math.random() < chance) { 
-                this.emeralds++; 
-                tg.HapticFeedback.notificationOccurred('success'); 
-            }
-        }
-        else if (type === 'farm') {
+            if (Math.random() < (this.inventory.includes('pick3') ? 0.08 : 0.02)) this.emeralds++;
+        } else if (type === 'farm') {
             if (this.lvl < 15) return tg.showAlert("Нужен 15 уровень!");
             earnedGold = 15;
             earnedXp = 12;
-        }
-        else if (type === 'hunt') {
+        } else if (type === 'hunt') {
             if (this.lvl < 25) return tg.showAlert("Нужен 25 уровень!");
-            if (!this.inventory.includes('bow1') && !this.inventory.includes('bow2')) {
-                return tg.showAlert("Купите лук или арбалет в лавке!");
-            }
+            if (!this.inventory.includes('bow1') && !this.inventory.includes('bow2')) return tg.showAlert("Нужен лук!");
             earnedGold = this.inventory.includes('bow2') ? 100 : 50;
             earnedXp = 20;
         }
 
-        // Применяем изменения
         this.gold += earnedGold;
         this.addXp(earnedXp);
-        
-        // Вибрация и обновление
-        tg.HapticFeedback.impactOccurred('medium');
+        this.spawnText(event, "+" + earnedGold + "🪙");
         this.updateUI();
+        this.saveProgress();
+        tg.HapticFeedback.impactOccurred('medium');
     },
 
-    addXp(val) {
-        let swordBonus = this.inventory.includes('sword1') ? 2 : 0;
-        this.xp += (val + swordBonus);
+    // === КОЛЕСО ФОРТУНЫ ===
+    checkWheelAccess() {
+        const streak = parseInt(localStorage.getItem('bonusStreak') || "0");
+        if (streak >= 10) {
+            document.getElementById('wheel-container').style.display = 'flex';
+        }
+    },
 
-        if(this.xp >= this.nextXp) {
-            this.xp -= this.nextXp; 
+    spinWheel() {
+        const btn = document.getElementById('spin-btn');
+        const wheel = document.getElementById('main-wheel');
+        btn.disabled = true;
+
+        const randomDeg = Math.floor(Math.random() * 360) + 3600; // 10 полных оборотов + рандом
+        wheel.style.transform = `rotate(${randomDeg}deg)`;
+
+        setTimeout(() => {
+            const prizes = ["5000 🪙", "50 💎", "10000 🪙", "100 💎", "Меч Лорда", "2000 🪙", "10 💎", "500 🪙"];
+            const prizeIndex = Math.floor(((randomDeg % 360)) / 45);
+            const won = prizes[prizeIndex];
+            
+            tg.showAlert("Великая удача! Ваш приз: " + won);
+            
+            // Начисление (пример для золота)
+            if (won.includes("🪙")) this.gold += parseInt(won);
+            if (won.includes("💎")) this.emeralds += parseInt(won);
+            
+            localStorage.setItem('bonusStreak', "0"); // Сброс серии после крутки
+            setTimeout(() => {
+                document.getElementById('wheel-container').style.display = 'none';
+                this.updateUI();
+            }, 2000);
+        }, 4000);
+    },
+
+    // === СОХРАНЕНИЕ И ЗАГРУЗКА ===
+    saveProgress() {
+        const data = {
+            gold: this.gold,
+            emeralds: this.emeralds,
+            lvl: this.lvl,
+            xp: this.xp,
+            nextXp: this.nextXp,
+            inventory: this.inventory
+        };
+        localStorage.setItem('warGameSave', JSON.stringify(data));
+    },
+
+    loadProgress() {
+        const saved = localStorage.getItem('warGameSave');
+        if (saved) {
+            const data = JSON.parse(saved);
+            Object.assign(this, data);
+        }
+    },
+
+    // === ОСТАЛЬНАЯ ЛОГИКА (БАЗОВАЯ) ===
+    addXp(val) {
+        let swordBonus = this.inventory.includes('sword2') ? 10 : (this.inventory.includes('sword1') ? 2 : 0);
+        this.xp += (val + swordBonus);
+        if (this.xp >= this.nextXp) {
             this.lvl++;
-            this.nextXp = Math.floor(this.nextXp * 1.6 + 50);
-            tg.showAlert("Уровень повышен до " + this.lvl + "!");
-            tg.HapticFeedback.notificationOccurred('warning');
+            this.xp -= this.nextXp;
+            this.nextXp = Math.floor(this.nextXp * 1.5);
+            tg.showAlert("НОВЫЙ РАНГ: " + this.lvl);
         }
     },
 
     buy(id, price) {
-        if(this.gold >= price && !this.inventory.includes(id)) {
-            this.gold -= price; 
+        if (this.gold >= price && !this.inventory.includes(id)) {
+            this.gold -= price;
             this.inventory.push(id);
+            this.updateUI();
+            this.saveProgress();
             tg.HapticFeedback.notificationOccurred('success');
-            this.updateUI();
-        } else if (this.inventory.includes(id)) {
-            tg.showAlert("Уже куплено!");
-        } else { 
-            tg.showAlert("Недостаточно золота!"); 
+        } else {
+            tg.showAlert(this.inventory.includes(id) ? "Уже есть!" : "Мало золота!");
         }
     },
 
-    exchange() {
-        if(this.emeralds >= 1) {
-            this.emeralds--; 
-            this.gold += 500;
-            this.updateUI();
-            tg.HapticFeedback.impactOccurred('heavy');
-        } else { 
-            tg.showAlert("Нужны изумруды!"); 
-        }
-    },
-
-    // === ОБНОВЛЕНИЕ ИНТЕРФЕЙСА ===
     updateUI() {
-        // Ресурсы
         document.getElementById('gold').innerText = Math.floor(this.gold);
         document.getElementById('emeralds').innerText = this.emeralds;
         document.getElementById('lvl').innerText = this.lvl;
-        document.getElementById('xp-text').innerText = this.xp + "/" + this.nextXp;
+        document.getElementById('xp-text').innerText = `${this.xp}/${this.nextXp}`;
         document.getElementById('exp-fill').style.width = (this.xp / this.nextXp * 100) + "%";
         
-        // Динамические показатели на кнопках
-        const pG = 2 + (this.inventory.includes('rod3') ? 40 : (this.inventory.includes('rod2') ? 15 : (this.inventory.includes('rod1') ? 5 : 0)));
-        const mG = 1 + (this.inventory.includes('pick3') ? 25 : (this.inventory.includes('pick2') ? 12 : (this.inventory.includes('pick1') ? 4 : 0)));
-        const mC = (this.inventory.includes('pick3') ? 8 : (this.inventory.includes('pick2') ? 4 : (this.inventory.includes('pick1') ? 2 : 1)));
+        // Статус игрока
+        const statuses = ["Рекрут", "Боец", "Ветеран", "Рыцарь", "Барон", "Виконт", "Граф", "Маркиз", "Герцог", "Принц", "Король"];
+        document.getElementById('status-text').innerText = statuses[Math.min(Math.floor(this.lvl/5), statuses.length-1)];
 
-        if(document.getElementById('p-gold')) document.getElementById('p-gold').innerText = pG;
-        if(document.getElementById('m-gold')) document.getElementById('m-gold').innerText = mG;
-        if(document.getElementById('m-chance')) document.getElementById('m-chance').innerText = mC;
-        
+        // Инвентарь
+        document.getElementById('inv').innerText = this.inventory.join(', ') || "Пусто";
+
         // Разблокировка работ
-        if (this.lvl >= 15 && document.getElementById('work-farm')) {
-            document.getElementById('work-farm').style.opacity = "1";
-            document.getElementById('farm-lock').innerText = "";
-        }
-        if (this.lvl >= 25 && document.getElementById('work-hunt')) {
-            document.getElementById('work-hunt').style.opacity = "1";
-            document.getElementById('hunt-lock').innerText = "";
-            let bowText = this.inventory.includes('bow2') ? "Доход: 100 🪙" : (this.inventory.includes('bow1') ? "Доход: 50 🪙" : "Нужен лук!");
-            document.getElementById('hunt-desc').innerText = bowText;
-        }
-
-        // Кнопки в магазине
-        this.inventory.forEach(itemId => {
-            const btn = document.getElementById('btn-' + itemId);
-            if (btn) {
-                btn.innerText = "КУПЛЕНО";
-                btn.classList.add('bought');
-            }
+        if (this.lvl >= 15) document.getElementById('work-farm').classList.remove('locked');
+        if (this.lvl >= 25) document.getElementById('work-hunt').classList.remove('locked');
+        
+        // Пометка купленного
+        this.inventory.forEach(item => {
+            const btn = document.getElementById('btn-' + item);
+            if(btn) { btn.innerText = "ВЫДАНО"; btn.classList.add('bought'); }
         });
 
-        // Инвентарь в профиле
-        document.getElementById('inv').innerText = this.inventory.length > 0 ? "Предметов: " + this.inventory.length : "пусто";
+        this.checkWheelAccess();
     },
 
-    openLocation(id) {
-        tg.showAlert("Локация временно недоступна.");
-    }
+    // === СТАНДАРТНЫЕ МЕТОДЫ ===
+    startLoading() {
+        let w = 0;
+        const bar = document.getElementById('load-progress');
+        const ival = setInterval(() => {
+            w += Math.random() * 20;
+            if(w >= 100) {
+                w = 100; clearInterval(ival);
+                setTimeout(() => document.getElementById('loading-screen').style.display='none', 500);
+            }
+            bar.style.width = w + "%";
+        }, 150);
+    },
+
+    checkDaily() {
+        const last = localStorage.getItem('lastBonusDate');
+        const today = new Date().toDateString();
+        if (last !== today) {
+            let streak = parseInt(localStorage.getItem('bonusStreak') || "0") + 1;
+            this.giveDailyReward(streak);
+            localStorage.setItem('lastBonusDate', today);
+            localStorage.setItem('bonusStreak', streak);
+        }
+    },
+
+    giveDailyReward(day) {
+        const reward = day === 10 ? 50 : 5 + day;
+        this.emeralds += reward;
+        document.getElementById('daily-modal').style.display = 'flex';
+        this.updateUI();
+    },
+
+    closeDaily() { document.getElementById('daily-modal').style.display = 'none'; },
+    exchange() {
+        if(this.emeralds >= 1) { this.emeralds--; this.gold += 500; this.updateUI(); this.saveProgress(); }
+    },
+    openLocation(name) { tg.showAlert("Локация " + name + " под охраной. Нужен пропуск."); }
 };
 
-// === ЗАПУСК ===
-if(tg.initDataUnsafe?.user) {
-    document.getElementById('user-name').innerText = tg.initDataUnsafe.user.first_name;
-}
-
-game.updateUI();
-game.startLoading();
-
-setTimeout(() => {
-    game.checkDaily();
-}, 3000);
+// Запуск
+game.init();
