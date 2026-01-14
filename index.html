@@ -3,13 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Medieval Game</title>
+    <title>War Strategy Mobile</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        :root {
+            --bg-dark: #121212;
+            --bg-card: #1c1c1c;
+            --accent-red: #ff3c3c;
+            --accent-red-dim: #992525;
+            --text-main: #e0e0e0;
+            --gold-color: #ffd700;
+        }
+
         body {
-            background-color: #121212;
-            color: #e0e0e0;
-            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 0;
             display: flex;
@@ -18,105 +27,156 @@
             overflow: hidden;
         }
 
-        /* ПАНЕЛЬ РЕСУРСОВ */
+        /* ПАНЕЛЬ РЕСУРСОВ И ОПЫТА */
         .header {
-            display: flex;
-            justify-content: space-around;
-            background: #1f1f1f;
-            padding: 15px 0;
-            border-bottom: 2px solid #d4af37;
-            font-weight: bold;
+            background: #000;
+            padding: 10px 15px;
+            border-bottom: 2px solid var(--accent-red);
+            box-shadow: 0 0 15px rgba(255, 60, 60, 0.3);
         }
 
-        .res { font-size: 1.2em; }
+        .res-row {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
 
-        /* ОСНОВНОЙ КОНТЕНТ */
+        /* Полоска опыта */
+        .exp-container {
+            width: 100%;
+            height: 6px;
+            background: #333;
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #exp-fill {
+            height: 100%;
+            background: var(--accent-red);
+            width: 0%;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px var(--accent-red);
+        }
+
+        .lvl-text {
+            font-size: 0.75em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-red);
+            margin-top: 4px;
+            display: block;
+            text-align: center;
+        }
+
+        /* КОНТЕНТ */
         .main-content {
             flex: 1;
             overflow-y: auto;
-            padding: 20px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px;
         }
 
         .screen { display: none; }
-        .screen.active { display: flex; flex-direction: column; gap: 15px; }
+        .screen.active { display: flex; flex-direction: column; gap: 12px; }
 
-        /* КАРТОЧКИ */
+        .title { 
+            text-align: left; 
+            font-size: 1.4em; 
+            color: #fff; 
+            margin: 0 0 10px 5px;
+            border-left: 4px solid var(--accent-red);
+            padding-left: 10px;
+        }
+
+        /* КАРТОЧКИ В КРАСНОМ СТИЛЕ */
         .item-card {
-            background: #252525;
+            background: var(--bg-card);
             border: 1px solid #333;
-            border-radius: 12px;
+            border-radius: 10px;
             padding: 15px;
             display: flex;
             align-items: center;
             gap: 15px;
             cursor: pointer;
-            transition: 0.2s;
+            position: relative;
+            overflow: hidden;
         }
 
-        .item-card:active { transform: scale(0.96); background: #303030; }
+        .item-card:active {
+            background: #252525;
+            border-color: var(--accent-red);
+        }
 
-        .icon-box { font-size: 2.2em; }
+        .icon-box { font-size: 2em; filter: drop-shadow(0 0 5px rgba(0,0,0,0.5)); }
+        
         .info-box { flex-grow: 1; }
-        .info-box h3 { margin: 0; color: #d4af37; font-size: 1.1em; }
-        .info-box p { margin: 3px 0 0 0; font-size: 0.85em; color: #aaa; }
+        .info-box h3 { margin: 0; color: #fff; font-size: 1em; }
+        .info-box p { margin: 3px 0 0 0; font-size: 0.8em; color: #888; }
 
-        .price-tag {
-            background: #388e3c;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 8px;
-            font-size: 0.9em;
+        /* КРАСНЫЕ КНОПКИ КУПИТЬ */
+        .price-btn {
+            background: var(--accent-red);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 0.85em;
             font-weight: bold;
+            border: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
 
-        .bought { background: #555 !important; color: #ccc; }
+        .bought { background: #444 !important; color: #888; }
 
-        /* НИЖНЕЕ МЕНЮ */
+        /* МЕНЮ */
         .bottom-nav {
             display: flex;
-            background: #1f1f1f;
-            border-top: 1px solid #333;
+            background: #000;
+            border-top: 1px solid var(--accent-red-dim);
             padding: 10px 0;
         }
 
         .nav-btn {
             flex: 1;
             text-align: center;
-            font-size: 0.8em;
-            color: #888;
+            font-size: 0.75em;
+            color: #666;
             cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
+            transition: 0.3s;
         }
 
-        .nav-btn.active { color: #d4af37; }
-        .nav-btn span { font-size: 1.6em; }
+        .nav-btn.active { color: var(--accent-red); }
+        .nav-btn span { font-size: 1.6em; display: block; margin-bottom: 2px; }
 
-        .title { text-align: center; color: #d4af37; margin: 0 0 10px 0; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="res">🪙 <span id="gold">0</span></div>
-        <div class="res">💎 <span id="emeralds">0</span></div>
+        <div class="res-row">
+            <div>🪙 <span id="gold">0</span></div>
+            <div>💎 <span id="emeralds">0</span></div>
+        </div>
+        <div class="exp-container">
+            <div id="exp-fill"></div>
+        </div>
+        <span class="lvl-text">Уровень <span id="lvl">1</span> — <span id="exp-val">0</span>/100 XP</span>
     </div>
 
     <div class="main-content">
         
         <div id="screen-work" class="screen active">
-            <h2 class="title">Доступные работы</h2>
+            <h2 class="title">Задания</h2>
             
             <div class="item-card" onclick="doWork('port')">
                 <div class="icon-box">🎣</div>
                 <div class="info-box">
-                    <h3>Порт</h3>
-                    <p>Доход: +<span id="port-reward">2</span> 🪙</p>
+                    <h3>Рыбалка</h3>
+                    <p>Доход: +<span id="port-reward">2</span> 🪙 | +5 XP</p>
                 </div>
             </div>
 
@@ -124,41 +184,42 @@
                 <div class="icon-box">⛏️</div>
                 <div class="info-box">
                     <h3>Рудник</h3>
-                    <p>Доход: +<span id="mine-reward">1</span> 🪙</p>
-                    <p style="color: #2ecc71;">Шанс на 💎: <span id="mine-chance">1</span>%</p>
+                    <p>Доход: +<span id="mine-reward">1</span> 🪙 | +8 XP</p>
+                    <p style="color: var(--accent-red); font-size: 0.75em;">Шанс на 💎: <span id="mine-chance">1</span>%</p>
                 </div>
             </div>
         </div>
 
         <div id="screen-shop" class="screen">
-            <h2 class="title">Лавка инструментов</h2>
+            <h2 class="title">Оружейная</h2>
             
             <div class="item-card" onclick="buyItem('rod', 100)">
                 <div class="icon-box">🎣</div>
                 <div class="info-box">
-                    <h3>Бамбуковая удочка</h3>
-                    <p>+5 к доходу в порту</p>
+                    <h3>Улучшенная удочка</h3>
+                    <p>Увеличивает прибыль в порту</p>
                 </div>
-                <div id="price-rod" class="price-tag">100 🪙</div>
+                <button id="price-rod" class="price-btn">100 🪙</button>
             </div>
 
             <div class="item-card" onclick="buyItem('pickaxe', 150)">
                 <div class="icon-box">⛏️</div>
                 <div class="info-box">
-                    <h3>Железная кирка</h3>
-                    <p>+4 к золоту и шанс 💎 2%</p>
+                    <h3>Стальная кирка</h3>
+                    <p>Удваивает доход и шанс на изумруд</p>
                 </div>
-                <div id="price-pickaxe" class="price-tag">150 🪙</div>
+                <button id="price-pickaxe" class="price-btn">150 🪙</button>
             </div>
         </div>
 
         <div id="screen-profile" class="screen">
-            <h2 class="title">Ваш профиль</h2>
+            <h2 class="title">Статус</h2>
             <div class="item-card">
-                <div class="icon-box">👤</div>
+                <div class="icon-box">💀</div>
                 <div class="info-box">
-                    <h3 id="user-name">Герой</h3>
-                    <p>Предметы: <span id="inv-list">нет</span></p>
+                    <h3 id="user-name">Воин</h3>
+                    <p>Уровень: <span id="lvl-profile">1</span></p>
+                    <p>Снаряжение: <span id="inv-list">пусто</span></p>
                 </div>
             </div>
         </div>
@@ -167,13 +228,13 @@
 
     <div class="bottom-nav">
         <div class="nav-btn active" onclick="switchTab('work', this)">
-            <span>⚒️</span> Работа
+            <span>⚔️</span> Работа
         </div>
         <div class="nav-btn" onclick="switchTab('shop', this)">
-            <span>💰</span> Лавка
+            <span>⚒️</span> Кузница
         </div>
         <div class="nav-btn" onclick="switchTab('profile', this)">
-            <span>🛡️</span> Герой
+            <span>🛡️</span> Профиль
         </div>
     </div>
 
@@ -181,9 +242,13 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
+        // СТАТИСТИКА
         let stats = {
             gold: 50,
             emeralds: 0,
+            lvl: 1,
+            exp: 0,
+            nextLvlExp: 100,
             hasRod: false,
             hasPickaxe: false
         };
@@ -196,30 +261,37 @@
             tg.HapticFeedback.impactOccurred('light');
         }
 
+        function addExp(amount) {
+            stats.exp += amount;
+            if (stats.exp >= stats.nextLvlExp) {
+                stats.exp -= stats.nextLvlExp;
+                stats.lvl++;
+                stats.nextLvlExp = Math.floor(stats.nextLvlExp * 1.5);
+                tg.showPopup({
+                    title: 'НОВЫЙ УРОВЕНЬ!',
+                    message: `Поздравляем! Теперь вы ${stats.lvl} уровня.`,
+                    buttons: [{type: 'ok'}]
+                });
+                tg.HapticFeedback.notificationOccurred('success');
+            }
+            updateUI();
+        }
+
         function doWork(type) {
             if (type === 'port') {
-                let reward = stats.hasRod ? 7 : 2;
-                stats.gold += reward;
+                stats.gold += stats.hasRod ? 7 : 2;
+                addExp(5);
             } else {
-                // ЛОГИКА РУДНИКА
-                let reward = stats.hasPickaxe ? 5 : 1;
-                stats.gold += reward;
-
-                // Расчет шанса изумруда (0.01 = 1%, 0.02 = 2%)
+                stats.gold += stats.hasPickaxe ? 5 : 1;
+                addExp(8);
                 let chance = stats.hasPickaxe ? 0.02 : 0.01;
-                
                 if (Math.random() < chance) {
                     stats.emeralds += 1;
-                    tg.showPopup({
-                        title: 'Находка!',
-                        message: 'Вы нашли редкий изумруд в шахте!',
-                        buttons: [{type: 'ok'}]
-                    });
                     tg.HapticFeedback.notificationOccurred('success');
                 }
             }
-            updateUI();
             tg.HapticFeedback.impactOccurred('medium');
+            updateUI();
         }
 
         function buyItem(item, price) {
@@ -227,26 +299,33 @@
                 if (item === 'rod' && !stats.hasRod) {
                     stats.gold -= price;
                     stats.hasRod = true;
-                    document.getElementById('price-rod').innerText = "Куплено";
+                    document.getElementById('price-rod').innerText = "ВЫКУПЛЕНО";
                     document.getElementById('price-rod').classList.add('bought');
-                } 
-                else if (item === 'pickaxe' && !stats.hasPickaxe) {
+                } else if (item === 'pickaxe' && !stats.hasPickaxe) {
                     stats.gold -= price;
                     stats.hasPickaxe = true;
-                    document.getElementById('price-pickaxe').innerText = "Куплено";
+                    document.getElementById('price-pickaxe').innerText = "ВЫКУПЛЕНО";
                     document.getElementById('price-pickaxe').classList.add('bought');
                 }
                 updateUI();
                 tg.HapticFeedback.notificationOccurred('success');
             } else {
-                tg.showAlert("Недостаточно золота!");
+                tg.showAlert("НЕДОСТАТОЧНО ЗОЛОТА!");
             }
         }
 
         function updateUI() {
             document.getElementById('gold').innerText = stats.gold;
             document.getElementById('emeralds').innerText = stats.emeralds;
+            document.getElementById('lvl').innerText = stats.lvl;
+            document.getElementById('lvl-profile').innerText = stats.lvl;
+            document.getElementById('exp-val').innerText = stats.exp;
             
+            // Полоска опыта
+            let expPercent = (stats.exp / stats.nextLvlExp) * 100;
+            document.getElementById('exp-fill').style.width = expPercent + "%";
+
+            // Награды
             document.getElementById('port-reward').innerText = stats.hasRod ? 7 : 2;
             document.getElementById('mine-reward').innerText = stats.hasPickaxe ? 5 : 1;
             document.getElementById('mine-chance').innerText = stats.hasPickaxe ? 2 : 1;
@@ -254,7 +333,7 @@
             let items = [];
             if (stats.hasRod) items.push("Удочка");
             if (stats.hasPickaxe) items.push("Кирка");
-            document.getElementById('inv-list').innerText = items.length > 0 ? items.join(", ") : "нет";
+            document.getElementById('inv-list').innerText = items.length > 0 ? items.join(", ") : "пусто";
         }
 
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
