@@ -1,22 +1,29 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>War-Game</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
-<body>
-    <div id="app-curtain" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#000; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999; transition: opacity 1s;">
-        <h1 style="color:#c5a059;">WAR-GAME</h1>
-        <p style="color:white;">ЗАГРУЗКА МИРА...</p>
+<body style="background: #000; margin: 0; padding: 0; overflow: hidden;">
+
+    <div id="app-curtain" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <h1 style="color: #c5a059; font-family: serif; letter-spacing: 3px; margin: 0;">WAR-GAME</h1>
+        <p style="color: #666; font-family: sans-serif; margin-top: 10px;">Инициализация нейросети...</p>
+        <p style="color: #444; font-family: sans-serif; font-size: 0.8rem;">ЗАГРУЗКА МИРА...</p>
     </div>
 
-    <div id="app" style="display:none; text-align:center; padding-top:50px;">
-        <h1 style="color:#c5a059;">ЦИТАДЕЛЬ ОТКРЫТА!</h1>
-        <p style="color:white;">Если ты это видишь — всё работает.</p>
+    <div id="app" style="display: none; padding: 20px; text-align: center; color: white; font-family: sans-serif;">
+        <h2 style="color: #c5a059; margin-top: 50px;">ЦИТАДЕЛЬ ОТКРЫТА</h2>
+        <p>Связь с сервером установлена успешно.</p>
+        <div style="background: #1a1a1a; border: 1px solid #c5a059; padding: 20px; border-radius: 10px; margin-top: 20px;">
+            <p>Герой готов к приключениям!</p>
+        </div>
     </div>
 
     <script src="script.js"></script>
+
 </body>
 </html>
