@@ -2,7 +2,7 @@ const tg = window.Telegram.WebApp;
 tg.expand();
 
 const game = {
-    // Данные игрока
+    // === ДАННЫЕ ИГРОКА ===
     gold: 50,
     emeralds: 0,
     lvl: 1,
@@ -10,7 +10,7 @@ const game = {
     nextXp: 100,
     inventory: [],
 
-    // Переключение основных вкладок меню
+    // === СИСТЕМА НАВИГАЦИИ ===
     setTab(id, el) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -22,7 +22,7 @@ const game = {
         tg.HapticFeedback.impactOccurred('light');
     },
 
-    // Переключение категорий ВНУТРИ лавки (удочки/кирки)
+    // Фильтр в лавке (удочки/кирки)
     filterShop(category) {
         const rodsContent = document.getElementById('shop-content-rods');
         const picksContent = document.getElementById('shop-content-picks');
@@ -34,32 +34,95 @@ const game = {
         if (rodsTab) rodsTab.classList.remove('active');
         if (picksTab) picksTab.classList.remove('active');
         
-        if (category === 'rods' && rodsContent && rodsTab) {
+        if (category === 'rods') {
             rodsContent.style.display = 'block';
             rodsTab.classList.add('active');
-        } else if (category === 'picks' && picksContent && picksTab) {
+        } else {
             picksContent.style.display = 'block';
             picksTab.classList.add('active');
         }
         tg.HapticFeedback.impactOccurred('light');
     },
 
-    // Логика работы (Порт и Рудник)
+    // === ЛОГИКА ЗАГРУЗКИ ===
+    startLoading() {
+        const progress = document.getElementById('load-progress');
+        const screen = document.getElementById('loading-screen');
+        let width = 0;
+        
+        const interval = setInterval(() => {
+            width += Math.random() * 25;
+            if (width > 100) {
+                width = 100;
+                clearInterval(interval);
+                setTimeout(() => {
+                    screen.style.opacity = '0';
+                    setTimeout(() => screen.style.display = 'none', 500);
+                }, 500);
+            }
+            if (progress) progress.style.width = width + '%';
+        }, 200);
+    },
+
+    // === ЕЖЕДНЕВНЫЕ БОНУСЫ ===
+    checkDaily() {
+        const now = new Date();
+        const lastDate = localStorage.getItem('lastBonusDate');
+        let streak = parseInt(localStorage.getItem('bonusStreak') || "0");
+        const todayStr = now.toDateString();
+
+        if (lastDate === todayStr) return; // Уже получал сегодня
+
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        
+        if (lastDate === yesterday.toDateString()) {
+            streak++;
+        } else {
+            streak = 1;
+        }
+
+        if (streak > 10) streak = 1;
+
+        localStorage.setItem('lastBonusDate', todayStr);
+        localStorage.setItem('bonusStreak', streak);
+
+        this.giveDailyReward(streak);
+    },
+
+    giveDailyReward(day) {
+        let reward = 5 + (day - 1) * 3; // Базовая прогрессия
+        if (day === 10) reward = 50; // Супер-приз на 10 день
+        
+        this.emeralds += reward;
+        
+        document.getElementById('daily-day-text').innerText = "День " + day;
+        document.getElementById('daily-reward-text').innerText = (day === 10) ? "СУПЕР-ПРИЗ: 50 Изумрудов" : "+" + reward + " Изумрудов";
+        document.getElementById('daily-reward-icon').innerText = (day === 10) ? "🎡" : "💎";
+        document.getElementById('daily-modal').style.display = 'flex';
+        
+        tg.HapticFeedback.notificationOccurred('success');
+        this.updateUI();
+    },
+
+    closeDaily() {
+        document.getElementById('daily-modal').style.display = 'none';
+        tg.HapticFeedback.impactOccurred('light');
+    },
+
+    // === ИГРОВАЯ ЛОГИКА ===
     doWork(type) {
         if (type === 'port') {
             let bonus = 0;
-            // Проверка лучшей удочки
             if (this.inventory.includes('rod3')) bonus = 40;
             else if (this.inventory.includes('rod2')) bonus = 15;
             else if (this.inventory.includes('rod1')) bonus = 5;
             
-            this.gold += (2 + bonus); 
+            this.gold += (2 + bonus);
             this.addXp(5);
         } else {
             let bonus = 0;
             let chance = 0.01;
-            
-            // Проверка лучшей кирки
             if (this.inventory.includes('pick3')) { bonus = 25; chance = 0.08; }
             else if (this.inventory.includes('pick2')) { bonus = 12; chance = 0.04; }
             else if (this.inventory.includes('pick1')) { bonus = 4; chance = 0.02; }
@@ -75,9 +138,11 @@ const game = {
         this.updateUI();
     },
 
-    // Система опыта и уровней
     addXp(val) {
-        this.xp += val;
+        // Бонус опыта от оружия
+        let swordBonus = this.inventory.includes('sword1') ? 2 : 0;
+        this.xp += (val + swordBonus);
+
         if(this.xp >= this.nextXp) {
             this.xp -= this.nextXp; 
             this.lvl++;
@@ -87,67 +152,53 @@ const game = {
         }
     },
 
-    // Покупка предметов
     buy(id, price) {
         if(this.gold >= price && !this.inventory.includes(id)) {
             this.gold -= price; 
             this.inventory.push(id);
-            
             tg.HapticFeedback.notificationOccurred('success');
             this.updateUI();
         } else if (this.inventory.includes(id)) {
-            tg.showAlert("Этот предмет уже куплен!");
+            tg.showAlert("Уже куплено!");
         } else { 
             tg.showAlert("Недостаточно золота!"); 
         }
     },
 
-    // Обмен изумрудов в банке
     exchange() {
         if(this.emeralds >= 1) {
             this.emeralds--; 
             this.gold += 500;
             this.updateUI();
-            tg.showAlert("Обмен завершен! +500 золота.");
             tg.HapticFeedback.impactOccurred('heavy');
         } else { 
-            tg.showAlert("У вас нет изумрудов!"); 
+            tg.showAlert("Нужны изумруды!"); 
         }
     },
 
-    // Заглушка для локаций на карте
     openLocation(id) {
-        const titles = {
-            tavern: "Таверна", blacksmith: "Оружейник", armorer: "Бронник"
-        };
-        tg.showAlert("Вы вошли в локацию: " + (titles[id] || id));
+        const titles = { tavern: "Таверна", camp: "Лагерь", stable: "Конюшня", armorer: "Бронник" };
+        tg.showAlert("Вы пришли в: " + (titles[id] || id) + ". Контент в разработке!");
     },
 
-    // Обновление интерфейса
+    // === ОБНОВЛЕНИЕ ИНТЕРФЕЙСА ===
     updateUI() {
-        // Ресурсы
         document.getElementById('gold').innerText = Math.floor(this.gold);
         document.getElementById('emeralds').innerText = this.emeralds;
-        
-        // Прогресс уровня
         document.getElementById('lvl').innerText = this.lvl;
         document.getElementById('xp-text').innerText = this.xp + "/" + this.nextXp;
         document.getElementById('exp-fill').style.width = (this.xp / this.nextXp * 100) + "%";
         
-        // Динамические показатели дохода на кнопках работы
-        const pGold = document.getElementById('p-gold');
-        const mGold = document.getElementById('m-gold');
-        const mChance = document.getElementById('m-chance');
+        // Обновление цифр дохода на кнопках
+        const pG = 2 + (this.inventory.includes('rod3') ? 40 : (this.inventory.includes('rod2') ? 15 : (this.inventory.includes('rod1') ? 5 : 0)));
+        const mG = 1 + (this.inventory.includes('pick3') ? 25 : (this.inventory.includes('pick2') ? 12 : (this.inventory.includes('pick1') ? 4 : 0)));
+        const mC = (this.inventory.includes('pick3') ? 8 : (this.inventory.includes('pick2') ? 4 : (this.inventory.includes('pick1') ? 2 : 1)));
 
-        let currentPB = 2 + (this.inventory.includes('rod3') ? 40 : (this.inventory.includes('rod2') ? 15 : (this.inventory.includes('rod1') ? 5 : 0)));
-        let currentMB = 1 + (this.inventory.includes('pick3') ? 25 : (this.inventory.includes('pick2') ? 12 : (this.inventory.includes('pick1') ? 4 : 0)));
-        let currentMC = (this.inventory.includes('pick3') ? 8 : (this.inventory.includes('pick2') ? 4 : (this.inventory.includes('pick1') ? 2 : 1)));
-
-        if(pGold) pGold.innerText = currentPB;
-        if(mGold) mGold.innerText = currentMB;
-        if(mChance) mChance.innerText = currentMC;
+        if(document.getElementById('p-gold')) document.getElementById('p-gold').innerText = pG;
+        if(document.getElementById('m-gold')) document.getElementById('m-gold').innerText = mG;
+        if(document.getElementById('m-chance')) document.getElementById('m-chance').innerText = mC;
         
-        // Обновление кнопок в лавке (КУПЛЕНО)
+        // Пометка купленных кнопок
         this.inventory.forEach(itemId => {
             const btn = document.getElementById('btn-' + itemId);
             if (btn) {
@@ -156,36 +207,21 @@ const game = {
             }
         });
 
-        // Инвентарь в профиле
-        const invDisplay = document.getElementById('inv');
-        if (invDisplay) {
-            invDisplay.innerText = this.inventory.length > 0 ? this.inventory.length + " предметов" : "пусто";
-        }
+        // Инвентарь
+        document.getElementById('inv').innerText = this.inventory.length > 0 ? "Предметов: " + this.inventory.length : "пусто";
     }
 };
 
-// Инициализация имени
+// === ИНИЦИАЛИЗАЦИЯ ПРИ ЗАПУСКЕ ===
 if(tg.initDataUnsafe?.user) {
-    const userName = document.getElementById('user-name');
-    if (userName) userName.innerText = tg.initDataUnsafe.user.first_name;
-startLoading() {
-        const progress = document.getElementById('load-progress');
-        const screen = document.getElementById('loading-screen');
-        let width = 0;
-        
-        const interval = setInterval(() => {
-            width += Math.random() * 30;
-            if (width > 100) {
-                width = 100;
-                clearInterval(interval);
-                setTimeout(() => {
-                    screen.style.opacity = '0';
-                    setTimeout(() => screen.style.display = 'none', 500);
-                }, 500);
-            }
-            if (progress) progress.style.width = width + '%';
-        }, 300);
-    }}
+    document.getElementById('user-name').innerText = tg.initDataUnsafe.user.first_name;
+}
 
+// Запуск систем
 game.updateUI();
+game.startLoading();
 
+// Проверка бонуса через 3 секунды после анимации
+setTimeout(() => {
+    game.checkDaily();
+}, 3000);
