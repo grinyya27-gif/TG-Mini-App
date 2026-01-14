@@ -5,6 +5,34 @@
 
 "use strict";
 
+// Функция, которая физически убирает заставку
+function forceHideLoader() {
+    console.log("Принудительное скрытие загрузки...");
+    const loader = document.getElementById('preloader') || document.getElementById('app-curtain');
+    const app = document.getElementById('app');
+
+    if (loader) {
+        loader.classList.add('hide-preloader'); // Добавляем CSS класс скрытия
+        loader.style.display = 'none';         // Дублируем для надежности
+    }
+    
+    if (app) {
+        app.classList.remove('hidden');       // Показываем саму игру
+        app.style.display = 'block';
+    }
+}
+
+// Запуск таймера: если через 4 секунды игра не ожила, убираем экран загрузки
+setTimeout(forceHideLoader, 4000);
+
+// Также пробуем убрать загрузку сразу, как только страница "отрисовалась"
+window.addEventListener('DOMContentLoaded', () => {
+    // Если Telegram готов, пробуем запуститься
+    if (window.Telegram && window.Telegram.WebApp) {
+        window.Telegram.WebApp.ready();
+        window.Telegram.WebApp.expand();
+    }
+});
 const tg = window.Telegram.WebApp;
 
 // Главный объект игры
@@ -1265,3 +1293,4 @@ const AppLauncher = {
 
 // Запуск при полной загрузке страницы
 window.onload = () => AppLauncher.run();
+
