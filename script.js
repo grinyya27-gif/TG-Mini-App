@@ -22,23 +22,20 @@ const game = {
         tg.HapticFeedback.impactOccurred('light');
     },
 
-    // Фильтр в лавке (удочки/кирки/оружие)
     filterShop(category) {
-        // Прячем все контейнеры контента
-        const contents = ['rods', 'picks', 'weapons'];
-        contents.forEach(type => {
-            const el = document.getElementById('shop-content-' + type);
-            if (el) el.style.display = 'none';
+        const types = ['rods', 'picks', 'weapons'];
+        types.forEach(type => {
+            const content = document.getElementById('shop-content-' + type);
             const tab = document.getElementById('tab-' + type);
+            if (content) content.style.display = 'none';
             if (tab) tab.classList.remove('active');
         });
 
-        // Показываем нужный
         const activeContent = document.getElementById('shop-content-' + category);
         const activeTab = document.getElementById('tab-' + category);
         if (activeContent) activeContent.style.display = 'block';
         if (activeTab) activeTab.classList.add('active');
-
+        
         tg.HapticFeedback.impactOccurred('light');
     },
 
@@ -81,10 +78,8 @@ const game = {
         }
 
         if (streak > 10) streak = 1;
-
         localStorage.setItem('lastBonusDate', todayStr);
         localStorage.setItem('bonusStreak', streak);
-
         this.giveDailyReward(streak);
     },
 
@@ -93,7 +88,6 @@ const game = {
         if (day === 10) reward = 50;
         
         this.emeralds += reward;
-        
         document.getElementById('daily-day-text').innerText = "День " + day;
         document.getElementById('daily-reward-text').innerText = (day === 10) ? "СУПЕР-ПРИЗ: 50 Изумрудов" : "+" + reward + " Изумрудов";
         document.getElementById('daily-reward-icon').innerText = (day === 10) ? "🎡" : "💎";
@@ -110,13 +104,16 @@ const game = {
 
     // === ИГРОВАЯ ЛОГИКА (РАБОТА) ===
     doWork(type) {
+        let earnedGold = 0;
+        let earnedXp = 0;
+
         if (type === 'port') {
             let bonus = 0;
             if (this.inventory.includes('rod3')) bonus = 40;
             else if (this.inventory.includes('rod2')) bonus = 15;
             else if (this.inventory.includes('rod1')) bonus = 5;
-            this.gold += (2 + bonus);
-            this.addXp(5);
+            earnedGold = 2 + bonus;
+            earnedXp = 5;
         } 
         else if (type === 'mine') {
             let bonus = 0;
@@ -124,25 +121,32 @@ const game = {
             if (this.inventory.includes('pick3')) { bonus = 25; chance = 0.08; }
             else if (this.inventory.includes('pick2')) { bonus = 12; chance = 0.04; }
             else if (this.inventory.includes('pick1')) { bonus = 4; chance = 0.02; }
-            this.gold += (1 + bonus);
-            if(Math.random() < chance) { this.emeralds++; tg.HapticFeedback.notificationOccurred('success'); }
-            this.addXp(8);
+            earnedGold = 1 + bonus;
+            earnedXp = 8;
+            if(Math.random() < chance) { 
+                this.emeralds++; 
+                tg.HapticFeedback.notificationOccurred('success'); 
+            }
         }
         else if (type === 'farm') {
             if (this.lvl < 15) return tg.showAlert("Нужен 15 уровень!");
-            this.gold += 15;
-            this.addXp(12);
+            earnedGold = 15;
+            earnedXp = 12;
         }
         else if (type === 'hunt') {
             if (this.lvl < 25) return tg.showAlert("Нужен 25 уровень!");
             if (!this.inventory.includes('bow1') && !this.inventory.includes('bow2')) {
-                return tg.showAlert("Вам нужен лук или арбалет из лавки!");
+                return tg.showAlert("Купите лук или арбалет в лавке!");
             }
-            let income = this.inventory.includes('bow2') ? 100 : 50;
-            this.gold += income;
-            this.addXp(20);
+            earnedGold = this.inventory.includes('bow2') ? 100 : 50;
+            earnedXp = 20;
         }
 
+        // Применяем изменения
+        this.gold += earnedGold;
+        this.addXp(earnedXp);
+        
+        // Вибрация и обновление
         tg.HapticFeedback.impactOccurred('medium');
         this.updateUI();
     },
@@ -184,20 +188,16 @@ const game = {
         }
     },
 
-    openLocation(id) {
-        const titles = { tavern: "Таверна", camp: "Лагерь", stable: "Конюшня", armorer: "Бронник" };
-        tg.showAlert("Вы пришли в: " + (titles[id] || id) + ". Контент в разработке!");
-    },
-
     // === ОБНОВЛЕНИЕ ИНТЕРФЕЙСА ===
     updateUI() {
+        // Ресурсы
         document.getElementById('gold').innerText = Math.floor(this.gold);
         document.getElementById('emeralds').innerText = this.emeralds;
         document.getElementById('lvl').innerText = this.lvl;
         document.getElementById('xp-text').innerText = this.xp + "/" + this.nextXp;
         document.getElementById('exp-fill').style.width = (this.xp / this.nextXp * 100) + "%";
         
-        // Обновление цифр дохода порта/рудника
+        // Динамические показатели на кнопках
         const pG = 2 + (this.inventory.includes('rod3') ? 40 : (this.inventory.includes('rod2') ? 15 : (this.inventory.includes('rod1') ? 5 : 0)));
         const mG = 1 + (this.inventory.includes('pick3') ? 25 : (this.inventory.includes('pick2') ? 12 : (this.inventory.includes('pick1') ? 4 : 0)));
         const mC = (this.inventory.includes('pick3') ? 8 : (this.inventory.includes('pick2') ? 4 : (this.inventory.includes('pick1') ? 2 : 1)));
@@ -206,22 +206,19 @@ const game = {
         if(document.getElementById('m-gold')) document.getElementById('m-gold').innerText = mG;
         if(document.getElementById('m-chance')) document.getElementById('m-chance').innerText = mC;
         
-        // Визуальная разблокировка работ по уровню
-        if (this.lvl >= 15) {
-            const farm = document.getElementById('work-farm');
-            if(farm) { farm.style.opacity = "1"; document.getElementById('farm-lock').innerText = ""; }
+        // Разблокировка работ
+        if (this.lvl >= 15 && document.getElementById('work-farm')) {
+            document.getElementById('work-farm').style.opacity = "1";
+            document.getElementById('farm-lock').innerText = "";
         }
-        if (this.lvl >= 25) {
-            const hunt = document.getElementById('work-hunt');
-            if(hunt) { 
-                hunt.style.opacity = "1"; 
-                document.getElementById('hunt-lock').innerText = ""; 
-                let bowText = this.inventory.includes('bow2') ? "Доход: 100 🪙" : (this.inventory.includes('bow1') ? "Доход: 50 🪙" : "Нужен лук!");
-                document.getElementById('hunt-desc').innerText = bowText;
-            }
+        if (this.lvl >= 25 && document.getElementById('work-hunt')) {
+            document.getElementById('work-hunt').style.opacity = "1";
+            document.getElementById('hunt-lock').innerText = "";
+            let bowText = this.inventory.includes('bow2') ? "Доход: 100 🪙" : (this.inventory.includes('bow1') ? "Доход: 50 🪙" : "Нужен лук!");
+            document.getElementById('hunt-desc').innerText = bowText;
         }
 
-        // Пометка купленных кнопок
+        // Кнопки в магазине
         this.inventory.forEach(itemId => {
             const btn = document.getElementById('btn-' + itemId);
             if (btn) {
@@ -230,12 +227,16 @@ const game = {
             }
         });
 
-        // Инвентарь
+        // Инвентарь в профиле
         document.getElementById('inv').innerText = this.inventory.length > 0 ? "Предметов: " + this.inventory.length : "пусто";
+    },
+
+    openLocation(id) {
+        tg.showAlert("Локация временно недоступна.");
     }
 };
 
-// === ИНИЦИАЛИЗАЦИЯ ===
+// === ЗАПУСК ===
 if(tg.initDataUnsafe?.user) {
     document.getElementById('user-name').innerText = tg.initDataUnsafe.user.first_name;
 }
