@@ -221,3 +221,33 @@
     </script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Medieval Strategy</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { background-color: #1a120b; color: #f4e4bc; font-family: sans-serif; margin: 0; padding: 15px; text-align: center; }
+        .res-panel { display: flex; justify-content: space-around; background: #3e2723; padding: 10px; border: 2px solid #d4af37; border-radius: 10px; margin-bottom: 15px; font-weight: bold; }
+        
+        .building-card { background: #4e342e; border: 1px solid #d4af37; border-radius: 12px; padding: 15px; margin: 10px 0; }
+        
+        .inventory-section { margin-top: 20px; border-top: 1px solid #5d4037; padding-top: 10px; }
+        .inv-grid { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+        .inv-slot { width: 50px; height: 50px; background: #2c1e14; border: 1px solid #8d6e63; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.5em; }
+
+        button { background: #d4af37; border: none; padding: 10px 15px; font-weight: bold; border-radius: 5px; margin-top: 5px; cursor: pointer; width: 100%; color: #1a120b; }
+        button:active { background: #b8860b; transform: translateY(2px); }
+        button.alt { background: #2ecc71; } /* Зеленая кнопка для рынка */
+        
+        .stats-panel { background: rgba(0,0,0,0.3); padding: 5px; border-radius: 5px; margin-bottom: 10px; font-size: 0.8em; }
+    </style>
+</head>
+<body>
+
+    <div class="res-panel">
+        <div>🪙 <span id="gold">0</span></div>
+        <div>💎 <span id="emeralds">0</span></div>
+    </div>
