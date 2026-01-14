@@ -22,22 +22,18 @@ const game = {
         tg.HapticFeedback.impactOccurred('light');
     },
 
-    // Переключение категорий ВНУТРИ лавки
+    // Переключение категорий ВНУТРИ лавки (удочки/кирки)
     filterShop(category) {
         const rodsContent = document.getElementById('shop-content-rods');
         const picksContent = document.getElementById('shop-content-picks');
         const rodsTab = document.getElementById('tab-rods');
         const picksTab = document.getElementById('tab-picks');
 
-        // Прячем всё
         if (rodsContent) rodsContent.style.display = 'none';
         if (picksContent) picksContent.style.display = 'none';
-        
-        // Убираем подсветку кнопок
         if (rodsTab) rodsTab.classList.remove('active');
         if (picksTab) picksTab.classList.remove('active');
         
-        // Показываем нужную категорию
         if (category === 'rods' && rodsContent && rodsTab) {
             rodsContent.style.display = 'block';
             rodsTab.classList.add('active');
@@ -48,17 +44,27 @@ const game = {
         tg.HapticFeedback.impactOccurred('light');
     },
 
-    // Логика работы
+    // Логика работы (Порт и Рудник)
     doWork(type) {
         if (type === 'port') {
-            let bonus = this.inventory.includes('rod1') ? 5 : 0;
+            let bonus = 0;
+            // Проверка лучшей удочки
+            if (this.inventory.includes('rod3')) bonus = 40;
+            else if (this.inventory.includes('rod2')) bonus = 15;
+            else if (this.inventory.includes('rod1')) bonus = 5;
+            
             this.gold += (2 + bonus); 
             this.addXp(5);
         } else {
-            let bonus = this.inventory.includes('pick1') ? 4 : 0;
-            let chance = this.inventory.includes('pick1') ? 0.02 : 0.01;
-            this.gold += (1 + bonus);
+            let bonus = 0;
+            let chance = 0.01;
             
+            // Проверка лучшей кирки
+            if (this.inventory.includes('pick3')) { bonus = 25; chance = 0.08; }
+            else if (this.inventory.includes('pick2')) { bonus = 12; chance = 0.04; }
+            else if (this.inventory.includes('pick1')) { bonus = 4; chance = 0.02; }
+            
+            this.gold += (1 + bonus);
             if(Math.random() < chance) { 
                 this.emeralds++; 
                 tg.HapticFeedback.notificationOccurred('success'); 
@@ -69,13 +75,12 @@ const game = {
         this.updateUI();
     },
 
-    // Система опыта
+    // Система опыта и уровней
     addXp(val) {
         this.xp += val;
         if(this.xp >= this.nextXp) {
             this.xp -= this.nextXp; 
             this.lvl++;
-            // Умное увеличение сложности уровня
             this.nextXp = Math.floor(this.nextXp * 1.6 + 50);
             tg.showAlert("Уровень повышен до " + this.lvl + "!");
             tg.HapticFeedback.notificationOccurred('warning');
@@ -88,23 +93,16 @@ const game = {
             this.gold -= price; 
             this.inventory.push(id);
             
-            // Визуально помечаем кнопку покупки
-            const btn = document.getElementById('btn-' + id);
-            if (btn) {
-                btn.innerText = "КУПЛЕНО";
-                btn.classList.add('bought');
-            }
-            
             tg.HapticFeedback.notificationOccurred('success');
             this.updateUI();
         } else if (this.inventory.includes(id)) {
-            tg.showAlert("Этот предмет уже в инвентаре!");
+            tg.showAlert("Этот предмет уже куплен!");
         } else { 
             tg.showAlert("Недостаточно золота!"); 
         }
     },
 
-    // Банковский обмен
+    // Обмен изумрудов в банке
     exchange() {
         if(this.emeralds >= 1) {
             this.emeralds--; 
@@ -113,56 +111,63 @@ const game = {
             tg.showAlert("Обмен завершен! +500 золота.");
             tg.HapticFeedback.impactOccurred('heavy');
         } else { 
-            tg.showAlert("У вас нет изумрудов для обмена!"); 
+            tg.showAlert("У вас нет изумрудов!"); 
         }
     },
 
-    // Локации на карте
+    // Заглушка для локаций на карте
     openLocation(id) {
         const titles = {
-            tavern: "Таверна", camp: "Лагерь", 
-            stable: "Конюшня", blacksmith: "Оружейник", armorer: "Бронник"
+            tavern: "Таверна", blacksmith: "Оружейник", armorer: "Бронник"
         };
-        tg.showAlert("Добро пожаловать в " + (titles[id] || id) + "! Здесь скоро будет контент.");
+        tg.showAlert("Вы вошли в локацию: " + (titles[id] || id));
     },
 
-    // Обновление всех данных на экране
+    // Обновление интерфейса
     updateUI() {
         // Ресурсы
         document.getElementById('gold').innerText = Math.floor(this.gold);
         document.getElementById('emeralds').innerText = this.emeralds;
         
-        // Опыт и Уровень
+        // Прогресс уровня
         document.getElementById('lvl').innerText = this.lvl;
         document.getElementById('xp-text').innerText = this.xp + "/" + this.nextXp;
         document.getElementById('exp-fill').style.width = (this.xp / this.nextXp * 100) + "%";
         
-        // Информация на кнопках работы (динамическое обновление дохода)
+        // Динамические показатели дохода на кнопках работы
         const pGold = document.getElementById('p-gold');
         const mGold = document.getElementById('m-gold');
         const mChance = document.getElementById('m-chance');
 
-        if(pGold) pGold.innerText = this.inventory.includes('rod1') ? 7 : 2;
-        if(mGold) mGold.innerText = this.inventory.includes('pick1') ? 5 : 1;
-        if(mChance) mChance.innerText = this.inventory.includes('pick1') ? 2 : 1;
+        let currentPB = 2 + (this.inventory.includes('rod3') ? 40 : (this.inventory.includes('rod2') ? 15 : (this.inventory.includes('rod1') ? 5 : 0)));
+        let currentMB = 1 + (this.inventory.includes('pick3') ? 25 : (this.inventory.includes('pick2') ? 12 : (this.inventory.includes('pick1') ? 4 : 0)));
+        let currentMC = (this.inventory.includes('pick3') ? 8 : (this.inventory.includes('pick2') ? 4 : (this.inventory.includes('pick1') ? 2 : 1)));
+
+        if(pGold) pGold.innerText = currentPB;
+        if(mGold) mGold.innerText = currentMB;
+        if(mChance) mChance.innerText = currentMC;
         
+        // Обновление кнопок в лавке (КУПЛЕНО)
+        this.inventory.forEach(itemId => {
+            const btn = document.getElementById('btn-' + itemId);
+            if (btn) {
+                btn.innerText = "КУПЛЕНО";
+                btn.classList.add('bought');
+            }
+        });
+
         // Инвентарь в профиле
-        let itemsNames = [];
-        if(this.inventory.includes('rod1')) itemsNames.push("Удочка");
-        if(this.inventory.includes('pick1')) itemsNames.push("Кирка");
-        
         const invDisplay = document.getElementById('inv');
         if (invDisplay) {
-            invDisplay.innerText = itemsNames.length ? itemsNames.join(", ") : "пусто";
+            invDisplay.innerText = this.inventory.length > 0 ? this.inventory.length + " предметов" : "пусто";
         }
     }
 };
 
-// Привязка имени пользователя Telegram
+// Инициализация имени
 if(tg.initDataUnsafe?.user) {
     const userName = document.getElementById('user-name');
     if (userName) userName.innerText = tg.initDataUnsafe.user.first_name;
 }
 
-// Первый запуск интерфейса
 game.updateUI();
