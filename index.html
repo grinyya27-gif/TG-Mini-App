@@ -109,3 +109,115 @@
     </script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Medieval Mini App</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { background-color: #1a120b; color: #f4e4bc; font-family: sans-serif; margin: 0; padding: 15px; text-align: center; }
+        .res-panel { display: flex; justify-content: space-around; background: #3e2723; padding: 10px; border: 2px solid #d4af37; border-radius: 10px; margin-bottom: 15px; font-weight: bold; }
+        
+        .stats-panel { font-size: 0.9em; margin-bottom: 10px; color: #4caf50; }
+
+        .building-card { background: #4e342e; border: 1px solid #d4af37; border-radius: 12px; padding: 15px; margin: 10px 0; cursor: pointer; }
+        
+        /* Стили инвентаря */
+        .inventory-section { margin-top: 20px; border-top: 1px solid #5d4037; padding-top: 10px; }
+        .inv-grid { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+        .inv-slot { width: 50px; height: 50px; background: #2c1e14; border: 1px solid #8d6e63; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.5em; }
+
+        button { background: #d4af37; border: none; padding: 10px 15px; font-weight: bold; border-radius: 5px; margin-top: 5px; cursor: pointer; width: 100%; }
+        button:active { background: #b8860b; }
+        .emerald-text { color: #2ecc71; }
+    </style>
+</head>
+<body>
+
+    <div class="res-panel">
+        <div>🪙 <span id="gold">100</span></div>
+        <div>💎 <span id="emeralds">0</span></div>
+    </div>
+
+    <div class="stats-panel">
+        ⚔️ Сила атаки: <span id="attack">10</span>
+    </div>
+
+    <div id="main-screen">
+        <div class="building-card">
+            <h3>⚒️ Кузница Магнуса</h3>
+            <p>Стальной меч: <b>150 🪙</b></p>
+            <button onclick="buySword()">Купить (+5 к силе)</button>
+        </div>
+
+        <div class="building-card">
+            <h3>⛏️ Королевский рудник</h3>
+            <p>Добыть золото и шанс на изумруд</p>
+            <button onclick="mine()">Работать!</button>
+        </div>
+    </div>
+
+    <div class="inventory-section">
+        <h4>🎒 Твое снаряжение</h4>
+        <div class="inv-grid" id="inventory">
+            <div class="inv-slot">📦</div>
+        </div>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        let stats = {
+            gold: 150,
+            emeralds: 0,
+            attack: 10,
+            inventory: []
+        };
+
+        function updateUI() {
+            document.getElementById('gold').innerText = stats.gold;
+            document.getElementById('emeralds').innerText = stats.emeralds;
+            document.getElementById('attack').innerText = stats.attack;
+            
+            // Обновляем инвентарь
+            const invContainer = document.getElementById('inventory');
+            invContainer.innerHTML = '';
+            stats.inventory.forEach(item => {
+                const slot = document.createElement('div');
+                slot.className = 'inv-slot';
+                slot.innerText = item === 'sword' ? '🗡️' : '📦';
+                invContainer.appendChild(slot);
+            });
+        }
+
+        function mine() {
+            stats.gold += 15;
+            // Шанс 10% найти изумруд
+            if (Math.random() < 0.1) {
+                stats.emeralds += 1;
+                tg.HapticFeedback.notificationOccurred('success');
+            } else {
+                tg.HapticFeedback.impactOccurred('light');
+            }
+            updateUI();
+        }
+
+        function buySword() {
+            if (stats.gold >= 150) {
+                stats.gold -= 150;
+                stats.attack += 5;
+                stats.inventory.push('sword');
+                updateUI();
+                tg.HapticFeedback.impactOccurred('medium');
+            } else {
+                alert("Недостаточно золота для меча!");
+            }
+        }
+
+        updateUI();
+    </script>
+</body>
+</html>
