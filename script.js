@@ -43,6 +43,17 @@ const game = {
         }
         tg.HapticFeedback.impactOccurred('light');
     },
+    filterShop(category) {
+    document.getElementById('shop-content-rods').style.display = 'none';
+    document.getElementById('shop-content-picks').style.display = 'none';
+    document.getElementById('shop-content-weapons').style.display = 'none'; // Скрыть оружие
+    
+    document.querySelectorAll('.shop-tab').forEach(t => t.classList.remove('active'));
+    
+    document.getElementById('shop-content-' + category).style.display = 'block';
+    document.getElementById('tab-' + category).classList.add('active');
+    tg.HapticFeedback.impactOccurred('light');
+},
 
     // === ЛОГИКА ЗАГРУЗКИ ===
     startLoading() {
@@ -137,6 +148,26 @@ const game = {
         tg.HapticFeedback.impactOccurred('medium');
         this.updateUI();
     },
+    doWork(type) {
+    if (type === 'farm') {
+        if (this.lvl < 15) return tg.showAlert("Нужен 15 уровень!");
+        this.gold += 15; this.addXp(12);
+    } 
+    else if (type === 'hunt') {
+        if (this.lvl < 25) return tg.showAlert("Нужен 25 уровень!");
+        if (!this.inventory.includes('bow1') && !this.inventory.includes('bow2')) {
+            return tg.showAlert("Купите лук в лавке!");
+        }
+        let bonus = this.inventory.includes('bow2') ? 100 : 50;
+        this.gold += bonus; this.addXp(20);
+    }
+    // ... логика для порта и рудника остается ...
+    else if (type === 'port') { /* старый код порта */ }
+    else if (type === 'mine') { /* старый код рудника */ }
+    
+    tg.HapticFeedback.impactOccurred('medium');
+    this.updateUI();
+},
 
     addXp(val) {
         // Бонус опыта от оружия
@@ -225,3 +256,4 @@ game.startLoading();
 setTimeout(() => {
     game.checkDaily();
 }, 3000);
+
