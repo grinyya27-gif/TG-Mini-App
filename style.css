@@ -1,1 +1,23 @@
+.work-card {
+    display: flex;
+    align-items: center;
+    text-align: left;
+    gap: 15px;
+    background: linear-gradient(145deg, #4e342e, #3e2723);
+}
+
+.card-icon {
+    font-size: 2.5em;
+}
+
+.card-info h3 {
+    margin: 0;
+    color: #d4af37;
+}
+
+.card-info p {
+    margin: 5px 0 0 0;
+    font-size: 0.85em;
+    opacity: 0.8;
+}
 
