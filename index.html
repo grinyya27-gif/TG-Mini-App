@@ -3,195 +3,246 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WAR SAGA: STABLE</title>
-    <link href="https://fonts.googleapis.com/css2?family=Almendra:wght@400;700&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+    <title>WAR SAGA: FINAL MONOLITH</title>
+    <link href="https://fonts.googleapis.com/css2?family=Almendra:wght@400;700&family=Cinzel:wght@700;900&family=MedievalSharp&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
-        :root { --gold: #ffcc00; --gold-dark: #b8860b; --parchment: #f4e4bc; --blood: #800000; }
+        /* --- СТИЛИ (ДИЗАЙН ИЗ ПЕРВОЙ ВЕРСИИ) --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+        :root { --gold: #ffcc00; --gold-dark: #b8860b; --blood: #800000; --parchment: #f4e4bc; --iron: #1a1a1a; --stone: #252525; }
         
-        body { 
-            background: #000; color: var(--parchment); 
-            font-family: 'Almendra', serif; height: 100vh; 
-            overflow: hidden; display: flex; flex-direction: column; 
-        }
+        body { background: #000; color: var(--parchment); font-family: 'Almendra', serif; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
-        /* Упрощенный лоадер без лишних скриптов */
-        #loader { 
-            position: fixed; inset: 0; background: #000; 
-            z-index: 9999; display: flex; flex-direction: column; 
-            justify-content: center; align-items: center; 
-        }
+        /* Фикс лоадера */
+        #loader { position: fixed; inset: 0; background: radial-gradient(circle, #1a0000 0%, #000 100%); z-index: 10000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .seal { width: 100px; height: 100px; border: 2px dashed var(--gold); border-radius: 50%; display: flex; justify-content: center; align-items: center; animation: spin 8s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        .header { background: #1a1a1a; border-bottom: 2px solid var(--gold-dark); padding: 15px; }
-        .stats { display: flex; justify-content: space-around; font-weight: bold; font-size: 1.2em; }
+        /* Верхняя панель */
+        .royal-header { background: linear-gradient(180deg, #1a1a1a 0%, #000 100%); border-bottom: 2px solid var(--gold-dark); padding: 12px; z-index: 100; box-shadow: 0 5px 15px rgba(0,0,0,0.8); }
+        .stats-row { display: flex; justify-content: center; gap: 15px; margin-bottom: 10px; }
+        .stat-box { background: var(--stone); border: 1px solid var(--gold-dark); padding: 5px 15px; border-radius: 4px; font-family: 'MedievalSharp', cursive; display: flex; align-items: center; gap: 8px; min-width: 100px; box-shadow: inset 0 0 10px #000; }
         
-        .main { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 100px; }
+        .exp-area { display: flex; align-items: center; gap: 10px; }
+        .lvl-orb { width: 45px; height: 45px; background: #000; border: 2px solid var(--gold); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 0 10px var(--gold-dark); }
+        .exp-track { flex: 1; height: 12px; background: #000; border: 1px solid var(--gold-dark); position: relative; overflow: hidden; }
+        #exp-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #4a0000, #ff0000); transition: width 0.4s; }
+
+        /* Контент */
+        .main-scroll { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 90px; background: url('https://www.transparenttextures.com/patterns/dark-matter.png'); }
         .screen { display: none; }
-        .active { display: block; }
+        .screen.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .card { 
-            background: #111; border: 1px solid var(--gold-dark); 
-            margin-bottom: 15px; padding: 15px; border-radius: 5px; 
-            display: flex; justify-content: space-between; align-items: center;
-        }
+        .m-title { font-family: 'Cinzel', serif; text-align: center; color: var(--gold); margin: 15px 0; text-transform: uppercase; letter-spacing: 2px; }
 
-        .btn { 
-            background: var(--blood); color: white; border: 1px solid var(--gold); 
-            padding: 10px 15px; cursor: pointer; font-family: 'Cinzel', serif;
-        }
+        /* Карточки */
+        .card-a { background: #151515; border: 1px solid #333; margin-bottom: 15px; border-left: 4px solid var(--gold-dark); position: relative; transition: 0.1s; }
+        .card-a:active { transform: scale(0.98); background: #222; }
+        .card-body { padding: 15px; display: flex; align-items: center; gap: 15px; }
+        .icon-f { width: 55px; height: 55px; background: #000; border: 1px solid var(--gold-dark); display: flex; justify-content: center; align-items: center; font-size: 1.8em; box-shadow: inset 0 0 10px var(--gold-dark); }
+        .c-text h3 { font-family: 'Cinzel', serif; font-size: 0.9em; color: var(--gold); }
+        .c-text p { font-size: 0.8em; color: #888; }
 
-        nav { 
-            position: fixed; bottom: 0; width: 100%; height: 70px; 
-            background: #000; border-top: 2px solid var(--gold-dark); 
-            display: flex; justify-content: space-around; align-items: center;
-        }
+        /* Навигация */
+        .royal-nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: #000; border-top: 2px solid var(--gold-dark); display: flex; z-index: 1000; }
+        .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #555; text-decoration: none; transition: 0.3s; }
+        .nav-btn.active { color: var(--gold); background: rgba(184,134,11,0.1); }
+        .nav-btn i { font-size: 1.5em; }
+        .nav-btn span { font-size: 0.6em; text-transform: uppercase; font-family: 'MedievalSharp'; margin-top: 4px; }
 
-        .nav-item { color: #666; text-align: center; font-size: 0.8em; }
-        .nav-active { color: var(--gold); }
+        /* Всплывающий текст */
+        .pop-txt { position: fixed; color: var(--gold); font-weight: bold; pointer-events: none; z-index: 9999; animation: floatUp 0.8s forwards; text-shadow: 2px 2px #000; }
+        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-80px); } }
 
-        /* Всплывающее золото */
-        .coin { position: fixed; color: var(--gold); font-weight: bold; pointer-events: none; animation: moveUp 0.8s forwards; }
-        @keyframes moveUp { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-100px); } }
+        .locked { opacity: 0.3; filter: grayscale(1); pointer-events: none; }
+        .btn-buy { background: var(--blood); border: 1px solid var(--gold); color: white; padding: 6px 12px; font-family: 'MedievalSharp'; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div id="loader">
-        <h1 style="color: var(--gold); font-family: 'Cinzel';">WAR SAGA</h1>
-        <p>Загрузка мира...</p>
+        <div class="seal"><h2 style="color:var(--gold); transform: rotate(-45deg);">WS</h2></div>
+        <h1 style="color:var(--gold); font-family:'Cinzel'; margin-top:20px; letter-spacing:5px;">WAR SAGA</h1>
+        <p id="l-status">Загрузка летописи...</p>
     </div>
 
-    <header class="header">
-        <div class="stats">
-            <div>🪙 <span id="gold">0</span></div>
-            <div>💎 <span id="gems">0</span></div>
-            <div>🎖️ <span id="lvl">1</span></div>
+    <header class="royal-header">
+        <div class="stats-row">
+            <div class="stat-box">🪙 <span id="g-val">0</span></div>
+            <div class="stat-box">💎 <span id="d-val">0</span></div>
+        </div>
+        <div class="exp-area">
+            <div class="lvl-orb"><span id="l-val" style="font-weight:bold; color:var(--gold);">1</span><small style="font-size:0.5em; text-transform:uppercase;">lvl</small></div>
+            <div class="exp-track"><div id="exp-fill"></div></div>
         </div>
     </header>
 
-    <main class="main">
+    <main class="main-scroll">
         <section id="scr-battle" class="screen active">
-            <h2 style="text-align:center; margin-bottom:20px;">ГЕРОИЧЕСКИЕ ТРУДЫ</h2>
-            <div class="card" onclick="game.tap('port', event)">
-                <div><h3>Рыбалка</h3><p>+2 🪙 | +5 XP</p></div>
-                <span>🎣</span>
+            <h2 class="m-title">Ратные Подвиги</h2>
+            <div class="card-a" onclick="game.doWork('port', event)">
+                <div class="card-body">
+                    <div class="icon-f">🎣</div>
+                    <div class="c-text"><h3>Рыбацкая Бухта</h3><p>Награда: +2 🪙 | Опыт: +5</p></div>
+                </div>
             </div>
-            <div class="card" onclick="game.tap('mine', event)">
-                <div><h3>Рудник</h3><p>+1 🪙 | +10 XP</p></div>
-                <span>⛏️</span>
+            <div class="card-a" onclick="game.doWork('mine', event)">
+                <div class="card-body">
+                    <div class="icon-f">⛏️</div>
+                    <div class="c-text"><h3>Древние Рудники</h3><p>Награда: +1 🪙 | Опыт: +10</p></div>
+                </div>
+            </div>
+            <div id="card-farm" class="card-a locked" onclick="game.doWork('farm', event)">
+                <div class="card-body">
+                    <div class="icon-f">🌾</div>
+                    <div class="c-text"><h3>Имперская Ферма</h3><p>Требуется 10 уровень</p></div>
+                </div>
             </div>
         </section>
 
         <section id="scr-shop" class="screen">
-            <h2 style="text-align:center; margin-bottom:20px;">КОРОЛЕВСКАЯ ЛАВКА</h2>
-            <div class="card">
-                <div><h3>Меч</h3><p>+3 к клику</p></div>
-                <button class="btn" onclick="game.buy('sword', 300)">300 🪙</button>
+            <h2 class="m-title">Королевская Лавка</h2>
+            <div class="card-a">
+                <div class="card-body">
+                    <div class="icon-f">🗡️</div>
+                    <div style="flex:1"><h3>Стальной Меч</h3><p>+3 золота за каждый клик</p></div>
+                    <button class="btn-buy" id="b-sword" onclick="game.buy('sword', 300)">300</button>
+                </div>
             </div>
-            <div class="card">
-                <div><h3>Крестьянин</h3><p>+1 🪙 / сек</p></div>
-                <button class="btn" onclick="game.hire(100)">100 🪙</button>
+            <div class="card-a">
+                <div class="card-body">
+                    <div class="icon-f">👨‍🌾</div>
+                    <div style="flex:1"><h3>Нанять Наемника</h3><p>Приносит +1 🪙 в сек пассивно</p></div>
+                    <button class="btn-buy" id="b-worker" onclick="game.hire(150)">150</button>
+                </div>
             </div>
         </section>
     </main>
 
-    <nav>
-        <div class="nav-item nav-active" onclick="game.tab('battle', this)">⚔️<br>БИТВА</div>
-        <div class="nav-item" onclick="game.tab('shop', this)">💰<br>ЛАВКА</div>
+    <nav class="royal-nav">
+        <div class="nav-btn active" onclick="game.tab('battle', this)"><i>⚔️</i><span>Битва</span></div>
+        <div class="nav-btn" onclick="game.tab('shop', this)"><i>💰</i><span>Лавка</span></div>
     </nav>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
+        // --- ЛОГИКА (ВСЁ В ОДНОМ) ---
         const tg = window.Telegram.WebApp;
-        
         const game = {
-            data: { gold: 50, gems: 0, lvl: 1, xp: 0, nx: 100, sword: false, workers: 0 },
+            s: { gold: 50, gems: 0, lvl: 1, xp: 0, nx: 100, sword: false, workers: 0 },
 
             init() {
-                // Загрузка
-                const saved = localStorage.getItem('war_saga_v3');
-                if (saved) this.data = JSON.parse(saved);
+                // Пытаемся загрузить данные
+                const save = localStorage.getItem('WS_FINAL_SAVE');
+                if (save) this.s = JSON.parse(save);
                 
                 tg.expand();
-                
-                // Таймер дохода
+                tg.ready();
+
+                // Пассивный доход
                 setInterval(() => {
-                    if (this.data.workers > 0) {
-                        this.data.gold += this.data.workers;
-                        this.update();
+                    if (this.s.workers > 0) {
+                        this.s.gold += this.s.workers;
+                        this.upd();
                     }
                 }, 1000);
 
-                // Убираем лоадер гарантированно
-                document.getElementById('loader').style.display = 'none';
-                this.update();
+                // Убираем лоадер через 1.5 сек
+                setTimeout(() => {
+                    document.getElementById('loader').style.opacity = '0';
+                    setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
+                }, 1500);
+
+                this.upd();
             },
 
             tab(id, el) {
                 document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('nav-active'));
+                document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active'));
                 document.getElementById('scr-' + id).classList.add('active');
-                el.classList.add('nav-active');
+                el.classList.add('active');
+                tg.HapticFeedback.impactOccurred('light');
             },
 
-            tap(type, e) {
-                let g = (type === 'port' ? 2 : 1) + (this.data.sword ? 3 : 0);
-                this.data.gold += g;
-                this.addXp(type === 'port' ? 5 : 10);
-                
-                // Анимация текста
-                const p = document.createElement('div');
-                p.className = 'coin'; p.innerText = '+' + g;
-                p.style.left = (e.clientX || e.touches[0].clientX) + 'px';
-                p.style.top = (e.clientY || e.touches[0].clientY) + 'px';
-                document.body.appendChild(p);
-                setTimeout(() => p.remove(), 800);
+            doWork(type, e) {
+                if (type === 'farm' && this.s.lvl < 10) return;
 
-                this.update();
+                let g = (type === 'port' ? 2 : (type === 'mine' ? 1 : 10));
+                if (this.s.sword) g += 3;
+
+                this.s.gold += g;
+                this.addXp(type === 'port' ? 5 : (type === 'mine' ? 10 : 20));
+                
+                // Эффект цифр
+                this.pop(e, `+${g} 🪙`);
+                this.upd();
                 tg.HapticFeedback.impactOccurred('medium');
             },
 
             addXp(v) {
-                this.data.xp += v;
-                if (this.data.xp >= this.data.nx) {
-                    this.data.lvl++;
-                    this.data.xp = 0;
-                    this.data.nx = Math.floor(this.data.nx * 1.5);
-                    tg.showAlert("Новый уровень: " + this.data.lvl);
+                this.s.xp += v;
+                if (this.s.xp >= this.s.nx) {
+                    this.s.lvl++;
+                    this.s.xp = 0;
+                    this.s.nx = Math.floor(this.s.nx * 1.6);
+                    tg.showAlert("⚔️ Уровень повышен! Ваша сила растет.");
                 }
             },
 
             buy(id, p) {
-                if (this.data[id]) return tg.showAlert("Уже есть!");
-                if (this.data.gold >= p) {
-                    this.data.gold -= p;
-                    this.data[id] = true;
-                    this.update();
-                } else { tg.showAlert("Мало золота!"); }
+                if (this.s.sword) return tg.showAlert("Предмет уже у вас!");
+                if (this.s.gold >= p) {
+                    this.s.gold -= p;
+                    this.s.sword = true;
+                    this.upd();
+                    tg.showAlert("Вы купили Меч! Теперь добыча золота выше.");
+                } else { tg.showAlert("Недостаточно золота!"); }
             },
 
             hire(p) {
-                if (this.data.gold >= p) {
-                    this.data.gold -= p;
-                    this.data.workers++;
-                    this.update();
-                } else { tg.showAlert("Мало золота!"); }
+                const price = p + (this.s.workers * 30); // Цена растет
+                if (this.s.gold >= price) {
+                    this.s.gold -= price;
+                    this.s.workers++;
+                    this.upd();
+                } else { tg.showAlert("Недостаточно золота для найма!"); }
             },
 
-            update() {
-                document.getElementById('gold').innerText = Math.floor(this.data.gold);
-                document.getElementById('gems').innerText = this.data.gems;
-                document.getElementById('lvl').innerText = this.data.lvl;
-                localStorage.setItem('war_saga_v3', JSON.stringify(this.data));
+            upd() {
+                document.getElementById('g-val').innerText = Math.floor(this.s.gold);
+                document.getElementById('d-val').innerText = this.s.gems;
+                document.getElementById('l-val').innerText = this.s.lvl;
+                document.getElementById('exp-fill').style.width = (this.s.xp / this.s.nx * 100) + "%";
+                
+                // Текст на кнопке найма
+                document.getElementById('b-worker').innerText = (150 + (this.s.workers * 30));
+                
+                // Разблокировка фермы
+                if (this.s.lvl >= 10) {
+                    const f = document.getElementById('card-farm');
+                    f.classList.remove('locked');
+                    f.querySelector('p').innerText = "Награда: +10 🪙 | Опыт: +20";
+                }
+
+                if (this.s.sword) document.getElementById('b-sword').innerText = "КУПЛЕНО";
+
+                localStorage.setItem('WS_FINAL_SAVE', JSON.stringify(this.s));
+            },
+
+            pop(e, txt) {
+                const p = document.createElement('div');
+                p.className = 'pop-txt';
+                p.innerText = txt;
+                const x = e.clientX || (e.touches ? e.touches[0].clientX : 0);
+                const y = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+                p.style.left = x + 'px';
+                p.style.top = y + 'px';
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 800);
             }
         };
 
-        // Запуск
-        try {
-            game.init();
-        } catch(e) {
-            alert("Ошибка запуска: " + e);
-        }
+        window.onload = () => game.init();
     </script>
 </body>
 </html>
