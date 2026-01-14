@@ -1219,3 +1219,49 @@ window.game = {
 
 // Старт
 document.addEventListener('DOMContentLoaded', () => AppLauncher.run());
+
+        /**
+ * БЕЗОПАСНЫЙ ЗАПУСК (Без звукового движка)
+ */
+const AppLauncher = {
+    run() {
+        console.log("Попытка запуска системы...");
+        
+        try {
+            // 1. Инициализация Telegram
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.ready();
+                window.Telegram.WebApp.expand();
+            }
+
+            // 2. Инициализация основных модулей
+            // Проверяем существование каждого модуля перед вызовом
+            if (typeof Game !== 'undefined') Game.loadPlayerData();
+            if (typeof UI !== 'undefined') UI.init();
+            if (typeof Economy !== 'undefined') Economy.init();
+
+            // 3. Убираем экран загрузки (Curtain)
+            this.hideLoader();
+
+        } catch (error) {
+            console.error("Критическая ошибка при запуске:", error);
+            // Если всё сломалось, всё равно пытаемся показать интерфейс через 2 секунды
+            setTimeout(() => this.hideLoader(), 2000);
+        }
+    },
+
+    hideLoader() {
+        const curtain = document.getElementById('app-curtain');
+        if (curtain) {
+            curtain.style.opacity = '0';
+            setTimeout(() => {
+                curtain.style.display = 'none';
+                // Показываем первый экран
+                if (typeof UI !== 'undefined') UI.showScreen('screen-auth');
+            }, 500);
+        }
+    }
+};
+
+// Запуск при полной загрузке страницы
+window.onload = () => AppLauncher.run();
