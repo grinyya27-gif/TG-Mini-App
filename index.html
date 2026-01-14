@@ -9,6 +9,14 @@
 </head>
 <body>
 
+    <div id="loading-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.5s;">
+        <h1 style="color: var(--accent-red); font-size: 3em; margin: 0; letter-spacing: 5px; text-shadow: 0 0 20px var(--accent-red); font-weight: bold;">WAR-GAME</h1>
+        <div style="width: 200px; height: 4px; background: #222; border-radius: 2px; margin-top: 20px; overflow: hidden;">
+            <div id="load-progress" style="width: 0%; height: 100%; background: var(--accent-red); transition: width 0.3s;"></div>
+        </div>
+        <p style="color: var(--gray-text); font-size: 0.7em; margin-top: 10px; text-transform: uppercase; letter-spacing: 2px;">Загрузка мира...</p>
+    </div>
+
     <div class="header">
         <div class="res-row">
             <div>🪙 <span id="gold">50</span></div>
@@ -36,7 +44,7 @@
                 <span>🐎</span>
                 <div><h3>Конюшня</h3><p>Транспорт и кони</p></div>
             </div>
-            <div class="card" onclick="game.openLocation('blacksmith')">
+            <div class="card" onclick="game.setTab('blacksmith-shop')">
                 <span>⚔️</span>
                 <div><h3>Оружейник</h3><p>Мечи и топоры</p></div>
             </div>
@@ -74,40 +82,41 @@
             </div>
 
             <div id="shop-content-rods">
-    <div class="card">
-        <div class="card-icon">🎋</div>
-        <div class="card-info"><h3>Бамбуковая удочка</h3><p>Доход: +5 🪙</p></div>
-        <button id="btn-rod1" class="buy-btn" onclick="game.buy('rod1', 100)">100</button>
-    </div>
-    <div class="card" style="margin-top:10px">
-        <div class="card-icon">🎣</div>
-        <div class="card-info"><h3>Спиннинг мастера</h3><p>Доход: +15 🪙</p></div>
-        <button id="btn-rod2" class="buy-btn" onclick="game.buy('rod2', 450)">450</button>
-    </div>
-    <div class="card" style="margin-top:10px">
-        <div class="card-icon">🔱</div>
-        <div class="card-info"><h3>Легендарный трезубец</h3><p>Доход: +40 🪙</p></div>
-        <button id="btn-rod3" class="buy-btn" onclick="game.buy('rod3', 1200)">1200</button>
-    </div>
-</div>
+                <div class="card">
+                    <div class="card-icon">🎋</div>
+                    <div class="card-info"><h3>Бамбуковая удочка</h3><p>Доход: +5 🪙</p></div>
+                    <button id="btn-rod1" class="buy-btn" onclick="game.buy('rod1', 100)">100</button>
+                </div>
+                <div class="card" style="margin-top:10px">
+                    <div class="card-icon">🎣</div>
+                    <div class="card-info"><h3>Спиннинг мастера</h3><p>Доход: +15 🪙</p></div>
+                    <button id="btn-rod2" class="buy-btn" onclick="game.buy('rod2', 450)">450</button>
+                </div>
+                <div class="card" style="margin-top:10px">
+                    <div class="card-icon">🔱</div>
+                    <div class="card-info"><h3>Легендарный трезубец</h3><p>Доход: +40 🪙</p></div>
+                    <button id="btn-rod3" class="buy-btn" onclick="game.buy('rod3', 1200)">1200</button>
+                </div>
+            </div>
 
-<div id="shop-content-picks" style="display:none;">
-    <div class="card">
-        <div class="card-icon">🔨</div>
-        <div class="card-info"><h3>Железная кирка</h3><p>Доход: +4 | 💎 2%</p></div>
-        <button id="btn-pick1" class="buy-btn" onclick="game.buy('pick1', 150)">150</button>
-    </div>
-    <div class="card" style="margin-top:10px">
-        <div class="card-icon">⚙️</div>
-        <div class="card-info"><h3>Титановый бур</h3><p>Доход: +12 | 💎 4%</p></div>
-        <button id="btn-pick2" class="buy-btn" onclick="game.buy('pick2', 600)">600</button>
-    </div>
-    <div class="card" style="margin-top:10px">
-        <div class="card-icon">🌌</div>
-        <div class="card-info"><h3>Кирка Края</h3><p>Доход: +25 | 💎 8%</p></div>
-        <button id="btn-pick3" class="buy-btn" onclick="game.buy('pick3', 2000)">2000</button>
-    </div>
-</div>
+            <div id="shop-content-picks" style="display:none;">
+                <div class="card">
+                    <div class="card-icon">🔨</div>
+                    <div class="card-info"><h3>Железная кирка</h3><p>Доход: +4 | 💎 2%</p></div>
+                    <button id="btn-pick1" class="buy-btn" onclick="game.buy('pick1', 150)">150</button>
+                </div>
+                <div class="card" style="margin-top:10px">
+                    <div class="card-icon">⚙️</div>
+                    <div class="card-info"><h3>Титановый бур</h3><p>Доход: +12 | 💎 4%</p></div>
+                    <button id="btn-pick2" class="buy-btn" onclick="game.buy('pick2', 600)">600</button>
+                </div>
+                <div class="card" style="margin-top:10px">
+                    <div class="card-icon">🌌</div>
+                    <div class="card-info"><h3>Кирка Края</h3><p>Доход: +25 | 💎 8%</p></div>
+                    <button id="btn-pick3" class="buy-btn" onclick="game.buy('pick3', 2000)">2000</button>
+                </div>
+            </div>
+        </div>
 
         <div id="screen-bank" class="screen">
             <h2 class="title">Королевский Банк</h2>
@@ -115,7 +124,7 @@
                 <div class="card-icon">💎</div>
                 <div class="card-info">
                     <h3>Обменник</h3>
-                    <p>Сдать 1 Изумруд за 500 Золота</p>
+                    <p>1 Изумруд = 500 Золота</p>
                 </div>
                 <button class="buy-btn" onclick="game.exchange()">Обменять</button>
             </div>
@@ -131,6 +140,17 @@
                 </div>
             </div>
         </div>
+
+        <div id="screen-blacksmith-shop" class="screen">
+            <div class="back-btn" onclick="game.setTab('map')" style="color:var(--accent-red); cursor:pointer; margin-bottom: 10px;">← Назад к карте</div>
+            <h2 class="title">Кузница</h2>
+            <div class="card">
+                <div class="card-icon">🗡️</div>
+                <div class="card-info"><h3>Ржавый нож</h3><p>Опыт за работу: +2 XP</p></div>
+                <button id="btn-sword1" class="buy-btn" onclick="game.buy('sword1', 200)">200</button>
+            </div>
+        </div>
+
     </div>
 
     <nav class="nav">
@@ -142,13 +162,5 @@
     </nav>
 
     <script src="script.js"></script>
-</body> <div id="loading-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.5s;">
-    <h1 style="color: var(--accent-red); font-size: 3em; margin: 0; letter-spacing: 5px; text-shadow: 0 0 20px var(--accent-red);">WAR-GAME</h1>
-    <div style="width: 200px; height: 4px; background: #222; border-radius: 2px; margin-top: 20px; overflow: hidden;">
-        <div id="load-progress" style="width: 0%; height: 100%; background: var(--accent-red); transition: width 0.3s;"></div>
-    </div>
-    <p style="color: var(--gray-text); font-size: 0.8em; margin-top: 10px; text-transform: uppercase; letter-spacing: 2px;">Загрузка мира...</p>
-</div>
+</body>
 </html>
-
-
