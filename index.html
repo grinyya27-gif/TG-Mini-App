@@ -2,285 +2,333 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Dark Ages RPG</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Telegram Mini App -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-    <!-- Styles -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1a1a1a">
+    <title>Древняя Судьба — Средневековый RPG Кликер</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
+<body class="dark-ancient-theme">
 
-<body>
+<div class="app-wrapper">
 
-<div id="game-root">
-
-    <!-- ================= HEADER ================= -->
-    <header class="game-header">
-        <div class="header-top">
-            <div class="game-logo">
-                🏰 Dark Ages
-            </div>
-            <div class="game-subtitle">
-                Эпоха стали, камня и крови
+    <!-- ============================================= -->
+    <!--               ШАПКА / ХЕДЕР                   -->
+    <!-- ============================================= -->
+    <header class="main-header rune-border">
+        <div class="header-content">
+            <h1 class="title-gothic">Древняя Судьба</h1>
+            <div class="player-header-block">
+                <div class="player-avatar-frame">
+                    <div class="player-avatar" id="avatar-preview"></div>
+                </div>
+                <div class="player-main-info">
+                    <div class="player-name-level">
+                        <span class="player-name" id="player-name">Безымянный странник</span>
+                        <span class="player-title" id="player-title">Крестьянин</span>
+                    </div>
+                    <div class="level-info">
+                        Уровень: <span id="current-level">1</span>
+                        <div class="xp-bar-container">
+                            <div class="xp-bar" id="xp-progress" style="width:0%"></div>
+                        </div>
+                        <span id="xp-text">0 / 100</span>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div class="header-resources">
-            <div class="resource gold">
-                <span class="icon">💰</span>
-                <span id="gold">0</span>
+            <div class="resource-pill gold">
+                <span class="icon">🪙</span>
+                <span id="gold-count">0</span>
             </div>
-            <div class="resource emerald">
+            <div class="resource-pill emerald">
                 <span class="icon">💎</span>
-                <span id="emeralds">0</span>
+                <span id="emerald-count">0</span>
             </div>
-            <div class="resource energy">
-                <span class="icon">⚡</span>
-                <span id="energy">100</span>/<span id="maxEnergy">100</span>
+            <div class="resource-pill fame">
+                <span class="icon">✦</span>
+                <span id="fame-count">0</span>
             </div>
         </div>
     </header>
 
-    <!-- ================= PLAYER PANEL ================= -->
-    <section class="player-panel">
-        <div class="player-row">
-            <span class="label">Имя:</span>
-            <span class="value" id="playerName">Безымянный</span>
-        </div>
-
-        <div class="player-row">
-            <span class="label">Уровень:</span>
-            <span class="value" id="level">1</span>
-        </div>
-
-        <div class="player-row">
-            <span class="label">Титул:</span>
-            <span class="value" id="title">Бродяга</span>
-        </div>
-
-        <div class="player-row">
-            <span class="label">Опыт:</span>
-            <span class="value">
-                <span id="exp">0</span>/<span id="expNext">100</span>
-            </span>
-        </div>
-
-        <div class="player-progress">
-            <div class="exp-bar">
-                <div class="exp-fill" id="expBar"></div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ================= MAIN NAVIGATION ================= -->
-    <nav class="main-navigation">
-        <button data-tab="city">🏰 Город</button>
-        <button data-tab="jobs">⚒️ Работы</button>
-        <button data-tab="locations">🗺️ Локации</button>
-        <button data-tab="market">🛒 Рынок</button>
-        <button data-tab="inventory">🎒 Инвентарь</button>
-        <button data-tab="bank">🏦 Банк</button>
-        <button data-tab="profile">🧍 Профиль</button>
+    <!-- ============================================= -->
+    <!--               НАВИГАЦИЯ (ТАБЫ)                -->
+    <!-- ============================================= -->
+    <nav class="main-tabs rune-border-bottom">
+        <button class="tab-button active" data-tab="activities">Деятельность</button>
+        <button class="tab-button" data-tab="market">Рынок</button>
+        <button class="tab-button" data-tab="workshop">Мастерская</button>
+        <button class="tab-button" data-tab="inventory">Инвентарь</button>
+        <button class="tab-button" data-tab="character">Персонаж</button>
+        <button class="tab-button" data-tab="bank">Банк</button>
     </nav>
 
-    <!-- ================= CONTENT ================= -->
-    <main class="game-content">
+    <!-- ============================================= -->
+    <!--          ВКЛАДКА: ДЕЯТЕЛЬНОСТЬ / РАБОТЫ       -->
+    <!-- ============================================= -->
+    <main id="tab-activities" class="tab-panel active">
 
-        <!-- ================= CITY ================= -->
-        <section class="tab-content active" id="city">
-            <h2>🏰 Город</h2>
+        <section class="activity-section">
+            <h2 class="section-title">Основные занятия</h2>
 
-            <div class="city-description">
-                Сердце королевства. Здесь решается судьба людей и золота.
+            <div class="activity-card" id="activity-fishing">
+                <div class="activity-icon">🎣</div>
+                <div class="activity-info">
+                    <h3>Рыбалка в порту</h3>
+                    <p class="unlock-info">Доступно с 1 уровня</p>
+                    <p class="reward-range">1–4 золота за действие</p>
+                    <p class="passive-info">Пассив: <span id="fishing-passive">0</span>/с</p>
+                </div>
+                <button class="activity-action-btn" id="btn-fish">Забросить удочку</button>
             </div>
 
-            <div class="city-buildings">
-                <div class="building-card">
-                    <h3>🛒 Рынок</h3>
-                    <p>Торговцы оружием, бронёй и инструментами</p>
+            <div class="activity-card locked" id="activity-farming">
+                <div class="activity-icon">🌾</div>
+                <div class="activity-info">
+                    <h3>Работа на ферме</h3>
+                    <p class="unlock-info">Требуется уровень 3</p>
+                    <p class="reward-range">5–12 золота за действие</p>
+                    <p class="passive-info">Пассив: <span>0</span>/с</p>
                 </div>
+                <button class="activity-action-btn" disabled>Собирать урожай</button>
+            </div>
 
-                <div class="building-card">
-                    <h3>🏦 Банк</h3>
-                    <p>Обмен валют и хранение золота</p>
+            <div class="activity-card locked" id="activity-mining">
+                <div class="activity-icon">⛏️</div>
+                <div class="activity-info">
+                    <h3>Добыча в руднике</h3>
+                    <p class="unlock-info">Требуется уровень 5</p>
+                    <p class="reward-range">12–35 золота + 1–2% шанс на изумруд</p>
+                    <p class="passive-info">Пассив: <span>0</span>/с</p>
                 </div>
+                <button class="activity-action-btn" disabled>Копать жилу</button>
+            </div>
 
-                <div class="building-card">
-                    <h3>🏠 Таверна</h3>
-                    <p>Слухи, задания и наёмники</p>
+            <div class="activity-card locked" id="activity-hunting">
+                <div class="activity-icon">🏹</div>
+                <div class="activity-info">
+                    <h3>Охота в диком лесу</h3>
+                    <p class="unlock-info">Требуется уровень 15 + любое оружие дальнего боя</p>
+                    <p class="reward-range">45–160 золота + шанс на шкуру/мясо</p>
+                    <p class="passive-info">Пассив: <span>0</span>/с</p>
                 </div>
+                <button class="activity-action-btn" disabled>Выследить добычу</button>
+            </div>
+
+            <div class="activity-card locked" id="activity-guarding">
+                <div class="activity-icon">🛡️</div>
+                <div class="activity-info">
+                    <h3>Служба стражником</h3>
+                    <p class="unlock-info">Требуется уровень 20 + любая броня</p>
+                    <p class="reward-range">Стабильно 25–40 золота + репутация</p>
+                </div>
+                <button class="activity-action-btn" disabled>Встать на пост</button>
+            </div>
+
+            <div class="activity-card locked" id="activity-praying">
+                <div class="activity-icon">🙏</div>
+                <div class="activity-info">
+                    <h3>Молитва в храме</h3>
+                    <p class="unlock-info">Требуется уровень 28</p>
+                    <p class="reward-range">Шанс на благословение / изумруд / опыт</p>
+                </div>
+                <button class="activity-action-btn" disabled>Вознести молитву</button>
             </div>
         </section>
-
-        <!-- ================= JOBS ================= -->
-        <section class="tab-content" id="jobs">
-            <h2>⚒️ Работы</h2>
-
-            <!-- PORT -->
-            <div class="job-card">
-                <div class="job-header">
-                    <h3>⚓ Порт — Рыбалка</h3>
-                    <span class="job-level">Уровень: 1+</span>
-                </div>
-
-                <div class="job-body">
-                    <p>Простая работа для выживания.</p>
-                    <ul>
-                        <li>Доход: 1–2 💰</li>
-                        <li>Энергия: −1</li>
-                        <li>Опыт: +5</li>
-                    </ul>
-                </div>
-
-                <button class="job-action" id="jobFishing">
-                    Выйти на ловлю
-                </button>
-            </div>
-
-            <!-- MINE -->
-            <div class="job-card locked" id="jobMineCard">
-                <div class="job-header">
-                    <h3>⛏️ Рудник</h3>
-                    <span class="job-level">Уровень: 5+</span>
-                </div>
-
-                <div class="job-body">
-                    <p>Тяжёлая и опасная работа под землёй.</p>
-                    <ul>
-                        <li>Доход: 4–6 💰</li>
-                        <li>Шанс: 1% 💎</li>
-                        <li>Энергия: −2</li>
-                        <li>Опыт: +8</li>
-                    </ul>
-                </div>
-
-                <button class="job-action" id="jobMine">
-                    Спуститься в рудник
-                </button>
-            </div>
-
-            <!-- HUNT -->
-            <div class="job-card locked" id="jobHuntCard">
-                <div class="job-header">
-                    <h3>🏹 Охота</h3>
-                    <span class="job-level">Уровень: 15+</span>
-                </div>
-
-                <div class="job-body">
-                    <p>Опасная охота в диких землях.</p>
-                    <ul>
-                        <li>Доход: 8–12 💰</li>
-                        <li>Требуется: Лук</li>
-                        <li>Энергия: −3</li>
-                        <li>Опыт: +12</li>
-                    </ul>
-                </div>
-
-                <button class="job-action" id="jobHunt">
-                    Отправиться на охоту
-                </button>
-            </div>
-        </section>
-
-        <!-- ================= LOCATIONS ================= -->
-        <section class="tab-content" id="locations">
-            <h2>🗺️ Локации</h2>
-
-            <div class="location-card">
-                <h3>🌲 Лес</h3>
-                <p>Охота, редкие ресурсы</p>
-            </div>
-
-            <div class="location-card">
-                <h3>⛰️ Горы</h3>
-                <p>Рудники и опасности</p>
-            </div>
-
-            <div class="location-card">
-                <h3>🏞️ Равнины</h3>
-                <p>Путешествия и квесты</p>
-            </div>
-        </section>
-
-        <!-- ================= MARKET ================= -->
-        <section class="tab-content" id="market">
-            <h2>🛒 Рынок</h2>
-
-            <div class="market-category">
-                <h3>⚔️ Оружие</h3>
-
-                <div class="item-card">
-                    <h4>🏹 Лук</h4>
-                    <p>Необходим для охоты</p>
-                    <p>Цена: 1000 💰</p>
-                    <button>Купить</button>
-                </div>
-
-                <div class="item-card locked">
-                    <h4>🏹 Арбалет</h4>
-                    <p>Повышает доход охоты</p>
-                    <p>Цена: 5000 💰</p>
-                    <button>Купить</button>
-                </div>
-            </div>
-
-            <div class="market-category">
-                <h3>🛡️ Броня</h3>
-
-                <div class="item-card">
-                    <h4>Кожаная броня</h4>
-                    <p>Снижает расход энергии</p>
-                    <p>Цена: 800 💰</p>
-                    <button>Купить</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- ================= INVENTORY ================= -->
-        <section class="tab-content" id="inventory">
-            <h2>🎒 Инвентарь</h2>
-
-            <div class="inventory-grid">
-                <!-- items -->
-            </div>
-        </section>
-
-        <!-- ================= BANK ================= -->
-        <section class="tab-content" id="bank">
-            <h2>🏦 Банк</h2>
-
-            <div class="bank-card">
-                <h3>Обмен валют</h3>
-                <button>100 💰 → 1 💎</button>
-                <button>1 💎 → 80 💰</button>
-            </div>
-
-            <div class="bank-card">
-                <h3>Депозит</h3>
-                <p>Пассивный доход</p>
-            </div>
-        </section>
-
-        <!-- ================= PROFILE ================= -->
-        <section class="tab-content" id="profile">
-            <h2>🧍 Профиль</h2>
-
-            <div class="profile-row">
-                <span>Дней в игре:</span>
-                <span id="daysPlayed">1</span>
-            </div>
-
-            <div class="profile-row">
-                <span>Ежедневный бонус:</span>
-                <button id="dailyBonus">Получить</button>
-            </div>
-        </section>
-
     </main>
 
-</div>
+    <!-- ============================================= -->
+    <!--               ВКЛАДКА РЫНОК                   -->
+    <!-- ============================================= -->
+    <main id="tab-market" class="tab-panel">
+
+        <section class="market-section">
+            <h2 class="section-title">Торговые ряды Старого города</h2>
+
+            <div class="market-category">
+                <h3>Оружие дальнего боя</h3>
+                <div class="shop-grid">
+                    <div class="shop-item">
+                        <div class="item-icon">🏹</div>
+                        <h4>Простой охотничий лук</h4>
+                        <p class="price">1 450 золота</p>
+                        <button class="buy-btn" id="buy-simple-bow">Приобрести</button>
+                    </div>
+                    <div class="shop-item">
+                        <div class="item-icon">🏹</div>
+                        <h4>Усиленный боевой лук</h4>
+                        <p class="price">3 800 золота</p>
+                        <button class="buy-btn" id="buy-strong-bow">Приобрести</button>
+                    </div>
+                    <div class="shop-item">
+                        <div class="item-icon">🏹→</div>
+                        <h4>Тяжёлый арбалет</h4>
+                        <p class="price">6 200 золота + Лук</p>
+                        <button class="buy-btn upgrade" id="buy-crossbow">Улучшить</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="market-category">
+                <h3>Ближний бой</h3>
+                <div class="shop-grid">
+                    <div class="shop-item">
+                        <div class="item-icon">⚔️</div>
+                        <h4>Железный меч</h4>
+                        <p class="price">2 900 золота</p>
+                        <button class="buy-btn">Купить</button>
+                    </div>
+                    <div class="shop-item">
+                        <div class="item-icon">🗡️</div>
+                        <h4>Длинный полуторный меч</h4>
+                        <p class="price">7 100 золота</p>
+                        <button class="buy-btn">Купить</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="market-category">
+                <h3>Защита</h3>
+                <div class="shop-grid">
+                    <div class="shop-item">
+                        <div class="item-icon">🛡️</div>
+                        <h4>Кольчуга</h4>
+                        <p class="price">5 400 золота</p>
+                        <button class="buy-btn">Купить</button>
+                    </div>
+                    <div class="shop-item">
+                        <div class="item-icon">🛡️</div>
+                        <h4>Пластинчатый доспех</h4>
+                        <p class="price">14 000 золота</p>
+                        <button class="buy-btn">Купить</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="market-category">
+                <h3>Редкие предметы</h3>
+                <div class="shop-grid">
+                    <div class="shop-item rare">
+                        <div class="item-icon">💎</div>
+                        <h4>Амулет удачного удара</h4>
+                        <p class="price">3 изумруда</p>
+                        <button class="buy-btn rare">Приобрести</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ============================================= -->
+    <!--         ВКЛАДКА МАСТЕРСКАЯ / КУЗНЯ            -->
+    <!-- ============================================= -->
+    <main id="tab-workshop" class="tab-panel">
+        <h2 class="section-title">Кузница и мастерская</h2>
+        <p class="coming-soon">Здесь можно будет улучшать и создавать предметы (в разработке)</p>
+        <!-- Здесь будет много форм, рецептов, слотов для ингредиентов и т.д. -->
+    </main>
+
+    <!-- ============================================= -->
+    <!--               ВКЛАДКА ИНВЕНТАРЬ              -->
+    <!-- ============================================= -->
+    <main id="tab-inventory" class="tab-panel">
+        <h2 class="section-title">Инвентарь странника</h2>
+        <div class="inventory-container" id="inventory-grid">
+            <!-- 48 пустых слотов для начала -->
+            <div class="inv-slot empty"></div><div class="inv-slot empty"></div><div class="inv-slot empty"></div><div class="inv-slot empty"></div>
+            <div class="inv-slot empty"></div><div class="inv-slot empty"></div><div class="inv-slot empty"></div><div class="inv-slot empty"></div>
+            <div class="inv-slot empty"></div><div class="inv-slot empty"></div><div class="inv-slot empty"></div><div class="inv-slot empty"></div>
+            <div class="inv-slot empty"></div><div class="inv-slot empty"></div><div class="inv-slot empty"></div><div class="inv-slot empty"></div>
+            <div class="inv-slot empty"></div><div class="inv-slot empty"></div><div class="inv-slot empty"></div><div class="inv-slot empty"></div>
+            <div class="inv-slot empty"></div><div class="inv-slot empty"></div><div class="inv-slot empty"></div><div class="inv-slot empty"></div>
+            <!-- ... можно добавить ещё 24–48 слотов если нужно больше строк -->
+        </div>
+    </main>
+
+    <!-- ============================================= -->
+    <!--           ВКЛАДКА ПЕРСОНАЖ / ПРОФИЛЬ          -->
+    <!-- ============================================= -->
+    <main id="tab-character" class="tab-panel">
+        <section class="character-stats">
+            <h2 class="section-title">Характеристики героя</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-label">Уровень</span>
+                    <span class="stat-value" id="stat-level">1</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Титул</span>
+                    <span class="stat-value" id="stat-title">Крестьянин</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Сила клика</span>
+                    <span class="stat-value" id="stat-click-power">1</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Пассивный доход</span>
+                    <span class="stat-value" id="stat-passive">0/с</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Репутация</span>
+                    <span class="stat-value" id="stat-fame">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Серия дней</span>
+                    <span class="stat-value" id="daily-streak">0</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="daily-reward-section">
+            <h3>Дар богов за преданность</h3>
+            <button class="big-reward-btn" id="claim-daily-reward">Получить сегодняшнюю награду</button>
+            <p id="daily-message">Награда обновляется каждые 24 часа</p>
+        </section>
+    </main>
+
+    <!-- ============================================= -->
+    <!--               ВКЛАДКА БАНК                    -->
+    <!-- ============================================= -->
+    <main id="tab-bank" class="tab-panel">
+        <h2 class="section-title">Банк Гильдии Золотых Весов</h2>
+
+        <div class="exchange-panel">
+            <h3>Обмен валют</h3>
+            
+            <div class="exchange-block">
+                <label>Золото → Изумруды</label>
+                <div class="exchange-row">
+                    <input type="number" id="gold-to-em-amount" min="0" placeholder="Количество золота">
+                    <button id="btn-gold-to-em">Обменять</button>
+                </div>
+                <p class="rate-info">Курс: 220 : 1</p>
+            </div>
+
+            <div class="exchange-block">
+                <label>Изумруды → Золото</label>
+                <div class="exchange-row">
+                    <input type="number" id="em-to-gold-amount" min="0" placeholder="Количество изумрудов">
+                    <button id="btn-em-to-gold">Обменять</button>
+                </div>
+                <p class="rate-info">Курс: 1 : 195</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Нижняя фиксированная кнопка-кликер -->
+    <footer class="main-action-bar">
+        <button class="giant-click-button" id="main-world-click">
+            <span class="hammer-icon">⚒️</span><br>УДАР!
+        </button>
+    </footer>
+
+</div><!-- .app-wrapper -->
 
 <script src="script.js"></script>
 </body>
