@@ -3,28 +3,523 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>War-Game</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Medieval Strategy TMA</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body style="background: #000; margin: 0; padding: 0; overflow: hidden;">
+<body>
+    <div id="app">
 
-    <div id="app-curtain" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-        <h1 style="color: #c5a059; font-family: serif; letter-spacing: 3px; margin: 0;">WAR-GAME</h1>
-        <p style="color: #666; font-family: sans-serif; margin-top: 10px;">Инициализация нейросети...</p>
-        <p style="color: #444; font-family: sans-serif; font-size: 0.8rem;">ЗАГРУЗКА МИРА...</p>
-    </div>
+        <header class="top-bar">
+            <div class="player-info">
+                <div class="avatar" id="player-avatar"></div>
+                <div class="name-zone">
+                    <span id="player-name">Загрузка...</span>
+                    <span id="player-rank">Рекрут</span>
+                </div>
+            </div>
+            
+            <div class="resources-grid">
+                <div class="res-item" id="res-gold">
+                    <img src="assets/gold.png" alt="Gold">
+                    <span id="gold-val">1000</span>
+                </div>
+                <div class="res-item" id="res-emerald">
+                    <img src="assets/emerald.png" alt="Emerald">
+                    <span id="emerald-val">10</span>
+                </div>
+                <div class="res-item" id="res-wood">
+                    <img src="assets/wood.png" alt="Wood">
+                    <span id="wood-val">50</span>
+                </div>
+                <div class="res-item" id="res-stone">
+                    <img src="assets/stone.png" alt="Stone">
+                    <span id="stone-val">20</span>
+                </div>
+            </div>
 
-    <div id="app" style="display: none; padding: 20px; text-align: center; color: white; font-family: sans-serif;">
-        <h2 style="color: #c5a059; margin-top: 50px;">ЦИТАДЕЛЬ ОТКРЫТА</h2>
-        <p>Связь с сервером установлена успешно.</p>
-        <div style="background: #1a1a1a; border: 1px solid #c5a059; padding: 20px; border-radius: 10px; margin-top: 20px;">
-            <p>Герой готов к приключениям!</p>
+            <div class="exp-bar-container">
+                <div id="exp-fill" style="width: 30%;"></div>
+                <span id="exp-text">Lvl 1</span>
+            </div>
+        </header>
+
+        <main id="main-city" class="screen active">
+            <div class="location-title">
+                <h2>Королевство Элдория</h2>
+            </div>
+
+            <div class="city-grid">
+                
+                <div class="building blacksmith" onclick="ui.showTab('blacksmith')">
+                    <div class="building-icon">⚒️</div>
+                    <div class="building-label">Кузница</div>
+                    <div class="level-badge">ур. 1</div>
+                </div>
+
+                <div class="building town-hall" onclick="ui.showTab('town-hall')">
+                    <div class="building-icon">🏰</div>
+                    <div class="building-label">Ратуша</div>
+                    <div class="level-badge">ур. 1</div>
+                </div>
+
+                <div class="building market" onclick="ui.showTab('market')">
+                    <div class="building-icon">⚖️</div>
+                    <div class="building-label">Рынок</div>
+                    <div class="level-badge">ур. 1</div>
+                </div>
+
+                <div class="building barracks" onclick="ui.showTab('barracks')">
+                    <div class="building-icon">⚔️</div>
+                    <div class="building-label">Казармы</div>
+                    <div class="level-badge">0</div>
+                </div>
+
+                <div class="building farm" onclick="ui.showTab('farm')">
+                    <div class="building-icon">🌾</div>
+                    <div class="building-label">Ферма</div>
+                    <div class="level-badge">ур. 2</div>
+                </div>
+
+                <div class="building mine" onclick="ui.showTab('mine')">
+                    <div class="building-icon">⛏️</div>
+                    <div class="building-label">Рудник</div>
+                    <div class="level-badge">ур. 1</div>
+                </div>
+
+            </div>
+        </main>
+        <div id="modal-overlay" class="hidden">
+            
+            <div id="modal-blacksmith" class="modal-window hidden">
+                <div class="modal-header">
+                    <button class="close-btn" onclick="ui.closeModal()">✕</button>
+                    <h2>⚒️ Кузница Магнуса</h2>
+                </div>
+                
+                <div class="modal-content">
+                    <div class="npc-talk">
+                        <p>"Нужно острое лезвие или крепкий щит, путник? За золото я сделаю из тебя рыцаря!"</p>
+                    </div>
+
+                    <div class="shop-tabs">
+                        <button class="tab-link active" onclick="ui.switchShopTab('weapons')">Оружие</button>
+                        <button class="tab-link" onclick="ui.switchShopTab('armor')">Броня</button>
+                    </div>
+
+                    <div id="shop-weapons" class="shop-list">
+                        <div class="item-card">
+                            <div class="item-icon">🗡️</div>
+                            <div class="item-info">
+                                <span class="item-name">Ржавый меч</span>
+                                <span class="item-stat">+5 к атаке</span>
+                            </div>
+                            <button class="buy-btn" onclick="game.buyItem('rusty_sword', 50)">
+                                50 <img src="assets/gold.png" class="mini-res">
+                            </button>
+                        </div>
+
+                        <div class="item-card">
+                            <div class="item-icon">⚔️</div>
+                            <div class="item-info">
+                                <span class="item-name">Стальной клеймор</span>
+                                <span class="item-stat">+15 к атаке</span>
+                            </div>
+                            <button class="buy-btn locked">
+                                200 <img src="assets/gold.png" class="mini-res">
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="modal-market" class="modal-window hidden">
+                <div class="modal-header">
+                    <button class="close-btn" onclick="ui.closeModal()">✕</button>
+                    <h2>⚖️ Городской Рынок</h2>
+                </div>
+
+                <div class="modal-content">
+                    <div class="market-exchange">
+                        <h3>Обмен валюты</h3>
+                        <div class="exchange-container">
+                            <div class="exchange-box">
+                                <span>Отдать:</span>
+                                <button class="ex-btn" onclick="game.exchange('emerald_to_gold')">
+                                    1 💎 → 500 🪙
+                                </button>
+                            </div>
+                            <div class="exchange-box">
+                                <span>Купить ресурсы:</span>
+                                <button class="ex-btn" onclick="game.buyRes('wood', 100)">
+                                    100 🪵 за 50 🪙
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="special-offers">
+                        <h3>Эксклюзив за изумруды</h3>
+                        <div class="item-card premium">
+                            <div class="item-icon">🛡️</div>
+                            <div class="item-info">
+                                <span class="item-name">Щит Дракона</span>
+                                <span class="item-stat">Неуязвимость 5 мин.</span>
+                            </div>
+                            <button class="buy-btn emerald" onclick="game.buyPremium('dragon_shield', 10)">
+                                10 💎
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div> <nav class="bottom-nav">
+            <div class="nav-item active" onclick="ui.showScreen('main-city')">
+                <span class="nav-icon">🏰</span>
+                <span class="nav-text">Город</span>
+            </div>
+            <div class="nav-item" onclick="ui.showScreen('world-map')">
+                <span class="nav-icon">🗺️</span>
+                <span class="nav-text">Карта</span>
+            </div>
+            <div class="nav-item" onclick="ui.showScreen('inventory')">
+                <span class="nav-icon">🎒</span>
+                <span class="nav-text">Сумка</span>
+            </div>
+            <div class="nav-item" onclick="ui.showScreen('quests')">
+                <span class="nav-icon">📜</span>
+                <span class="nav-text">Квесты</span>
+            </div>
+        </nav>
+        <section id="inventory" class="screen hidden">
+            <div class="screen-header">
+                <h2>🎒 Сумка героя</h2>
+                <div class="weight-info">Вес: <span id="current-weight">0</span>/50</div>
+            </div>
+
+            <div class="character-preview">
+                <div class="equip-slot" id="slot-head" data-label="Голова"></div>
+                <div class="equip-slot" id="slot-body" data-label="Тело"></div>
+                <div class="equip-slot" id="slot-weapon" data-label="Оружие"></div>
+                <div class="equip-slot" id="slot-shield" data-label="Щит"></div>
+            </div>
+
+            <div class="inventory-grid">
+                <div class="inv-slot empty"></div>
+                <div class="inv-slot empty"></div>
+                <div class="inv-slot empty"></div>
+                <div class="inv-slot empty"></div>
+                <div class="inv-slot empty"></div>
+                <div class="inv-slot empty"></div>
+                <div class="inv-slot empty"></div>
+                <div class="inv-slot empty"></div>
+                <div class="inv-slot empty"></div>
+                <div class="inv-slot empty"></div>
+                <div class="inv-slot empty"></div>
+                <div class="inv-slot empty"></div>
+            </div>
+        </section>
+
+        <section id="quests" class="screen hidden">
+            <div class="screen-header">
+                <h2>📜 Доска объявлений</h2>
+            </div>
+
+            <div class="quest-list">
+                <div class="quest-card">
+                    <div class="quest-icon">🐺</div>
+                    <div class="quest-details">
+                        <h4>Охота на волков</h4>
+                        <p>Убейте 5 волков в лесу, чтобы обезопасить караваны.</p>
+                        <div class="quest-reward">
+                            Награда: <span>200 🪙</span> <span>1 💎</span>
+                        </div>
+                    </div>
+                    <button class="quest-btn" onclick="game.startQuest(1)">Взять</button>
+                </div>
+
+                <div class="quest-card locked">
+                    <div class="quest-icon">⛏️</div>
+                    <div class="
+                        <section id="inventory" class="screen hidden">
+            <div class="screen-header">
+                <h2>🎒 Сумка героя</h2>
+                <div class="weight-info">Вес: <span id="current-weight">0</span>/50</div>
+            </div>
+
+            <div class="character-preview">
+                <div class="equip-slot" id="slot-head" data-label="Голова"></div>
+                <div class="equip-slot" id="slot-body" data-label="Тело"></div>
+                <div class="equip-slot" id="slot-weapon" data-label="Оружие"></div>
+                <div class="equip-slot" id="slot-shield" data-label="Щит"></div>
+            </div>
+
+            <div class="inventory-grid">
+                <div class="inv-slot empty"></div>
+                <div class="inv-slot empty"></div>
+                <div class="inv-slot empty"></div>
+                <div class="inv-slot empty"></div>
+                <div class="inv-slot empty"></div>
+                <div class="inv-slot empty"></div>
+                <div class="inv-slot empty"></div>
+                <div class="inv-slot empty"></div>
+                <div class="inv-slot empty"></div>
+                <div class="inv-slot empty"></div>
+                <div class="inv-slot empty"></div>
+                <div class="inv-slot empty"></div>
+            </div>
+        </section>
+
+        <section id="quests" class="screen hidden">
+            <div class="screen-header">
+                <h2>📜 Доска объявлений</h2>
+            </div>
+
+            <div class="quest-list">
+                <div class="quest-card">
+                    <div class="quest-icon">🐺</div>
+                    <div class="quest-details">
+                        <h4>Охота на волков</h4>
+                        <p>Убейте 5 волков в лесу, чтобы обезопасить караваны.</p>
+                        <div class="quest-reward">
+                            Награда: <span>200 🪙</span> <span>1 💎</span>
+                        </div>
+                    </div>
+                    <button class="quest-btn" onclick="game.startQuest(1)">Взять</button>
+                </div>
+
+                <div class="quest-card locked">
+                    <div class="quest-icon">⛏️</div>
+                    <div class="quest-details">
+                        <h4>Поставка руды</h4>
+                        <p>Добудьте 100 единиц железа для кузницы.</p>
+                        <div class="quest-reward">
+                            Награда: <span>500 🪙</span> <span>3 💎</span>
+                        </div>
+                    </div>
+                    <button class="quest-btn disabled">Нужен ур. 5</button>
+                </div>
+
+                <div class="quest-card daily">
+                    <div class="quest-icon">💎</div>
+                    <div class="quest-details">
+                        <h4>Благословение короля</h4>
+                        <p>Зайдите в игру завтра, чтобы получить бонус.</p>
+                        <div class="quest-reward">
+                            Награда: <span>10 💎</span>
+                        </div>
+                    </div>
+                    <div class="timer">23:59:59</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="world-map" class="screen hidden">
+            <div class="map-container">
+                <div class="map-point point-city active" title="Город"></div>
+                <div class="map-point point-forest" title="Лес"></div>
+                <div class="map-point point-mines" title="Шахты"></div>
+                <div class="map-point point-boss" title="Замок Дракона"></div>
+                
+                <canvas id="map-canvas"></canvas>
+            </div>
+            <div class="map-footer">
+                <p>Выберите локацию для путешествия</p>
+            </div>
+        </section>
+        <section id="profile" class="screen hidden">
+            <div class="screen-header">
+                <h2>👤 Профиль Лорда</h2>
+            </div>
+
+            <div class="profile-card">
+                <div class="stats-scroll">
+                    <div class="stat-row">
+                        <span>Побед:</span>
+                        <span id="stat-wins">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Поражений:</span>
+                        <span id="stat-losses">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Построено зданий:</span>
+                        <span id="stat-buildings">5</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Всего добыто золота:</span>
+                        <span id="stat-total-gold">1500</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="social-box">
+                <h3>Пригласить соратников</h3>
+                <p>Пригласи друга и получи <span class="text-emerald">5 💎</span></p>
+                <div class="referral-link-container">
+                    <input type="text" id="ref-link" value="https://t.me/game_bot?start=123" readonly>
+                    <button class="copy-btn" onclick="ui.copyRefLink()">Копировать</button>
+                </div>
+                <button class="share-btn-tg" onclick="tg.shareLink()">
+                    ✈️ Отправить в Telegram
+                </button>
+            </div>
+
+            <div class="friends-list">
+                <h3>Твои союзники</h3>
+                <div class="friend-item">
+                    <div class="friend-avatar">👑</div>
+                    <div class="friend-name">Король Артур</div>
+                    <div class="friend-status online">В сети</div>
+                </div>
+                <div class="friend-item">
+                    <div class="friend-avatar">🛡️</div>
+                    <div class="friend-name">Ланселот</div>
+                    <div class="friend-status">Был недавно</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="settings" class="screen hidden">
+            <div class="screen-header">
+                <h2>⚙️ Настройки</h2>
+            </div>
+
+            <div class="settings-group">
+                <div class="setting-item">
+                    <span>Звуковые эффекты</span>
+                    <label class="switch">
+                        <input type="checkbox" checked onchange="audio.toggleSound()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <span>Музыка</span>
+                    <label class="switch">
+                        <input type="checkbox" onchange="audio.toggleMusic()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <span>Уведомления</span>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="danger-zone">
+                <button class="reset-btn" onclick="game.resetProgress()">Начать игру заново</button>
+            </div>
+        </section>
+        <div id="modal-town-hall" class="modal-window hidden">
+            <div class="modal-header">
+                <button class="close-btn" onclick="ui.closeModal()">✕</button>
+                <h2>🏰 Ратуша Королевства</h2>
+            </div>
+
+            <div class="modal-content">
+                <div class="upgrade-info">
+                    <p>Текущий уровень города: <b><span id="city-lvl">1</span></b></p>
+                    <p>Следующий уровень откроет: <i>Новые земли и Казармы</i></p>
+                </div>
+
+                <div class="upgrade-list">
+                    <div class="upgrade-card">
+                        <div class="up-icon">🏗️</div>
+                        <div class="up-details">
+                            <h4>Улучшить город</h4>
+                            <p>Требуется: 1000 🪵, 500 🪨</p>
+                        </div>
+                        <button class="upgrade-btn" onclick="game.upgradeCity()">Улучшить</button>
+                    </div>
+
+                    <div class="upgrade-card">
+                        <div class="up-icon">📈</div>
+                        <div class="up-details">
+                            <h4>Налоги</h4>
+                            <p>Увеличить пассивный доход золота</p>
+                        </div>
+                        <button class="upgrade-btn" onclick="game.upgradeTaxes()">
+                            10 💎
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
+        <div id="notification-container">
+            </div>
 
-    <script src="script.js"></script>
+        <section id="event-log" class="screen hidden">
+            <div class="screen-header">
+                <h2>📜 Хроники Королевства</h2>
+            </div>
+            <div class="log-container">
+                <div class="log-entry positive">
+                    <span class="log-time">12:45</span>
+                    <p>Вы успешно завершили квест "Охота на волков". Получено 200 🪙</p>
+                </div>
+                <div class="log-entry neutral">
+                    <span class="log-time">12:30</span>
+                    <p>Построено новое здание: <b>Рынок</b>.</p>
+                </div>
+                <div class="log-entry negative">
+                    <span class="log-time">10:15</span>
+                    <p>Разбойники напали на караван! Потеряно 50 🪙</p>
+                </div>
+            </div>
+            <button class="clear-log-btn" onclick="game.clearLog()">Очистить историю</button>
+        </section>
+        <section id="battle-scene" class="screen hidden">
+            <div class="battle-header">
+                <div class="enemy-info">
+                    <h3 id="enemy-name">Лесной Разбойник</h3>
+                    <div class="hp-bar">
+                        <div id="enemy-hp-fill" style="width: 100%;"></div>
+                        <span id="enemy-hp-text">100/100 HP</span>
+                    </div>
+                </div>
+            </div>
 
+            <div class="battle-arena">
+                <div class="fighter player-side">
+                    <div class="character-sprite" id="player-sprite">🛡️</div>
+                </div>
+                <div class="vs-label">VS</div>
+                <div class="fighter enemy-side">
+                    <div class="character-sprite" id="enemy-sprite">⚔️</div>
+                </div>
+            </div>
+
+            <div class="battle-controls">
+                <div class="action-grid">
+                    <button class="action-btn attack" onclick="combat.attack()">
+                        <span class="icon">🗡️</span> Удар
+                    </button>
+                    <button class="action-btn defend" onclick="combat.defend()">
+                        <span class="icon">🛡️</span> Блок
+                    </button>
+                    <button class="action-btn magic" onclick="combat.useSkill()">
+                        <span class="icon">🔥</span> Навык
+                    </button>
+                    <button class="action-btn flee" onclick="combat.run()">
+                        <span class="icon">🏃</span> Побег
+                    </button>
+                </div>
+            </div>
+        </section>
+        <div id="preloader">
+            <div class="spinner"></div>
+            <p>Загрузка королевства...</p>
+        </div>
+
+    </div> <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Расширяем приложение на весь экран
+        tg.ready();
+    </script>
 </body>
 </html>
-
+                    
