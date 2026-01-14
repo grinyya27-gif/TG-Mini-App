@@ -3,193 +3,342 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>War Saga: Medieval RPG</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=MedievalSharp&family=Almendra:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>WAR SAGA: LEGENDS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Almendra:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@700&family=MedievalSharp&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- RESET & BASE --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --gold: #ffcc00;
+            --gold-dark: #b8860b;
+            --blood: #800000;
+            --parchment: #f4e4bc;
+            --iron: #1a1a1a;
+            --stone: #252525;
+            --shadow: rgba(0, 0, 0, 0.9);
+        }
+
+        body {
+            background: #000;
+            color: var(--parchment);
+            font-family: 'Almendra', serif;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- LOADING SCREEN --- */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle, #220000 0%, #000 100%);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.8s ease;
+        }
+
+        .seal-container {
+            width: 120px;
+            height: 120px;
+            border: 2px dashed var(--blood);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: spin 10s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        /* --- ROYAL HEADER --- */
+        .royal-header {
+            background: linear-gradient(180deg, #1a1a1a 0%, #000 100%);
+            border-bottom: 2px solid var(--gold-dark);
+            padding: 15px 10px;
+            box-shadow: 0 5px 20px var(--shadow);
+            z-index: 100;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 12px;
+        }
+
+        .stat-box {
+            background: var(--stone);
+            border: 1px solid var(--gold-dark);
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-family: 'MedievalSharp', cursive;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 90px;
+            box-shadow: inset 0 0 10px #000;
+        }
+
+        .gold-glow { color: var(--gold); text-shadow: 0 0 8px var(--gold-dark); }
+        .crystal-glow { color: #00f2ff; text-shadow: 0 0 8px #0066ff; }
+
+        .experience-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .level-orb {
+            width: 50px;
+            height: 50px;
+            background: #111;
+            border: 2px solid var(--gold);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px var(--gold-dark);
+        }
+
+        .level-orb span { font-size: 1.2em; color: var(--gold); font-weight: bold; }
+        .level-orb label { font-size: 0.5em; text-transform: uppercase; margin-top: -3px; }
+
+        .bar-ancient {
+            flex: 1;
+            height: 14px;
+            background: #000;
+            border: 1px solid var(--gold-dark);
+            position: relative;
+            box-shadow: inset 0 0 5px #000;
+        }
+
+        #exp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4a0000, #ff0000);
+            width: 0%;
+            transition: width 0.5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+            box-shadow: 0 0 10px #ff0000;
+        }
+
+        /* --- MAIN CONTENT & SCREENS --- */
+        .main-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            background: url('https://www.transparenttextures.com/patterns/black-linen.png');
+            padding-bottom: 100px;
+        }
+
+        .screen { display: none; }
+        .screen.active { display: block; animation: fadeIn 0.4s ease; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .medieval-title {
+            font-family: 'Cinzel', serif;
+            text-align: center;
+            color: var(--gold);
+            margin: 20px 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 1px solid var(--gold-dark);
+            padding-bottom: 10px;
+        }
+
+        /* --- ANCIENT CARDS --- */
+        .card-ancient {
+            background: #151515;
+            border: 1px solid #333;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+            transition: 0.1s;
+            border-left: 4px solid var(--gold-dark);
+        }
+
+        .card-ancient:active { transform: scale(0.98); background: #222; }
+
+        .card-body {
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .icon-frame {
+            width: 60px;
+            height: 60px;
+            background: #000;
+            border: 2px solid var(--gold-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            box-shadow: inset 0 0 10px var(--gold-dark);
+        }
+
+        .info-text h3 { font-family: 'Cinzel', serif; font-size: 1em; color: var(--gold); }
+        .info-text p { font-size: 0.85em; color: #aaa; margin-top: 4px; }
+
+        /* --- NAVIGATION --- */
+        .royal-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            height: 75px;
+            background: #000;
+            border-top: 2px solid var(--gold-dark);
+            display: flex;
+            z-index: 1000;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #555;
+            transition: 0.3s;
+        }
+
+        .nav-item.active {
+            color: var(--gold);
+            background: linear-gradient(0deg, rgba(184, 134, 11, 0.15) 0%, transparent 100%);
+        }
+
+        .nav-icon { font-size: 1.6em; }
+        .nav-label { font-size: 0.65em; text-transform: uppercase; font-family: 'MedievalSharp', cursive; margin-top: 4px; }
+
+        /* --- UTILS --- */
+        .locked { filter: grayscale(1) brightness(0.4); pointer-events: none; }
+        .gold-text { color: var(--gold); font-weight: bold; }
+        
+        /* КНОПКИ КУПИТЬ */
+        .buy-btn {
+            background: linear-gradient(180deg, var(--blood) 0%, #400 100%);
+            border: 1px solid var(--gold);
+            color: var(--parchment);
+            padding: 8px 15px;
+            font-family: 'MedievalSharp', cursive;
+            text-transform: uppercase;
+            box-shadow: 0 4px 0 #000;
+        }
+    </style>
 </head>
 <body>
 
-    <div id="loading-screen">
-        <div class="magic-seal">
-            <div class="seal-inner"></div>
-            <h1>WAR SAGA</h1>
+    <div id="loader">
+        <div class="seal-container">
+            <h2 style="font-family: 'Cinzel', serif; color: var(--gold); transform: rotate(-45deg);">WS</h2>
         </div>
-        <div class="load-bar-ancient">
-            <div id="load-progress"></div>
-        </div>
-        <p class="loading-text">Пробуждение древних сил...</p>
-    </div>
-
-    <div id="daily-modal" class="modal-overlay">
-        <div class="parchment-scroll">
-            <div class="scroll-top"></div>
-            <div class="scroll-content">
-                <h2 class="medieval-title">Милость Короля</h2>
-                <p id="daily-day-text">День 1</p>
-                <div class="reward-box">
-                    <span id="daily-reward-icon" class="reward-icon">💎</span>
-                    <h3 id="daily-reward-text">+5 Изумрудов</h3>
-                </div>
-                <button class="ancient-btn" onclick="game.closeDaily()">ПРИНЯТЬ</button>
-            </div>
-            <div class="scroll-bottom"></div>
+        <h1 style="font-family: 'Cinzel', serif; color: var(--gold); letter-spacing: 5px;">WAR SAGA</h1>
+        <div style="width: 200px; height: 3px; background: #222; margin-top: 20px;">
+            <div id="load-progress" style="width: 0%; height: 100%; background: var(--blood); transition: width 0.2s;"></div>
         </div>
     </div>
 
     <header class="royal-header">
-        <div class="currency-board">
-            <div class="res-slot gold-slot">
-                <span class="icon">🪙</span>
-                <span id="gold" class="value">50</span>
-            </div>
-            <div class="res-slot emerald-slot">
-                <span class="icon">💎</span>
-                <span id="emeralds" class="value">0</span>
-            </div>
+        <div class="stats-row">
+            <div class="stat-box gold-glow"><span>🪙</span> <span id="gold">50</span></div>
+            <div class="stat-box crystal-glow"><span>💎</span> <span id="emeralds">0</span></div>
         </div>
-
-        <div class="hero-stats">
-            <div class="lvl-circle">
+        <div class="experience-area">
+            <div class="level-orb">
                 <span id="lvl">1</span>
-                <label>УР.</label>
+                <label>Lvl</label>
             </div>
-            <div class="exp-container-medieval">
-                <div class="exp-label-top">Опыт Королевства: <span id="xp-text">0/100</span></div>
-                <div class="exp-bar-ancient">
-                    <div id="exp-fill"></div>
-                </div>
+            <div class="bar-ancient">
+                <div id="exp-fill"></div>
             </div>
         </div>
     </header>
 
-    <main class="main-scroll">
+    <main class="main-scroll" id="main-content">
         
-        <div id="screen-map" class="screen">
-            <h2 class="medieval-title">Величие Мира</h2>
-            <div class="location-grid">
-                <div class="loc-stone" onclick="game.openLocation('tavern')">
-                    <div class="loc-icon">🍺</div>
-                    <span>Таверна</span>
-                </div>
-                <div class="loc-stone" onclick="game.openLocation('camp')">
-                    <div class="loc-icon">⛺</div>
-                    <span>Лагерь</span>
-                </div>
-                <div class="loc-stone" onclick="game.setTab('blacksmith-shop')">
-                    <div class="loc-icon">⚔️</div>
-                    <span>Кузница</span>
-                </div>
-                <div class="loc-stone locked">
-                    <div class="loc-icon">🏰</div>
-                    <span>Замок</span>
-                </div>
-            </div>
-        </div>
-
-        <div id="screen-work" class="screen active">
+        <section id="screen-work" class="screen active">
             <h2 class="medieval-title">Ратные Труды</h2>
             
-            <div class="ancient-card" onclick="game.doWork('port')">
-                <div class="card-ornament"></div>
+            <div class="card-ancient" onclick="game.doWork('port', event)">
                 <div class="card-body">
-                    <div class="card-icon-frame">🎣</div>
-                    <div class="card-text">
-                        <h3>Рыбацкая Гавань</h3>
-                        <p>Награда: <span class="gold-text">+<span id="p-gold">2</span> 🪙</span></p>
+                    <div class="icon-frame">🎣</div>
+                    <div class="info-text">
+                        <h3>Рыбацкая Бухта</h3>
+                        <p>Награда: <span class="gold-text">+2 🪙</span> | Опыт: +5</p>
                     </div>
                 </div>
             </div>
 
-            <div class="ancient-card" onclick="game.doWork('mine')">
-                <div class="card-ornament"></div>
+            <div class="card-ancient" onclick="game.doWork('mine', event)">
                 <div class="card-body">
-                    <div class="card-icon-frame">⛏️</div>
-                    <div class="card-text">
-                        <h3>Тайные Рудники</h3>
-                        <p>Награда: <span class="gold-text">+<span id="m-gold">1</span> 🪙</span></p>
+                    <div class="icon-frame">⛏️</div>
+                    <div class="info-text">
+                        <h3>Древние Рудники</h3>
+                        <p>Награда: <span class="gold-text">+1 🪙</span> | Шанс 💎: 2%</p>
                     </div>
                 </div>
             </div>
 
-            <div id="work-farm" class="ancient-card locked-work" onclick="game.doWork('farm')">
-                <div class="card-ornament"></div>
+            <div id="card-farm" class="card-ancient locked" onclick="game.doWork('farm', event)">
                 <div class="card-body">
-                    <div class="card-icon-frame">🌾</div>
-                    <div class="card-text">
-                        <h3>Ферма Лорда</h3>
-                        <p id="farm-lock">Уровень 15</p>
+                    <div class="icon-frame">🌾</div>
+                    <div class="info-text">
+                        <h3>Имперская Ферма</h3>
+                        <p>Требуется уровень: 15</p>
                     </div>
                 </div>
             </div>
+        </section>
 
-            <div id="work-hunt" class="ancient-card locked-work" onclick="game.doWork('hunt')">
-                <div class="card-ornament"></div>
+        <section id="screen-shop" class="screen">
+            <h2 class="medieval-title">Королевский Арсенал</h2>
+            <div class="card-ancient">
                 <div class="card-body">
-                    <div class="card-icon-frame">🏹</div>
-                    <div class="card-text">
-                        <h3>Королевская Охота</h3>
-                        <p id="hunt-lock">Уровень 25 + Лук</p>
+                    <div class="icon-frame">🗡️</div>
+                    <div class="info-text">
+                        <h3>Стальной Клинок</h3>
+                        <p>Удваивает получаемый опыт</p>
                     </div>
+                    <button class="buy-btn" id="btn-sword1" onclick="game.buy('sword1', 500)">500</button>
                 </div>
             </div>
-        </div>
-
-        <div id="screen-shop" class="screen">
-            <h2 class="medieval-title">Арсенал</h2>
-            <div class="shop-tabs-ancient">
-                <button id="tab-rods" class="ancient-tab active" onclick="game.filterShop('rods')">Снасти</button>
-                <button id="tab-picks" class="ancient-tab" onclick="game.filterShop('picks')">Инструмент</button>
-                <button id="tab-weapons" class="ancient-tab" onclick="game.filterShop('weapons')">Оружие</button>
-            </div>
-
-            <div id="shop-content-rods" class="shop-list">
-                <div class="ancient-card">
-                    <div class="card-body">
-                        <div class="card-icon-frame">🎣</div>
-                        <div class="card-text">
-                            <h3>Спиннинг Эльфов</h3>
-                            <p>+15 🪙 дохода</p>
-                        </div>
-                        <button id="btn-rod2" class="buy-btn-ancient" onclick="game.buy('rod2', 450)">450</button>
-                    </div>
-                </div>
-            </div>
-            </div>
-
-        <div id="screen-profile" class="screen">
-            <h2 class="medieval-title">Летопись Героя</h2>
-            <div class="profile-frame">
-                <div class="avatar-box">👤</div>
-                <div class="hero-info">
-                    <h3 id="user-name">Рыцарь</h3>
-                    <p class="rank-title">Звание: Новобранец</p>
-                    <p>Трофеи в сумке: <span id="inv">0</span></p>
-                </div>
-            </div>
-        </div>
+        </section>
 
     </main>
 
     <nav class="royal-nav">
-        <div class="nav-btn" onclick="game.setTab('map', this)">
+        <div class="nav-item" onclick="game.setTab('map', this)">
             <span class="nav-icon">🗺️</span>
-            <span class="nav-text">Мир</span>
+            <span class="nav-label">Мир</span>
         </div>
-        <div class="nav-btn active" onclick="game.setTab('work', this)">
+        <div class="nav-item active" onclick="game.setTab('work', this)">
             <span class="nav-icon">⚔️</span>
-            <span class="nav-text">Битва</span>
+            <span class="nav-label">Битва</span>
         </div>
-        <div class="nav-btn" onclick="game.setTab('shop', this)">
+        <div class="nav-item" onclick="game.setTab('shop', this)">
             <span class="nav-icon">💰</span>
-            <span class="nav-text">Лавка</span>
+            <span class="nav-label">Лавка</span>
         </div>
-        <div class="nav-btn" onclick="game.setTab('profile', this)">
+        <div class="nav-item" onclick="game.setTab('profile', this)">
             <span class="nav-icon">👤</span>
-            <span class="nav-text">Герой</span>
+            <span class="nav-label">Герой</span>
         </div>
     </nav>
 
-    <script src="script.js"></script>
 </body>
 </html>
