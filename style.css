@@ -1,635 +1,518 @@
-/* WAR-GAME: Chronicles of Empire 
-    Theme: Modern Dark Medieval (2026 Edition)
-*/
-
-:root {
-    /* Основная палитра */
-    --bg-deep: #0a0a0b;        /* Почти черный антрацит */
-    --bg-panel: rgba(20, 20, 22, 0.95); 
-    --accent-red: #d30000;     /* Кроваво-красный */
-    --accent-glow: rgba(211, 0, 0, 0.4);
-    --text-main: #e0e0e0;      /* Светло-серый пергамент */
-    --text-muted: #888888;
-    --gold: #c5a059;           /* Состаренное золото */
-    
-    /* Стекло и тени */
-    --glass: rgba(255, 255, 255, 0.03);
-    --border: rgba(255, 255, 255, 0.08);
-    --shadow-main: 0 10px 30px rgba(0, 0, 0, 0.8);
-    
-    /* Шрифты */
-    --font-main: 'Inter', system-ui, -apple-system, sans-serif;
-    --font-header: 'Cinzel', serif; /* Для атмосферы средневековья */
-}
-
-/* Глобальный сброс и база */
+/* Сброс стандартных отступов */
 * {
-    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    -webkit-tap-highlight-color: transparent;
-    user-select: none;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent; /* Убираем синюю рамку при нажатии на мобильных */
 }
 
 body {
-    background-color: var(--bg-deep);
-    color: var(--text-main);
-    font-family: var(--font-main);
-    overflow: hidden; /* Запрет прокрутки всего приложения */
+    background-color: #1a120b; /* Очень темный фон */
+    color: #e2d5b5; /* Цвет старого пергамента */
+    font-family: 'Trebuchet MS', sans-serif;
+    overflow: hidden; /* Запрещаем скролл всего документа, скроллить будем внутри экранов */
     height: 100vh;
     width: 100vw;
 }
 
-/* Главный контейнер приложения */
+/* Основной контейнер */
 #app {
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    background-image: 
-        radial-gradient(circle at 50% 10%, rgba(211, 0, 0, 0.05), transparent),
-        url('https://www.transparenttextures.com/patterns/dark-leather.png'); /* Текстура кожи */
+    height: 100%;
+    max-width: 500px; /* Ограничение для широких экранов */
+    margin: 0 auto;
+    position: relative;
 }
 
-/* Стилизация заголовков в духе 2026 года */
-h1, h2, h3 {
-    font-family: var(--font-header);
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    color: var(--gold);
-    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-}
-
-/* 1. ГЛАВНЫЙ HUD (ВЕРХНЯЯ ПАНЕЛЬ) */
-#main-hud {
-    padding: 15px 20px;
-    background: linear-gradient(to bottom, var(--bg-panel), transparent);
+/* ВЕРХНЯЯ ПАНЕЛЬ (Ресурсы) */
+.top-bar {
+    background: linear-gradient(180deg, #3d2b1f 0%, #2c1e14 100%);
+    border-bottom: 3px solid #d4af37;
+    padding: 10px;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid var(--border);
-    backdrop-filter: blur(10px);
-    z-index: 100;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 10;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
 
-.hud-resource {
+.player-info {
     display: flex;
     align-items: center;
-    gap: 8px;
-    background: var(--glass);
-    padding: 5px 12px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
+    gap: 12px;
 }
 
-.hud-resource span {
-    font-weight: 700;
+.avatar {
+    width: 45px;
+    height: 45px;
+    background: #5d4037;
+    border: 2px solid #d4af37;
+    border-radius: 50%;
+    box-shadow: inset 0 0 5px #000;
+}
+
+.name-zone {
+    display: flex;
+    flex-direction: column;
+}
+
+#player-name {
+    font-weight: bold;
+    font-size: 1.1em;
     color: #fff;
 }
 
-.icon-gold { color: #ffd700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
-.icon-gem { color: #00ffcc; text-shadow: 0 0 10px rgba(0, 255, 204, 0.3); }
+#player-rank {
+    font-size: 0.8em;
+    color: #d4af37;
+    text-transform: uppercase;
+}
 
-/* ПОЛОСКА HP (Кровавый градиент) */
-.hp-container {
-    width: 120px;
-    height: 8px;
-    background: #222;
-    border-radius: 4px;
+/* Сетка ресурсов */
+.resources-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+}
+
+.res-item {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-size: 0.85em;
+    border: 1px solid #4e342e;
+}
+
+.res-item img {
+    width: 16px;
+    height: 16px;
+}
+
+/* Полоска опыта */
+.exp-bar-container {
+    width: 100%;
+    height: 12px;
+    background: #000;
+    border-radius: 6px;
+    border: 1px solid #5d4037;
+    position: relative;
     overflow: hidden;
-    border: 1px solid rgba(255,0,0,0.2);
 }
 
-#hp-fill {
+#exp-fill {
     height: 100%;
-    background: linear-gradient(90deg, #800000, var(--accent-red));
-    box-shadow: 0 0 15px var(--accent-glow);
-    transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    background: linear-gradient(90deg, #4caf50, #8bc34a);
+    transition: width 0.3s ease;
 }
 
-/* 2. ГЛАВНОЕ МЕНЮ (НАВИГАЦИЯ) */
-#bottom-nav {
-    background: var(--bg-panel);
+#exp-text {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    font-size: 9px;
+    line-height: 10px;
+    color: white;
+    font-weight: bold;
+    top: 0;
+}
+/* Экраны игры */
+.screen {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    display: none; /* По умолчанию скрыты */
+}
+
+.screen.active {
+    display: block; /* Только активный экран виден */
+}
+
+/* Заголовок локации */
+.location-title h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.4em;
+    text-shadow: 2px 2px 4px #000;
+    color: #f4e4bc;
+}
+
+/* Сетка зданий */
+.city-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.building {
+    background: #4e342e;
+    border: 2px solid #8d6e63;
+    border-radius: 12px;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    transition: transform 0.1s;
+}
+
+.building:active {
+    transform: scale(0.95);
+    background: #5d4037;
+}
+
+.building-icon {
+    font-size: 2.5em;
+    margin-bottom: 5px;
+}
+
+.building-label {
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.level-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #d4af37;
+    color: #000;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.7em;
+    font-weight: bold;
+    border: 1px solid #fff;
+}
+/* НИЖНЯЯ ПАНЕЛЬ (Nav Bar) */
+.bottom-nav {
+    background: #2c1e14;
+    border-top: 2px solid #d4af37;
     display: flex;
     justify-content: space-around;
-    padding: 10px 5px 25px; /* Отступ под "чёлку" iPhone */
-    border-top: 1px solid var(--border);
-    backdrop-filter: blur(20px);
+    padding: 10px 5px;
+    padding-bottom: env(safe-area-inset-bottom); /* Учет выреза на iPhone */
+    position: sticky;
+    bottom: 0;
+    z-index: 100;
 }
 
 .nav-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 5px;
-    opacity: 0.6;
-    transition: 0.3s;
-    flex: 1;
+    gap: 4px;
+    color: #8d6e63;
+    transition: color 0.3s;
+    cursor: pointer;
 }
 
 .nav-item.active {
-    opacity: 1;
-    color: var(--accent-red);
+    color: #d4af37; /* Золотой цвет для активного экрана */
 }
 
 .nav-icon {
-    font-size: 22px;
-    transition: transform 0.2s;
+    font-size: 1.5em;
 }
 
-.nav-item:active .nav-icon {
-    transform: scale(0.8);
-}
-
-/* 3. КНОПКИ (Кровавый неон) */
-.btn-main-red {
-    background: var(--accent-red);
-    color: white;
-    border: none;
-    padding: 15px 30px;
-    border-radius: 8px;
-    font-family: var(--font-header);
+.nav-text {
+    font-size: 0.7em;
     font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(211, 0, 0, 0.3);
-    transition: 0.3s;
     text-transform: uppercase;
 }
 
-.btn-main-red:hover {
-    box-shadow: 0 0 25px var(--accent-glow);
-    transform: translateY(-2px);
-}
-
-.btn-main-red:active {
-    transform: scale(0.95);
-}
-
-/* Утилитарные классы */
-.hidden { display: none !important; }
-/* 4. ГЛАВНЫЙ ХАБ (Центральная площадь) */
-#game-world {
-    flex: 1;
-    overflow-y: auto;
-    padding: 20px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    perspective: 1000px; /* Для 3D-эффекта карточек */
-}
-
-.hub-node {
-    background: linear-gradient(145deg, #1a1a1c, #121214);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px 10px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: var(--shadow-main);
-}
-
-/* Эффект при наведении/нажатии */
-.hub-node:active {
-    transform: scale(0.95) translateZ(-10px);
-    border-color: var(--accent-red);
-    box-shadow: 0 0 20px var(--accent-glow);
-}
-
-.node-icon {
-    font-size: 32px;
-    margin-bottom: 10px;
-    display: block;
-    filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));
-}
-
-.hub-node h3 {
-    font-size: 0.8rem;
-    margin-bottom: 4px;
-    color: var(--text-main);
-}
-
-.node-desc {
-    font-size: 0.65rem;
-    color: var(--text-muted);
-}
-
-/* 5. ИНВЕНТАРЬ (Сетка предметов) */
-#inventory-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    padding: 15px;
-    background: rgba(0, 0, 0, 0.4);
-    border-radius: 12px;
-}
-
-.inv-cell {
-    aspect-ratio: 1 / 1;
-    background: var(--glass);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    position: relative;
-    transition: 0.2s;
-}
-
-.inv-cell.occupied {
-    background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
-    border-color: rgba(255,255,255,0.2);
-    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
-}
-
-/* Редкость предметов */
-.inv-cell[data-rarity="rare"] { border-color: #0070dd; box-shadow: inset 0 0 15px rgba(0, 112, 221, 0.2); }
-.inv-cell[data-rarity="epic"] { border-color: #a335ee; box-shadow: inset 0 0 15px rgba(163, 53, 238, 0.2); }
-.inv-cell[data-rarity="legendary"] { border-color: var(--gold); box-shadow: 0 0 10px var(--gold); }
-
-/* 6. МОДАЛЬНЫЕ ОКНА (Location Overlays) */
-.location-overlay {
+/* МОДАЛЬНЫЕ ОКНА (Overlay) */
+#modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: var(--bg-deep);
+    background: rgba(0, 0, 0, 0.85);
     z-index: 200;
-    display: flex;
-    flex-direction: column;
-    animation: slideIn 0.3s ease-out;
-}
-
-@keyframes slideIn {
-    from { transform: translateY(100%); }
-    to { transform: translateY(0); }
-}
-
-.overlay-header {
-    padding: 20px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    background: rgba(255,255,255,0.03);
-    border-bottom: 1px solid var(--border);
-}
-
-.btn-back {
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--text-main);
-    padding: 8px 15px;
-    border-radius: 6px;
-    font-size: 0.9rem;
-}
-
-/* 7. ЭКРАН ПЕРСОНАЖА (Статистика) */
-.char-info-block {
-    padding: 20px;
-    display: flex;
-    gap: 20px;
-    align-items: center;
-}
-
-.char-avatar-circle {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    border: 2px solid var(--gold);
-    background-size: cover;
-    box-shadow: 0 0 20px rgba(197, 160, 89, 0.2);
-}
-
-.stat-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 0;
-    border-bottom: 1px border var(--border);
-    font-size: 0.9rem;
-}
-
-.stat-val {
-    color: var(--gold);
-    font-weight: bold;
-}
-/* 8. БОЕВОЙ ИНТЕРФЕЙС (Combat UI) */
-#combat-overlay {
-    background: radial-gradient(circle at center, #1a0505 0%, var(--bg-deep) 100%);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.combat-scene {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-around;
-    padding: 40px 0;
-}
-
-/* Аватары бойцов с неоновым контуром */
-.fighter-preview {
-    position: relative;
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    background: var(--bg-panel);
-    border: 2px solid rgba(255, 255, 255, 0.1);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 50px;
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
 }
 
-.fighter-preview.player { border-color: #444; }
-.fighter-preview.enemy { 
-    border-color: var(--accent-red); 
-    box-shadow: 0 0 20px var(--accent-glow);
-}
-
-/* Полоски HP в бою */
-.combat-hp-bar {
-    width: 200px;
-    height: 10px;
-    background: #111;
-    border-radius: 5px;
-    margin-top: 15px;
-    border: 1px solid var(--border);
-    overflow: hidden;
-}
-
-.hp-bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #d30000, #ff4d4d);
-    transition: width 0.3s ease-out;
-}
-
-/* Панель управления боем */
-.combat-actions {
-    padding: 30px 20px;
-    background: var(--bg-panel);
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    border-top: 1px solid var(--border);
-}
-
-.btn-attack {
-    background: linear-gradient(180deg, #333, #111);
-    border: 1px solid var(--accent-red);
-    color: #fff;
-    padding: 15px;
-    border-radius: 12px;
-    font-family: var(--font-header);
-    letter-spacing: 1px;
-    text-shadow: 0 0 5px var(--accent-red);
-    transition: 0.2s;
-}
-
-.btn-attack:active {
-    transform: scale(0.9);
-    background: var(--accent-red);
-}
-
-/* 9. МАГАЗИН И КУЗНЯ (Shop Cards) */
-.shop-grid {
+.modal-window {
+    background: #3e2723;
+    width: 90%;
+    max-height: 80vh;
+    border: 3px solid #d4af37;
+    border-radius: 15px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    padding: 20px;
+    overflow: hidden;
+    animation: modalAppear 0.3s ease-out;
 }
 
-.shop-item-card {
-    background: var(--glass);
-    border: 1px solid var(--border);
-    border-radius: 15px;
+@keyframes modalAppear {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.modal-header {
+    background: #2c1e14;
     padding: 15px;
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    transition: 0.3s;
+    align-items: center;
+    border-bottom: 2px solid #5d4037;
 }
 
-.shop-item-card:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: var(--gold);
+.close-btn {
+    background: #c62828;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-weight: bold;
 }
 
-.item-details h4 {
-    color: var(--text-main);
+.modal-content {
+    padding: 15px;
+    overflow-y: auto;
+}
+
+/* ВСПОМОГАТЕЛЬНЫЕ КЛАССЫ */
+.hidden { display: none !important; }
+
+.text-emerald { color: #2ecc71; font-weight: bold; }
+/* КАРТОЧКА ТОВАРА/КВЕСТА */
+.item-card, .quest-card {
+    background: #4e342e;
+    border: 1px solid #8d6e63;
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.item-icon, .quest-icon {
+    font-size: 2em;
+    background: rgba(0,0,0,0.2);
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+}
+
+.item-info, .quest-details {
+    flex: 1;
+}
+
+.item-name, h4 {
+    display: block;
+    font-weight: bold;
+    color: #fff;
     margin-bottom: 4px;
 }
 
-.item-details p {
-    font-size: 0.75rem;
-    color: var(--text-muted);
+.item-stat {
+    font-size: 0.8em;
+    color: #4caf50;
 }
 
-.price-tag {
-    background: rgba(0, 0, 0, 0.3);
+/* КНОПКИ ПОКУПКИ */
+.buy-btn, .quest-btn, .upgrade-btn {
+    background: linear-gradient(180deg, #d4af37 0%, #b8860b 100%);
+    border: none;
+    border-radius: 5px;
     padding: 8px 12px;
-    border-radius: 8px;
-    color: var(--gold);
+    color: #000;
     font-weight: bold;
-    font-size: 0.9rem;
-    border: 1px solid rgba(197, 160, 89, 0.3);
-}
-
-/* 10. СПЕЦЭФФЕКТЫ (VFX) */
-
-/* Тряска экрана при ударе */
-.shake-anim {
-    animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
-}
-
-@keyframes shake {
-    10%, 90% { transform: translate3d(-1px, 0, 0); }
-    20%, 80% { transform: translate3d(2px, 0, 0); }
-    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-    40%, 60% { transform: translate3d(4px, 0, 0); }
-}
-
-/* Всплывающий урон */
-.damage-popup {
-    position: absolute;
-    color: #ff4d4d;
-    font-weight: 900;
-    font-size: 2rem;
-    pointer-events: none;
-    animation: floatUp 1s ease-out forwards;
-    text-shadow: 2px 2px 0 #000;
-    z-index: 1000;
-}
-
-.damage-popup.crit {
-    color: #ffcc00;
-    font-size: 3rem;
-    text-shadow: 0 0 10px #ff0000;
-}
-
-@keyframes floatUp {
-    0% { transform: translateY(0) scale(1); opacity: 1; }
-    100% { transform: translateY(-100px) scale(1.5); opacity: 0; }
-}
-/* 11. ЭКРАН СМЕРТИ (Death Screen - Dark Elegance) */
-#screen-death {
-    background: linear-gradient(to bottom, #000 0%, #1a0000 100%);
+    cursor: pointer;
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.buy-btn.locked {
+    background: #757575;
+    color: #bdbdbd;
+}
+
+.mini-res {
+    width: 14px;
+    height: 14px;
+}
+/* СЕТКА ИНВЕНТАРЯ */
+.inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 слота в ряд */
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.inv-slot {
+    aspect-ratio: 1 / 1; /* Квадратные слоты */
+    background: #3e2723;
+    border: 2px solid #5d4037;
+    border-radius: 8px;
+    display: flex;
     align-items: center;
     justify-content: center;
-    text-align: center;
-    z-index: 1000;
+    font-size: 1.8em;
+    position: relative;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
 }
 
-.death-title {
-    font-size: 3rem;
-    color: var(--accent-red);
-    text-shadow: 0 0 20px rgba(211, 0, 0, 0.6), 0 0 40px #000;
-    margin-bottom: 20px;
-    animation: pulseRed 2s infinite;
+.inv-slot.empty::after {
+    content: "";
+    width: 40%;
+    height: 40%;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
 }
 
-@keyframes pulseRed {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.7; transform: scale(0.98); }
-}
-
-.death-icon {
-    font-size: 80px;
-    filter: drop-shadow(0 0 15px var(--accent-red));
-    margin-bottom: 30px;
-}
-
-/* 12. ДИАЛОГИ С NPC (Storytelling UI) */
-#dialog-overlay {
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(8px);
-    display: flex;
-    align-items: flex-end;
+/* ЭКИПИРОВКА (Персонаж) */
+.character-preview {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    background: url('assets/hero-bg.png') no-repeat center; /* Если будет фон */
+    background-size: contain;
     padding: 20px;
-}
-
-.dialog-window {
-    width: 100%;
-    background: var(--bg-panel);
-    border: 1px solid var(--border);
-    border-top: 2px solid var(--gold);
-    border-radius: 15px 15px 0 0;
-    padding: 25px;
-    box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
-}
-
-.dialog-npc-name {
-    color: var(--gold);
-    font-family: var(--font-header);
-    font-size: 1.2rem;
-    margin-bottom: 10px;
-    display: block;
-}
-
-.dialog-text {
-    font-size: 1rem;
-    line-height: 1.5;
-    color: var(--text-main);
+    border: 1px solid #d4af37;
+    border-radius: 15px;
     margin-bottom: 20px;
 }
 
-.dialog-options {
+.equip-slot {
+    width: 70px;
+    height: 70px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 2px solid #d4af37;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.equip-slot::before {
+    content: attr(data-label);
+    position: absolute;
+    bottom: -18px;
+    font-size: 0.6em;
+    color: #8d6e63;
+    text-transform: uppercase;
+}
+/* БОЕВОЙ ЭКРАН */
+#battle-scene {
+    background: linear-gradient(to bottom, #1a120b, #4e342e);
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
+}
+
+.hp-bar {
+    width: 100%;
+    height: 20px;
+    background: #000;
+    border: 2px solid #333;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    margin-top: 5px;
+}
+
+#enemy-hp-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff5252, #b71c1c);
+    width: 100%;
+    transition: width 0.5s ease-out;
+}
+
+#enemy-hp-text {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    font-size: 10px;
+    color: #fff;
+    font-weight: bold;
+    line-height: 16px;
+}
+
+.battle-arena {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    position: relative;
+}
+
+.character-sprite {
+    font-size: 4em;
+    filter: drop-shadow(0 0 10px rgba(0,0,0,0.8));
+    animation: idleFloat 3s infinite ease-in-out;
+}
+
+@keyframes idleFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* КНОПКИ ДЕЙСТВИЙ В БОЮ */
+.battle-controls {
+    padding: 20px;
+    background: rgba(0,0,0,0.5);
+    border-top: 3px solid #d4af37;
+}
+
+.action-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 10px;
 }
 
-.opt-btn {
-    background: var(--glass);
-    border: 1px solid var(--border);
-    color: var(--text-main);
-    padding: 12px;
-    border-radius: 8px;
-    text-align: left;
-    transition: 0.2s;
-}
-
-.opt-btn:active {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: var(--gold);
-    transform: translateX(5px);
-}
-
-/* 13. СИСТЕМНЫЕ УВЕДОМЛЕНИЯ (Toast Notifications) */
-#toast-container {
-    position: fixed;
-    top: 80px;
-    right: 20px;
-    left: 20px;
-    pointer-events: none;
-    z-index: 2000;
-}
-
-.game-notification {
-    background: rgba(20, 20, 22, 0.9);
-    border-left: 4px solid var(--accent-red);
-    border-radius: 4px;
+.action-btn {
     padding: 15px;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    box-shadow: var(--shadow-main);
-    transform: translateX(120%);
-    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.game-notification.visible {
-    transform: translateX(0);
-}
-
-.notify-icon {
-    font-size: 1.2rem;
-}
-
-.notify-body {
-    font-size: 0.9rem;
-    color: #fff;
-}
-
-/* 14. СКЕЛЕТНАЯ ЗАГРУЗКА (Skeleton Loader) */
-.skel-card {
-    background: var(--glass);
-    height: 100px;
+    border: 2px solid #8d6e63;
     border-radius: 12px;
-    position: relative;
-    overflow: hidden;
-}
-
-.skel-card::after {
-    content: "";
-    position: absolute;
-    top: 0; right: 0; bottom: 0; left: 0;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
-    animation: slideLoader 1.5s infinite;
-}
-
-@keyframes slideLoader {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
-}
-#app-curtain {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: #0a0a0b; /* Твой темно-серый */
+    background: #3e2723;
+    color: #fff;
+    font-weight: bold;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    z-index: 10000;
-    transition: opacity 0.5s ease; /* Важно для функции hideLoader */
+    gap: 10px;
 }
 
+.action-btn.attack { border-color: #ff5252; }
+.action-btn.magic { border-color: #448aff; }
+#notification-container {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    width: 80%;
+}
+
+.toast {
+    background: rgba(44, 30, 20, 0.95);
+    border: 1px solid #d4af37;
+    color: #f4e4bc;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    animation: slideDown 0.4s ease-out;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
