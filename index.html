@@ -246,3 +246,118 @@
     </script>
 </body>
 </html>
+<section id="scr-forge" class="screen">
+    <h2 style="text-align: center; color: var(--gold); margin-bottom: 15px; font-family: 'Cinzel';">КУЗНИЦА</h2>
+    <div class="card" style="flex-direction: column; align-items: stretch;">
+        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+            <div class="icon-box" id="forge-icon">🗡️</div>
+            <div class="info">
+                <h3>Улучшение меча</h3>
+                <p id="sword-lvl-text">Текущий уровень: 0</p>
+                <p id="sword-boost-text">Бонус: +0 🪙 к клику</p>
+            </div>
+        </div>
+        <button class="btn" onclick="game.upgradeSword()">ЗАТОЧИТЬ ЗА <span id="forge-cost">500</span> 🪙</button>
+    </div>
+</section>
+
+<section id="scr-market" class="screen">
+    <h2 style="text-align: center; color: var(--gold); margin-bottom: 15px; font-family: 'Cinzel';">ЧЕРНЫЙ РЫНОК</h2>
+    <div class="card" style="background: rgba(40, 20, 0, 0.4);">
+        <div class="info" style="width: 100%;">
+            <p style="text-align: center; font-style: italic; color: var(--gold-dark); margin-bottom: 10px;">Цены меняются каждые 30 секунд!</p>
+            <div style="display: flex; justify-content: space-around; align-items: center;">
+                <div>
+                    <p>Курс продажи 💎</p>
+                    <h3 id="gem-sell-price" style="color: var(--gold);">400 🪙</h3>
+                </div>
+                <div style="height: 40px; width: 1px; background: var(--gold-dark);"></div>
+                <div>
+                    <p>Курс покупки 💎</p>
+                    <h3 id="gem-buy-price" style="color: var(--emerald);">600 🪙</h3>
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button class="btn" style="flex: 1;" onclick="game.marketDeal('buy')">КУПИТЬ</button>
+                <button class="btn" style="flex: 1; background: #333;" onclick="game.marketDeal('sell')">ПРОДАТЬ</button>
+            </div>
+        </div>
+    </div>
+</
+    // В объект s (state) добавь:
+s: { 
+    // ... твои прошлые переменные ...
+    swordLvl: 0,
+    marketPrices: { buy: 600, sell: 400 },
+    lastPriceUpdate: 0
+},
+
+// В объект game добавь эти методы:
+
+// ЛОГИКА КУЗНИЦЫ
+upgradeSword() {
+    const cost = (this.s.swordLvl + 1) * 500;
+    if (this.s.gold >= cost) {
+        this.s.gold -= cost;
+        this.s.swordLvl++;
+        this.alert(`Меч закален до уровня ${this.s.swordLvl}!`);
+        this.upd();
+        tg.HapticFeedback.notificationOccurred('success');
+    } else {
+        this.alert("Недостаточно золота для ковки!");
+    }
+},
+
+// ЛОГИКА РЫНКА
+updateMarket() {
+    const now = Date.now();
+    if (now - this.s.lastPriceUpdate > 30000) { // 30 секунд
+        const base = 500;
+        const volatility = Math.floor(Math.random() * 200) - 100; // -100 до +100
+        this.s.marketPrices.buy = base + volatility + 50;
+        this.s.marketPrices.sell = base + volatility - 50;
+        this.s.lastPriceUpdate = now;
+        console.log("Цены на рынке обновились");
+    }
+},
+
+marketDeal(type) {
+    if (type === 'buy') {
+        if (this.s.gold >= this.s.marketPrices.buy) {
+            this.s.gold -= this.s.marketPrices.buy;
+            this.s.gems++;
+            this.alert("Изумруд куплен!");
+        } else { this.alert("Мало золота!"); }
+    } else {
+        if (this.s.gems >= 1) {
+            this.s.gems--;
+            this.s.gold += this.s.marketPrices.sell;
+            this.alert("Изумруд продан!");
+        } else { this.alert("У вас нет изумрудов!"); }
+    }
+    this.upd();
+},
+
+// ОБНОВИ МЕТОД upd() ДЛЯ ОТОБРАЖЕНИЯ НОВЫХ ДАННЫХ
+upd() {
+    // ... старый код обновления ...
+    
+    // Кузница
+    const swordBonus = this.s.swordLvl * 5;
+    document.getElementById('sword-lvl-text').innerText = `Текущий уровень: ${this.s.swordLvl}`;
+    document.getElementById('sword-boost-text').innerText = `Бонус: +${swordBonus} 🪙 к клику`;
+    document.getElementById('forge-cost').innerText = (this.s.swordLvl + 1) * 500;
+    
+    // Рынок
+    document.getElementById('gem-buy-price').innerText = `${this.s.marketPrices.buy} 🪙`;
+    document.getElementById('gem-sell-price').innerText = `${this.s.marketPrices.sell} 🪙`;
+    
+    // Обновление цен (вызываем внутри upd, так как он часто дергается)
+    this.updateMarket();
+    
+    this.save();
+}
+
+// В методе work() измени расчет золота, чтобы учитывался уровень меча:
+// let g = (type === 'port' ? 2 : 1) + (this.s.swordLvl * 5);
+
