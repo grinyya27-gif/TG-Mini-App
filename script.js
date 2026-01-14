@@ -1,32 +1,27 @@
-// Ждем, когда страница полностью загрузится
-window.addEventListener('load', () => {
-    console.log("Страница готова. Запускаем таймер выхода...");
+// Функция, которая физически убирает черный экран
+function forceStartGame() {
+    console.log("Принудительный запуск игры...");
+    const curtain = document.getElementById('app-curtain');
+    const app = document.getElementById('app');
 
-    // Даем игроку посмотреть на заставку 3 секунды
-    setTimeout(() => {
-        // Ищем элементы по их ID, которые мы прописали в index.html
-        const curtain = document.getElementById('app-curtain');
-        const app = document.getElementById('app');
-
-        if (curtain) {
-            // Плавно растворяем заставку
-            curtain.style.opacity = '0';
-            
-            // Через 1 секунду (время анимации) полностью удаляем заставку и показываем игру
-            setTimeout(() => {
-                curtain.style.display = 'none';
-                if (app) {
-                    app.style.display = 'block';
-                }
-                console.log("Загрузка завершена успешно!");
-            }, 1000);
-        }
-    }, 3000);
-});
-
-// Инициализация Telegram WebApp
-if (window.Telegram && window.Telegram.WebApp) {
-    const tg = window.Telegram.WebApp;
-    tg.ready();
-    tg.expand(); // Разворачиваем приложение на весь экран
+    if (curtain) {
+        curtain.style.opacity = '0';
+        setTimeout(() => {
+            curtain.style.display = 'none';
+            if (app) app.style.display = 'block';
+        }, 1000);
+    }
 }
+
+// ПРЕДОХРАНИТЕЛЬ: если через 4 секунды заставка всё ещё висит — убираем её силой
+setTimeout(forceStartGame, 4000);
+
+// Обычная логика загрузки
+window.addEventListener('load', () => {
+    if (window.Telegram && window.Telegram.WebApp) {
+        window.Telegram.WebApp.ready();
+        window.Telegram.WebApp.expand();
+    }
+    // Пробуем мягко закрыть заставку через 2 секунды
+    setTimeout(forceStartGame, 2000);
+});
