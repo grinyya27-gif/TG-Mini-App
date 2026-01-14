@@ -10,240 +10,194 @@ const game = {
     nextXp: 100,
     inventory: [],
 
-    // === СИСТЕМА НАВИГАЦИИ ===
+    // === ИНИЦИАЛИЗАЦИЯ ===
+    init() {
+        this.load(); // Загрузка сохранения
+        this.updateUI();
+        this.startLoading();
+        
+        if(tg.initDataUnsafe?.user) {
+            document.getElementById('user-name').innerText = tg.initDataUnsafe.user.first_name;
+        }
+
+        // Проверка бонуса через 3 секунды после старта
+        setTimeout(() => this.checkDaily(), 3000);
+    },
+
+    // === НАВИГАЦИЯ ===
     setTab(id, el) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         
-        const targetScreen = document.getElementById('screen-' + id);
-        if (targetScreen) targetScreen.classList.add('active');
+        const target = document.getElementById('screen-' + id);
+        if (target) target.classList.add('active');
         if (el) el.classList.add('active');
         
         tg.HapticFeedback.impactOccurred('light');
     },
 
     filterShop(category) {
-        const types = ['rods', 'picks', 'weapons'];
-        types.forEach(type => {
-            const content = document.getElementById('shop-content-' + type);
-            const tab = document.getElementById('tab-' + type);
-            if (content) content.style.display = 'none';
-            if (tab) tab.classList.remove('active');
+        const categories = ['rods', 'picks', 'weapons'];
+        categories.forEach(cat => {
+            document.getElementById('shop-content-' + cat).style.display = 'none';
+            document.getElementById('tab-' + cat).classList.remove('active');
         });
-
-        const activeContent = document.getElementById('shop-content-' + category);
-        const activeTab = document.getElementById('tab-' + category);
-        if (activeContent) activeContent.style.display = 'block';
-        if (activeTab) activeTab.classList.add('active');
-        
-        tg.HapticFeedback.impactOccurred('light');
+        document.getElementById('shop-content-' + category).style.display = 'block';
+        document.getElementById('tab-' + category).classList.add('active');
     },
 
-    // === ЛОГИКА ЗАГРУЗКИ ===
-    startLoading() {
-        const progress = document.getElementById('load-progress');
-        const screen = document.getElementById('loading-screen');
-        let width = 0;
-        
-        const interval = setInterval(() => {
-            width += Math.random() * 25;
-            if (width > 100) {
-                width = 100;
-                clearInterval(interval);
-                setTimeout(() => {
-                    screen.style.opacity = '0';
-                    setTimeout(() => screen.style.display = 'none', 500);
-                }, 500);
-            }
-            if (progress) progress.style.width = width + '%';
-        }, 200);
-    },
-
-    // === ЕЖЕДНЕВНЫЕ БОНУСЫ ===
-    checkDaily() {
-        const now = new Date();
-        const lastDate = localStorage.getItem('lastBonusDate');
-        let streak = parseInt(localStorage.getItem('bonusStreak') || "0");
-        const todayStr = now.toDateString();
-
-        if (lastDate === todayStr) return;
-
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-        
-        if (lastDate === yesterday.toDateString()) {
-            streak++;
-        } else {
-            streak = 1;
-        }
-
-        if (streak > 10) streak = 1;
-        localStorage.setItem('lastBonusDate', todayStr);
-        localStorage.setItem('bonusStreak', streak);
-        this.giveDailyReward(streak);
-    },
-
-    giveDailyReward(day) {
-        let reward = 5 + (day - 1) * 3;
-        if (day === 10) reward = 50;
-        
-        this.emeralds += reward;
-        document.getElementById('daily-day-text').innerText = "День " + day;
-        document.getElementById('daily-reward-text').innerText = (day === 10) ? "СУПЕР-ПРИЗ: 50 Изумрудов" : "+" + reward + " Изумрудов";
-        document.getElementById('daily-reward-icon').innerText = (day === 10) ? "🎡" : "💎";
-        document.getElementById('daily-modal').style.display = 'flex';
-        
-        tg.HapticFeedback.notificationOccurred('success');
-        this.updateUI();
-    },
-
-    closeDaily() {
-        document.getElementById('daily-modal').style.display = 'none';
-        tg.HapticFeedback.impactOccurred('light');
-    },
-
-    // === ИГРОВАЯ ЛОГИКА (РАБОТА) ===
+    // === ЛОГИКА РАБОТЫ ===
     doWork(type) {
         let earnedGold = 0;
         let earnedXp = 0;
 
         if (type === 'port') {
-            let bonus = 0;
-            if (this.inventory.includes('rod3')) bonus = 40;
-            else if (this.inventory.includes('rod2')) bonus = 15;
-            else if (this.inventory.includes('rod1')) bonus = 5;
+            let bonus = this.inventory.includes('rod2') ? 15 : 0;
             earnedGold = 2 + bonus;
             earnedXp = 5;
         } 
         else if (type === 'mine') {
-            let bonus = 0;
-            let chance = 0.01;
-            if (this.inventory.includes('pick3')) { bonus = 25; chance = 0.08; }
-            else if (this.inventory.includes('pick2')) { bonus = 12; chance = 0.04; }
-            else if (this.inventory.includes('pick1')) { bonus = 4; chance = 0.02; }
+            let bonus = this.inventory.includes('pick3') ? 25 : 0;
             earnedGold = 1 + bonus;
             earnedXp = 8;
-            if(Math.random() < chance) { 
-                this.emeralds++; 
-                tg.HapticFeedback.notificationOccurred('success'); 
-            }
-        }
+            if (Math.random() < 0.02) this.emeralds++; 
+        } 
         else if (type === 'farm') {
             if (this.lvl < 15) return tg.showAlert("Нужен 15 уровень!");
             earnedGold = 15;
             earnedXp = 12;
-        }
+        } 
         else if (type === 'hunt') {
             if (this.lvl < 25) return tg.showAlert("Нужен 25 уровень!");
-            if (!this.inventory.includes('bow1') && !this.inventory.includes('bow2')) {
-                return tg.showAlert("Купите лук или арбалет в лавке!");
-            }
-            earnedGold = this.inventory.includes('bow2') ? 100 : 50;
+            if (!this.inventory.includes('bow1')) return tg.showAlert("Сначала купите лук!");
+            earnedGold = 50;
             earnedXp = 20;
         }
 
-        // Применяем изменения
         this.gold += earnedGold;
         this.addXp(earnedXp);
-        
-        // Вибрация и обновление
-        tg.HapticFeedback.impactOccurred('medium');
         this.updateUI();
+        this.save();
+        tg.HapticFeedback.impactOccurred('medium');
     },
 
     addXp(val) {
-        let swordBonus = this.inventory.includes('sword1') ? 2 : 0;
-        this.xp += (val + swordBonus);
-
-        if(this.xp >= this.nextXp) {
-            this.xp -= this.nextXp; 
+        this.xp += val;
+        if (this.xp >= this.nextXp) {
+            this.xp -= this.nextXp;
             this.lvl++;
-            this.nextXp = Math.floor(this.nextXp * 1.6 + 50);
+            this.nextXp = Math.floor(this.nextXp * 1.5);
             tg.showAlert("Уровень повышен до " + this.lvl + "!");
-            tg.HapticFeedback.notificationOccurred('warning');
         }
     },
 
+    // === МАГАЗИН И ОБМЕН ===
     buy(id, price) {
-        if(this.gold >= price && !this.inventory.includes(id)) {
-            this.gold -= price; 
+        if (this.gold >= price && !this.inventory.includes(id)) {
+            this.gold -= price;
             this.inventory.push(id);
-            tg.HapticFeedback.notificationOccurred('success');
             this.updateUI();
-        } else if (this.inventory.includes(id)) {
-            tg.showAlert("Уже куплено!");
-        } else { 
-            tg.showAlert("Недостаточно золота!"); 
+            this.save();
+            tg.HapticFeedback.notificationOccurred('success');
+        } else {
+            tg.showAlert(this.inventory.includes(id) ? "Уже куплено!" : "Недостаточно золота!");
         }
     },
 
     exchange() {
-        if(this.emeralds >= 1) {
-            this.emeralds--; 
+        if (this.emeralds >= 1) {
+            this.emeralds--;
             this.gold += 500;
             this.updateUI();
-            tg.HapticFeedback.impactOccurred('heavy');
-        } else { 
-            tg.showAlert("Нужны изумруды!"); 
+            this.save();
+        } else {
+            tg.showAlert("Нужны изумруды!");
         }
     },
 
-    // === ОБНОВЛЕНИЕ ИНТЕРФЕЙСА ===
+    // === ЕЖЕДНЕВНЫЙ БОНУС ===
+    checkDaily() {
+        const last = localStorage.getItem('lastBonus');
+        const today = new Date().toDateString();
+        if (last !== today) {
+            document.getElementById('daily-modal').style.display = 'flex';
+        }
+    },
+
+    closeDaily() {
+        this.emeralds += 5;
+        localStorage.setItem('lastBonus', new Date().toDateString());
+        document.getElementById('daily-modal').style.display = 'none';
+        this.updateUI();
+        this.save();
+    },
+
+    // === ИНТЕРФЕЙС И СОХРАНЕНИЕ ===
     updateUI() {
-        // Ресурсы
         document.getElementById('gold').innerText = Math.floor(this.gold);
         document.getElementById('emeralds').innerText = this.emeralds;
         document.getElementById('lvl').innerText = this.lvl;
         document.getElementById('xp-text').innerText = this.xp + "/" + this.nextXp;
         document.getElementById('exp-fill').style.width = (this.xp / this.nextXp * 100) + "%";
-        
-        // Динамические показатели на кнопках
-        const pG = 2 + (this.inventory.includes('rod3') ? 40 : (this.inventory.includes('rod2') ? 15 : (this.inventory.includes('rod1') ? 5 : 0)));
-        const mG = 1 + (this.inventory.includes('pick3') ? 25 : (this.inventory.includes('pick2') ? 12 : (this.inventory.includes('pick1') ? 4 : 0)));
-        const mC = (this.inventory.includes('pick3') ? 8 : (this.inventory.includes('pick2') ? 4 : (this.inventory.includes('pick1') ? 2 : 1)));
+        document.getElementById('inv').innerText = this.inventory.length;
 
-        if(document.getElementById('p-gold')) document.getElementById('p-gold').innerText = pG;
-        if(document.getElementById('m-gold')) document.getElementById('m-gold').innerText = mG;
-        if(document.getElementById('m-chance')) document.getElementById('m-chance').innerText = mC;
-        
         // Разблокировка работ
-        if (this.lvl >= 15 && document.getElementById('work-farm')) {
-            document.getElementById('work-farm').style.opacity = "1";
-            document.getElementById('farm-lock').innerText = "";
-        }
-        if (this.lvl >= 25 && document.getElementById('work-hunt')) {
-            document.getElementById('work-hunt').style.opacity = "1";
-            document.getElementById('hunt-lock').innerText = "";
-            let bowText = this.inventory.includes('bow2') ? "Доход: 100 🪙" : (this.inventory.includes('bow1') ? "Доход: 50 🪙" : "Нужен лук!");
-            document.getElementById('hunt-desc').innerText = bowText;
-        }
+        if (this.lvl >= 15) document.getElementById('work-farm').classList.remove('locked-work');
+        if (this.lvl >= 25) document.getElementById('work-hunt').classList.remove('locked-work');
 
-        // Кнопки в магазине
-        this.inventory.forEach(itemId => {
-            const btn = document.getElementById('btn-' + itemId);
+        // Кнопки купить
+        this.inventory.forEach(item => {
+            const btn = document.getElementById('btn-' + item);
             if (btn) {
-                btn.innerText = "КУПЛЕНО";
-                btn.classList.add('bought');
+                btn.innerText = "Куплено";
+                btn.style.background = "#333";
             }
         });
-
-        // Инвентарь в профиле
-        document.getElementById('inv').innerText = this.inventory.length > 0 ? "Предметов: " + this.inventory.length : "пусто";
     },
 
-    openLocation(id) {
-        tg.showAlert("Локация временно недоступна.");
+    startLoading() {
+        let w = 0;
+        const progress = document.getElementById('load-progress');
+        const interval = setInterval(() => {
+            w += Math.random() * 15;
+            if (w >= 100) {
+                w = 100;
+                clearInterval(interval);
+                setTimeout(() => document.getElementById('loading-screen').style.display = 'none', 500);
+            }
+            progress.style.width = w + "%";
+        }, 150);
+    },
+
+    save() {
+        const data = {
+            gold: this.gold,
+            emeralds: this.emeralds,
+            lvl: this.lvl,
+            xp: this.xp,
+            inv: this.inventory,
+            next: this.nextXp
+        };
+        localStorage.setItem('warSagaSave', JSON.stringify(data));
+    },
+
+    load() {
+        const save = localStorage.getItem('warSagaSave');
+        if (save) {
+            const d = JSON.parse(save);
+            this.gold = d.gold;
+            this.emeralds = d.emeralds;
+            this.lvl = d.lvl;
+            this.xp = d.xp;
+            this.inventory = d.inv;
+            this.nextXp = d.next;
+        }
+    },
+
+    openLocation(name) {
+        tg.showAlert("Вы вошли в локацию: " + name);
     }
 };
 
-// === ЗАПУСК ===
-if(tg.initDataUnsafe?.user) {
-    document.getElementById('user-name').innerText = tg.initDataUnsafe.user.first_name;
-}
-
-game.updateUI();
-game.startLoading();
-
-setTimeout(() => {
-    game.checkDaily();
-}, 3000);
+// Запуск игры
+game.init();
