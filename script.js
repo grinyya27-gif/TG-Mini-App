@@ -2,6 +2,12 @@
  * WAR-GAME: Chronicles of Empire
  * Core Engine Module
  */
+setTimeout(() => {
+    const loader = document.getElementById('app-curtain');
+    if (loader) loader.style.display = 'none';
+    const app = document.getElementById('app');
+    if (app) app.style.display = 'block';
+}, 2000);
 
 "use strict";
 // Аварийный таймер: убирает экран загрузки через 3 секунды в любом случае
@@ -1306,5 +1312,6 @@ const AppLauncher = {
 
 // Запуск при полной загрузке страницы
 window.onload = () => AppLauncher.run();
+
 
 
