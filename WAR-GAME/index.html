@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WAR-Game</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="splash-screen" class="screen">
+        <div class="logo-container">
+            <h1 class="game-title">WAR-<span>GAME</span></h1>
+            <p class="subtitle">Стань легендой империи</p>
+        </div>
+        <button id="start-btn" class="btn-main">НАЧАТЬ ИГРУ</button>
+    </div>
+
+    <div id="main-menu" class="screen hidden">
+        <header class="user-info">
+            <div class="avatar" id="user-photo"></div>
+            <div class="stats-brief">
+                <span id="username">Боец</span>
+                <span id="balance">💰 0</span>
+            </div>
+        </header>
+
+        <div class="menu-grid">
+            <button class="menu-item" data-loc="traktir"><span>🍺</span> Трактир</button>
+            <button class="menu-item" data-loc="shop"><span>🛒</span> Магазин</button>
+            <button class="menu-item" data-loc="tavern"><span>🎭</span> Таверна</button>
+            <button class="menu-item" data-loc="port"><span>⚓</span> Порт</button>
+            <button class="menu-item" data-loc="armor"><span>🛡️</span> Бронник</button>
+            <button class="menu-item" data-loc="blacksmith"><span>⚔️</span> Мечник</button>
+            <button class="menu-item" data-loc="stables"><span>🐎</span> Конюшня</button>
+            <button class="menu-item" data-loc="stats"><span>📊</span> Статистика</button>
+            <button class="menu-item" data-loc="faq"><span>❓</span> FAQ</button>
+        </div>
+    </div>
+
+    <div id="tutorial" class="modal hidden">
+        <div class="modal-content">
+            <h2>Обучение</h2>
+            <p>Добро пожаловать в мир WAR-Game! Здесь вы можете сражаться, торговать и развивать своего персонажа.</p>
+            <button id="close-tutorial" class="btn-red">Понятно</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
