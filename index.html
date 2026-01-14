@@ -3,553 +3,321 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WAR SAGA: LEGENDS</title>
-    <link href="https://fonts.googleapis.com/css2?family=Almendra:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <title>WAR SAGA: OVERLORD</title>
+    <link href="https://fonts.googleapis.com/css2?family=Almendra:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@700;900&family=MedievalSharp&display=swap" rel="stylesheet">
     
     <style>
-        /* --- RESET & BASE --- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
-
+        /* --- КОЛОССАЛЬНЫЙ БЛОК СТИЛЕЙ (CSS) --- */
         :root {
             --gold: #ffcc00;
             --gold-dark: #b8860b;
+            --gold-light: #ffeb3b;
             --blood: #800000;
+            --blood-light: #b30000;
             --parchment: #f4e4bc;
             --iron: #1a1a1a;
-            --stone: #252525;
-            --shadow: rgba(0, 0, 0, 0.9);
+            --stone-dark: #0d0d0d;
+            --stone-light: #252525;
+            --emerald: #00ffcc;
+            --shadow-soft: rgba(0, 0, 0, 0.6);
+            --shadow-hard: rgba(0, 0, 0, 0.9);
+        }
+
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+            user-select: none; -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background: #000;
+            background-color: #000;
             color: var(--parchment);
             font-family: 'Almendra', serif;
-            height: 100vh;
+            height: 100vh; width: 100vw;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
+            display: flex; flex-direction: column;
         }
 
-        /* --- LOADING SCREEN --- */
+        /* АНИМАЦИЯ ПЕЧАТИ (LOADER) */
         #loader {
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(circle, #220000 0%, #000 100%);
-            z-index: 10000;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.8s ease;
+            position: fixed; inset: 0;
+            background: radial-gradient(circle, #1a0000 0%, #000 100%);
+            z-index: 99999; display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
         }
 
-        .seal-container {
-            width: 120px;
-            height: 120px;
-            border: 2px dashed var(--blood);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            animation: spin 10s linear infinite;
-            margin-bottom: 20px;
+        .seal-gate {
+            position: relative; width: 180px; height: 180px;
+            border: 4px double var(--gold-dark); border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 0 30px var(--blood);
+            animation: pulse-glow 2s infinite ease-in-out;
         }
 
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px var(--blood); }
+            50% { box-shadow: 0 0 50px var(--blood-light); }
+        }
 
-        /* --- ROYAL HEADER --- */
+        .seal-inner-circle {
+            position: absolute; width: 80%; height: 80%;
+            border: 1px dashed var(--gold); border-radius: 50%;
+            animation: spin-slow 15s linear infinite;
+        }
+
+        @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        /* ВЕРХНЯЯ ЦИТАДЕЛЬ (STATS) */
         .royal-header {
-            background: linear-gradient(180deg, #1a1a1a 0%, #000 100%);
+            background: linear-gradient(180deg, #1a1a1a 0%, #050505 100%);
             border-bottom: 2px solid var(--gold-dark);
-            padding: 15px 10px;
-            box-shadow: 0 5px 20px var(--shadow);
-            z-index: 100;
+            padding: 12px 10px; z-index: 1000;
+            box-shadow: 0 4px 15px var(--shadow-hard);
         }
 
-        .stats-row {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 12px;
+        .top-stats-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+            margin-bottom: 10px;
         }
 
-        .stat-box {
-            background: var(--stone);
+        .stat-vault {
+            background: var(--stone-dark);
             border: 1px solid var(--gold-dark);
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-family: 'MedievalSharp', cursive;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            min-width: 90px;
+            padding: 8px; border-radius: 4px;
+            display: flex; align-items: center; gap: 10px;
             box-shadow: inset 0 0 10px #000;
         }
 
-        .gold-glow { color: var(--gold); text-shadow: 0 0 8px var(--gold-dark); }
-        .crystal-glow { color: #00f2ff; text-shadow: 0 0 8px #0066ff; }
-
-        .experience-area {
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        .stat-vault img, .stat-vault span.icon { font-size: 1.4em; }
+        .stat-vault .val { 
+            font-family: 'MedievalSharp', cursive; color: var(--gold); 
+            font-size: 1.1em; text-shadow: 0 0 5px #000;
         }
 
-        .level-orb {
-            width: 50px;
-            height: 50px;
-            background: #111;
-            border: 2px solid var(--gold);
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 15px var(--gold-dark);
+        /* ПРОГРЕСС БАРЫ */
+        .hero-progress-container {
+            display: flex; align-items: center; gap: 12px;
         }
 
-        .level-orb span { font-size: 1.2em; color: var(--gold); font-weight: bold; }
-        .level-orb label { font-size: 0.5em; text-transform: uppercase; margin-top: -3px; }
-
-        .bar-ancient {
-            flex: 1;
-            height: 14px;
-            background: #000;
-            border: 1px solid var(--gold-dark);
-            position: relative;
-            box-shadow: inset 0 0 5px #000;
+        .lvl-emblem {
+            width: 50px; height: 50px; background: #000;
+            border: 2px solid var(--gold); border-radius: 50%;
+            display: flex; flex-direction: column; justify-content: center;
+            align-items: center; box-shadow: 0 0 10px var(--gold-dark);
         }
 
-        #exp-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #4a0000, #ff0000);
-            width: 0%;
-            transition: width 0.5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
-            box-shadow: 0 0 10px #ff0000;
+        .lvl-emblem .num { color: var(--gold); font-weight: 900; font-size: 1.2em; }
+        .lvl-emblem .lbl { font-size: 0.5em; text-transform: uppercase; margin-top: -4px; }
+
+        .exp-track {
+            flex: 1; height: 16px; background: #111;
+            border: 1px solid var(--gold-dark); position: relative;
+            box-shadow: inset 0 0 8px #000;
         }
 
-        /* --- MAIN CONTENT & SCREENS --- */
-        .main-scroll {
-            flex: 1;
-            overflow-y: auto;
-            padding: 15px;
-            background: url('https://www.transparenttextures.com/patterns/black-linen.png');
-            padding-bottom: 100px;
+        #exp-bar-fill {
+            height: 100%; width: 0%;
+            background: linear-gradient(90deg, #4b0082, var(--blood-light));
+            box-shadow: 0 0 12px var(--blood-light);
+            transition: width 0.6s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
-        .screen { display: none; }
-        .screen.active { display: block; animation: fadeIn 0.4s ease; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .medieval-title {
-            font-family: 'Cinzel', serif;
-            text-align: center;
-            color: var(--gold);
-            margin: 20px 0;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            border-bottom: 1px solid var(--gold-dark);
-            padding-bottom: 10px;
+        /* ОСНОВНОЙ СКРОЛЛ */
+        .content-scroll {
+            flex: 1; overflow-y: auto; padding: 15px;
+            background: url('https://www.transparenttextures.com/patterns/dark-matter.png');
+            padding-bottom: 120px;
         }
 
-        /* --- ANCIENT CARDS --- */
-        .card-ancient {
-            background: #151515;
-            border: 1px solid #333;
-            margin-bottom: 15px;
-            position: relative;
-            overflow: hidden;
-            transition: 0.1s;
-            border-left: 4px solid var(--gold-dark);
+        .screen { display: none; width: 100%; }
+        .screen.active { display: block; animation: screenSlide 0.4s ease-out; }
+
+        @keyframes screenSlide {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
-        .card-ancient:active { transform: scale(0.98); background: #222; }
-
-        .card-body {
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
+        /* СТИЛЬ ЗАГОЛОВКОВ */
+        .ancient-heading {
+            font-family: 'Cinzel', serif; text-align: center;
+            color: var(--gold); text-transform: uppercase;
+            letter-spacing: 4px; margin: 20px 0;
+            position: relative; padding-bottom: 10px;
         }
 
-        .icon-frame {
-            width: 60px;
-            height: 60px;
-            background: #000;
-            border: 2px solid var(--gold-dark);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2em;
-            box-shadow: inset 0 0 10px var(--gold-dark);
+        .ancient-heading::after {
+            content: ''; position: absolute; bottom: 0; left: 20%; right: 20%;
+            height: 1px; background: linear-gradient(90deg, transparent, var(--gold-dark), transparent);
         }
 
-        .info-text h3 { font-family: 'Cinzel', serif; font-size: 1em; color: var(--gold); }
-        .info-text p { font-size: 0.85em; color: #aaa; margin-top: 4px; }
+        /* КАРТОЧКИ ОБЪЕКТОВ */
+        .quest-card {
+            background: rgba(26, 26, 26, 0.9);
+            border: 1px solid #333; margin-bottom: 15px;
+            position: relative; overflow: hidden;
+            border-left: 5px solid var(--gold-dark);
+            transition: 0.2s;
+        }
 
-        /* --- NAVIGATION --- */
-        .royal-nav {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            height: 75px;
-            background: #000;
-            border-top: 2px solid var(--gold-dark);
-            display: flex;
-            z-index: 1000;
+        .quest-card:active { transform: scale(0.97); background: #222; }
+
+        .quest-body { padding: 15px; display: flex; align-items: center; gap: 15px; }
+
+        .quest-icon-frame {
+            width: 65px; height: 65px; background: #000;
+            border: 2px solid var(--gold-dark); display: flex;
+            justify-content: center; align-items: center; font-size: 2.2em;
+            box-shadow: inset 0 0 15px var(--gold-dark);
+        }
+
+        .quest-info h3 { font-family: 'Cinzel', serif; color: var(--gold); font-size: 1em; }
+        .quest-info p { font-size: 0.8em; color: #888; margin-top: 5px; }
+
+        /* НАВИГАЦИЯ (НИЗ) */
+        .bottom-citadel-nav {
+            position: fixed; bottom: 0; width: 100%; height: 80px;
+            background: #000; border-top: 3px solid var(--gold-dark);
+            display: flex; z-index: 5000;
             padding-bottom: env(safe-area-inset-bottom);
         }
 
-        .nav-item {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #555;
-            transition: 0.3s;
+        .nav-link {
+            flex: 1; display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            color: #444; transition: 0.3s;
         }
 
-        .nav-item.active {
+        .nav-link.active {
             color: var(--gold);
-            background: linear-gradient(0deg, rgba(184, 134, 11, 0.15) 0%, transparent 100%);
+            background: radial-gradient(circle at bottom, rgba(184, 134, 11, 0.2), transparent);
         }
 
-        .nav-icon { font-size: 1.6em; }
-        .nav-label { font-size: 0.65em; text-transform: uppercase; font-family: 'MedievalSharp', cursive; margin-top: 4px; }
+        .nav-link i { font-size: 1.8em; margin-bottom: 4px; }
+        .nav-link span { font-size: 0.6em; text-transform: uppercase; font-family: 'MedievalSharp', cursive; }
 
-        /* --- UTILS --- */
-        .locked { filter: grayscale(1) brightness(0.4); pointer-events: none; }
-        .gold-text { color: var(--gold); font-weight: bold; }
-        
-        /* КНОПКИ КУПИТЬ */
-        .buy-btn {
-            background: linear-gradient(180deg, var(--blood) 0%, #400 100%);
-            border: 1px solid var(--gold);
-            color: var(--parchment);
-            padding: 8px 15px;
-            font-family: 'MedievalSharp', cursive;
-            text-transform: uppercase;
-            box-shadow: 0 4px 0 #000;
+        /* ВЫЛЕТАЮЩИЙ ТЕКСТ */
+        .dmg-text {
+            position: fixed; pointer-events: none; z-index: 10000;
+            font-family: 'MedievalSharp', cursive; font-weight: bold;
+            font-size: 1.5em; text-shadow: 2px 2px #000;
+            animation: float-up 1s ease-out forwards;
         }
+
+        @keyframes float-up {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-120px) scale(1.5); }
+        }
+
+        /* УТИЛИТЫ */
+        .locked-overlay { filter: grayscale(1) opacity(0.3); pointer-events: none; }
+        .emerald-text { color: var(--emerald); }
     </style>
 </head>
 <body>
 
     <div id="loader">
-        <div class="seal-container">
-            <h2 style="font-family: 'Cinzel', serif; color: var(--gold); transform: rotate(-45deg);">WS</h2>
+        <div class="seal-gate">
+            <div class="seal-inner-circle"></div>
+            <h1 style="font-family: 'Cinzel', serif; color: var(--gold); z-index: 2;">WS</h1>
         </div>
-        <h1 style="font-family: 'Cinzel', serif; color: var(--gold); letter-spacing: 5px;">WAR SAGA</h1>
-        <div style="width: 200px; height: 3px; background: #222; margin-top: 20px;">
-            <div id="load-progress" style="width: 0%; height: 100%; background: var(--blood); transition: width 0.2s;"></div>
+        <h2 style="margin-top: 30px; letter-spacing: 8px; font-family: 'Cinzel', serif; color: var(--gold-dark);">WAR SAGA</h2>
+        <div style="width: 250px; height: 4px; background: #222; margin-top: 20px; border-radius: 2px; overflow: hidden;">
+            <div id="boot-progress" style="width: 0%; height: 100%; background: var(--blood-light); transition: width 0.3s;"></div>
         </div>
+        <p id="boot-status" style="margin-top: 10px; font-size: 0.8em; color: var(--gold-dark);">Инициализация летописи...</p>
     </div>
 
     <header class="royal-header">
-        <div class="stats-row">
-            <div class="stat-box gold-glow"><span>🪙</span> <span id="gold">50</span></div>
-            <div class="stat-box crystal-glow"><span>💎</span> <span id="emeralds">0</span></div>
-        </div>
-        <div class="experience-area">
-            <div class="level-orb">
-                <span id="lvl">1</span>
-                <label>Lvl</label>
+        <div class="top-stats-grid">
+            <div class="stat-vault">
+                <span class="icon">🪙</span>
+                <span id="gold-val" class="val">0</span>
             </div>
-            <div class="bar-ancient">
-                <div id="exp-fill"></div>
+            <div class="stat-vault">
+                <span class="icon">💎</span>
+                <span id="gem-val" class="val">0</span>
+            </div>
+        </div>
+        <div class="hero-progress-container">
+            <div class="lvl-emblem">
+                <span id="lvl-num" class="num">1</span>
+                <span class="lbl">Rank</span>
+            </div>
+            <div class="exp-track">
+                <div id="exp-bar-fill"></div>
             </div>
         </div>
     </header>
 
-    <main class="main-scroll" id="main-content">
+    <main class="content-scroll" id="game-viewport">
         
-        <section id="screen-work" class="screen active">
-            <h2 class="medieval-title">Ратные Труды</h2>
+        <section id="scr-battle" class="screen active">
+            <h2 class="ancient-heading">Ратные Подвиги</h2>
             
-            <div class="card-ancient" onclick="game.doWork('port', event)">
-                <div class="card-body">
-                    <div class="icon-frame">🎣</div>
-                    <div class="info-text">
+            <div class="quest-card" onclick="gameEngine.execute('port', event)">
+                <div class="quest-body">
+                    <div class="quest-icon-frame">🎣</div>
+                    <div class="quest-info">
                         <h3>Рыбацкая Бухта</h3>
-                        <p>Награда: <span class="gold-text">+2 🪙</span> | Опыт: +5</p>
+                        <p>Награда: <span class="gold-text">+2 🪙</span> | Опыт: <span class="exp-text">+5</span></p>
                     </div>
                 </div>
             </div>
 
-            <div class="card-ancient" onclick="game.doWork('mine', event)">
-                <div class="card-body">
-                    <div class="icon-frame">⛏️</div>
-                    <div class="info-text">
+            <div class="quest-card" onclick="gameEngine.execute('mine', event)">
+                <div class="quest-body">
+                    <div class="quest-icon-frame">⛏️</div>
+                    <div class="quest-info">
                         <h3>Древние Рудники</h3>
-                        <p>Награда: <span class="gold-text">+1 🪙</span> | Шанс 💎: 2%</p>
+                        <p>Награда: <span class="gold-text">+1 🪙</span> | Шанс 💎: <span class="emerald-text">2%</span></p>
                     </div>
                 </div>
             </div>
 
-            <div id="card-farm" class="card-ancient locked" onclick="game.doWork('farm', event)">
-                <div class="card-body">
-                    <div class="icon-frame">🌾</div>
-                    <div class="info-text">
-                        <h3>Имперская Ферма</h3>
-                        <p>Требуется уровень: 15</p>
+            <div id="card-farm" class="quest-card locked-overlay" onclick="gameEngine.execute('farm', event)">
+                <div class="quest-body">
+                    <div class="quest-icon-frame">🌾</div>
+                    <div class="quest-info">
+                        <h3>Королевская Ферма</h3>
+                        <p>Требуется уровень: <span class="gold-text">15</span></p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="screen-shop" class="screen">
-            <h2 class="medieval-title">Королевский Арсенал</h2>
-            <div class="card-ancient">
-                <div class="card-body">
-                    <div class="icon-frame">🗡️</div>
-                    <div class="info-text">
-                        <h3>Стальной Клинок</h3>
-                        <p>Удваивает получаемый опыт</p>
+        <section id="scr-map" class="screen">
+            <h2 class="ancient-heading">Карта Мира</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="quest-card" style="margin-bottom: 0;" onclick="gameEngine.travel('tavern')">
+                    <div class="quest-body" style="flex-direction: column; text-align: center;">
+                        <div class="quest-icon-frame" style="margin-bottom: 10px;">🍺</div>
+                        <h3>Таверна</h3>
                     </div>
-                    <button class="buy-btn" id="btn-sword1" onclick="game.buy('sword1', 500)">500</button>
+                </div>
+                <div class="quest-card locked-overlay" style="margin-bottom: 0;">
+                    <div class="quest-body" style="flex-direction: column; text-align: center;">
+                        <div class="quest-icon-frame" style="margin-bottom: 10px;">🏰</div>
+                        <h3>Цитадель</h3>
+                    </div>
                 </div>
             </div>
         </section>
 
     </main>
 
-    <nav class="royal-nav">
-        <div class="nav-item" onclick="game.setTab('map', this)">
-            <span class="nav-icon">🗺️</span>
-            <span class="nav-label">Мир</span>
+    <nav class="bottom-citadel-nav">
+        <div class="nav-link" onclick="gameEngine.switchTab('map', this)">
+            <i>🗺️</i><span>Карта</span>
         </div>
-        <div class="nav-item active" onclick="game.setTab('work', this)">
-            <span class="nav-icon">⚔️</span>
-            <span class="nav-label">Битва</span>
+        <div class="nav-link active" onclick="gameEngine.switchTab('battle', this)">
+            <i>⚔️</i><span>Битва</span>
         </div>
-        <div class="nav-item" onclick="game.setTab('shop', this)">
-            <span class="nav-icon">💰</span>
-            <span class="nav-label">Лавка</span>
+        <div class="nav-link" onclick="gameEngine.switchTab('shop', this)">
+            <i>💰</i><span>Лавка</span>
         </div>
-        <div class="nav-item" onclick="game.setTab('profile', this)">
-            <span class="nav-icon">👤</span>
-            <span class="nav-label">Герой</span>
+        <div class="nav-link" onclick="gameEngine.switchTab('hero', this)">
+            <i>👤</i><span>Герой</span>
         </div>
     </nav>
 
-</body>
+    </body>
 </html>
-<script>
-// Инициализация Telegram WebApp
-const tg = window.Telegram.WebApp;
-tg.expand();
-
-// Основной объект игры
-const game = {
-    // --- СОСТОЯНИЕ (Data) ---
-    gold: 50,
-    emeralds: 0,
-    lvl: 1,
-    xp: 0,
-    nextXp: 100,
-    inventory: [],
-    
-    // --- СИСТЕМА ЗАГРУЗКИ ---
-    init() {
-        this.loadProgress();
-        this.updateUI();
-        
-        // Эмуляция загрузки древнего мира
-        let progress = 0;
-        const interval = setInterval(() => {
-            progress += Math.random() * 25;
-            if (progress > 100) progress = 100;
-            document.getElementById('load-progress').style.width = progress + '%';
-            
-            if (progress === 100) {
-                clearInterval(interval);
-                setTimeout(() => {
-                    document.getElementById('loader').style.opacity = '0';
-                    setTimeout(() => {
-                        document.getElementById('loader').style.display = 'none';
-                    }, 800);
-                }, 500);
-            }
-        }, 150);
-
-        // Получение имени из Telegram
-        if (tg.initDataUnsafe?.user) {
-            const name = tg.initDataUnsafe.user.first_name;
-            // Можно использовать для профиля
-        }
-    },
-
-    // --- НАВИГАЦИЯ ---
-    setTab(screenId, navEl) {
-        // Скрыть все экраны
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        // Деактивировать кнопки навигации
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        
-        // Активировать нужный
-        document.getElementById('screen-' + screenId).classList.add('active');
-        if (navEl) navEl.classList.add('active');
-        
-        // Легкая вибрация при переключении
-        tg.HapticFeedback.impactOccurred('light');
-    },
-
-    // --- ЭКОНОМИКА И РАБОТА ---
-    doWork(type, event) {
-        let gainGold = 0;
-        let gainXp = 0;
-
-        switch(type) {
-            case 'port':
-                gainGold = 2;
-                gainXp = 5;
-                break;
-            case 'mine':
-                gainGold = 1;
-                gainXp = 8;
-                // Шанс найти изумруд
-                if (Math.random() < 0.02) {
-                    this.emeralds += 1;
-                    this.notify("Вы нашли изумруд в руде!", "💎");
-                }
-                break;
-            case 'farm':
-                if (this.lvl < 15) return this.notify("Нужен 15 уровень!", "🚫");
-                gainGold = 10;
-                gainXp = 15;
-                break;
-        }
-
-        // Бонусы от снаряжения
-        if (this.inventory.includes('sword1')) gainXp *= 2;
-
-        this.gold += gainGold;
-        this.addXp(gainXp);
-        
-        // Визуальный эффект клика
-        this.spawnFloatingText(event, `+${gainGold} 🪙`);
-        
-        this.updateUI();
-        this.saveProgress();
-        tg.HapticFeedback.impactOccurred('medium');
-    },
-
-    // --- СИСТЕМА ОПЫТА ---
-    addXp(amount) {
-        this.xp += amount;
-        if (this.xp >= this.nextXp) {
-            this.lvl++;
-            this.xp -= this.nextXp;
-            this.nextXp = Math.floor(this.nextXp * 1.6);
-            this.notify(`Уровень повышен! Теперь вы: ${this.getRank()}`, "👑");
-            tg.HapticFeedback.notificationOccurred('success');
-        }
-    },
-
-    getRank() {
-        if (this.lvl < 5) return "Рекрут";
-        if (this.lvl < 10) return "Воин";
-        if (this.lvl < 20) return "Рыцарь";
-        return "Лорд";
-    },
-
-    // --- МАГАЗИН ---
-    buy(itemId, price) {
-        if (this.inventory.includes(itemId)) {
-            return this.notify("Уже во владении!", "⚔️");
-        }
-        if (this.gold >= price) {
-            this.gold -= price;
-            this.inventory.push(itemId);
-            this.updateUI();
-            this.saveProgress();
-            this.notify("Предмет куплен!", "📜");
-            tg.HapticFeedback.notificationOccurred('success');
-        } else {
-            this.notify("Недостаточно золота!", "❌");
-            tg.HapticFeedback.notificationOccurred('error');
-        }
-    },
-
-    // --- ВИЗУАЛЬНЫЕ ЭФФЕКТЫ ---
-    spawnFloatingText(e, text) {
-        const floating = document.createElement('div');
-        floating.innerText = text;
-        floating.style.position = 'fixed';
-        floating.style.left = (e.clientX || e.touches[0].clientX) + 'px';
-        floating.style.top = (e.clientY || e.touches[0].clientY) + 'px';
-        floating.style.color = 'var(--gold)';
-        floating.style.fontWeight = 'bold';
-        floating.style.pointerEvents = 'none';
-        floating.style.zIndex = '9999';
-        floating.animate([
-            { transform: 'translateY(0)', opacity: 1 },
-            { transform: 'translateY(-100px)', opacity: 0 }
-        ], { duration: 1000, easing: 'ease-out' });
-        
-        document.body.appendChild(floating);
-        setTimeout(() => floating.remove(), 1000);
-    },
-
-    notify(text, icon = "") {
-        // Простой alert через Telegram SDK
-        tg.showAlert(`${icon} ${text}`);
-    },
-
-    // --- ИНТЕРФЕЙС ---
-    updateUI() {
-        document.getElementById('gold').innerText = Math.floor(this.gold);
-        document.getElementById('emeralds').innerText = this.emeralds;
-        document.getElementById('lvl').innerText = this.lvl;
-        
-        const progressPercent = (this.xp / this.nextXp) * 100;
-        document.getElementById('exp-fill').style.width = progressPercent + '%';
-
-        // Проверка блокировок
-        if (this.lvl >= 15) {
-            document.getElementById('card-farm').classList.remove('locked');
-            document.getElementById('card-farm').querySelector('p').innerText = "Награда: +10 🪙";
-        }
-
-        // Кнопки в магазине
-        if (this.inventory.includes('sword1')) {
-            const btn = document.getElementById('btn-sword1');
-            btn.innerText = "ВЫДАНО";
-            btn.style.background = "#333";
-            btn.style.borderColor = "#555";
-        }
-    },
-
-    // --- СОХРАНЕНИЕ (LocalStorage) ---
-    saveProgress() {
-        const data = {
-            gold: this.gold,
-            emeralds: this.emeralds,
-            lvl: this.lvl,
-            xp: this.xp,
-            nextXp: this.nextXp,
-            inventory: this.inventory
-        };
-        localStorage.setItem('war_saga_save', JSON.stringify(data));
-    },
-
-    loadProgress() {
-        const saved = localStorage.getItem('war_saga_save');
-        if (saved) {
-            const data = JSON.parse(saved);
-            Object.assign(this, data);
-        }
-    }
-};
-
-// Старт
-window.onload = () => game.init();
-</script>
