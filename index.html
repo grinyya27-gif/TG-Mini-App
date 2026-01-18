@@ -3,439 +3,416 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WAR SAGA: ETERNAL EMPIRE</title>
+    <title>WAR SAGA: REBORN</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Comfortaa:wght@300;500&display=swap" rel="stylesheet">
     <style>
+        /* --- БАЗОВЫЕ СТИЛИ --- */
         :root {
-            --bg: #050507; --panel: #0d0d12; --accent: #c29d0b; --blood: #8b0000;
-            --magic: #4b0082; --gold: #ffd700; --text: #d1d1d1; --border: #1f1f2e;
+            --bg: #0a0a0a;
+            --card-bg: #141414;
+            --gold: #ffcc00;
+            --text-main: #e0e0e0;
+            --text-dim: #888;
+            --accent: #b8860b;
+            --green: #4caf50;
+            --red: #f44336;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+        
         body {
-            background: var(--bg); color: var(--text);
-            font-family: 'Comfortaa', cursive; height: 100vh;
-            overflow: hidden; display: flex; flex-direction: column;
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
-        h1, h2, h3, .rpg-font { font-family: 'Cinzel', serif; }
 
-        /* --- UI UTILS --- */
-        .flex-center { display: flex; align-items: center; justify-content: center; }
-        .hidden { display: none !important; }
-        .btn {
-            background: linear-gradient(135deg, #1a1a24 0%, #0d0d12 100%);
-            border: 1px solid var(--border); border-radius: 8px; color: var(--text);
-            padding: 12px; cursor: pointer; transition: 0.2s; font-weight: bold;
+        /* --- ЗАГРУЗЧИК --- */
+        #loader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 9999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.5s ease;
         }
-        .btn:active { transform: scale(0.96); border-color: var(--accent); }
-        .btn-gold { color: var(--gold); border-color: var(--gold); }
-        .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 12px; }
+        .spinner {
+            width: 40px; height: 40px; border: 4px solid #333;
+            border-top: 4px solid var(--gold); border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* --- HEADER & STATS --- */
-        header { padding: 15px; background: rgba(13,13,18,0.95); border-bottom: 2px solid var(--border); box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
-        .top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .resource-chip { background: #16161f; padding: 5px 12px; border-radius: 20px; font-size: 0.9em; border: 1px solid #252535; }
+        /* --- ШАПКА --- */
+        header {
+            padding: 15px; background: var(--card-bg);
+            border-bottom: 1px solid #333; display: flex; flex-direction: column; gap: 10px;
+        }
+        .stats-row { display: flex; justify-content: space-between; font-weight: bold; font-size: 1.1em; }
+        .gold-text { color: var(--gold); }
         
-        .xp-container { width: 100%; height: 8px; background: #000; border-radius: 4px; overflow: hidden; border: 1px solid #222; }
-        .xp-fill { width: 0%; height: 100%; background: linear-gradient(90deg, var(--blood), #f00); transition: 0.4s; }
+        .xp-container { width: 100%; height: 6px; background: #333; border-radius: 3px; overflow: hidden; }
+        .xp-bar { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; }
 
-        /* --- MAIN VIEW --- */
-        main { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 100px; }
-        .tab-content { display: none; animation: fadeIn 0.3s forwards; }
-        .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* --- ОСНОВНОЙ КОНТЕНТ --- */
+        main { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 80px; }
+        .screen { display: none; animation: fade 0.3s; }
+        .screen.active { display: block; }
+        @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 
-        /* --- BATTLE SYSTEM --- */
-        .monster-box { text-align: center; padding: 20px 0; position: relative; }
-        .monster-sprite { font-size: 5em; filter: drop-shadow(0 0 15px rgba(194,157,11,0.3)); margin: 15px 0; transition: 0.1s; }
-        .hp-bar-outer { width: 100%; height: 14px; background: #000; border-radius: 7px; border: 1px solid #333; overflow: hidden; margin-top: 10px; }
-        .hp-bar-inner { width: 100%; height: 100%; background: linear-gradient(90deg, #8b0000, #ff4d4d); transition: 0.2s; }
-        
-        .hit-btn {
-            width: 100%; height: 80px; font-size: 1.5em; letter-spacing: 2px;
-            background: linear-gradient(to bottom, #2a0000, #1a0000);
-            border: 2px solid var(--blood); border-radius: 15px; margin-top: 20px;
+        /* --- КАРТОЧКИ --- */
+        .card {
+            background: var(--card-bg); border: 1px solid #333; border-radius: 8px;
+            padding: 15px; margin-bottom: 10px; display: flex; align-items: center; gap: 15px;
         }
+        .icon { font-size: 2em; min-width: 50px; text-align: center; }
+        .info { flex: 1; }
+        .info h3 { font-size: 1em; margin-bottom: 4px; }
+        .info p { font-size: 0.85em; color: var(--text-dim); }
+        
+        button.btn {
+            background: var(--accent); color: #fff; border: none;
+            padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer;
+        }
+        button.btn:active { transform: scale(0.95); opacity: 0.8; }
+        button.btn:disabled { background: #333; color: #555; cursor: not-allowed; }
 
-        /* --- NAV BAR --- */
+        /* --- НАВИГАЦИЯ --- */
         nav {
-            position: fixed; bottom: 0; width: 100%; background: var(--panel);
-            display: flex; border-top: 1px solid var(--border);
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: var(--card-bg); border-top: 1px solid #333;
+            display: flex; justify-content: space-around; padding: 10px 0;
             padding-bottom: max(10px, env(safe-area-inset-bottom));
         }
         .nav-item {
-            flex: 1; padding: 12px; display: flex; flex-direction: column;
-            align-items: center; font-size: 0.7em; color: var(--dim);
+            text-align: center; color: var(--text-dim); font-size: 0.75em;
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
         }
-        .nav-item i { font-size: 1.6em; margin-bottom: 4px; font-style: normal; }
-        .nav-item.active { color: var(--accent); background: rgba(194,157,11,0.05); }
+        .nav-item.active { color: var(--gold); }
+        .nav-icon { font-size: 1.4em; }
 
-        /* --- LOGS --- */
-        #game-log {
-            background: #000; border: 1px solid #222; border-radius: 8px;
-            height: 100px; overflow-y: auto; padding: 10px; font-size: 0.75em;
-            color: #888; margin-top: 15px; line-height: 1.5;
+        /* --- АНИМАЦИИ --- */
+        .float-text {
+            position: fixed; color: var(--gold); font-weight: bold; font-size: 1.2em;
+            pointer-events: none; animation: floatUp 0.8s forwards; z-index: 1000;
         }
-        .log-new { border-left: 2px solid var(--accent); padding-left: 8px; margin-bottom: 4px; animation: logSlide 0.3s; }
-        @keyframes logSlide { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
-
-        /* --- ANIMATIONS --- */
-        .dmg-popup {
-            position: fixed; pointer-events: none; font-family: 'Cinzel'; font-weight: bold;
-            font-size: 1.5em; z-index: 1000; animation: popupAnim 0.7s forwards;
-        }
-        @keyframes popupAnim {
-            0% { opacity: 1; transform: translateY(0) scale(1); }
-            100% { opacity: 0; transform: translateY(-100px) scale(1.5); }
-        }
+        @keyframes floatUp { to { transform: translateY(-50px); opacity: 0; } }
     </style>
 </head>
 <body>
 
-<header>
-    <div class="top-row">
-        <div class="resource-chip">🪙 <span id="res-gold">0</span></div>
-        <div class="resource-chip">💎 <span id="res-gems">0</span></div>
-        <div class="resource-chip" style="border-color: #2e4a2e;">🎖️ LVL <span id="res-lvl">1</span></div>
+    <div id="loader">
+        <div class="spinner"></div>
+        <p style="margin-top: 15px; color: #666;">Загрузка мира...</p>
     </div>
-    <div class="xp-container"><div id="res-xp-bar" class="xp-fill"></div></div>
-    <div style="font-size: 0.7em; margin-top: 5px; color: #666; display: flex; justify-content: space-between;">
-        <span>ОПЫТ: <span id="res-xp-num">0/100</span></span>
-        <span id="res-rank">НОВИЧОК</span>
-    </div>
-</header>
 
-<main>
-    <section id="tab-battle" class="tab-content active">
-        <div class="monster-box">
-            <h2 id="m-name" class="rpg-font">Болотистый Бес</h2>
-            <p id="m-desc" style="font-size: 0.75em; color: #555;">Слабое порождение мглы</p>
-            <div id="m-sprite" class="monster-sprite">👺</div>
-            <div class="hp-bar-outer"><div id="m-hp-bar" class="hp-bar-inner"></div></div>
-            <p style="font-size: 0.8em; margin-top: 5px;">HP: <span id="m-hp-text">10/10</span></p>
+    <header>
+        <div class="stats-row">
+            <span>🪙 <span id="ui-gold">0</span></span>
+            <span>Ур. <span id="ui-lvl">1</span></span>
         </div>
-        
-        <button class="btn hit-btn rpg-font" onclick="game.handleAttack(event)">АТАКОВАТЬ</button>
-        
-        <div id="game-log"></div>
-    </section>
+        <div class="xp-container"><div id="ui-xp" class="xp-bar"></div></div>
+        <div style="font-size: 0.8em; color: #666; text-align: center;">
+            Сила клика: <span id="ui-power">1</span> | Доход: <span id="ui-auto">0</span>/сек
+        </div>
+    </header>
 
-    <section id="tab-hero" class="tab-content">
-        <h2 class="rpg-font" style="color: var(--accent); margin-bottom: 15px;">ХАРАКТЕРИСТИКИ</h2>
-        <div class="card">
-            <div id="stat-points-div" style="margin-bottom: 10px; color: var(--gold); font-weight: bold;">Свободные очки: <span id="h-points">0</span></div>
-            <div id="stats-list">
+    <main>
+        <section id="tab-battle" class="screen active">
+            <h2 style="margin-bottom: 15px; color: var(--gold);">Зоны охоты</h2>
+            
+            <div class="card" onclick="game.click('forest', event)">
+                <div class="icon">🌲</div>
+                <div class="info">
+                    <h3>Темный Лес</h3>
+                    <p>Кликните, чтобы найти золото</p>
                 </div>
-        </div>
-        <h2 class="rpg-font" style="color: var(--accent); margin-bottom: 15px;">СНАРЯЖЕНИЕ</h2>
-        <div id="gear-slots" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
             </div>
-    </section>
 
-    <section id="tab-forge" class="tab-content">
-        <h2 class="rpg-font" style="color: var(--accent); margin-bottom: 15px;">КУЗНИЦА</h2>
-        <div class="card" style="text-align: center;">
-            <p style="font-size: 0.8em; color: #777; margin-bottom: 15px;">Создавайте мощные артефакты из ресурсов</p>
-            <div id="craft-list"></div>
+            <div class="card" onclick="game.click('cave', event)">
+                <div class="icon">🦇</div>
+                <div class="info">
+                    <h3>Пещера (Ур. 5)</h3>
+                    <p>Больше опыта и золота</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-gear" class="screen">
+            <h2 style="margin-bottom: 15px; color: var(--gold);">Оружейная</h2>
+            <div id="gear-list">
+                </div>
+        </section>
+
+        <section id="tab-shop" class="screen">
+            <h2 style="margin-bottom: 15px; color: var(--gold);">Наемники</h2>
+            <div id="shop-list">
+                </div>
+        </section>
+    </main>
+
+    <nav>
+        <div class="nav-item active" onclick="game.switchTab('battle', this)">
+            <span class="nav-icon">⚔️</span>
+            <span>Битва</span>
         </div>
-    </section>
+        <div class="nav-item" onclick="game.switchTab('gear', this)">
+            <span class="nav-icon">🛡️</span>
+            <span>Герой</span>
+        </div>
+        <div class="nav-item" onclick="game.switchTab('shop', this)">
+            <span class="nav-icon">💰</span>
+            <span>Лавка</span>
+        </div>
+    </nav>
 
-    <section id="tab-castle" class="tab-content">
-        <h2 class="rpg-font" style="color: var(--accent); margin-bottom: 15px;">ВАШ ЗАМОК</h2>
-        <div id="castle-upgrades"></div>
-    </section>
-</main>
-
-<nav>
-    <div class="nav-item active" onclick="game.switchTab('battle', this)"><i>⚔️</i><span>БИТВА</span></div>
-    <div class="nav-item" onclick="game.switchTab('hero', this)"><i>👤</i><span>ГЕРОЙ</span></div>
-    <div class="nav-item" onclick="game.switchTab('forge', this)"><i>⚒️</i><span>КУЗНЯ</span></div>
-    <div class="nav-item" onclick="game.switchTab('castle', this)"><i>🏰</i><span>ЗАМОК</span></div>
-</nav>
-
-<script>
-/**
- * WAR SAGA ENGINE v3.0 - MEGA RPG CORE
- * Огромное количество систем, упакованных в один объект
- */
-
-const game = {
-    // 1. СОСТОЯНИЕ (STATE)
-    s: {
-        gold: 100, gems: 0, lvl: 1, xp: 0, nx: 100, points: 0,
-        stats: { str: 1, int: 1, luk: 1, vit: 1 },
-        gear: { weapon: null, armor: null, relic: null },
-        inventory: [],
-        castle: { mines: 0, barracks: 0, altar: 0 },
-        killed: 0,
-        m: { hp: 10, max: 10, type: 0 }
-    },
-
-    // 2. БАЗЫ ДАННЫХ (DATABASE)
-    db: {
-        monsters: [
-            { n: "Болотный Бес", s: "👺", h: 12, g: 3, x: 8, d: "Мелкий, но назойливый" },
-            { n: "Дикий Волк", s: "🐺", h: 40, g: 10, x: 25, d: "Охотник ночных лесов" },
-            { n: "Древний Скелет", s: "💀", h: 120, g: 40, x: 80, d: "Оживший прах воина" },
-            { n: "Маг Пустоты", s: "🧙", h: 450, g: 150, x: 300, d: "Искажает само пространство" },
-            { n: "Каменный Голем", s: "🗿", h: 1500, g: 600, x: 1200, d: "Гора, обретшая волю" },
-            { n: "Теневой Дракон", s: "🐉", h: 8000, g: 3000, x: 7000, d: "Легендарный ужас небес" }
-        ],
-        craft: [
-            { id: 'sw1', n: "Меч Новичка", cost: 200, pow: 5, type: 'weapon', i: '🗡️' },
-            { id: 'arm1', n: "Кожаный Жилет", cost: 500, pow: 10, type: 'armor', i: '🧥' },
-            { id: 'sw2', n: "Клинок Тени", cost: 2500, pow: 40, type: 'weapon', i: '⚔️' },
-            { id: 'rel1', n: "Око Хаоса", cost: 10000, pow: 200, type: 'relic', i: '👁️' }
-        ],
-        ranks: ["Смертный", "Наемник", "Рыцарь", "Магистр", "Полубог", "Бессмертный"]
-    },
-
-    // 3. ЯДРО (CORE)
-    init() {
-        this.load();
-        this.spawnMonster();
-        this.renderAll();
-        
-        // Цикл авто-дохода (раз в 5 сек)
-        setInterval(() => {
-            if (this.s.castle.mines > 0) {
-                const inc = this.s.castle.mines * 5;
-                this.s.gold += inc;
-                this.log(`Шахты принесли ${inc} золота`);
-                this.renderAll();
-            }
-            this.save();
-        }, 5000);
-
-        if (window.Telegram?.WebApp) {
-            window.Telegram.WebApp.ready();
-            window.Telegram.WebApp.expand();
-        }
-    },
-
-    handleAttack(e) {
-        // Расчет урона
-        let dmg = this.s.stats.str * 2;
-        if (this.s.gear.weapon) dmg += this.s.gear.weapon.pow;
-        
-        // Крит
-        const isCrit = Math.random() * 100 < (this.s.stats.luk * 3);
-        if (isCrit) dmg *= 2;
-
-        this.s.m.hp -= dmg;
-        this.pop(e, isCrit ? `КРИТ ${dmg}` : dmg, isCrit ? '#ffd700' : '#fff');
-
-        if (this.s.m.hp <= 0) {
-            this.onMonsterDeath();
-        }
-        this.updateBattleUI();
-        
-        if (window.Telegram?.WebApp?.HapticFeedback) {
-            window.Telegram.WebApp.HapticFeedback.impactOccurred(isCrit ? 'heavy' : 'light');
-        }
-    },
-
-    onMonsterDeath() {
-        const m = this.db.monsters[this.s.m.type];
-        
-        // Награды (с учетом Интеллекта для опыта)
-        const goldGain = Math.floor(m.g * (1 + this.s.stats.luk * 0.1));
-        const xpGain = Math.floor(m.x * (1 + this.s.stats.int * 0.15));
-
-        this.s.gold += goldGain;
-        this.addXp(xpGain);
-        this.s.killed++;
-
-        this.log(`Убит ${m.n}! +${goldGain}🪙 +${xpGain}XP`);
-        
-        // Шанс найти алмаз
-        if (Math.random() < 0.05) {
-            this.s.gems++;
-            this.log("Редкая находка: +1 💎");
-        }
-
-        this.spawnMonster();
-        this.renderAll();
-    },
-
-    addXp(val) {
-        this.s.xp += val;
-        if (this.s.xp >= this.s.nx) {
-            this.s.lvl++;
-            this.s.points += 5;
-            this.s.xp -= this.s.nx;
-            this.s.nx = Math.floor(this.s.nx * 1.6);
-            this.log(`УРОВЕНЬ ПОВЫШЕН! Получено 5 очков навыков`);
-            if (window.Telegram?.WebApp) window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
-        }
-    },
-
-    spawnMonster() {
-        // Выбор монстра по уровню
-        let idx = Math.floor(this.s.lvl / 8);
-        if (idx >= this.db.monsters.length) idx = this.db.monsters.length - 1;
-        
-        const m = this.db.monsters[idx];
-        const scaling = 1 + (this.s.lvl * 0.1);
-        
-        this.s.m = {
-            type: idx,
-            max: Math.floor(m.h * scaling),
-            hp: Math.floor(m.h * scaling)
+    <script>
+        // === БАЗА ДАННЫХ ИГРЫ ===
+        const DB = {
+            gear: [
+                { id: 'sword1', name: 'Деревянный меч', type: 'weapon', power: 2, price: 50, icon: '🗡️' },
+                { id: 'sword2', name: 'Железный меч', type: 'weapon', power: 5, price: 250, icon: '⚔️' },
+                { id: 'armor1', name: 'Кожаная броня', type: 'armor', power: 3, price: 500, icon: '👕' },
+                { id: 'ring1', name: 'Кольцо силы', type: 'acc', power: 10, price: 1500, icon: '💍' },
+                { id: 'sword3', name: 'Меч Героя', type: 'weapon', power: 25, price: 5000, icon: '🔥' }
+            ],
+            workers: [
+                { id: 'peasant', name: 'Крестьянин', income: 1, price: 100, icon: '👨‍🌾' },
+                { id: 'miner', name: 'Шахтер', income: 5, price: 600, icon: '⛏️' },
+                { id: 'merchant', name: 'Торговец', income: 15, price: 2000, icon: '⚖️' }
+            ]
         };
-        
-        document.getElementById('m-name').innerText = m.n;
-        document.getElementById('m-desc').innerText = m.d;
-        document.getElementById('m-sprite').innerText = m.s;
-    },
 
-    // 4. UI СИСТЕМЫ (RENDER)
-    renderAll() {
-        // Header
-        document.getElementById('res-gold').innerText = Math.floor(this.s.gold);
-        document.getElementById('res-gems').innerText = this.s.gems;
-        document.getElementById('res-lvl').innerText = this.s.lvl;
-        document.getElementById('res-xp-num').innerText = `${Math.floor(this.s.xp)}/${this.s.nx}`;
-        document.getElementById('res-xp-bar').style.width = (this.s.xp / this.s.nx * 100) + "%";
-        document.getElementById('res-rank').innerText = this.db.ranks[Math.min(Math.floor(this.s.lvl/15), 5)];
+        // === ДВИЖОК ИГРЫ ===
+        const game = {
+            state: {
+                gold: 0,
+                lvl: 1,
+                xp: 0,
+                xpNeed: 100,
+                inventory: [], // купленные ID предметов
+                workers: {}    // id: количество
+            },
 
-        this.updateBattleUI();
-        this.renderHero();
-        this.renderForge();
-        this.renderCastle();
-    },
+            // Инициализация
+            init() {
+                try {
+                    // Загрузка
+                    const saved = localStorage.getItem('WAR_SAGA_V5');
+                    if (saved) {
+                        this.state = JSON.parse(saved);
+                        // Фикс старых сейвов, если структура поменялась
+                        if (!this.state.workers) this.state.workers = {}; 
+                        if (!this.state.inventory) this.state.inventory = [];
+                    }
 
-    updateBattleUI() {
-        const pct = (this.s.m.hp / this.s.m.max) * 100;
-        document.getElementById('m-hp-bar').style.width = Math.max(0, pct) + "%";
-        document.getElementById('m-hp-text').innerText = `${Math.max(0, Math.floor(this.s.m.hp))}/${this.s.m.max}`;
-    },
+                    // Telegram API
+                    if (window.Telegram && window.Telegram.WebApp) {
+                        window.Telegram.WebApp.ready();
+                        window.Telegram.WebApp.expand();
+                    }
 
-    renderHero() {
-        document.getElementById('h-points').innerText = this.s.points;
-        const stats = [
-            { id: 'str', n: 'Сила', d: 'Урон и криты', v: this.s.stats.str },
-            { id: 'int', n: 'Интеллект', d: 'Бонус к опыту', v: this.s.stats.int },
-            { id: 'vit', n: 'Живучесть', d: 'Сопротивление', v: this.s.stats.vit },
-            { id: 'luk', n: 'Удача', d: 'Дроп и золото', v: this.s.stats.luk }
-        ];
+                    this.renderShop();
+                    this.renderGear();
+                    this.updateUI();
 
-        document.getElementById('stats-list').innerHTML = stats.map(st => `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid #1a1a24; padding-bottom:5px;">
-                <div><b>${st.n}</b>: ${st.v}<br><small style="color:#555">${st.d}</small></div>
-                <button class="btn" onclick="game.upgradeStat('${st.id}')" ${this.s.points > 0 ? '' : 'disabled'}>+</button>
-            </div>
-        `).join('');
+                    // Запуск цикла дохода
+                    setInterval(() => this.tick(), 1000);
 
-        // Gear slots
-        const slots = ['weapon', 'armor', 'relic'];
-        document.getElementById('gear-slots').innerHTML = slots.map(sl => {
-            const item = this.s.gear[sl];
-            return `
-                <div class="card" style="text-align:center; padding:10px;">
-                    <div style="font-size:0.7em; color:#444; margin-bottom:5px;">${sl.toUpperCase()}</div>
-                    <div style="font-size:1.5em">${item ? item.i : '🌑'}</div>
-                    <div style="font-size:0.75em; margin-top:5px;">${item ? item.n : 'Пусто'}</div>
-                </div>
-            `;
-        }).join('');
-    },
+                    // Убираем загрузчик
+                    setTimeout(() => {
+                        document.getElementById('loader').style.opacity = '0';
+                        setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
+                    }, 800);
 
-    renderForge() {
-        document.getElementById('craft-list').innerHTML = this.db.craft.map(c => {
-            const canAfford = this.s.gold >= c.cost;
-            return `
-                <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
-                    <div style="font-size:1.8em; margin-right:15px;">${c.i}</div>
-                    <div style="flex:1; text-align:left;">
-                        <b>${c.n}</b><br>
-                        <small>Сила: +${c.pow} | <span style="color:var(--gold)">${c.cost} 🪙</span></small>
-                    </div>
-                    <button class="btn" onclick="game.craftItem('${c.id}')" ${canAfford ? '' : 'disabled'}>КОВАТЬ</button>
-                </div>
-            `;
-        }).join('');
-    },
+                } catch (e) {
+                    alert('Ошибка запуска: ' + e);
+                    document.getElementById('loader').style.display = 'none';
+                }
+            },
 
-    renderCastle() {
-        const upg = [
-            { id: 'mines', n: 'Золотые шахты', c: 1000, d: 'Пассивное золото', v: this.s.castle.mines },
-            { id: 'barracks', n: 'Казармы', c: 5000, d: 'Множитель урона', v: this.s.castle.barracks }
-        ];
-        document.getElementById('castle-upgrades').innerHTML = upg.map(u => `
-            <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
-                <div><b>${u.n}</b> (Ур. ${u.v})<br><small>${u.d}</small></div>
-                <button class="btn btn-gold" onclick="game.buyCastle('${u.id}', ${u.c * (u.v + 1)})">${u.c * (u.v + 1)} 🪙</button>
-            </div>
-        `).join('');
-    },
+            // Основной клик
+            click(loc, e) {
+                if (loc === 'cave' && this.state.lvl < 5) {
+                    this.showFloat(e, "Нужен 5 уровень!", "red");
+                    return;
+                }
 
-    // 5. ДЕЙСТВИЯ (ACTIONS)
-    upgradeStat(id) {
-        if (this.s.points > 0) {
-            this.s.points--;
-            this.s.stats[id]++;
-            this.renderAll();
-        }
-    },
+                const basePower = 1 + this.getGearPower();
+                const gain = loc === 'cave' ? basePower * 2 : basePower;
+                const xpGain = loc === 'cave' ? 10 : 5;
 
-    craftItem(id) {
-        const c = this.db.craft.find(x => x.id === id);
-        if (this.s.gold >= c.cost) {
-            this.s.gold -= c.cost;
-            this.s.gear[c.type] = c;
-            this.log(`Выковали: ${c.n}!`);
-            this.renderAll();
-            if (window.Telegram?.WebApp) window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
-        }
-    },
+                this.state.gold += gain;
+                this.addXp(xpGain);
+                
+                this.showFloat(e, `+${gain}🪙`);
+                this.updateUI();
+                
+                // Вибрация
+                if (window.Telegram?.WebApp?.HapticFeedback) {
+                    window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+                }
+            },
 
-    buyCastle(id, cost) {
-        if (this.s.gold >= cost) {
-            this.s.gold -= cost;
-            this.s.castle[id]++;
-            this.log(`Улучшено: ${id}`);
-            this.renderAll();
-        }
-    },
+            // Получение опыта
+            addXp(amount) {
+                this.state.xp += amount;
+                if (this.state.xp >= this.state.xpNeed) {
+                    this.state.lvl++;
+                    this.state.xp -= this.state.xpNeed;
+                    this.state.xpNeed = Math.floor(this.state.xpNeed * 1.5);
+                    alert(`УРОВЕНЬ ПОВЫШЕН! Теперь вы ${this.state.lvl} уровня.`);
+                }
+            },
 
-    switchTab(id, el) {
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-        document.getElementById('tab-' + id).classList.add('active');
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        el.classList.add('active');
-    },
+            // Пассивный доход
+            tick() {
+                let income = 0;
+                for (let id in this.state.workers) {
+                    const count = this.state.workers[id];
+                    const worker = DB.workers.find(w => w.id === id);
+                    if (worker) income += worker.income * count;
+                }
 
-    log(msg) {
-        const l = document.getElementById('game-log');
-        const div = document.createElement('div');
-        div.className = 'log-new';
-        div.innerText = `[${new Date().toLocaleTimeString()}] ${msg}`;
-        l.prepend(div);
-        if (l.childNodes.length > 25) l.lastChild.remove();
-    },
+                if (income > 0) {
+                    this.state.gold += income;
+                    this.updateUI();
+                    this.save();
+                }
+            },
 
-    pop(e, txt, col) {
-        const p = document.createElement('div');
-        p.className = 'dmg-popup';
-        p.innerText = txt;
-        p.style.color = col;
-        p.style.left = (e.clientX || window.innerWidth/2) + 'px';
-        p.style.top = (e.clientY || window.innerHeight/2) + 'px';
-        document.body.appendChild(p);
-        setTimeout(() => p.remove(), 700);
-    },
+            // Покупка предмета
+            buyGear(id) {
+                const item = DB.gear.find(i => i.id === id);
+                if (this.state.inventory.includes(id)) return;
+                
+                if (this.state.gold >= item.price) {
+                    this.state.gold -= item.price;
+                    this.state.inventory.push(id);
+                    this.renderGear();
+                    this.updateUI();
+                    this.save();
+                } else {
+                    alert("Не хватает золота!");
+                }
+            },
 
-    save() { localStorage.setItem('WAR_SAGA_MEGA_V1', JSON.stringify(this.s)); },
-    load() {
-        const data = localStorage.getItem('WAR_SAGA_MEGA_V1');
-        if (data) this.s = JSON.parse(data);
-    }
-};
+            // Найм рабочего
+            hireWorker(id) {
+                const worker = DB.workers.find(w => w.id === id);
+                const currentCount = this.state.workers[id] || 0;
+                // Цена растет на 15% за каждого рабочего
+                const cost = Math.floor(worker.price * Math.pow(1.15, currentCount));
 
-window.onload = () => game.init();
-</script>
+                if (this.state.gold >= cost) {
+                    this.state.gold -= cost;
+                    this.state.workers[id] = currentCount + 1;
+                    this.renderShop();
+                    this.updateUI();
+                    this.save();
+                } else {
+                    alert("Не хватает золота!");
+                }
+            },
 
+            // Расчет силы от предметов
+            getGearPower() {
+                let p = 0;
+                this.state.inventory.forEach(itemId => {
+                    const item = DB.gear.find(i => i.id === itemId);
+                    if (item) p += item.power;
+                });
+                return p;
+            },
+
+            // Отрисовка магазина снаряжения
+            renderGear() {
+                const container = document.getElementById('gear-list');
+                container.innerHTML = DB.gear.map(item => {
+                    const owned = this.state.inventory.includes(item.id);
+                    return `
+                    <div class="card" style="opacity: ${owned ? 0.6 : 1}">
+                        <div class="icon">${item.icon}</div>
+                        <div class="info">
+                            <h3>${item.name}</h3>
+                            <p>Сила клика: +${item.power}</p>
+                        </div>
+                        <button class="btn" ${owned ? 'disabled' : ''} onclick="game.buyGear('${item.id}')">
+                            ${owned ? 'КУПЛЕНО' : item.price + ' 🪙'}
+                        </button>
+                    </div>`;
+                }).join('');
+            },
+
+            // Отрисовка магазина рабочих
+            renderShop() {
+                const container = document.getElementById('shop-list');
+                container.innerHTML = DB.workers.map(w => {
+                    const count = this.state.workers[w.id] || 0;
+                    const cost = Math.floor(w.price * Math.pow(1.15, count));
+                    return `
+                    <div class="card">
+                        <div class="icon">${w.icon}</div>
+                        <div class="info">
+                            <h3>${w.name}</h3>
+                            <p>Доход: ${w.income}/сек (У вас: ${count})</p>
+                        </div>
+                        <button class="btn" onclick="game.hireWorker('${w.id}')">
+                            ${cost} 🪙
+                        </button>
+                    </div>`;
+                }).join('');
+            },
+
+            // Обновление цифр
+            updateUI() {
+                document.getElementById('ui-gold').innerText = Math.floor(this.state.gold);
+                document.getElementById('ui-lvl').innerText = this.state.lvl;
+                
+                const pct = (this.state.xp / this.state.xpNeed) * 100;
+                document.getElementById('ui-xp').style.width = pct + "%";
+                
+                document.getElementById('ui-power').innerText = 1 + this.getGearPower();
+                
+                let income = 0;
+                for (let id in this.state.workers) {
+                    const w = DB.workers.find(x => x.id === id);
+                    if(w) income += w.income * (this.state.workers[id] || 0);
+                }
+                document.getElementById('ui-auto').innerText = income;
+            },
+
+            save() {
+                localStorage.setItem('WAR_SAGA_V5', JSON.stringify(this.state));
+            },
+
+            switchTab(id, el) {
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                document.getElementById('tab-' + id).classList.add('active');
+                
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                el.classList.add('active');
+            },
+
+            showFloat(e, text, color = null) {
+                const el = document.createElement('div');
+                el.className = 'float-text';
+                el.innerText = text;
+                if(color) el.style.color = color;
+                
+                const x = e.clientX || (e.touches ? e.touches[0].clientX : window.innerWidth / 2);
+                const y = e.clientY || (e.touches ? e.touches[0].clientY : window.innerHeight / 2);
+                
+                el.style.left = x + 'px';
+                el.style.top = y + 'px';
+                document.body.appendChild(el);
+                setTimeout(() => el.remove(), 800);
+            }
+        };
+
+        // СТАРТ
+        window.onload = () => game.init();
+    </script>
 </body>
 </html>
