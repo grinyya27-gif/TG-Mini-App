@@ -3,333 +3,416 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#1a1a1a">
-    <title>Древняя Судьба — Средневековый RPG Кликер</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+    <title>WAR SAGA: REBORN</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        /* --- БАЗОВЫЕ СТИЛИ --- */
+        :root {
+            --bg: #0a0a0a;
+            --card-bg: #141414;
+            --gold: #ffcc00;
+            --text-main: #e0e0e0;
+            --text-dim: #888;
+            --accent: #b8860b;
+            --green: #4caf50;
+            --red: #f44336;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* --- ЗАГРУЗЧИК --- */
+        #loader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 9999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.5s ease;
+        }
+        .spinner {
+            width: 40px; height: 40px; border: 4px solid #333;
+            border-top: 4px solid var(--gold); border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* --- ШАПКА --- */
+        header {
+            padding: 15px; background: var(--card-bg);
+            border-bottom: 1px solid #333; display: flex; flex-direction: column; gap: 10px;
+        }
+        .stats-row { display: flex; justify-content: space-between; font-weight: bold; font-size: 1.1em; }
+        .gold-text { color: var(--gold); }
+        
+        .xp-container { width: 100%; height: 6px; background: #333; border-radius: 3px; overflow: hidden; }
+        .xp-bar { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; }
+
+        /* --- ОСНОВНОЙ КОНТЕНТ --- */
+        main { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 80px; }
+        .screen { display: none; animation: fade 0.3s; }
+        .screen.active { display: block; }
+        @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+        /* --- КАРТОЧКИ --- */
+        .card {
+            background: var(--card-bg); border: 1px solid #333; border-radius: 8px;
+            padding: 15px; margin-bottom: 10px; display: flex; align-items: center; gap: 15px;
+        }
+        .icon { font-size: 2em; min-width: 50px; text-align: center; }
+        .info { flex: 1; }
+        .info h3 { font-size: 1em; margin-bottom: 4px; }
+        .info p { font-size: 0.85em; color: var(--text-dim); }
+        
+        button.btn {
+            background: var(--accent); color: #fff; border: none;
+            padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer;
+        }
+        button.btn:active { transform: scale(0.95); opacity: 0.8; }
+        button.btn:disabled { background: #333; color: #555; cursor: not-allowed; }
+
+        /* --- НАВИГАЦИЯ --- */
+        nav {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: var(--card-bg); border-top: 1px solid #333;
+            display: flex; justify-content: space-around; padding: 10px 0;
+            padding-bottom: max(10px, env(safe-area-inset-bottom));
+        }
+        .nav-item {
+            text-align: center; color: var(--text-dim); font-size: 0.75em;
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+        }
+        .nav-item.active { color: var(--gold); }
+        .nav-icon { font-size: 1.4em; }
+
+        /* --- АНИМАЦИИ --- */
+        .float-text {
+            position: fixed; color: var(--gold); font-weight: bold; font-size: 1.2em;
+            pointer-events: none; animation: floatUp 0.8s forwards; z-index: 1000;
+        }
+        @keyframes floatUp { to { transform: translateY(-50px); opacity: 0; } }
+    </style>
 </head>
-<body class="dark-ancient-theme">
+<body>
 
-<div class="app-wrapper">
+    <div id="loader">
+        <div class="spinner"></div>
+        <p style="margin-top: 15px; color: #666;">Загрузка мира...</p>
+    </div>
 
-    <!-- ============================================= -->
-    <!--               ШАПКА / ХЕДЕР                   -->
-    <!-- ============================================= -->
-    <header class="main-header rune-border">
-        <div class="header-content">
-            <h1 class="title-gothic">Древняя Судьба</h1>
-            <div class="player-header-block">
-                <div class="player-avatar-frame">
-                    <div class="player-avatar" id="avatar-preview"></div>
-                </div>
-                <div class="player-main-info">
-                    <div class="player-name-level">
-                        <span class="player-name" id="player-name">Безымянный странник</span>
-                        <span class="player-title" id="player-title">Крестьянин</span>
-                    </div>
-                    <div class="level-info">
-                        Уровень: <span id="current-level">1</span>
-                        <div class="xp-bar-container">
-                            <div class="xp-bar" id="xp-progress" style="width:0%"></div>
-                        </div>
-                        <span id="xp-text">0 / 100</span>
-                    </div>
-                </div>
-            </div>
+    <header>
+        <div class="stats-row">
+            <span>🪙 <span id="ui-gold">0</span></span>
+            <span>Ур. <span id="ui-lvl">1</span></span>
         </div>
-
-        <div class="header-resources">
-            <div class="resource-pill gold">
-                <span class="icon">🪙</span>
-                <span id="gold-count">0</span>
-            </div>
-            <div class="resource-pill emerald">
-                <span class="icon">💎</span>
-                <span id="emerald-count">0</span>
-            </div>
-            <div class="resource-pill fame">
-                <span class="icon">✦</span>
-                <span id="fame-count">0</span>
-            </div>
+        <div class="xp-container"><div id="ui-xp" class="xp-bar"></div></div>
+        <div style="font-size: 0.8em; color: #666; text-align: center;">
+            Сила клика: <span id="ui-power">1</span> | Доход: <span id="ui-auto">0</span>/сек
         </div>
     </header>
 
-    <!-- ============================================= -->
-    <!--               НАВИГАЦИЯ (ТАБЫ)                -->
-    <!-- ============================================= -->
-    <nav class="main-tabs rune-border-bottom">
-        <button class="tab-button active" data-tab="activities">Деятельность</button>
-        <button class="tab-button" data-tab="market">Рынок</button>
-        <button class="tab-button" data-tab="workshop">Мастерская</button>
-        <button class="tab-button" data-tab="inventory">Инвентарь</button>
-        <button class="tab-button" data-tab="character">Персонаж</button>
-        <button class="tab-button" data-tab="bank">Банк</button>
+    <main>
+        <section id="tab-battle" class="screen active">
+            <h2 style="margin-bottom: 15px; color: var(--gold);">Зоны охоты</h2>
+            
+            <div class="card" onclick="game.click('forest', event)">
+                <div class="icon">🌲</div>
+                <div class="info">
+                    <h3>Темный Лес</h3>
+                    <p>Кликните, чтобы найти золото</p>
+                </div>
+            </div>
+
+            <div class="card" onclick="game.click('cave', event)">
+                <div class="icon">🦇</div>
+                <div class="info">
+                    <h3>Пещера (Ур. 5)</h3>
+                    <p>Больше опыта и золота</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-gear" class="screen">
+            <h2 style="margin-bottom: 15px; color: var(--gold);">Оружейная</h2>
+            <div id="gear-list">
+                </div>
+        </section>
+
+        <section id="tab-shop" class="screen">
+            <h2 style="margin-bottom: 15px; color: var(--gold);">Наемники</h2>
+            <div id="shop-list">
+                </div>
+        </section>
+    </main>
+
+    <nav>
+        <div class="nav-item active" onclick="game.switchTab('battle', this)">
+            <span class="nav-icon">⚔️</span>
+            <span>Битва</span>
+        </div>
+        <div class="nav-item" onclick="game.switchTab('gear', this)">
+            <span class="nav-icon">🛡️</span>
+            <span>Герой</span>
+        </div>
+        <div class="nav-item" onclick="game.switchTab('shop', this)">
+            <span class="nav-icon">💰</span>
+            <span>Лавка</span>
+        </div>
     </nav>
 
-    <!-- ============================================= -->
-    <!--          ВКЛАДКА: ДЕЯТЕЛЬНОСТЬ / РАБОТЫ       -->
-    <!-- ============================================= -->
-    <main id="tab-activities" class="tab-panel active">
+    <script>
+        // === БАЗА ДАННЫХ ИГРЫ ===
+        const DB = {
+            gear: [
+                { id: 'sword1', name: 'Деревянный меч', type: 'weapon', power: 2, price: 50, icon: '🗡️' },
+                { id: 'sword2', name: 'Железный меч', type: 'weapon', power: 5, price: 250, icon: '⚔️' },
+                { id: 'armor1', name: 'Кожаная броня', type: 'armor', power: 3, price: 500, icon: '👕' },
+                { id: 'ring1', name: 'Кольцо силы', type: 'acc', power: 10, price: 1500, icon: '💍' },
+                { id: 'sword3', name: 'Меч Героя', type: 'weapon', power: 25, price: 5000, icon: '🔥' }
+            ],
+            workers: [
+                { id: 'peasant', name: 'Крестьянин', income: 1, price: 100, icon: '👨‍🌾' },
+                { id: 'miner', name: 'Шахтер', income: 5, price: 600, icon: '⛏️' },
+                { id: 'merchant', name: 'Торговец', income: 15, price: 2000, icon: '⚖️' }
+            ]
+        };
 
-        <section class="activity-section">
-            <h2 class="section-title">Основные занятия</h2>
+        // === ДВИЖОК ИГРЫ ===
+        const game = {
+            state: {
+                gold: 0,
+                lvl: 1,
+                xp: 0,
+                xpNeed: 100,
+                inventory: [], // купленные ID предметов
+                workers: {}    // id: количество
+            },
 
-            <div class="activity-card" id="activity-fishing">
-                <div class="activity-icon">🎣</div>
-                <div class="activity-info">
-                    <h3>Рыбалка в порту</h3>
-                    <p class="unlock-info">Доступно с 1 уровня</p>
-                    <p class="reward-range">1–4 золота за действие</p>
-                    <p class="passive-info">Пассив: <span id="fishing-passive">0</span>/с</p>
-                </div>
-                <button class="activity-action-btn" id="btn-fish">Забросить удочку</button>
-            </div>
+            // Инициализация
+            init() {
+                try {
+                    // Загрузка
+                    const saved = localStorage.getItem('WAR_SAGA_V5');
+                    if (saved) {
+                        this.state = JSON.parse(saved);
+                        // Фикс старых сейвов, если структура поменялась
+                        if (!this.state.workers) this.state.workers = {}; 
+                        if (!this.state.inventory) this.state.inventory = [];
+                    }
 
-            <div class="activity-card locked" id="activity-farming">
-                <div class="activity-icon">🌾</div>
-                <div class="activity-info">
-                    <h3>Работа на ферме</h3>
-                    <p class="unlock-info">Требуется уровень 3</p>
-                    <p class="reward-range">5–12 золота за действие</p>
-                    <p class="passive-info">Пассив: <span>0</span>/с</p>
-                </div>
-                <button class="activity-action-btn" disabled>Собирать урожай</button>
-            </div>
+                    // Telegram API
+                    if (window.Telegram && window.Telegram.WebApp) {
+                        window.Telegram.WebApp.ready();
+                        window.Telegram.WebApp.expand();
+                    }
 
-            <div class="activity-card locked" id="activity-mining">
-                <div class="activity-icon">⛏️</div>
-                <div class="activity-info">
-                    <h3>Добыча в руднике</h3>
-                    <p class="unlock-info">Требуется уровень 5</p>
-                    <p class="reward-range">12–35 золота + 1–2% шанс на изумруд</p>
-                    <p class="passive-info">Пассив: <span>0</span>/с</p>
-                </div>
-                <button class="activity-action-btn" disabled>Копать жилу</button>
-            </div>
+                    this.renderShop();
+                    this.renderGear();
+                    this.updateUI();
 
-            <div class="activity-card locked" id="activity-hunting">
-                <div class="activity-icon">🏹</div>
-                <div class="activity-info">
-                    <h3>Охота в диком лесу</h3>
-                    <p class="unlock-info">Требуется уровень 15 + любое оружие дальнего боя</p>
-                    <p class="reward-range">45–160 золота + шанс на шкуру/мясо</p>
-                    <p class="passive-info">Пассив: <span>0</span>/с</p>
-                </div>
-                <button class="activity-action-btn" disabled>Выследить добычу</button>
-            </div>
+                    // Запуск цикла дохода
+                    setInterval(() => this.tick(), 1000);
 
-            <div class="activity-card locked" id="activity-guarding">
-                <div class="activity-icon">🛡️</div>
-                <div class="activity-info">
-                    <h3>Служба стражником</h3>
-                    <p class="unlock-info">Требуется уровень 20 + любая броня</p>
-                    <p class="reward-range">Стабильно 25–40 золота + репутация</p>
-                </div>
-                <button class="activity-action-btn" disabled>Встать на пост</button>
-            </div>
+                    // Убираем загрузчик
+                    setTimeout(() => {
+                        document.getElementById('loader').style.opacity = '0';
+                        setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
+                    }, 800);
 
-            <div class="activity-card locked" id="activity-praying">
-                <div class="activity-icon">🙏</div>
-                <div class="activity-info">
-                    <h3>Молитва в храме</h3>
-                    <p class="unlock-info">Требуется уровень 28</p>
-                    <p class="reward-range">Шанс на благословение / изумруд / опыт</p>
-                </div>
-                <button class="activity-action-btn" disabled>Вознести молитву</button>
-            </div>
-        </section>
-    </main>
+                } catch (e) {
+                    alert('Ошибка запуска: ' + e);
+                    document.getElementById('loader').style.display = 'none';
+                }
+            },
 
-    <!-- ============================================= -->
-    <!--               ВКЛАДКА РЫНОК                   -->
-    <!-- ============================================= -->
-    <main id="tab-market" class="tab-panel">
+            // Основной клик
+            click(loc, e) {
+                if (loc === 'cave' && this.state.lvl < 5) {
+                    this.showFloat(e, "Нужен 5 уровень!", "red");
+                    return;
+                }
 
-        <section class="market-section">
-            <h2 class="section-title">Торговые ряды Старого города</h2>
+                const basePower = 1 + this.getGearPower();
+                const gain = loc === 'cave' ? basePower * 2 : basePower;
+                const xpGain = loc === 'cave' ? 10 : 5;
 
-            <div class="market-category">
-                <h3>Оружие дальнего боя</h3>
-                <div class="shop-grid">
-                    <div class="shop-item">
-                        <div class="item-icon">🏹</div>
-                        <h4>Простой охотничий лук</h4>
-                        <p class="price">1 450 золота</p>
-                        <button class="buy-btn" id="buy-simple-bow">Приобрести</button>
-                    </div>
-                    <div class="shop-item">
-                        <div class="item-icon">🏹</div>
-                        <h4>Усиленный боевой лук</h4>
-                        <p class="price">3 800 золота</p>
-                        <button class="buy-btn" id="buy-strong-bow">Приобрести</button>
-                    </div>
-                    <div class="shop-item">
-                        <div class="item-icon">🏹→</div>
-                        <h4>Тяжёлый арбалет</h4>
-                        <p class="price">6 200 золота + Лук</p>
-                        <button class="buy-btn upgrade" id="buy-crossbow">Улучшить</button>
-                    </div>
-                </div>
-            </div>
+                this.state.gold += gain;
+                this.addXp(xpGain);
+                
+                this.showFloat(e, `+${gain}🪙`);
+                this.updateUI();
+                
+                // Вибрация
+                if (window.Telegram?.WebApp?.HapticFeedback) {
+                    window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+                }
+            },
 
-            <div class="market-category">
-                <h3>Ближний бой</h3>
-                <div class="shop-grid">
-                    <div class="shop-item">
-                        <div class="item-icon">⚔️</div>
-                        <h4>Железный меч</h4>
-                        <p class="price">2 900 золота</p>
-                        <button class="buy-btn">Купить</button>
-                    </div>
-                    <div class="shop-item">
-                        <div class="item-icon">🗡️</div>
-                        <h4>Длинный полуторный меч</h4>
-                        <p class="price">7 100 золота</p>
-                        <button class="buy-btn">Купить</button>
-                    </div>
-                </div>
-            </div>
+            // Получение опыта
+            addXp(amount) {
+                this.state.xp += amount;
+                if (this.state.xp >= this.state.xpNeed) {
+                    this.state.lvl++;
+                    this.state.xp -= this.state.xpNeed;
+                    this.state.xpNeed = Math.floor(this.state.xpNeed * 1.5);
+                    alert(`УРОВЕНЬ ПОВЫШЕН! Теперь вы ${this.state.lvl} уровня.`);
+                }
+            },
 
-            <div class="market-category">
-                <h3>Защита</h3>
-                <div class="shop-grid">
-                    <div class="shop-item">
-                        <div class="item-icon">🛡️</div>
-                        <h4>Кольчуга</h4>
-                        <p class="price">5 400 золота</p>
-                        <button class="buy-btn">Купить</button>
-                    </div>
-                    <div class="shop-item">
-                        <div class="item-icon">🛡️</div>
-                        <h4>Пластинчатый доспех</h4>
-                        <p class="price">14 000 золота</p>
-                        <button class="buy-btn">Купить</button>
-                    </div>
-                </div>
-            </div>
+            // Пассивный доход
+            tick() {
+                let income = 0;
+                for (let id in this.state.workers) {
+                    const count = this.state.workers[id];
+                    const worker = DB.workers.find(w => w.id === id);
+                    if (worker) income += worker.income * count;
+                }
 
-            <div class="market-category">
-                <h3>Редкие предметы</h3>
-                <div class="shop-grid">
-                    <div class="shop-item rare">
-                        <div class="item-icon">💎</div>
-                        <h4>Амулет удачного удара</h4>
-                        <p class="price">3 изумруда</p>
-                        <button class="buy-btn rare">Приобрести</button>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
+                if (income > 0) {
+                    this.state.gold += income;
+                    this.updateUI();
+                    this.save();
+                }
+            },
 
-    <!-- ============================================= -->
-    <!--         ВКЛАДКА МАСТЕРСКАЯ / КУЗНЯ            -->
-    <!-- ============================================= -->
-    <main id="tab-workshop" class="tab-panel">
-        <h2 class="section-title">Кузница и мастерская</h2>
-        <p class="coming-soon">Здесь можно будет улучшать и создавать предметы (в разработке)</p>
-        <!-- Здесь будет много форм, рецептов, слотов для ингредиентов и т.д. -->
-    </main>
+            // Покупка предмета
+            buyGear(id) {
+                const item = DB.gear.find(i => i.id === id);
+                if (this.state.inventory.includes(id)) return;
+                
+                if (this.state.gold >= item.price) {
+                    this.state.gold -= item.price;
+                    this.state.inventory.push(id);
+                    this.renderGear();
+                    this.updateUI();
+                    this.save();
+                } else {
+                    alert("Не хватает золота!");
+                }
+            },
 
-    <!-- ============================================= -->
-    <!--               ВКЛАДКА ИНВЕНТАРЬ              -->
-    <!-- ============================================= -->
-    <main id="tab-inventory" class="tab-panel">
-        <h2 class="section-title">Инвентарь странника</h2>
-        <div class="inventory-container" id="inventory-grid">
-            <!-- 48 пустых слотов для начала -->
-            <div class="inv-slot empty"></div><div class="inv-slot empty"></div><div class="inv-slot empty"></div><div class="inv-slot empty"></div>
-            <div class="inv-slot empty"></div><div class="inv-slot empty"></div><div class="inv-slot empty"></div><div class="inv-slot empty"></div>
-            <div class="inv-slot empty"></div><div class="inv-slot empty"></div><div class="inv-slot empty"></div><div class="inv-slot empty"></div>
-            <div class="inv-slot empty"></div><div class="inv-slot empty"></div><div class="inv-slot empty"></div><div class="inv-slot empty"></div>
-            <div class="inv-slot empty"></div><div class="inv-slot empty"></div><div class="inv-slot empty"></div><div class="inv-slot empty"></div>
-            <div class="inv-slot empty"></div><div class="inv-slot empty"></div><div class="inv-slot empty"></div><div class="inv-slot empty"></div>
-            <!-- ... можно добавить ещё 24–48 слотов если нужно больше строк -->
-        </div>
-    </main>
+            // Найм рабочего
+            hireWorker(id) {
+                const worker = DB.workers.find(w => w.id === id);
+                const currentCount = this.state.workers[id] || 0;
+                // Цена растет на 15% за каждого рабочего
+                const cost = Math.floor(worker.price * Math.pow(1.15, currentCount));
 
-    <!-- ============================================= -->
-    <!--           ВКЛАДКА ПЕРСОНАЖ / ПРОФИЛЬ          -->
-    <!-- ============================================= -->
-    <main id="tab-character" class="tab-panel">
-        <section class="character-stats">
-            <h2 class="section-title">Характеристики героя</h2>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <span class="stat-label">Уровень</span>
-                    <span class="stat-value" id="stat-level">1</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">Титул</span>
-                    <span class="stat-value" id="stat-title">Крестьянин</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">Сила клика</span>
-                    <span class="stat-value" id="stat-click-power">1</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">Пассивный доход</span>
-                    <span class="stat-value" id="stat-passive">0/с</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">Репутация</span>
-                    <span class="stat-value" id="stat-fame">0</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">Серия дней</span>
-                    <span class="stat-value" id="daily-streak">0</span>
-                </div>
-            </div>
-        </section>
+                if (this.state.gold >= cost) {
+                    this.state.gold -= cost;
+                    this.state.workers[id] = currentCount + 1;
+                    this.renderShop();
+                    this.updateUI();
+                    this.save();
+                } else {
+                    alert("Не хватает золота!");
+                }
+            },
 
-        <section class="daily-reward-section">
-            <h3>Дар богов за преданность</h3>
-            <button class="big-reward-btn" id="claim-daily-reward">Получить сегодняшнюю награду</button>
-            <p id="daily-message">Награда обновляется каждые 24 часа</p>
-        </section>
-    </main>
+            // Расчет силы от предметов
+            getGearPower() {
+                let p = 0;
+                this.state.inventory.forEach(itemId => {
+                    const item = DB.gear.find(i => i.id === itemId);
+                    if (item) p += item.power;
+                });
+                return p;
+            },
 
-    <!-- ============================================= -->
-    <!--               ВКЛАДКА БАНК                    -->
-    <!-- ============================================= -->
-    <main id="tab-bank" class="tab-panel">
-        <h2 class="section-title">Банк Гильдии Золотых Весов</h2>
+            // Отрисовка магазина снаряжения
+            renderGear() {
+                const container = document.getElementById('gear-list');
+                container.innerHTML = DB.gear.map(item => {
+                    const owned = this.state.inventory.includes(item.id);
+                    return `
+                    <div class="card" style="opacity: ${owned ? 0.6 : 1}">
+                        <div class="icon">${item.icon}</div>
+                        <div class="info">
+                            <h3>${item.name}</h3>
+                            <p>Сила клика: +${item.power}</p>
+                        </div>
+                        <button class="btn" ${owned ? 'disabled' : ''} onclick="game.buyGear('${item.id}')">
+                            ${owned ? 'КУПЛЕНО' : item.price + ' 🪙'}
+                        </button>
+                    </div>`;
+                }).join('');
+            },
 
-        <div class="exchange-panel">
-            <h3>Обмен валют</h3>
-            
-            <div class="exchange-block">
-                <label>Золото → Изумруды</label>
-                <div class="exchange-row">
-                    <input type="number" id="gold-to-em-amount" min="0" placeholder="Количество золота">
-                    <button id="btn-gold-to-em">Обменять</button>
-                </div>
-                <p class="rate-info">Курс: 220 : 1</p>
-            </div>
+            // Отрисовка магазина рабочих
+            renderShop() {
+                const container = document.getElementById('shop-list');
+                container.innerHTML = DB.workers.map(w => {
+                    const count = this.state.workers[w.id] || 0;
+                    const cost = Math.floor(w.price * Math.pow(1.15, count));
+                    return `
+                    <div class="card">
+                        <div class="icon">${w.icon}</div>
+                        <div class="info">
+                            <h3>${w.name}</h3>
+                            <p>Доход: ${w.income}/сек (У вас: ${count})</p>
+                        </div>
+                        <button class="btn" onclick="game.hireWorker('${w.id}')">
+                            ${cost} 🪙
+                        </button>
+                    </div>`;
+                }).join('');
+            },
 
-            <div class="exchange-block">
-                <label>Изумруды → Золото</label>
-                <div class="exchange-row">
-                    <input type="number" id="em-to-gold-amount" min="0" placeholder="Количество изумрудов">
-                    <button id="btn-em-to-gold">Обменять</button>
-                </div>
-                <p class="rate-info">Курс: 1 : 195</p>
-            </div>
-        </div>
-    </main>
+            // Обновление цифр
+            updateUI() {
+                document.getElementById('ui-gold').innerText = Math.floor(this.state.gold);
+                document.getElementById('ui-lvl').innerText = this.state.lvl;
+                
+                const pct = (this.state.xp / this.state.xpNeed) * 100;
+                document.getElementById('ui-xp').style.width = pct + "%";
+                
+                document.getElementById('ui-power').innerText = 1 + this.getGearPower();
+                
+                let income = 0;
+                for (let id in this.state.workers) {
+                    const w = DB.workers.find(x => x.id === id);
+                    if(w) income += w.income * (this.state.workers[id] || 0);
+                }
+                document.getElementById('ui-auto').innerText = income;
+            },
 
-    <!-- Нижняя фиксированная кнопка-кликер -->
-    <footer class="main-action-bar">
-        <button class="giant-click-button" id="main-world-click">
-            <span class="hammer-icon">⚒️</span><br>УДАР!
-        </button>
-    </footer>
+            save() {
+                localStorage.setItem('WAR_SAGA_V5', JSON.stringify(this.state));
+            },
 
-</div><!-- .app-wrapper -->
+            switchTab(id, el) {
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                document.getElementById('tab-' + id).classList.add('active');
+                
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                el.classList.add('active');
+            },
 
-<script src="script.js"></script>
+            showFloat(e, text, color = null) {
+                const el = document.createElement('div');
+                el.className = 'float-text';
+                el.innerText = text;
+                if(color) el.style.color = color;
+                
+                const x = e.clientX || (e.touches ? e.touches[0].clientX : window.innerWidth / 2);
+                const y = e.clientY || (e.touches ? e.touches[0].clientY : window.innerHeight / 2);
+                
+                el.style.left = x + 'px';
+                el.style.top = y + 'px';
+                document.body.appendChild(el);
+                setTimeout(() => el.remove(), 800);
+            }
+        };
+
+        // СТАРТ
+        window.onload = () => game.init();
+    </script>
 </body>
 </html>
