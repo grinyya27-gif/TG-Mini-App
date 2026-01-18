@@ -3,406 +3,439 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WAR SAGA: TITAN EDITION</title>
+    <title>WAR SAGA: ETERNAL EMPIRE</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Comfortaa:wght@300;500&display=swap" rel="stylesheet">
     <style>
-        /* --- ОГРОМНЫЙ БЛОК СТИЛЕЙ (200+ строк дизайна) --- */
         :root {
-            --gold: #ffd700; --gold-d: #b8860b; --bg: #050505; --card: #111;
-            --text: #e0e0e0; --dim: #666; --accent: #800000; --emerald: #50c878;
-            --shadow: 0 4px 15px rgba(0,0,0,0.7);
+            --bg: #050507; --panel: #0d0d12; --accent: #c29d0b; --blood: #8b0000;
+            --magic: #4b0082; --gold: #ffd700; --text: #d1d1d1; --border: #1f1f2e;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; font-family: 'Cinzel', serif; }
-        body { background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            background: var(--bg); color: var(--text);
+            font-family: 'Comfortaa', cursive; height: 100vh;
+            overflow: hidden; display: flex; flex-direction: column;
+        }
+        h1, h2, h3, .rpg-font { font-family: 'Cinzel', serif; }
+
+        /* --- UI UTILS --- */
+        .flex-center { display: flex; align-items: center; justify-content: center; }
+        .hidden { display: none !important; }
+        .btn {
+            background: linear-gradient(135deg, #1a1a24 0%, #0d0d12 100%);
+            border: 1px solid var(--border); border-radius: 8px; color: var(--text);
+            padding: 12px; cursor: pointer; transition: 0.2s; font-weight: bold;
+        }
+        .btn:active { transform: scale(0.96); border-color: var(--accent); }
+        .btn-gold { color: var(--gold); border-color: var(--gold); }
+        .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 12px; }
+
+        /* --- HEADER & STATS --- */
+        header { padding: 15px; background: rgba(13,13,18,0.95); border-bottom: 2px solid var(--border); box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+        .top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .resource-chip { background: #16161f; padding: 5px 12px; border-radius: 20px; font-size: 0.9em; border: 1px solid #252535; }
         
-        /* Стилизация скроллбара */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: #000; }
-        ::-webkit-scrollbar-thumb { background: var(--gold-d); }
+        .xp-container { width: 100%; height: 8px; background: #000; border-radius: 4px; overflow: hidden; border: 1px solid #222; }
+        .xp-fill { width: 0%; height: 100%; background: linear-gradient(90deg, var(--blood), #f00); transition: 0.4s; }
 
-        header { padding: 20px; background: linear-gradient(180deg, #151515 0%, #050505 100%); border-bottom: 2px solid var(--gold-d); box-shadow: var(--shadow); z-index: 10; }
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        .stat-card { background: #000; border: 1px solid #333; padding: 8px; border-radius: 4px; display: flex; align-items: center; justify-content: space-between; }
-        .stat-label { color: var(--gold); font-size: 0.7em; text-transform: uppercase; }
-        .stat-value { font-weight: bold; font-size: 1.1em; }
+        /* --- MAIN VIEW --- */
+        main { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 100px; }
+        .tab-content { display: none; animation: fadeIn 0.3s forwards; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .xp-container { width: 100%; height: 6px; background: #222; border-radius: 10px; margin-top: 10px; position: relative; border: 1px solid #333; }
-        .xp-bar { height: 100%; background: linear-gradient(90deg, #800000, #ff4500); width: 0%; transition: width 0.4s cubic-bezier(0.17, 0.67, 0.83, 0.67); }
+        /* --- BATTLE SYSTEM --- */
+        .monster-box { text-align: center; padding: 20px 0; position: relative; }
+        .monster-sprite { font-size: 5em; filter: drop-shadow(0 0 15px rgba(194,157,11,0.3)); margin: 15px 0; transition: 0.1s; }
+        .hp-bar-outer { width: 100%; height: 14px; background: #000; border-radius: 7px; border: 1px solid #333; overflow: hidden; margin-top: 10px; }
+        .hp-bar-inner { width: 100%; height: 100%; background: linear-gradient(90deg, #8b0000, #ff4d4d); transition: 0.2s; }
+        
+        .hit-btn {
+            width: 100%; height: 80px; font-size: 1.5em; letter-spacing: 2px;
+            background: linear-gradient(to bottom, #2a0000, #1a0000);
+            border: 2px solid var(--blood); border-radius: 15px; margin-top: 20px;
+        }
 
-        main { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 100px; background-image: radial-gradient(#111 1px, transparent 1px); background-size: 20px 20px; }
-        .screen { display: none; }
-        .screen.active { display: block; animation: slideUp 0.3s ease-out; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        /* --- NAV BAR --- */
+        nav {
+            position: fixed; bottom: 0; width: 100%; background: var(--panel);
+            display: flex; border-top: 1px solid var(--border);
+            padding-bottom: max(10px, env(safe-area-inset-bottom));
+        }
+        .nav-item {
+            flex: 1; padding: 12px; display: flex; flex-direction: column;
+            align-items: center; font-size: 0.7em; color: var(--dim);
+        }
+        .nav-item i { font-size: 1.6em; margin-bottom: 4px; font-style: normal; }
+        .nav-item.active { color: var(--accent); background: rgba(194,157,11,0.05); }
 
-        .m-card { background: var(--card); border: 2px solid #222; border-radius: 15px; padding: 20px; position: relative; margin-bottom: 20px; overflow: hidden; }
-        .m-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--gold-d); }
-        .m-hp-box { width: 100%; height: 12px; background: #000; border: 1px solid #444; border-radius: 6px; margin: 15px 0; overflow: hidden; }
-        .m-hp-fill { height: 100%; background: linear-gradient(90deg, #ff0000, #8b0000); width: 100%; transition: width 0.2s; }
+        /* --- LOGS --- */
+        #game-log {
+            background: #000; border: 1px solid #222; border-radius: 8px;
+            height: 100px; overflow-y: auto; padding: 10px; font-size: 0.75em;
+            color: #888; margin-top: 15px; line-height: 1.5;
+        }
+        .log-new { border-left: 2px solid var(--accent); padding-left: 8px; margin-bottom: 4px; animation: logSlide 0.3s; }
+        @keyframes logSlide { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
 
-        .action-btn { background: linear-gradient(135deg, #800000 0%, #4a0000 100%); color: #fff; border: 1px solid var(--gold); padding: 15px; border-radius: 10px; width: 100%; font-size: 1.2em; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.5); cursor: pointer; text-shadow: 1px 1px 2px #000; }
-        .action-btn:active { transform: scale(0.98); filter: brightness(1.2); }
-
-        .grid-list { display: grid; grid-template-columns: 1fr; gap: 15px; }
-        .item-card { background: #151515; border: 1px solid #333; border-radius: 8px; padding: 12px; display: flex; align-items: center; gap: 15px; }
-        .item-icon { font-size: 2em; background: #000; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 8px; border: 1px solid var(--gold-d); }
-        .item-info { flex: 1; }
-        .item-info h4 { font-size: 0.9em; color: var(--gold); }
-        .item-info p { font-size: 0.75em; color: var(--dim); }
-
-        .buy-btn { background: var(--emerald); color: #000; border: none; padding: 8px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; }
-        .buy-btn:disabled { background: #333; color: #555; }
-
-        nav { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid var(--gold-d); padding-bottom: max(10px, env(safe-area-inset-bottom)); z-index: 100; }
-        .nav-link { color: var(--dim); text-decoration: none; font-size: 0.7em; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 5px; }
-        .nav-link.active { color: var(--gold); }
-        .nav-link i { font-size: 1.8em; font-style: normal; }
-
-        #game-log { background: rgba(0,0,0,0.8); border: 1px solid #222; padding: 10px; height: 80px; font-size: 0.75em; overflow-y: auto; color: #aaa; margin-top: 20px; border-radius: 5px; line-height: 1.4; }
-        .log-entry { border-left: 2px solid var(--gold-d); padding-left: 8px; margin-bottom: 5px; }
-
-        .floating-num { position: fixed; pointer-events: none; font-weight: 900; animation: floatAnim 1s ease-out forwards; z-index: 2000; text-shadow: 2px 2px 4px #000; }
-        @keyframes floatAnim { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-100px) scale(1.5); } }
+        /* --- ANIMATIONS --- */
+        .dmg-popup {
+            position: fixed; pointer-events: none; font-family: 'Cinzel'; font-weight: bold;
+            font-size: 1.5em; z-index: 1000; animation: popupAnim 0.7s forwards;
+        }
+        @keyframes popupAnim {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-100px) scale(1.5); }
+        }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="stats-grid">
-        <div class="stat-card">
-            <span class="stat-label">Золото</span>
-            <span class="stat-value gold-text" id="ui-gold">0</span>
-        </div>
-        <div class="stat-card">
-            <span class="stat-label">Алмазы</span>
-            <span class="stat-value" style="color:var(--emerald)" id="ui-gems">0</span>
-        </div>
+    <div class="top-row">
+        <div class="resource-chip">🪙 <span id="res-gold">0</span></div>
+        <div class="resource-chip">💎 <span id="res-gems">0</span></div>
+        <div class="resource-chip" style="border-color: #2e4a2e;">🎖️ LVL <span id="res-lvl">1</span></div>
     </div>
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-        <span style="font-size: 0.8em; color: var(--gold);">УРОВЕНЬ <span id="ui-lvl">1</span></span>
-        <span style="font-size: 0.7em; color: var(--dim);" id="ui-rank">БРОДЯГА</span>
+    <div class="xp-container"><div id="res-xp-bar" class="xp-fill"></div></div>
+    <div style="font-size: 0.7em; margin-top: 5px; color: #666; display: flex; justify-content: space-between;">
+        <span>ОПЫТ: <span id="res-xp-num">0/100</span></span>
+        <span id="res-rank">НОВИЧОК</span>
     </div>
-    <div class="xp-container"><div class="xp-bar" id="ui-xp-fill"></div></div>
 </header>
 
 <main>
-    <section id="scr-battle" class="screen active">
-        <div class="m-card">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                <div>
-                    <h2 id="m-name">Гнилой Слизень</h2>
-                    <p style="font-size: 0.8em; color: var(--dim);">Зона: <span id="ui-zone">Мрачные Болота</span></p>
-                </div>
-                <div id="m-icon" style="font-size: 3.5em; filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));">💧</div>
-            </div>
-            <div class="m-hp-box"><div class="m-hp-fill" id="ui-hp-fill"></div></div>
-            <div style="text-align: center; font-size: 0.8em; color: var(--dim); margin-bottom: 10px;">
-                HP: <span id="ui-hp-cur">10</span> / <span id="ui-hp-max">10</span>
-            </div>
-            <button class="action-btn" id="btn-attack">НАНЕСТИ УДАР</button>
+    <section id="tab-battle" class="tab-content active">
+        <div class="monster-box">
+            <h2 id="m-name" class="rpg-font">Болотистый Бес</h2>
+            <p id="m-desc" style="font-size: 0.75em; color: #555;">Слабое порождение мглы</p>
+            <div id="m-sprite" class="monster-sprite">👺</div>
+            <div class="hp-bar-outer"><div id="m-hp-bar" class="hp-bar-inner"></div></div>
+            <p style="font-size: 0.8em; margin-top: 5px;">HP: <span id="m-hp-text">10/10</span></p>
         </div>
         
-        <div id="game-log">
-            <div class="log-entry">Ваше приключение начинается...</div>
+        <button class="btn hit-btn rpg-font" onclick="game.handleAttack(event)">АТАКОВАТЬ</button>
+        
+        <div id="game-log"></div>
+    </section>
+
+    <section id="tab-hero" class="tab-content">
+        <h2 class="rpg-font" style="color: var(--accent); margin-bottom: 15px;">ХАРАКТЕРИСТИКИ</h2>
+        <div class="card">
+            <div id="stat-points-div" style="margin-bottom: 10px; color: var(--gold); font-weight: bold;">Свободные очки: <span id="h-points">0</span></div>
+            <div id="stats-list">
+                </div>
+        </div>
+        <h2 class="rpg-font" style="color: var(--accent); margin-bottom: 15px;">СНАРЯЖЕНИЕ</h2>
+        <div id="gear-slots" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            </div>
+    </section>
+
+    <section id="tab-forge" class="tab-content">
+        <h2 class="rpg-font" style="color: var(--accent); margin-bottom: 15px;">КУЗНИЦА</h2>
+        <div class="card" style="text-align: center;">
+            <p style="font-size: 0.8em; color: #777; margin-bottom: 15px;">Создавайте мощные артефакты из ресурсов</p>
+            <div id="craft-list"></div>
         </div>
     </section>
 
-    <section id="scr-shop" class="screen">
-        <h3 style="margin-bottom: 15px; color: var(--gold);">КОРОЛЕВСКИЙ РЫНОК</h3>
-        <div class="grid-list" id="ui-shop-list">
-            </div>
-    </section>
-
-    <section id="scr-talents" class="screen">
-        <h3 style="margin-bottom: 15px; color: var(--gold);">ДРЕВО УМЕНИЙ</h3>
-        <div class="grid-list" id="ui-talent-list">
-            </div>
+    <section id="tab-castle" class="tab-content">
+        <h2 class="rpg-font" style="color: var(--accent); margin-bottom: 15px;">ВАШ ЗАМОК</h2>
+        <div id="castle-upgrades"></div>
     </section>
 </main>
 
 <nav>
-    <a href="#" class="nav-link active" onclick="app.setTab('battle', this)"><i>⚔️</i><span>БИТВА</span></a>
-    <a href="#" class="nav-link" onclick="app.setTab('shop', this)"><i>💰</i><span>РЫНОК</span></a>
-    <a href="#" class="nav-link" onclick="app.setTab('talents', this)"><i>🌟</i><span>ТАЛАНТЫ</span></a>
-    <a href="#" class="nav-link" onclick="app.setTab('hero', this)"><i>👤</i><span>ГЕРОЙ</span></a>
+    <div class="nav-item active" onclick="game.switchTab('battle', this)"><i>⚔️</i><span>БИТВА</span></div>
+    <div class="nav-item" onclick="game.switchTab('hero', this)"><i>👤</i><span>ГЕРОЙ</span></div>
+    <div class="nav-item" onclick="game.switchTab('forge', this)"><i>⚒️</i><span>КУЗНЯ</span></div>
+    <div class="nav-item" onclick="game.switchTab('castle', this)"><i>🏰</i><span>ЗАМОК</span></div>
 </nav>
 
 <script>
 /**
- * WAR SAGA ENGINE v2.0
- * КОД НАПИСАН ДЛЯ МАКСИМАЛЬНОЙ ПРОИЗВОДИТЕЛЬНОСТИ И ОБЪЕМА
+ * WAR SAGA ENGINE v3.0 - MEGA RPG CORE
+ * Огромное количество систем, упакованных в один объект
  */
 
-const app = {
-    // --- БАЗА ДАННЫХ ИГРЫ (400+ строк контента) ---
+const game = {
+    // 1. СОСТОЯНИЕ (STATE)
+    s: {
+        gold: 100, gems: 0, lvl: 1, xp: 0, nx: 100, points: 0,
+        stats: { str: 1, int: 1, luk: 1, vit: 1 },
+        gear: { weapon: null, armor: null, relic: null },
+        inventory: [],
+        castle: { mines: 0, barracks: 0, altar: 0 },
+        killed: 0,
+        m: { hp: 10, max: 10, type: 0 }
+    },
+
+    // 2. БАЗЫ ДАННЫХ (DATABASE)
     db: {
         monsters: [
-            { id: 1, n: "Слизень", i: "💧", h: 10, g: 2, x: 5, zone: "Болота" },
-            { id: 2, n: "Крыса", i: "🐀", h: 25, g: 5, x: 12, zone: "Болота" },
-            { id: 3, n: "Скелет", i: "💀", h: 60, g: 15, x: 30, zone: "Кладбище" },
-            { id: 4, n: "Зомби", i: "🧟", h: 120, g: 35, x: 70, zone: "Кладбище" },
-            { id: 5, n: "Призрак", i: "👻", h: 300, g: 100, x: 150, zone: "Башня" },
-            { id: 6, n: "Паук", i: "🕷️", h: 600, g: 250, x: 400, zone: "Лес" },
-            { id: 7, n: "Орк", i: "👹", h: 1500, g: 800, x: 1000, zone: "Горы" },
-            { id: 8, n: "Дракон", i: "🐉", h: 10000, g: 5000, x: 10000, zone: "Пик" }
+            { n: "Болотный Бес", s: "👺", h: 12, g: 3, x: 8, d: "Мелкий, но назойливый" },
+            { n: "Дикий Волк", s: "🐺", h: 40, g: 10, x: 25, d: "Охотник ночных лесов" },
+            { n: "Древний Скелет", s: "💀", h: 120, g: 40, x: 80, d: "Оживший прах воина" },
+            { n: "Маг Пустоты", s: "🧙", h: 450, g: 150, x: 300, d: "Искажает само пространство" },
+            { n: "Каменный Голем", s: "🗿", h: 1500, g: 600, x: 1200, d: "Гора, обретшая волю" },
+            { n: "Теневой Дракон", s: "🐉", h: 8000, g: 3000, x: 7000, d: "Легендарный ужас небес" }
         ],
-        items: [
-            { id: 'i1', n: "Медный нож", d: "+2 к урону", p: 100, type: "atk", v: 2, i: "🔪" },
-            { id: 'i2', n: "Стальной меч", d: "+10 к урону", p: 1000, type: "atk", v: 10, i: "⚔️" },
-            { id: 'i3', n: "Амулет удачи", d: "+5% золота", p: 2500, type: "gold", v: 0.05, i: "📿" },
-            { id: 'i4', n: "Кольцо опыта", d: "+10% опыта", p: 5000, type: "xp", v: 0.1, i: "💍" },
-            { id: 'i5', n: "Секира палача", d: "+50 к урону", p: 15000, type: "atk", v: 50, i: "🪓" },
-            { id: 'i6', n: "Святой Грааль", d: "Авто-клик: 1/сек", p: 50000, type: "auto", v: 1, i: "🏆" }
+        craft: [
+            { id: 'sw1', n: "Меч Новичка", cost: 200, pow: 5, type: 'weapon', i: '🗡️' },
+            { id: 'arm1', n: "Кожаный Жилет", cost: 500, pow: 10, type: 'armor', i: '🧥' },
+            { id: 'sw2', n: "Клинок Тени", cost: 2500, pow: 40, type: 'weapon', i: '⚔️' },
+            { id: 'rel1', n: "Око Хаоса", cost: 10000, pow: 200, type: 'relic', i: '👁️' }
         ],
-        talents: [
-            { id: 't1', n: "Грубая сила", d: "+1 урона за уровень", p: 10, max: 10, i: "💪" },
-            { id: 't2', n: "Алчность", d: "+10% золота за уровень", p: 25, max: 5, i: "🪙" },
-            { id: 't3', n: "Медитация", d: "+15% опыта за уровень", p: 30, max: 5, i: "🧘" }
-        ]
+        ranks: ["Смертный", "Наемник", "Рыцарь", "Магистр", "Полубог", "Бессмертный"]
     },
 
-    // --- СОСТОЯНИЕ ИГРЫ ---
-    s: {
-        gold: 0, gems: 0, lvl: 1, xp: 0, nx: 100,
-        dmg: 1, goldMult: 1, xpMult: 1, autoAtk: 0,
-        inv: [], tal: {}, kills: 0,
-        m: { hp: 10, max: 10, id: 0 }
-    },
-
-    // --- ИНИЦИАЛИЗАЦИЯ ---
+    // 3. ЯДРО (CORE)
     init() {
         this.load();
-        this.bindEvents();
-        this.startTimers();
+        this.spawnMonster();
         this.renderAll();
-        this.spawn(0);
         
+        // Цикл авто-дохода (раз в 5 сек)
+        setInterval(() => {
+            if (this.s.castle.mines > 0) {
+                const inc = this.s.castle.mines * 5;
+                this.s.gold += inc;
+                this.log(`Шахты принесли ${inc} золота`);
+                this.renderAll();
+            }
+            this.save();
+        }, 5000);
+
         if (window.Telegram?.WebApp) {
             window.Telegram.WebApp.ready();
             window.Telegram.WebApp.expand();
         }
     },
 
-    bindEvents() {
-        document.getElementById('btn-attack').addEventListener('click', (e) => this.hit(e));
-    },
-
-    startTimers() {
-        // Цикл пассивного дохода и авто-атаки
-        setInterval(() => {
-            if (this.s.autoAtk > 0) {
-                this.hit(null, true);
-            }
-            this.save();
-        }, 1000);
-    },
-
-    // --- ЛОГИКА БОЯ ---
-    spawn(idx) {
-        const m = this.db.monsters[idx % this.db.monsters.length];
-        this.s.m = {
-            hp: m.h + (this.s.lvl * 5),
-            max: m.h + (this.s.lvl * 5),
-            id: idx
-        };
-        this.updateBattleUI();
-    },
-
-    hit(e, isAuto = false) {
-        const crit = Math.random() < 0.1 ? 2 : 1;
-        const totalDmg = (this.s.dmg + this.getTalentBonus('t1')) * crit;
+    handleAttack(e) {
+        // Расчет урона
+        let dmg = this.s.stats.str * 2;
+        if (this.s.gear.weapon) dmg += this.s.gear.weapon.pow;
         
-        this.s.m.hp -= totalDmg;
+        // Крит
+        const isCrit = Math.random() * 100 < (this.s.stats.luk * 3);
+        if (isCrit) dmg *= 2;
 
-        if (!isAuto && e) {
-            this.pop(e, `-${totalDmg}`, crit > 1 ? '#ffcc00' : '#fff');
-            if (window.Telegram?.WebApp?.HapticFeedback) {
-                window.Telegram.WebApp.HapticFeedback.impactOccurred(crit > 1 ? 'heavy' : 'light');
-            }
-        }
+        this.s.m.hp -= dmg;
+        this.pop(e, isCrit ? `КРИТ ${dmg}` : dmg, isCrit ? '#ffd700' : '#fff');
 
         if (this.s.m.hp <= 0) {
-            this.onKill();
+            this.onMonsterDeath();
         }
         this.updateBattleUI();
+        
+        if (window.Telegram?.WebApp?.HapticFeedback) {
+            window.Telegram.WebApp.HapticFeedback.impactOccurred(isCrit ? 'heavy' : 'light');
+        }
     },
 
-    onKill() {
-        const m = this.db.monsters[this.s.m.id % this.db.monsters.length];
+    onMonsterDeath() {
+        const m = this.db.monsters[this.s.m.type];
         
-        // Награды
-        const gGain = Math.floor(m.g * this.s.goldMult * (1 + this.getTalentBonus('t2')));
-        const xGain = Math.floor(m.x * this.s.xpMult * (1 + this.getTalentBonus('t3')));
-        
-        this.s.gold += gGain;
-        this.addXp(xGain);
-        this.s.kills++;
+        // Награды (с учетом Интеллекта для опыта)
+        const goldGain = Math.floor(m.g * (1 + this.s.stats.luk * 0.1));
+        const xpGain = Math.floor(m.x * (1 + this.s.stats.int * 0.15));
 
-        this.log(`Побежден ${m.n}! Получено: ${gGain} золота.`);
+        this.s.gold += goldGain;
+        this.addXp(xpGain);
+        this.s.killed++;
+
+        this.log(`Убит ${m.n}! +${goldGain}🪙 +${xpGain}XP`);
         
-        if (this.s.kills % 5 === 0) {
-            this.s.gems += 1;
-            this.log("Бонус: +1 алмаз за серию побед!");
+        // Шанс найти алмаз
+        if (Math.random() < 0.05) {
+            this.s.gems++;
+            this.log("Редкая находка: +1 💎");
         }
 
-        this.spawn(Math.floor(this.s.lvl / 2) + (this.s.kills % 3));
+        this.spawnMonster();
         this.renderAll();
     },
 
-    addXp(v) {
-        this.s.xp += v;
+    addXp(val) {
+        this.s.xp += val;
         if (this.s.xp >= this.s.nx) {
             this.s.lvl++;
-            this.s.xp = 0;
-            this.s.nx = Math.floor(this.s.nx * 1.5);
-            this.log(`УРОВЕНЬ ПОВЫШЕН! Теперь вы ${this.s.lvl} уровня.`);
-            this.s.gems += 5;
+            this.s.points += 5;
+            this.s.xp -= this.s.nx;
+            this.s.nx = Math.floor(this.s.nx * 1.6);
+            this.log(`УРОВЕНЬ ПОВЫШЕН! Получено 5 очков навыков`);
+            if (window.Telegram?.WebApp) window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
         }
     },
 
-    // --- МАГАЗИН И ТАЛАНТЫ ---
-    buyItem(id) {
-        const item = this.db.items.find(x => x.id === id);
-        if (this.s.gold >= item.p) {
-            this.s.gold -= item.p;
-            this.s.inv.push(id);
-            
-            // Применяем эффекты
-            if (item.type === 'atk') this.s.dmg += item.v;
-            if (item.type === 'gold') this.s.goldMult += item.v;
-            if (item.type === 'xp') this.s.xpMult += item.v;
-            if (item.type === 'auto') this.s.autoAtk += item.v;
-
-            this.log(`Куплено: ${item.n}`);
-            this.renderAll();
-        } else {
-            this.log("Недостаточно золота!");
-        }
-    },
-
-    upgradeTalent(id) {
-        const t = this.db.talents.find(x => x.id === id);
-        const curLvl = this.s.tal[id] || 0;
+    spawnMonster() {
+        // Выбор монстра по уровню
+        let idx = Math.floor(this.s.lvl / 8);
+        if (idx >= this.db.monsters.length) idx = this.db.monsters.length - 1;
         
-        if (curLvl < t.max && this.s.gems >= t.p) {
-            this.s.gems -= t.p;
-            this.s.tal[id] = curLvl + 1;
-            this.log(`Талант ${t.n} улучшен до ${this.s.tal[id]}`);
-            this.renderAll();
-        }
+        const m = this.db.monsters[idx];
+        const scaling = 1 + (this.s.lvl * 0.1);
+        
+        this.s.m = {
+            type: idx,
+            max: Math.floor(m.h * scaling),
+            hp: Math.floor(m.h * scaling)
+        };
+        
+        document.getElementById('m-name').innerText = m.n;
+        document.getElementById('m-desc').innerText = m.d;
+        document.getElementById('m-sprite').innerText = m.s;
     },
 
-    getTalentBonus(id) {
-        const lvl = this.s.tal[id] || 0;
-        if (id === 't1') return lvl * this.s.lvl;
-        if (id === 't2') return lvl * 0.1;
-        if (id === 't3') return lvl * 0.15;
-        return 0;
-    },
-
-    // --- ИНТЕРФЕЙС (150+ строк манипуляций DOM) ---
+    // 4. UI СИСТЕМЫ (RENDER)
     renderAll() {
-        document.getElementById('ui-gold').innerText = Math.floor(this.s.gold);
-        document.getElementById('ui-gems').innerText = this.s.gems;
-        document.getElementById('ui-lvl').innerText = this.s.lvl;
-        document.getElementById('ui-xp-fill').style.width = (this.s.xp / this.s.nx * 100) + "%";
-        
-        // Ранги
-        const ranks = ["БРОДЯГА", "НАЕМНИК", "ВОИН", "РЫЦАРЬ", "МАГИСТР", "ГЕРОЙ", "ТИТАН"];
-        document.getElementById('ui-rank').innerText = ranks[Math.min(Math.floor(this.s.lvl/10), 6)];
+        // Header
+        document.getElementById('res-gold').innerText = Math.floor(this.s.gold);
+        document.getElementById('res-gems').innerText = this.s.gems;
+        document.getElementById('res-lvl').innerText = this.s.lvl;
+        document.getElementById('res-xp-num').innerText = `${Math.floor(this.s.xp)}/${this.s.nx}`;
+        document.getElementById('res-xp-bar').style.width = (this.s.xp / this.s.nx * 100) + "%";
+        document.getElementById('res-rank').innerText = this.db.ranks[Math.min(Math.floor(this.s.lvl/15), 5)];
 
-        this.renderShop();
-        this.renderTalents();
+        this.updateBattleUI();
+        this.renderHero();
+        this.renderForge();
+        this.renderCastle();
     },
 
     updateBattleUI() {
-        const m = this.db.monsters[this.s.m.id % this.db.monsters.length];
-        document.getElementById('m-name').innerText = m.n;
-        document.getElementById('m-icon').innerText = m.i;
-        document.getElementById('ui-zone').innerText = m.zone;
-        document.getElementById('ui-hp-cur').innerText = Math.max(0, Math.floor(this.s.m.hp));
-        document.getElementById('ui-hp-max').innerText = this.s.m.max;
-        document.getElementById('ui-hp-fill').style.width = (this.s.m.hp / this.s.m.max * 100) + "%";
+        const pct = (this.s.m.hp / this.s.m.max) * 100;
+        document.getElementById('m-hp-bar').style.width = Math.max(0, pct) + "%";
+        document.getElementById('m-hp-text').innerText = `${Math.max(0, Math.floor(this.s.m.hp))}/${this.s.m.max}`;
     },
 
-    renderShop() {
-        const cont = document.getElementById('ui-shop-list');
-        cont.innerHTML = this.db.items.map(i => {
-            const owned = this.s.inv.includes(i.id);
+    renderHero() {
+        document.getElementById('h-points').innerText = this.s.points;
+        const stats = [
+            { id: 'str', n: 'Сила', d: 'Урон и криты', v: this.s.stats.str },
+            { id: 'int', n: 'Интеллект', d: 'Бонус к опыту', v: this.s.stats.int },
+            { id: 'vit', n: 'Живучесть', d: 'Сопротивление', v: this.s.stats.vit },
+            { id: 'luk', n: 'Удача', d: 'Дроп и золото', v: this.s.stats.luk }
+        ];
+
+        document.getElementById('stats-list').innerHTML = stats.map(st => `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid #1a1a24; padding-bottom:5px;">
+                <div><b>${st.n}</b>: ${st.v}<br><small style="color:#555">${st.d}</small></div>
+                <button class="btn" onclick="game.upgradeStat('${st.id}')" ${this.s.points > 0 ? '' : 'disabled'}>+</button>
+            </div>
+        `).join('');
+
+        // Gear slots
+        const slots = ['weapon', 'armor', 'relic'];
+        document.getElementById('gear-slots').innerHTML = slots.map(sl => {
+            const item = this.s.gear[sl];
             return `
-                <div class="item-card">
-                    <div class="item-icon">${i.i}</div>
-                    <div class="item-info">
-                        <h4>${i.n}</h4>
-                        <p>${i.d}</p>
-                        <p style="color:var(--gold)">Цена: ${i.p} золота</p>
-                    </div>
-                    <button class="buy-btn" ${owned ? 'disabled' : ''} onclick="app.buyItem('${i.id}')">
-                        ${owned ? 'КУПЛЕНО' : 'КУПИТЬ'}
-                    </button>
+                <div class="card" style="text-align:center; padding:10px;">
+                    <div style="font-size:0.7em; color:#444; margin-bottom:5px;">${sl.toUpperCase()}</div>
+                    <div style="font-size:1.5em">${item ? item.i : '🌑'}</div>
+                    <div style="font-size:0.75em; margin-top:5px;">${item ? item.n : 'Пусто'}</div>
                 </div>
             `;
         }).join('');
     },
 
-    renderTalents() {
-        const cont = document.getElementById('ui-talent-list');
-        cont.innerHTML = this.db.talents.map(t => {
-            const lvl = this.s.tal[t.id] || 0;
+    renderForge() {
+        document.getElementById('craft-list').innerHTML = this.db.craft.map(c => {
+            const canAfford = this.s.gold >= c.cost;
             return `
-                <div class="item-card">
-                    <div class="item-icon">${t.i}</div>
-                    <div class="item-info">
-                        <h4>${t.n} (Ур. ${lvl}/${t.max})</h4>
-                        <p>${t.d}</p>
-                        <p style="color:var(--emerald)">Цена: ${t.p} алмазов</p>
+                <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="font-size:1.8em; margin-right:15px;">${c.i}</div>
+                    <div style="flex:1; text-align:left;">
+                        <b>${c.n}</b><br>
+                        <small>Сила: +${c.pow} | <span style="color:var(--gold)">${c.cost} 🪙</span></small>
                     </div>
-                    <button class="buy-btn" ${lvl >= t.max ? 'disabled' : ''} onclick="app.upgradeTalent('${t.id}')">
-                        ${lvl >= t.max ? 'МАКС' : 'УЛУЧШИТЬ'}
-                    </button>
+                    <button class="btn" onclick="game.craftItem('${c.id}')" ${canAfford ? '' : 'disabled'}>КОВАТЬ</button>
                 </div>
             `;
         }).join('');
     },
 
-    setTab(id, el) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById('scr-' + id).classList.add('active');
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    renderCastle() {
+        const upg = [
+            { id: 'mines', n: 'Золотые шахты', c: 1000, d: 'Пассивное золото', v: this.s.castle.mines },
+            { id: 'barracks', n: 'Казармы', c: 5000, d: 'Множитель урона', v: this.s.castle.barracks }
+        ];
+        document.getElementById('castle-upgrades').innerHTML = upg.map(u => `
+            <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+                <div><b>${u.n}</b> (Ур. ${u.v})<br><small>${u.d}</small></div>
+                <button class="btn btn-gold" onclick="game.buyCastle('${u.id}', ${u.c * (u.v + 1)})">${u.c * (u.v + 1)} 🪙</button>
+            </div>
+        `).join('');
+    },
+
+    // 5. ДЕЙСТВИЯ (ACTIONS)
+    upgradeStat(id) {
+        if (this.s.points > 0) {
+            this.s.points--;
+            this.s.stats[id]++;
+            this.renderAll();
+        }
+    },
+
+    craftItem(id) {
+        const c = this.db.craft.find(x => x.id === id);
+        if (this.s.gold >= c.cost) {
+            this.s.gold -= c.cost;
+            this.s.gear[c.type] = c;
+            this.log(`Выковали: ${c.n}!`);
+            this.renderAll();
+            if (window.Telegram?.WebApp) window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+        }
+    },
+
+    buyCastle(id, cost) {
+        if (this.s.gold >= cost) {
+            this.s.gold -= cost;
+            this.s.castle[id]++;
+            this.log(`Улучшено: ${id}`);
+            this.renderAll();
+        }
+    },
+
+    switchTab(id, el) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.getElementById('tab-' + id).classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         el.classList.add('active');
     },
 
-    pop(e, txt, color) {
-        const p = document.createElement('div');
-        p.className = 'floating-num';
-        p.innerText = txt;
-        p.style.color = color;
-        p.style.left = e.clientX + 'px';
-        p.style.top = e.clientY + 'px';
-        document.body.appendChild(p);
-        setTimeout(() => p.remove(), 1000);
-    },
-
     log(msg) {
-        const log = document.getElementById('game-log');
-        log.innerHTML = `<div class="log-entry">${msg}</div>` + log.innerHTML;
-        if (log.children.length > 20) log.lastChild.remove();
+        const l = document.getElementById('game-log');
+        const div = document.createElement('div');
+        div.className = 'log-new';
+        div.innerText = `[${new Date().toLocaleTimeString()}] ${msg}`;
+        l.prepend(div);
+        if (l.childNodes.length > 25) l.lastChild.remove();
     },
 
-    // --- СИСТЕМА СОХРАНЕНИЙ ---
-    save() {
-        localStorage.setItem('WAR_SAGA_TITAN_SAVE', JSON.stringify(this.s));
+    pop(e, txt, col) {
+        const p = document.createElement('div');
+        p.className = 'dmg-popup';
+        p.innerText = txt;
+        p.style.color = col;
+        p.style.left = (e.clientX || window.innerWidth/2) + 'px';
+        p.style.top = (e.clientY || window.innerHeight/2) + 'px';
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 700);
     },
 
+    save() { localStorage.setItem('WAR_SAGA_MEGA_V1', JSON.stringify(this.s)); },
     load() {
-        const data = localStorage.getItem('WAR_SAGA_TITAN_SAVE');
-        if (data) {
-            const parsed = JSON.parse(data);
-            this.s = { ...this.s, ...parsed };
-        }
+        const data = localStorage.getItem('WAR_SAGA_MEGA_V1');
+        if (data) this.s = JSON.parse(data);
     }
 };
 
-window.onload = () => app.init();
+window.onload = () => game.init();
 </script>
+
 </body>
 </html>
