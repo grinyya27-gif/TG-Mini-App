@@ -2,318 +2,286 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WAR SAGA: WHEEL OF FORTUNE</title>
+    <title>Dark Ages RPG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Telegram Mini App -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        :root {
-            --bg: #0a0a0a;
-            --card-bg: #141414;
-            --gold: #ffcc00;
-            --emerald: #2ecc71;
-            --text-main: #e0e0e0;
-            --text-dim: #888;
-            --accent: #b8860b;
-            --red: #f44336;
-            --blue: #3498db;
-        }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg); color: var(--text-main); font-family: sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-
-        header { padding: 15px; background: var(--card-bg); border-bottom: 1px solid #333; }
-        .stats-top { display: flex; justify-content: space-around; font-weight: bold; margin-bottom: 8px; }
-        .xp-container { width: 100%; height: 6px; background: #333; border-radius: 3px; overflow: hidden; }
-        .xp-bar { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; }
-
-        nav { position: fixed; bottom: 0; width: 100%; background: var(--card-bg); border-top: 1px solid #333; display: flex; justify-content: space-around; padding: 10px 0; padding-bottom: max(10px, env(safe-area-inset-bottom)); z-index: 100; }
-        .nav-item { text-align: center; color: var(--text-dim); font-size: 10px; cursor: pointer; flex: 1; }
-        .nav-item.active { color: var(--gold); }
-        .nav-icon { font-size: 20px; display: block; margin-bottom: 2px; }
-
-        main { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 100px; }
-        .screen { display: none; }
-        .screen.active { display: block; animation: fadeIn 0.3s forwards; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .card { background: var(--card-bg); border: 1px solid #333; border-radius: 12px; padding: 15px; margin-bottom: 12px; display: flex; align-items: center; gap: 15px; position: relative; }
-        .card .icon { font-size: 30px; min-width: 50px; text-align: center; }
-        .card .info { flex: 1; }
-        
-        .btn { background: var(--accent); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; text-align: center; }
-        .btn:active { transform: scale(0.98); }
-        .btn:disabled { background: #333; color: #666; cursor: not-allowed; }
-
-        /* WHEEL STYLES */
-        .wheel-container { position: relative; width: 180px; height: 180px; margin: 15px auto; }
-        #wheel { width: 100%; height: 100%; border-radius: 50%; border: 4px solid var(--gold); background: conic-gradient(var(--accent) 0deg 60deg, #222 60deg 120deg, var(--blue) 120deg 180deg, #222 180deg 240deg, var(--emerald) 240deg 300deg, #222 300deg 360deg); transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1); }
-        .wheel-pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 20px; height: 25px; background: var(--red); clip-path: polygon(50% 100%, 0 0, 100% 0); z-index: 10; }
-
-        .profile-header { display: flex; gap: 15px; align-items: center; margin-bottom: 20px; }
-        .avatar { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--gold); background: #222; display: flex; align-items: center; justify-content: center; font-size: 24px; overflow: hidden; }
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .stat-box { background: #1a1a1a; padding: 10px; border-radius: 8px; border: 1px solid #222; }
-        
-        .float-text { position: fixed; pointer-events: none; font-weight: bold; animation: floatUp 0.8s forwards; z-index: 1000; }
-        @keyframes floatUp { to { transform: translateY(-50px); opacity: 0; } }
-    </style>
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<header>
-    <div class="stats-top">
-        <span>🪙 <span id="ui-gold">0</span></span>
-        <span>💎 <span id="ui-emeralds">0</span></span>
-        <span>⭐ <span id="ui-lvl">1</span></span>
-    </div>
-    <div class="xp-container"><div id="ui-xp" class="xp-bar"></div></div>
-</header>
+<div id="game-root">
 
-<main>
-    <section id="tab-battle" class="screen active">
-        <h2 style="color: var(--gold); margin-bottom: 15px;">Карта Мира</h2>
-        <div id="world-map"></div>
+    <!-- ================= HEADER ================= -->
+    <header class="game-header">
+        <div class="header-top">
+            <div class="game-logo">
+                🏰 Dark Ages
+            </div>
+            <div class="game-subtitle">
+                Эпоха стали, камня и крови
+            </div>
+        </div>
+
+        <div class="header-resources">
+            <div class="resource gold">
+                <span class="icon">💰</span>
+                <span id="gold">0</span>
+            </div>
+            <div class="resource emerald">
+                <span class="icon">💎</span>
+                <span id="emeralds">0</span>
+            </div>
+            <div class="resource energy">
+                <span class="icon">⚡</span>
+                <span id="energy">100</span>/<span id="maxEnergy">100</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- ================= PLAYER PANEL ================= -->
+    <section class="player-panel">
+        <div class="player-row">
+            <span class="label">Имя:</span>
+            <span class="value" id="playerName">Безымянный</span>
+        </div>
+
+        <div class="player-row">
+            <span class="label">Уровень:</span>
+            <span class="value" id="level">1</span>
+        </div>
+
+        <div class="player-row">
+            <span class="label">Титул:</span>
+            <span class="value" id="title">Бродяга</span>
+        </div>
+
+        <div class="player-row">
+            <span class="label">Опыт:</span>
+            <span class="value">
+                <span id="exp">0</span>/<span id="expNext">100</span>
+            </span>
+        </div>
+
+        <div class="player-progress">
+            <div class="exp-bar">
+                <div class="exp-fill" id="expBar"></div>
+            </div>
+        </div>
     </section>
 
-    <section id="tab-town" class="screen">
-        <h2 style="color: var(--gold); margin-bottom: 15px;">🏙️ Город</h2>
-        <div class="card" onclick="game.openTownPlace('tavern')">
-            <div class="icon">🍺</div>
-            <div class="info"><h3>Таверна</h3><p>Колесо удачи и наемники</p></div>
-        </div>
-        <div class="card" onclick="game.openTownPlace('forge')">
-            <div class="icon">⚒️</div>
-            <div class="info"><h3>Кузница</h3><p>Снаряжение героя</p></div>
-        </div>
-        <div class="card" onclick="game.openTownPlace('stables')">
-            <div class="icon">🐎</div>
-            <div class="info"><h3>Конюшни</h3><p>Маунты для фарма</p></div>
-        </div>
-    </section>
+    <!-- ================= MAIN NAVIGATION ================= -->
+    <nav class="main-navigation">
+        <button data-tab="city">🏰 Город</button>
+        <button data-tab="jobs">⚒️ Работы</button>
+        <button data-tab="locations">🗺️ Локации</button>
+        <button data-tab="market">🛒 Рынок</button>
+        <button data-tab="inventory">🎒 Инвентарь</button>
+        <button data-tab="bank">🏦 Банк</button>
+        <button data-tab="profile">🧍 Профиль</button>
+    </nav>
 
-    <section id="tab-town-detail" class="screen">
-        <button class="btn" style="background: #333; margin-bottom: 15px; width: 100%;" onclick="game.switchTab('town')">← Назад в город</button>
-        <div id="town-detail-content"></div>
-    </section>
+    <!-- ================= CONTENT ================= -->
+    <main class="game-content">
 
-    <section id="tab-profile" class="screen">
-        <div class="profile-header">
-            <div class="avatar" id="user-avatar">👤</div>
-            <div><h2 id="user-name">Герой</h2><p id="user-rank" style="color: var(--accent);">Странник</p></div>
-        </div>
-        <div class="stat-grid">
-            <div class="stat-box">Мощь: <b id="st-power">1</b></div>
-            <div class="stat-box">Доход: <b id="st-income">0</b>/с</div>
-            <div class="stat-box">Клики: <b id="st-clicks">0</b></div>
-            <div class="stat-box">Гемы: <b id="st-gems">0</b></div>
-        </div>
-    </section>
+        <!-- ================= CITY ================= -->
+        <section class="tab-content active" id="city">
+            <h2>🏰 Город</h2>
 
-    <section id="tab-bank" class="screen">
-        <h2 style="color: var(--blue); margin-bottom: 15px;">🏛️ Банк</h2>
-        <div class="card" style="flex-direction: column; text-align: center;">
-            <p>Накоплено золота:</p>
-            <h1 style="color: var(--gold);">🪙 <span id="bank-val">0</span></h1>
-            <p style="font-size: 12px;">Лимит: <span id="bank-limit">0</span></p>
-            <button class="btn" style="background: var(--blue); width: 100%;" onclick="game.collectBank()">ЗАБРАТЬ</button>
-        </div>
-    </section>
-</main>
+            <div class="city-description">
+                Сердце королевства. Здесь решается судьба людей и золота.
+            </div>
 
-<nav>
-    <div class="nav-item active" onclick="game.switchTab('battle', this)"><span class="nav-icon">⚔️</span>Битва</div>
-    <div class="nav-item" onclick="game.switchTab('town', this)"><span class="nav-icon">🏙️</span>Город</div>
-    <div class="nav-item" onclick="game.switchTab('profile', this)"><span class="nav-icon">👤</span>Профиль</div>
-    <div class="nav-item" onclick="game.switchTab('bank', this)"><span class="nav-icon">🏛️</span>Банк</div>
-</nav>
-
-<script>
-const DB = {
-    locations: [
-        { id: 'forest', name: 'Лес', icon: '🌲', lvl: 1, gold: 2, xp: 5 },
-        { id: 'cave', name: 'Пещера', icon: '🦇', lvl: 5, gold: 10, xp: 20 },
-        { id: 'castle', name: 'Замок', icon: '🏰', lvl: 15, gold: 50, xp: 100 }
-    ],
-    gear: [
-        { id: 'item1', name: 'Меч', power: 3, price: 100, icon: '🗡️' },
-        { id: 'item2', name: 'Броня', power: 5, price: 500, icon: '👕' }
-    ],
-    workers: [
-        { id: 'w1', name: 'Рабочий', income: 1, price: 50, icon: '👨‍🌾' }
-    ],
-    mounts: [
-        { id: 'm1', name: 'Ослик', mult: 1.2, price: 1000, icon: '🫏' }
-    ]
-};
-
-const game = {
-    state: {
-        gold: 0, emeralds: 0, lvl: 1, xp: 0, xpNeed: 100,
-        inventory: [], workers: {}, currentMount: null,
-        totalClicks: 0, bankGold: 0, lastSave: Date.now()
-    },
-
-    init() {
-        const saved = localStorage.getItem('WAR_SAGA_V3');
-        if (saved) Object.assign(this.state, JSON.parse(saved));
-        
-        if (window.Telegram?.WebApp) {
-            const user = window.Telegram.WebApp.initDataUnsafe?.user;
-            if (user) document.getElementById('user-name').innerText = user.first_name;
-            window.Telegram.WebApp.expand();
-        }
-
-        const diff = Math.floor((Date.now() - this.state.lastSave) / 1000);
-        this.state.bankGold = Math.min(this.state.bankGold + (diff * this.getIncome()), this.getBankLimit());
-
-        this.renderMap();
-        this.updateUI();
-        setInterval(() => this.tick(), 1000);
-    },
-
-    getIncome() {
-        return Object.keys(this.state.workers).reduce((sum, id) => {
-            const w = DB.workers.find(x => x.id === id);
-            return sum + (w.income * this.state.workers[id]);
-        }, 0);
-    },
-
-    getPower() {
-        let p = 1;
-        this.state.inventory.forEach(id => {
-            const item = DB.gear.find(x => x.id === id);
-            if (item) p += item.power;
-        });
-        return p;
-    },
-
-    getBankLimit() { return this.state.lvl * 2000; },
-
-    tick() {
-        const inc = this.getIncome();
-        if (inc > 0) this.state.bankGold = Math.min(this.state.bankGold + inc, this.getBankLimit());
-        this.state.lastSave = Date.now();
-        this.updateUI();
-        this.save();
-    },
-
-    handleAttack(locId, e) {
-        const loc = DB.locations.find(l => l.id === locId);
-        if (this.state.lvl < loc.lvl) return;
-        const gain = Math.floor(loc.gold * this.getPower() * (this.state.currentMount ? 1.5 : 1));
-        this.state.gold += gain;
-        this.state.totalClicks++;
-        if (Math.random() < 0.02) this.state.emeralds++;
-        this.addXp(loc.xp);
-        this.showFloat(e, `+${gain}🪙`, "var(--gold)");
-        this.updateUI();
-    },
-
-    addXp(val) {
-        this.state.xp += val;
-        if (this.state.xp >= this.state.xpNeed) {
-            this.state.lvl++;
-            this.state.xp = 0;
-            this.state.xpNeed = Math.floor(this.state.xpNeed * 1.5);
-        }
-    },
-
-    collectBank() {
-        this.state.gold += Math.floor(this.state.bankGold);
-        this.state.bankGold = 0;
-        this.updateUI();
-    },
-
-    spinWheel() {
-        if (this.state.gold < 500) return alert("Нужно 500 золота!");
-        const btn = document.getElementById('spin-btn');
-        const wheel = document.getElementById('wheel');
-        const msg = document.getElementById('wheel-msg');
-        
-        this.state.gold -= 500;
-        btn.disabled = true;
-        msg.innerText = "Удачи...";
-        
-        const deg = Math.floor(Math.random() * 360) + 1800;
-        wheel.style.transform = `rotate(${deg}deg)`;
-
-        setTimeout(() => {
-            btn.disabled = false;
-            const finalDeg = deg % 360;
-            if (finalDeg < 60) { this.state.gold += 1000; msg.innerText = "+1000 Золота!"; }
-            else if (finalDeg < 120) { msg.innerText = "Пусто..."; }
-            else if (finalDeg < 180) { this.addXp(this.state.xpNeed*0.2); msg.innerText = "+Опыт!"; }
-            else if (finalDeg < 240) { msg.innerText = "Мимо..."; }
-            else if (finalDeg < 300) { this.state.emeralds += 2; msg.innerText = "+2 Гема!"; }
-            else { msg.innerText = "Еще раз?"; }
-            this.updateUI();
-        }, 4000);
-    },
-
-    openTownPlace(place) {
-        this.switchTab('town-detail');
-        const content = document.getElementById('town-detail-content');
-        if (place === 'tavern') {
-            content.innerHTML = `
-                <div class="card" style="flex-direction:column; text-align:center;">
-                    <h3>🎡 Колесо Удачи</h3>
-                    <div class="wheel-container"><div class="wheel-pointer"></div><div id="wheel"></div></div>
-                    <button class="btn" id="spin-btn" style="width:100%" onclick="game.spinWheel()">Крутить (500 🪙)</button>
-                    <p id="wheel-msg" style="margin-top:10px;"></p>
+            <div class="city-buildings">
+                <div class="building-card">
+                    <h3>🛒 Рынок</h3>
+                    <p>Торговцы оружием, бронёй и инструментами</p>
                 </div>
-                <h3>👷 Наемники</h3>` + 
-                DB.workers.map(w => `<div class="card"><div class="icon">${w.icon}</div><div class="info"><b>${w.name}</b></div><button class="btn" onclick="game.buyW('${w.id}')">${w.price}🪙</button></div>`).join('');
-        }
-        if (place === 'forge') {
-            content.innerHTML = `<h3>⚒️ Кузница</h3>` + 
-                DB.gear.map(g => `<div class="card"><div class="icon">${g.icon}</div><div class="info"><b>${g.name}</b></div><button class="btn" onclick="game.buyG('${g.id}')">${g.price}🪙</button></div>`).join('');
-        }
-    },
 
-    buyW(id) {
-        const w = DB.workers.find(x => x.id === id);
-        if (this.state.gold >= w.price) { this.state.gold -= w.price; this.state.workers[id] = (this.state.workers[id]||0)+1; this.updateUI(); }
-    },
+                <div class="building-card">
+                    <h3>🏦 Банк</h3>
+                    <p>Обмен валют и хранение золота</p>
+                </div>
 
-    buyG(id) {
-        const g = DB.gear.find(x => x.id === id);
-        if (this.state.gold >= g.price && !this.state.inventory.includes(id)) { this.state.gold -= g.price; this.state.inventory.push(id); this.updateUI(); }
-    },
+                <div class="building-card">
+                    <h3>🏠 Таверна</h3>
+                    <p>Слухи, задания и наёмники</p>
+                </div>
+            </div>
+        </section>
 
-    renderMap() {
-        document.getElementById('world-map').innerHTML = DB.locations.map(loc => `<div class="card" onclick="game.handleAttack('${loc.id}', event)"><div class="icon">${loc.icon}</div><div class="info"><b>${loc.name}</b><p>Ур. ${loc.lvl}</p></div><button class="btn">БОЙ</button></div>`).join('');
-    },
+        <!-- ================= JOBS ================= -->
+        <section class="tab-content" id="jobs">
+            <h2>⚒️ Работы</h2>
 
-    updateUI() {
-        document.getElementById('ui-gold').innerText = Math.floor(this.state.gold);
-        document.getElementById('ui-emeralds').innerText = this.state.emeralds;
-        document.getElementById('ui-lvl').innerText = this.state.lvl;
-        document.getElementById('ui-xp').style.width = (this.state.xp / this.state.xpNeed * 100) + "%";
-        document.getElementById('st-power').innerText = this.getPower();
-        document.getElementById('st-income').innerText = this.getIncome();
-        document.getElementById('st-clicks').innerText = this.state.totalClicks;
-        document.getElementById('st-gems').innerText = this.state.emeralds;
-        document.getElementById('bank-val').innerText = Math.floor(this.state.bankGold);
-        document.getElementById('bank-limit').innerText = this.getBankLimit();
-    },
+            <!-- PORT -->
+            <div class="job-card">
+                <div class="job-header">
+                    <h3>⚓ Порт — Рыбалка</h3>
+                    <span class="job-level">Уровень: 1+</span>
+                </div>
 
-    switchTab(id, el) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById('tab-' + id).classList.add('active');
-        if (el) { document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
-    },
+                <div class="job-body">
+                    <p>Простая работа для выживания.</p>
+                    <ul>
+                        <li>Доход: 1–2 💰</li>
+                        <li>Энергия: −1</li>
+                        <li>Опыт: +5</li>
+                    </ul>
+                </div>
 
-    showFloat(e, text, color) {
-        const el = document.createElement('div');
-        el.className = 'float-text'; el.innerText = text; el.style.color = color;
-        el.style.left = (e.clientX || window.innerWidth/2) + 'px'; el.style.top = (e.clientY || window.innerHeight/2) + 'px';
-        document.body.appendChild(el); setTimeout(() => el.remove(), 800);
-    },
+                <button class="job-action" id="jobFishing">
+                    Выйти на ловлю
+                </button>
+            </div>
 
-    save() { localStorage.setItem('WAR_SAGA_V3', JSON.stringify(this.state)); }
-};
+            <!-- MINE -->
+            <div class="job-card locked" id="jobMineCard">
+                <div class="job-header">
+                    <h3>⛏️ Рудник</h3>
+                    <span class="job-level">Уровень: 5+</span>
+                </div>
 
-window.onload = () => game.init();
-</script>
+                <div class="job-body">
+                    <p>Тяжёлая и опасная работа под землёй.</p>
+                    <ul>
+                        <li>Доход: 4–6 💰</li>
+                        <li>Шанс: 1% 💎</li>
+                        <li>Энергия: −2</li>
+                        <li>Опыт: +8</li>
+                    </ul>
+                </div>
+
+                <button class="job-action" id="jobMine">
+                    Спуститься в рудник
+                </button>
+            </div>
+
+            <!-- HUNT -->
+            <div class="job-card locked" id="jobHuntCard">
+                <div class="job-header">
+                    <h3>🏹 Охота</h3>
+                    <span class="job-level">Уровень: 15+</span>
+                </div>
+
+                <div class="job-body">
+                    <p>Опасная охота в диких землях.</p>
+                    <ul>
+                        <li>Доход: 8–12 💰</li>
+                        <li>Требуется: Лук</li>
+                        <li>Энергия: −3</li>
+                        <li>Опыт: +12</li>
+                    </ul>
+                </div>
+
+                <button class="job-action" id="jobHunt">
+                    Отправиться на охоту
+                </button>
+            </div>
+        </section>
+
+        <!-- ================= LOCATIONS ================= -->
+        <section class="tab-content" id="locations">
+            <h2>🗺️ Локации</h2>
+
+            <div class="location-card">
+                <h3>🌲 Лес</h3>
+                <p>Охота, редкие ресурсы</p>
+            </div>
+
+            <div class="location-card">
+                <h3>⛰️ Горы</h3>
+                <p>Рудники и опасности</p>
+            </div>
+
+            <div class="location-card">
+                <h3>🏞️ Равнины</h3>
+                <p>Путешествия и квесты</p>
+            </div>
+        </section>
+
+        <!-- ================= MARKET ================= -->
+        <section class="tab-content" id="market">
+            <h2>🛒 Рынок</h2>
+
+            <div class="market-category">
+                <h3>⚔️ Оружие</h3>
+
+                <div class="item-card">
+                    <h4>🏹 Лук</h4>
+                    <p>Необходим для охоты</p>
+                    <p>Цена: 1000 💰</p>
+                    <button>Купить</button>
+                </div>
+
+                <div class="item-card locked">
+                    <h4>🏹 Арбалет</h4>
+                    <p>Повышает доход охоты</p>
+                    <p>Цена: 5000 💰</p>
+                    <button>Купить</button>
+                </div>
+            </div>
+
+            <div class="market-category">
+                <h3>🛡️ Броня</h3>
+
+                <div class="item-card">
+                    <h4>Кожаная броня</h4>
+                    <p>Снижает расход энергии</p>
+                    <p>Цена: 800 💰</p>
+                    <button>Купить</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= INVENTORY ================= -->
+        <section class="tab-content" id="inventory">
+            <h2>🎒 Инвентарь</h2>
+
+            <div class="inventory-grid">
+                <!-- items -->
+            </div>
+        </section>
+
+        <!-- ================= BANK ================= -->
+        <section class="tab-content" id="bank">
+            <h2>🏦 Банк</h2>
+
+            <div class="bank-card">
+                <h3>Обмен валют</h3>
+                <button>100 💰 → 1 💎</button>
+                <button>1 💎 → 80 💰</button>
+            </div>
+
+            <div class="bank-card">
+                <h3>Депозит</h3>
+                <p>Пассивный доход</p>
+            </div>
+        </section>
+
+        <!-- ================= PROFILE ================= -->
+        <section class="tab-content" id="profile">
+            <h2>🧍 Профиль</h2>
+
+            <div class="profile-row">
+                <span>Дней в игре:</span>
+                <span id="daysPlayed">1</span>
+            </div>
+
+            <div class="profile-row">
+                <span>Ежедневный бонус:</span>
+                <button id="dailyBonus">Получить</button>
+            </div>
+        </section>
+
+    </main>
+
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
