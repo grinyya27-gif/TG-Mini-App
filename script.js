@@ -50,16 +50,33 @@ const levelTitles = {
 /* ===============================
    SAVE / LOAD
 ================================ */
-function saveGame() {
-    localStorage.setItem("darkAgesSave", JSON.stringify(game));
-}
+document.addEventListener("DOMContentLoaded", () => {
 
-function loadGame() {
-    const save = localStorage.getItem("darkAgesSave");
-    if (save) {
-        Object.assign(game, JSON.parse(save));
-    }
-}
+    loadGame();
+    updateUI();
+
+    /* ===============================
+       NAVIGATION
+    ================================ */
+    document.querySelectorAll(".main-navigation button").forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll(".tab-content").forEach(t =>
+                t.classList.remove("active")
+            );
+
+            const tabId = btn.dataset.tab;
+            const tab = document.getElementById(tabId);
+            if (tab) tab.classList.add("active");
+
+            document.querySelectorAll(".main-navigation button").forEach(b =>
+                b.classList.remove("active")
+            );
+
+            btn.classList.add("active");
+        };
+    });
+
+});
 
 /* ===============================
    UI UPDATE
