@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Medieval Life RPG</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+<div class="app">
+
+<header>
+  <h2>Средневековая жизнь</h2>
+  <div class="stats">
+    <span>💰 <b id="gold">0</b></span>
+    <span>⚡ <b id="energy">100</b></span>
+    <span>📈 Уровень <b id="level">1</b></span>
+  </div>
+</header>
+
+<section id="location">
+  <h3>📍 Деревня</h3>
+  <p id="locationDesc">
+    Грязная деревня на окраине королевства. Здесь живут бедняки и крестьяне.
+  </p>
+</section>
+
+<section>
+  <h3>💼 Работы</h3>
+  <div class="card">
+    <h4>Сбор хвороста</h4>
+    <p>Доход: 3–6 💰</p>
+    <p>Навык: Физический труд</p>
+    <button onclick="Game.jobs.start('wood')">Работать</button>
+    <p id="jobStatus"></p>
+  </div>
+</section>
+
+<section>
+  <h3>🛠 Инструменты</h3>
+  <ul id="tools"></ul>
+</section>
+
+<section>
+  <h3>📜 Квесты</h3>
+  <div class="card">
+    <p><b>Старый дровосек</b></p>
+    <p id="questText">Принеси 10 золота, и я дам тебе лучший топор.</p>
+    <button onclick="Game.quests.complete()">Выполнить</button>
+  </div>
+</section>
+
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
