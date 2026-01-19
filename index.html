@@ -1,796 +1,398 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Средневековая Жизнь RPG</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            color: #e0e0e0;
-            overflow-x: hidden;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-            padding-bottom: 80px;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
-            padding: 15px;
-            border-bottom: 3px solid #c41e3a;
-            box-shadow: 0 4px 15px rgba(196, 30, 58, 0.3);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .profile-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            border: 3px solid #c41e3a;
-            background: #3a3a3a;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            font-weight: bold;
-            color: #c41e3a;
-        }
-
-        .avatar img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .user-info {
-            flex: 1;
-        }
-
-        .username {
-            font-size: 18px;
-            font-weight: bold;
-            color: #c41e3a;
-            margin-bottom: 5px;
-        }
-
-        .level {
-            font-size: 14px;
-            color: #b0b0b0;
-        }
-
-        .resources {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-        }
-
-        .resource {
-            background: rgba(196, 30, 58, 0.1);
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #c41e3a;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .resource-name {
-            font-size: 12px;
-            color: #b0b0b0;
-        }
-
-        .resource-value {
-            font-size: 16px;
-            font-weight: bold;
-            color: #c41e3a;
-        }
-
-        .navigation {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 5px;
-            padding: 10px;
-            background: #1f1f1f;
-            border-bottom: 2px solid #c41e3a;
-        }
-
-        .nav-btn {
-            background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
-            border: 2px solid #c41e3a;
-            color: #e0e0e0;
-            padding: 12px 5px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 11px;
-            transition: all 0.3s;
-            text-align: center;
-        }
-
-        .nav-btn:hover {
-            background: linear-gradient(135deg, #c41e3a 0%, #a01830 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(196, 30, 58, 0.4);
-        }
-
-        .nav-btn.active {
-            background: linear-gradient(135deg, #c41e3a 0%, #a01830 100%);
-            box-shadow: 0 4px 12px rgba(196, 30, 58, 0.6);
-        }
-
-        .content {
-            padding: 15px;
-        }
-
-        .section {
-            display: none;
-        }
-
-        .section.active {
-            display: block;
-            animation: fadeIn 0.3s;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .job-grid {
-            display: grid;
-            gap: 15px;
-        }
-
-        .job-card {
-            background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
-            border: 2px solid #c41e3a;
-            border-radius: 12px;
-            padding: 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .job-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(196, 30, 58, 0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .job-card:hover::before {
-            left: 100%;
-        }
-
-        .job-card:active {
-            transform: scale(0.98);
-        }
-
-        .job-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .job-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #c41e3a;
-        }
-
-        .job-level {
-            background: rgba(196, 30, 58, 0.2);
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 12px;
-            border: 1px solid #c41e3a;
-        }
-
-        .job-info {
-            margin-bottom: 15px;
-            color: #b0b0b0;
-            font-size: 14px;
-        }
-
-        .job-rewards {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .reward {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 14px;
-        }
-
-        .reward-icon {
-            color: #c41e3a;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #1a1a1a;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-bottom: 10px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #c41e3a 0%, #ff4d6d 100%);
-            border-radius: 4px;
-            transition: width 0.3s;
-        }
-
-        .work-btn {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #c41e3a 0%, #a01830 100%);
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .work-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(196, 30, 58, 0.4);
-        }
-
-        .work-btn:disabled {
-            background: #3a3a3a;
-            cursor: not-allowed;
-            opacity: 0.5;
-        }
-
-        .inventory-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-        }
-
-        .item-card {
-            background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
-            border: 2px solid #c41e3a;
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-
-        .item-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(196, 30, 58, 0.3);
-        }
-
-        .item-icon {
-            font-size: 36px;
-            margin-bottom: 10px;
-        }
-
-        .item-name {
-            font-size: 13px;
-            font-weight: bold;
-            color: #c41e3a;
-            margin-bottom: 5px;
-        }
-
-        .item-count {
-            font-size: 18px;
-            font-weight: bold;
-            color: #e0e0e0;
-        }
-
-        .market-item {
-            background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
-            border: 2px solid #c41e3a;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .market-item-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .market-item-icon {
-            font-size: 32px;
-        }
-
-        .market-item-details h3 {
-            color: #c41e3a;
-            margin-bottom: 5px;
-        }
-
-        .market-item-price {
-            color: #b0b0b0;
-            font-size: 14px;
-        }
-
-        .buy-btn, .sell-btn {
-            padding: 10px 20px;
-            background: linear-gradient(135deg, #c41e3a 0%, #a01830 100%);
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .buy-btn:hover, .sell-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 15px rgba(196, 30, 58, 0.4);
-        }
-
-        .quest-card {
-            background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
-            border: 2px solid #c41e3a;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 15px;
-        }
-
-        .quest-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #c41e3a;
-            margin-bottom: 10px;
-        }
-
-        .quest-description {
-            color: #b0b0b0;
-            margin-bottom: 15px;
-            font-size: 14px;
-        }
-
-        .quest-progress {
-            margin-bottom: 10px;
-        }
-
-        .quest-status {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 14px;
-            color: #b0b0b0;
-        }
-
-        .bank-section {
-            background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
-            border: 2px solid #c41e3a;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .bank-balance {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .bank-balance h2 {
-            color: #c41e3a;
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-
-        .bank-balance .amount {
-            font-size: 36px;
-            font-weight: bold;
-            color: #e0e0e0;
-        }
-
-        .bank-actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .bank-input {
-            width: 100%;
-            padding: 12px;
-            background: #1a1a1a;
-            border: 2px solid #c41e3a;
-            border-radius: 8px;
-            color: #e0e0e0;
-            font-size: 16px;
-            margin-bottom: 10px;
-        }
-
-        .achievement-card {
-            background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
-            border: 2px solid #c41e3a;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .achievement-card.completed {
-            border-color: #4CAF50;
-            background: linear-gradient(135deg, #1a3a1a 0%, #1f1f1f 100%);
-        }
-
-        .achievement-icon {
-            font-size: 40px;
-            opacity: 0.5;
-        }
-
-        .achievement-card.completed .achievement-icon {
-            opacity: 1;
-        }
-
-        .achievement-info h3 {
-            color: #c41e3a;
-            margin-bottom: 5px;
-        }
-
-        .achievement-card.completed .achievement-info h3 {
-            color: #4CAF50;
-        }
-
-        .achievement-description {
-            color: #b0b0b0;
-            font-size: 13px;
-        }
-
-        .leaderboard-item {
-            background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
-            border: 2px solid #c41e3a;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .rank {
-            font-size: 24px;
-            font-weight: bold;
-            color: #c41e3a;
-            min-width: 40px;
-            text-align: center;
-        }
-
-        .rank.top1 { color: #FFD700; }
-        .rank.top2 { color: #C0C0C0; }
-        .rank.top3 { color: #CD7F32; }
-
-        .player-info {
-            flex: 1;
-        }
-
-        .player-name {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .player-stats {
-            font-size: 13px;
-            color: #b0b0b0;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
-            border: 2px solid #c41e3a;
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-        }
-
-        .stat-icon {
-            font-size: 32px;
-            margin-bottom: 10px;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: #b0b0b0;
-            margin-bottom: 5px;
-        }
-
-        .stat-value {
-            font-size: 20px;
-            font-weight: bold;
-            color: #c41e3a;
-        }
-
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #c41e3a 0%, #a01830 100%);
-            color: white;
-            padding: 15px 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(196, 30, 58, 0.5);
-            animation: slideIn 0.3s, slideOut 0.3s 2.7s;
-            z-index: 1000;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(400px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        @keyframes slideOut {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(400px); opacity: 0; }
-        }
-
-        .floating-text {
-            position: fixed;
-            font-size: 24px;
-            font-weight: bold;
-            color: #4CAF50;
-            pointer-events: none;
-            animation: floatUp 1s ease-out;
-            z-index: 999;
-        }
-
-        @keyframes floatUp {
-            from { transform: translateY(0); opacity: 1; }
-            to { transform: translateY(-100px); opacity: 0; }
-        }
-
-        .section-title {
-            font-size: 24px;
-            font-weight: bold;
-            color: #c41e3a;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #c41e3a;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: #b0b0b0;
-        }
-
-        .empty-state-icon {
-            font-size: 64px;
-            margin-bottom: 15px;
-            opacity: 0.5;
-        }
-
-        @media (max-width: 400px) {
-            .navigation {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            
-            .inventory-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Средневековая RPG мини-игра</title>
+<style>
+body {
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  background-color: #222;
+  color: #ccc;
+}
+/* Заголовок */
+header {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #333;
+}
+#avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  margin-right: 15px;
+}
+#nickname {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #f55;
+}
+/* Основной контейнер */
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 10px;
+}
+.menu {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+.menu button {
+  background-color: #c00;
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  margin: 0 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.menu button:hover {
+  background-color: #a00;
+}
+/* Вкладки */
+.tabs {
+  display: none;
+  width: 100%;
+}
+.active {
+  display: block;
+}
+/* Общие стили для панелей */
+.panel {
+  background-color: #444;
+  border-radius: 10px;
+  padding: 15px;
+  margin: 10px 0;
+}
+h2 {
+  color: #f55;
+  margin-top: 0;
+}
+button {
+  background-color: #c00;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+}
+button:hover {
+  background-color: #a00;
+}
+/* Прогресс бар */
+.progress {
+  background-color: #555;
+  border-radius: 10px;
+  overflow: hidden;
+  height: 20px;
+  margin-top: 10px;
+  width: 100%;
+}
+.progress-bar {
+  height: 100%;
+  background-color: #f55;
+  width: 0%;
+  transition: width 0.3s;
+}
+/* Списки */
+ul {
+  list-style: none;
+  padding: 0;
+}
+li {
+  padding: 5px 0;
+}
+#achievementList, #playersRanking {
+  max-height: 200px;
+  overflow-y: auto;
+}
+/* Адаптивность */
+@media(max-width: 900px) {
+  .container {
+    flex-direction: column;
+  }
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="profile-header">
-                <div class="avatar" id="avatar">👤</div>
-                <div class="user-info">
-                    <div class="username" id="username">Игрок</div>
-                    <div class="level">Уровень: <span id="level">1</span> | Опыт: <span id="exp">0</span>/100</div>
-                </div>
-            </div>
-            <div class="resources">
-                <div class="resource">
-                    <span class="resource-name">💰 Золото</span>
-                    <span class="resource-value" id="gold">100</span>
-                </div>
-                <div class="resource">
-                    <span class="resource-name">💎 Драгоценности</span>
-                    <span class="resource-value" id="gems">0</span>
-                </div>
-                <div class="resource">
-                    <span class="resource-name">⚡ Энергия</span>
-                    <span class="resource-value" id="energy">100</span>
-                </div>
-                <div class="resource">
-                    <span class="resource-name">🏆 Рейтинг</span>
-                    <span class="resource-value" id="rating">0</span>
-                </div>
-            </div>
-        </div>
 
-        <div class="navigation">
-            <button class="nav-btn active" onclick="showSection('work')">⚒️ Работа</button>
-            <button class="nav-btn" onclick="showSection('inventory')">🎒 Инвентарь</button>
-            <button class="nav-btn" onclick="showSection('market')">🏪 Рынок</button>
-            <button class="nav-btn" onclick="showSection('quests')">📜 Квесты</button>
-            <button class="nav-btn" onclick="showSection('bank')">🏦 Банк</button>
-            <button class="nav-btn" onclick="showSection('achievements')">🏅 Достижения</button>
-            <button class="nav-btn" onclick="showSection('leaderboard')">👑 Рейтинг</button>
-            <button class="nav-btn" onclick="showSection('profile')">📊 Профиль</button>
-        </div>
+<header>
+  <img id="avatar" src="https://via.placeholder.com/60" alt="Аватар" />
+  <div id="nickname">Никнейм</div>
+  <div style="margin-left:auto; padding-right:10px;">Lvl: <span id="levelSpan">1</span></div>
+</header>
 
-        <div class="content">
-            <div id="work-section" class="section active">
-                <h2 class="section-title">⚒️ Доступные работы</h2>
-                <div class="job-grid" id="jobs-container"></div>
-            </div>
+<div class="menu">
+  <button data-tab="profile">Профиль</button>
+  <button data-tab="work">Работы</button>
+  <button data-tab="inventory">Инвентарь</button>
+  <button data-tab="market">Рынок</button>
+  <button data-tab="bank">Банк</button>
+  <button data-tab="quests">Квесты</button>
+  <button data-tab="achievements">Достижения</button>
+  <button data-tab="rating">Рейтинг</button>
+</div>
 
-            <div id="inventory-section" class="section">
-                <h2 class="section-title">🎒 Ваш инвентарь</h2>
-                <div class="inventory-grid" id="inventory-container"></div>
-            </div>
-
-            <div id="market-section" class="section">
-                <h2 class="section-title">🏪 Рынок</h2>
-                <div id="market-container"></div>
-            </div>
-
-            <div id="quests-section" class="section">
-                <h2 class="section-title">📜 Ежедневные квесты</h2>
-                <div id="quests-container"></div>
-            </div>
-
-            <div id="bank-section" class="section">
-                <h2 class="section-title">🏦 Банк</h2>
-                <div class="bank-section">
-                    <div class="bank-balance">
-                        <h2>Баланс в банке</h2>
-                        <div class="amount" id="bank-balance">0</div>
-                        <div style="color: #b0b0b0; margin-top: 10px;">Процент: 5% в день</div>
-                    </div>
-                    <input type="number" class="bank-input" id="bank-amount" placeholder="Введите сумму">
-                    <div class="bank-actions">
-                        <button class="buy-btn" onclick="depositBank()">Внести</button>
-                        <button class="sell-btn" onclick="withdrawBank()">Снять</button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="achievements-section" class="section">
-                <h2 class="section-title">🏅 Достижения</h2>
-                <div id="achievements-container"></div>
-            </div>
-
-            <div id="leaderboard-section" class="section">
-                <h2 class="section-title">👑 Таблица лидеров</h2>
-                <div id="leaderboard-container"></div>
-            </div>
-
-            <div id="profile-section" class="section">
-                <h2 class="section-title">📊 Статистика</h2>
-                <div class="stats-grid" id="stats-container"></div>
-            </div>
-        </div>
+<div id="tabs">
+  <!-- Профиль -->
+  <div class="tabs active" id="profile">
+    <div class="panel">
+      <h2>Профиль</h2>
+      <p>Уровень: <span id="playerLevel">1</span></p>
+      <p>Опыт: <span id="playerXP">0</span> / <span id="xpNeeded">10</span></p>
+      <div class="progress" style="width:100%">
+        <div class="progress-bar" id="xpProgress"></div>
+      </div>
+      <p>Золото: <span id="playerGold">0</span></p>
+      <p>Текущий опыт: <span id="currentXP">0</span></p>
+      <button id="clickerBtn">Заработать опыт</button>
     </div>
+  </div>
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
+  <!-- Работа -->
+  <div class="tabs" id="work">
+    <div class="panel">
+      <h2>Работы</h2>
+      <p>Заработок за работу: <span id="workEarnings">+0</span> золота</p>
+      <button id="workBtn">Работать</button>
+      <h3>История работы</h3>
+      <ul id="workHistory"></ul>
+    </div>
+  </div>
 
-        let gameData = {
-            username: 'Игрок',
-            avatar: null,
-            level: 1,
-            exp: 0,
-            gold: 100,
-            gems: 0,
-            energy: 100,
-            maxEnergy: 100,
-            bankBalance: 0,
-            rating: 0,
-            inventory: {},
-            jobLevels: {},
-            completedQuests: [],
-            achievements: [],
-            stats: {
-                totalGoldEarned: 0,
-                totalWorkDone: 0,
-                itemsCrafted: 0,
-                questsCompleted: 0
-            },
-            lastLogin: Date.now(),
-            lastBankUpdate: Date.now()
-        };
+  <!-- Инвентарь -->
+  <div class="tabs" id="inventory">
+    <div class="panel">
+      <h2>Инвентарь</h2>
+      <ul id="inventoryItems"></ul>
+      <button id="buyItem">Купить предмет</button>
+    </div>
+  </div>
 
-        const jobs = [
-            { id: 'farming', name: '🌾 Фермерство', description: 'Выращивайте урожай и зарабатывайте золото', reward: 15, expReward: 10, energyCost: 10, time: 2000, requiredLevel: 1 },
-            { id: 'mining', name: '⛏️ Добыча руды', description: 'Добывайте ценную руду в шахтах', reward: 25, expReward: 15, energyCost: 15, time: 3000, requiredLevel: 3 },
-            { id: 'smithing', name: '⚒️ Кузнечное дело', description: 'Создавайте оружие и доспехи', reward: 40, expReward: 25, energyCost: 20, time: 4000, requiredLevel: 5 },
-            { id: 'trading', name: '💼 Торговля', description: 'Покупайте и продавайте товары', reward: 50, expReward: 30, energyCost: 15, time: 3500, requiredLevel: 7 },
-            { id: 'alchemy', name: '🧪 Алхимия', description: 'Создавайте зелья и эликсиры', reward: 70, expReward: 40, energyCost: 25, time: 5000, requiredLevel: 10 },
-            { id: 'hunting', name: '🏹 Охота', description: 'Охотьтесь на диких зверей', reward: 60, expReward: 35, energyCost: 30, time: 4500, requiredLevel: 8 }
-        ];
+  <!-- Рынок -->
+  <div class="tabs" id="market">
+    <div class="panel">
+      <h2>Рынок</h2>
+      <ul id="marketItems"></ul>
+    </div>
+  </div>
 
-        const marketItems = [
-            { id: 'sword', name: '⚔️ Меч', icon: '⚔️', buyPrice: 200, sellPrice: 100, description: 'Острый боевой меч' },
-            { id: 'shield', name: '🛡️ Щит', icon: '🛡️', buyPrice: 150, sellPrice: 75, description: 'Крепкий защитный щит' },
-            { id: 'potion', name: '🧪 Зелье здоровья', icon: '🧪', buyPrice: 50, sellPrice: 25, description: 'Восстанавливает здоровье' },
-            { id: 'armor', name: '🛡️ Доспехи', icon: '🛡️', buyPrice: 300, sellPrice: 150, description: 'Прочные металлические доспехи' },
-            { id: 'gem', name: '💎 Драгоценный камень', icon: '💎', buyPrice: 500, sellPrice: 250, description: 'Редкий драгоценный камень' },
-            { id: 'food', name: '🍖 Еда', icon: '🍖', buyPrice: 30, sellPrice: 15, description: 'Восстанавливает энергию' }
-        ];
+  <!-- Банк -->
+  <div class="tabs" id="bank">
+    <div class="panel">
+      <h2>Банк</h2>
+      <p>Баланс банка: <span id="bankBalance">0</span></p>
+      <button id="depositBtn">Вложить</button>
+      <button id="withdrawBtn">Снять</button>
+    </div>
+  </div>
 
-        const achievements = [
-            { id: 'first_gold', name: 'Первое золото', description: 'Заработайте 100 золота', icon: '💰', check: () => gameData.stats.totalGoldEarned >= 100 },
-            { id: 'hard_worker', name: 'Трудяга', description: 'Выполните 50 работ', icon: '⚒️', check: () => gameData.stats.totalWorkDone >= 50 },
-            { id: 'level_5', name: 'Опытный искатель', description: 'Достигните 5 уровня', icon: '⭐', check: () => gameData.level >= 5 },
-            { id: 'rich', name: 'Богач', description: 'Накопите 1000 золота', icon: '💎', check: () => gameData.gold >= 1000 },
-            { id: 'craftsman', name: 'Мастер ремесла', description: 'Создайте 20 предметов', icon: '🔨', check: () => gameData.stats.itemsCrafted >= 20 },
-            { id: 'quest_master', name: 'Мастер квестов', description: 'Выполните 10 квестов', icon: '📜', check: () => gameData.stats.questsCompleted >= 10 },
-            { id: 'banker', name: 'Банкир', description: 'Положите в банк 500 золота', icon: '🏦', check: () => gameData.bankBalance >= 500 },
-            { id: 'level_10', name: 'Легендарный герой', description: 'Достигните 10 уровня', icon: '👑', check: () => gameData.level >= 10 }
-        ];
+  <!-- Ежедневные квесты -->
+  <div class="tabs" id="quests">
+    <div class="panel">
+      <h2>Ежедневные квесты</h2>
+      <p>Выполнено квестов: <span id="questsCount">0</span></p>
+      <button id="dailyQuestBtn">Выполнить квест</button>
+    </div>
+  </div>
 
-        let dailyQuests = [];
-        let workingJobs = new Set();
+  <!-- Достижения -->
+  <div class="tabs" id="achievements">
+    <div class="panel">
+      <h2>Достижения</h2>
+      <ul id="achievementList"></ul>
+    </div>
+  </div>
 
-        function initTelegramData() {
-            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                const user = tg.initDataUnsafe.user;
-                gameData.username = user.first_name || user.username || 'Игрок';
-                
-                if (user.photo_url) {
-                    gameData.avatar = user.photo_url;
-                    document.getElementById('avatar').innerHTML = `<img src="${user.photo_url}" alt="Avatar">`;
-                } else {
-                    const firstLetter = gameData.username.charAt(0).toUpperCase();
-                    document.getElementById('avatar').textContent = firstLetter;
-                }
-            }
-            document.getElementById('username').textContent = gameData.username;
-        }
+  <!-- Рейтинг -->
+  <div class="tabs" id="rating">
+    <div class="panel">
+      <h2>Рейтинг игроков</h2>
+      <ol id="playersRanking"></ol>
+    </div>
+  </div>
+</div>
 
-        async function loadGameData() {
-            try {
-                const savedData = await window.storage.get('medieval_rpg_save', false);
-                if (savedData && savedData.value) {
-                    gameData = JSON.parse(savedData.value
+<script>
+  // Объект пользователя
+  const userData = {
+    nickname: "Игрок",
+    avatar: "https://via.placeholder.com/60",
+    level: 1,
+    experience: 0,
+    gold: 0,
+    inventory: [],
+    bank: 0,
+    questsCompleted: 0,
+    achievements: [],
+    rating: []
+  };
+
+  // Хранилище данных
+  function saveData() {
+    localStorage.setItem('medieval_rpg_save', JSON.stringify(userData));
+  }
+  function loadData() {
+    const data = localStorage.getItem('medieval_rpg_save');
+    if (data) {
+      Object.assign(userData, JSON.parse(data));
+    }
+  }
+
+  // Обновление интерфейса
+  function updateUI() {
+    document.getElementById('nickname').innerText = userData.nickname;
+    document.getElementById('avatar').src = userData.avatar;
+    document.getElementById('playerLevel').innerText = userData.level;
+    document.getElementById('playerXP').innerText = userData.experience;
+    document.getElementById('xpNeeded').innerText = userData.level * 10;
+    document.getElementById('playerGold').innerText = userData.gold;
+    document.getElementById('bankBalance').innerText = userData.bank;
+    document.getElementById('questsCount').innerText = userData.questsCompleted;
+    // прогресс XP
+    const xpPercent = (userData.experience / (userData.level * 10)) * 100;
+    document.getElementById('xpProgress').style.width = Math.min(xpPercent, 100) + '%';
+
+    // Инвентарь
+    const invList = document.getElementById('inventoryItems');
+    invList.innerHTML = '';
+    userData.inventory.forEach(item => {
+      const li = document.createElement('li');
+      li.innerText = item.name + ' x' + item.count;
+      invList.appendChild(li);
+    });
+
+    // Достижения
+    const achList = document.getElementById('achievementList');
+    achList.innerHTML = '';
+    userData.achievements.forEach(a => {
+      const li = document.createElement('li');
+      li.innerText = a;
+      achList.appendChild(li);
+    });
+
+    // Рейтинг (заглушка)
+    const ratingList = document.getElementById('playersRanking');
+    ratingList.innerHTML = '';
+    userData.rating.forEach((player, index) => {
+      const li = document.createElement('li');
+      li.innerText = `{player.name} — ${player.level} уровень`;
+      ratingList.appendChild(li);
+    });
+  }
+
+  // Инициализация
+  loadData();
+  updateUI();
+
+  // Логика кнопок
+  document.querySelectorAll('.menu button').forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll('.tabs').forEach(tab => tab.classList.remove('active'));
+      document.getElementById(btn.dataset.tab).classList.add('active');
+    };
+  });
+
+  // Зарабатывать опыт
+  document.getElementById('clickerBtn').onclick = () => {
+    userData.experience += 1;
+    if (userData.experience >= userData.level * 10) {
+      userData.level++;
+      userData.experience = 0;
+      userData.achievements.push(`Достигнут уровень ${userData.level}`);
+    }
+    saveData();
+    updateUI();
+  };
+
+  // Работа
+  document.getElementById('workBtn').onclick = () => {
+    const earnings = Math.floor(Math.random() * 10) + 5;
+    userData.gold += earnings;
+    userData.achievements.push(`Заработано за работу: ${earnings} золота`);
+    document.getElementById('workEarnings').innerText = '+' + earnings;
+    // история
+    const history = document.getElementById('workHistory');
+    const li = document.createElement('li');
+    li.innerText = `Заработано: ${earnings} золота за работу.`;
+    history.appendChild(li);
+    saveData();
+    updateUI();
+  };
+
+  // Инвентарь
+  document.getElementById('buyItem').onclick = () => {
+    const item = {name: 'Меч', count: 1};
+    const existing = userData.inventory.find(i => i.name === item.name);
+    if (existing) {
+      existing.count++;
+    } else {
+      userData.inventory.push(item);
+    }
+    userData.gold -= 10; // Цена
+    if (userData.gold < 0) userData.gold = 0;
+    saveData();
+    updateUI();
+  };
+
+  // Ежедневный квест
+  document.getElementById('dailyQuestBtn').onclick = () => {
+    userData.questsCompleted++;
+    userData.gold += 20;
+    userData.achievements.push('Выполнен ежедневный квест');
+    // Добавление в рейтинг
+    userData.rating.push({name: userData.nickname, level: userData.level});
+    saveData();
+    updateUI();
+  };
+
+  // Вложить в банк
+  document.getElementById('depositBtn').onclick = () => {
+    if (userData.gold > 0) {
+      userData.bank += userData.gold;
+      userData.gold = 0;
+    }
+    saveData();
+    updateUI();
+  };
+  // Снять со счета
+  document.getElementById('withdrawBtn').onclick = () => {
+    if (userData.bank > 0) {
+      userData.gold += userData.bank;
+      userData.bank = 0;
+    }
+    saveData();
+    updateUI();
+  };
+
+  // Обновление рейтинга (по уровню)
+  function updateRating() {
+    userData.rating.sort((a, b) => b.level - a.level);
+  }
+
+  // Инициализация и обновление
+  setInterval(() => {
+    // Постоянное увеличение опыта для симуляции
+    userData.experience += 0.1;
+    if (userData.experience >= userData.level * 10) {
+      userData.level++;
+      userData.experience = 0;
+      userData.achievements.push(`Автоматический уровень ${userData.level} достигнут`);
+    }
+    saveData();
+    updateUI();
+  }, 60000); // каждую минуту
+
+  // Сохраняем прогресс при закрытии
+  window.onbeforeunload = () => {
+    saveData();
+  };
+</script>
+</body>
+</html>
