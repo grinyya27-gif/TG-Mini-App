@@ -1,1 +1,386 @@
+/* =========================
+   GLOBAL RESET
+========================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    font-family: "Georgia", "Times New Roman", serif;
+    background: #111;
+    color: #d6d6d6;
+}
+
+/* =========================
+   ROOT CONTAINER
+========================= */
+#game-root {
+    max-width: 520px;
+    margin: 0 auto;
+    min-height: 100vh;
+    background: linear-gradient(180deg, #1a1a1a, #0f0f0f);
+    border-left: 2px solid #2b2b2b;
+    border-right: 2px solid #2b2b2b;
+}
+
+/* =========================
+   HEADER
+========================= */
+.game-header {
+    background: linear-gradient(180deg, #2a2a2a, #1b1b1b);
+    border-bottom: 2px solid #3a3a3a;
+    padding: 12px;
+}
+
+.header-top {
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.game-logo {
+    font-size: 26px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    color: #c9b37e;
+    text-shadow: 0 0 6px rgba(201,179,126,0.3);
+}
+
+.game-subtitle {
+    font-size: 12px;
+    color: #888;
+    font-style: italic;
+}
+
+/* =========================
+   RESOURCES
+========================= */
+.header-resources {
+    display: flex;
+    justify-content: space-around;
+    background: #151515;
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 6px;
+}
+
+.resource {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: bold;
+}
+
+.resource .icon {
+    font-size: 16px;
+}
+
+.resource.gold { color: #d4af37; }
+.resource.emerald { color: #3ddc97; }
+.resource.energy { color: #a3c9ff; }
+
+/* =========================
+   PLAYER PANEL
+========================= */
+.player-panel {
+    background: #181818;
+    border-bottom: 2px solid #2e2e2e;
+    padding: 10px;
+}
+
+.player-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.player-row .label {
+    color: #888;
+}
+
+.player-row .value {
+    color: #ddd;
+    font-weight: bold;
+}
+
+/* =========================
+   EXP BAR
+========================= */
+.player-progress {
+    margin-top: 6px;
+}
+
+.exp-bar {
+    width: 100%;
+    height: 8px;
+    background: #222;
+    border: 1px solid #444;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.exp-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #6b4f1d, #c9b37e);
+    transition: width 0.3s ease;
+}
+
+/* =========================
+   NAVIGATION
+========================= */
+.main-navigation {
+    display: flex;
+    flex-wrap: wrap;
+    background: #121212;
+    border-bottom: 2px solid #2b2b2b;
+}
+
+.main-navigation button {
+    flex: 1 1 33%;
+    padding: 10px 0;
+    background: #1c1c1c;
+    color: #bbb;
+    border: 1px solid #2b2b2b;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.main-navigation button:hover {
+    background: #2a2a2a;
+    color: #fff;
+}
+
+.main-navigation button.active {
+    background: #2e2e2e;
+    color: #d4af37;
+    box-shadow: inset 0 0 6px rgba(212,175,55,0.4);
+}
+
+/* =========================
+   CONTENT
+========================= */
+.game-content {
+    padding: 10px;
+}
+
+.tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* =========================
+   HEADINGS
+========================= */
+h2 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #c9b37e;
+    text-shadow: 0 0 4px rgba(201,179,126,0.3);
+}
+
+h3 {
+    font-size: 16px;
+    margin-bottom: 6px;
+}
+
+h4 {
+    font-size: 14px;
+}
+
+/* =========================
+   CITY
+========================= */
+.city-description {
+    font-size: 13px;
+    color: #aaa;
+    margin-bottom: 10px;
+}
+
+.city-buildings {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+.building-card {
+    background: #1b1b1b;
+    border: 1px solid #333;
+    padding: 8px;
+    border-radius: 6px;
+    text-align: center;
+}
+
+/* =========================
+   JOBS
+========================= */
+.job-card {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-left: 4px solid #6b4f1d;
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.job-card.locked {
+    opacity: 0.45;
+    border-left-color: #444;
+}
+
+.job-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.job-level {
+    font-size: 12px;
+    color: #999;
+}
+
+.job-body {
+    font-size: 13px;
+    margin: 6px 0;
+}
+
+.job-body ul {
+    margin-left: 16px;
+}
+
+.job-action {
+    width: 100%;
+    padding: 8px;
+    background: linear-gradient(180deg, #3a2a10, #1f1608);
+    color: #e0c36f;
+    border: 1px solid #6b4f1d;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.job-action:hover {
+    background: linear-gradient(180deg, #4a3515, #2a1d0b);
+}
+
+/* =========================
+   LOCATIONS
+========================= */
+.location-card {
+    background: #1b1b1b;
+    border: 1px solid #333;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+}
+
+/* =========================
+   MARKET
+========================= */
+.market-category {
+    margin-bottom: 14px;
+}
+
+.item-card {
+    background: #181818;
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 8px;
+    margin-bottom: 8px;
+}
+
+.item-card.locked {
+    opacity: 0.5;
+}
+
+.item-card button {
+    width: 100%;
+    padding: 6px;
+    background: #222;
+    border: 1px solid #444;
+    color: #ccc;
+}
+
+/* =========================
+   INVENTORY
+========================= */
+.inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+}
+
+.inventory-slot {
+    background: #151515;
+    border: 1px solid #333;
+    height: 60px;
+    border-radius: 4px;
+}
+
+/* =========================
+   BANK
+========================= */
+.bank-card {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.bank-card button {
+    width: 100%;
+    padding: 6px;
+    margin-top: 4px;
+    background: #222;
+    border: 1px solid #444;
+    color: #d4af37;
+}
+
+/* =========================
+   PROFILE
+========================= */
+.profile-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+.profile-row button {
+    padding: 4px 8px;
+    background: #2a2a2a;
+    border: 1px solid #444;
+    color: #c9b37e;
+}
+
+/* =========================
+   SCROLLBAR
+========================= */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #444;
+}
+
+::-webkit-scrollbar-track {
+    background: #111;
+}
 
