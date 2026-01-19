@@ -1,398 +1,1279 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Средневековая RPG мини-игра</title>
-<style>
-body {
-  margin: 0;
-  font-family: 'Arial', sans-serif;
-  background-color: #222;
-  color: #ccc;
-}
-/* Заголовок */
-header {
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  background-color: #333;
-}
-#avatar {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  margin-right: 15px;
-}
-#nickname {
-  font-size: 1.5em;
-  font-weight: bold;
-  color: #f55;
-}
-/* Основной контейнер */
-.container {
-  display: flex;
-  flex-wrap: wrap;
-  padding: 10px;
-}
-.menu {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  margin-bottom: 15px;
-}
-.menu button {
-  background-color: #c00;
-  color: #fff;
-  border: none;
-  padding: 12px 20px;
-  margin: 0 10px;
-  border-radius: 5px;
-  font-weight: bold;
-  cursor: pointer;
-}
-.menu button:hover {
-  background-color: #a00;
-}
-/* Вкладки */
-.tabs {
-  display: none;
-  width: 100%;
-}
-.active {
-  display: block;
-}
-/* Общие стили для панелей */
-.panel {
-  background-color: #444;
-  border-radius: 10px;
-  padding: 15px;
-  margin: 10px 0;
-}
-h2 {
-  color: #f55;
-  margin-top: 0;
-}
-button {
-  background-color: #c00;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  color: #fff;
-  font-weight: bold;
-  cursor: pointer;
-}
-button:hover {
-  background-color: #a00;
-}
-/* Прогресс бар */
-.progress {
-  background-color: #555;
-  border-radius: 10px;
-  overflow: hidden;
-  height: 20px;
-  margin-top: 10px;
-  width: 100%;
-}
-.progress-bar {
-  height: 100%;
-  background-color: #f55;
-  width: 0%;
-  transition: width 0.3s;
-}
-/* Списки */
-ul {
-  list-style: none;
-  padding: 0;
-}
-li {
-  padding: 5px 0;
-}
-#achievementList, #playersRanking {
-  max-height: 200px;
-  overflow-y: auto;
-}
-/* Адаптивность */
-@media(max-width: 900px) {
-  .container {
-    flex-direction: column;
-  }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Средневековая Жизнь</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --bg-dark: #1a1a1a;
+            --bg-medium: #252525;
+            --bg-light: #2d2d2d;
+            --accent-red: #c41e3a;
+            --accent-red-dark: #8b1529;
+            --accent-red-light: #ff2d55;
+            --text-primary: #e8e8e8;
+            --text-secondary: #a0a0a0;
+            --gold: #ffd700;
+            --border: #3a3a3a;
+        }
+
+        body {
+            font-family: 'Crimson Text', serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding-bottom: 70px;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(196, 30, 58, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(196, 30, 58, 0.08) 0%, transparent 50%);
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--bg-medium) 0%, var(--bg-light) 100%);
+            padding: 15px;
+            border-bottom: 2px solid var(--accent-red);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(196, 30, 58, 0.3);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 3px solid var(--accent-red);
+            background: var(--bg-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+        }
+
+        .user-details h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 18px;
+            color: var(--text-primary);
+            margin-bottom: 3px;
+        }
+
+        .level-badge {
+            background: var(--accent-red);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            display: inline-block;
+            font-weight: 600;
+        }
+
+        .resources {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .resource-item {
+            background: var(--bg-dark);
+            padding: 8px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .resource-icon {
+            font-size: 18px;
+            margin-bottom: 2px;
+        }
+
+        .resource-amount {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gold);
+        }
+
+        .resource-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .exp-bar {
+            background: var(--bg-dark);
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+            border: 1px solid var(--border);
+        }
+
+        .exp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-red-dark), var(--accent-red));
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .content {
+            padding: 15px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .section {
+            background: var(--bg-medium);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-title {
+            font-family: 'Cinzel', serif;
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: var(--accent-red-light);
+            border-bottom: 2px solid var(--accent-red);
+            padding-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .job-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .job-card {
+            background: var(--bg-light);
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid var(--border);
+        }
+
+        .job-card:active {
+            transform: scale(0.95);
+        }
+
+        .job-card.working {
+            border-color: var(--accent-red);
+            box-shadow: 0 0 15px rgba(196, 30, 58, 0.4);
+        }
+
+        .job-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .job-name {
+            font-family: 'Cinzel', serif;
+            font-size: 14px;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .job-reward {
+            color: var(--gold);
+            font-size: 13px;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: var(--bg-dark);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent-red);
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .item-slot {
+            aspect-ratio: 1;
+            background: var(--bg-light);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .item-slot:active {
+            transform: scale(0.95);
+        }
+
+        .item-slot.has-item {
+            border-color: var(--accent-red-dark);
+        }
+
+        .item-icon {
+            font-size: 24px;
+        }
+
+        .item-count {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            background: var(--accent-red);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .quest-item {
+            background: var(--bg-light);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--accent-red);
+        }
+
+        .quest-title {
+            font-family: 'Cinzel', serif;
+            font-size: 15px;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .quest-description {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .quest-progress {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .quest-reward {
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--accent-red), var(--accent-red-dark));
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-family: 'Cinzel', serif;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(196, 30, 58, 0.3);
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: var(--bg-light);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-medium);
+            border-top: 2px solid var(--accent-red);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 100;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            transition: all 0.2s ease;
+            padding: 5px 10px;
+        }
+
+        .nav-btn.active {
+            color: var(--accent-red-light);
+        }
+
+        .nav-icon {
+            font-size: 24px;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .market-item {
+            background: var(--bg-light);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border);
+        }
+
+        .market-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .market-icon {
+            font-size: 28px;
+        }
+
+        .market-details h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 15px;
+            margin-bottom: 3px;
+        }
+
+        .market-price {
+            color: var(--gold);
+            font-size: 13px;
+        }
+
+        .achievement-item {
+            background: var(--bg-light);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 2px solid var(--border);
+        }
+
+        .achievement-item.unlocked {
+            border-color: var(--accent-red);
+            box-shadow: 0 0 12px rgba(196, 30, 58, 0.3);
+        }
+
+        .achievement-icon {
+            font-size: 32px;
+            opacity: 0.3;
+        }
+
+        .achievement-item.unlocked .achievement-icon {
+            opacity: 1;
+        }
+
+        .achievement-info h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 15px;
+            margin-bottom: 3px;
+        }
+
+        .achievement-description {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .leaderboard-item {
+            background: var(--bg-light);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .rank {
+            font-family: 'Cinzel', serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent-red);
+            min-width: 30px;
+        }
+
+        .rank.top3 {
+            color: var(--gold);
+        }
+
+        .player-info {
+            flex: 1;
+        }
+
+        .player-name {
+            font-family: 'Cinzel', serif;
+            font-size: 15px;
+            margin-bottom: 2px;
+        }
+
+        .player-stats {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: var(--bg-medium);
+            border-radius: 12px;
+            padding: 20px;
+            max-width: 400px;
+            width: 100%;
+            border: 2px solid var(--accent-red);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+        }
+
+        .modal-title {
+            font-family: 'Cinzel', serif;
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: var(--accent-red-light);
+        }
+
+        .bank-actions {
+            display: grid;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .stat-card {
+            background: var(--bg-light);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .stat-value {
+            font-family: 'Cinzel', serif;
+            font-size: 24px;
+            color: var(--accent-red-light);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--accent-red);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+            z-index: 300;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        .notification.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(400px); }
+            to { transform: translateX(0); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+    </style>
 </head>
 <body>
+    <div id="notification" class="notification"></div>
 
-<header>
-  <img id="avatar" src="https://via.placeholder.com/60" alt="Аватар" />
-  <div id="nickname">Никнейм</div>
-  <div style="margin-left:auto; padding-right:10px;">Lvl: <span id="levelSpan">1</span></div>
-</header>
-
-<div class="menu">
-  <button data-tab="profile">Профиль</button>
-  <button data-tab="work">Работы</button>
-  <button data-tab="inventory">Инвентарь</button>
-  <button data-tab="market">Рынок</button>
-  <button data-tab="bank">Банк</button>
-  <button data-tab="quests">Квесты</button>
-  <button data-tab="achievements">Достижения</button>
-  <button data-tab="rating">Рейтинг</button>
-</div>
-
-<div id="tabs">
-  <!-- Профиль -->
-  <div class="tabs active" id="profile">
-    <div class="panel">
-      <h2>Профиль</h2>
-      <p>Уровень: <span id="playerLevel">1</span></p>
-      <p>Опыт: <span id="playerXP">0</span> / <span id="xpNeeded">10</span></p>
-      <div class="progress" style="width:100%">
-        <div class="progress-bar" id="xpProgress"></div>
-      </div>
-      <p>Золото: <span id="playerGold">0</span></p>
-      <p>Текущий опыт: <span id="currentXP">0</span></p>
-      <button id="clickerBtn">Заработать опыт</button>
+    <div class="header">
+        <div class="user-info">
+            <div class="avatar" id="userAvatar">👤</div>
+            <div class="user-details">
+                <h2 id="userName">Загрузка...</h2>
+                <span class="level-badge">Уровень <span id="userLevel">1</span></span>
+            </div>
+        </div>
+        <div class="resources">
+            <div class="resource-item">
+                <div class="resource-icon">💰</div>
+                <div class="resource-amount" id="goldAmount">0</div>
+                <div class="resource-label">Золото</div>
+            </div>
+            <div class="resource-item">
+                <div class="resource-icon">🏦</div>
+                <div class="resource-amount" id="bankAmount">0</div>
+                <div class="resource-label">В банке</div>
+            </div>
+            <div class="resource-item">
+                <div class="resource-icon">⚡</div>
+                <div class="resource-amount" id="energyAmount">100</div>
+                <div class="resource-label">Энергия</div>
+            </div>
+        </div>
+        <div class="exp-bar">
+            <div class="exp-fill" id="expBar">0 / 100 XP</div>
+        </div>
     </div>
-  </div>
 
-  <!-- Работа -->
-  <div class="tabs" id="work">
-    <div class="panel">
-      <h2>Работы</h2>
-      <p>Заработок за работу: <span id="workEarnings">+0</span> золота</p>
-      <button id="workBtn">Работать</button>
-      <h3>История работы</h3>
-      <ul id="workHistory"></ul>
+    <div class="content">
+        <!-- Работы -->
+        <div id="jobsPage" class="page active">
+            <div class="section">
+                <div class="section-title">⚒️ Работы</div>
+                <div class="job-grid" id="jobsGrid"></div>
+            </div>
+        </div>
+
+        <!-- Инвентарь -->
+        <div id="inventoryPage" class="page">
+            <div class="section">
+                <div class="section-title">🎒 Инвентарь</div>
+                <div class="inventory-grid" id="inventoryGrid"></div>
+            </div>
+        </div>
+
+        <!-- Квесты -->
+        <div id="questsPage" class="page">
+            <div class="section">
+                <div class="section-title">📜 Ежедневные квесты</div>
+                <div id="questsList"></div>
+            </div>
+        </div>
+
+        <!-- Рынок -->
+        <div id="marketPage" class="page">
+            <div class="section">
+                <div class="section-title">🏪 Рынок</div>
+                <div id="marketList"></div>
+            </div>
+        </div>
+
+        <!-- Профиль -->
+        <div id="profilePage" class="page">
+            <div class="section">
+                <div class="section-title">👤 Профиль</div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="profileLevel">1</div>
+                        <div class="stat-label">Уровень</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="profileGold">0</div>
+                        <div class="stat-label">Золото</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="profileWork">0</div>
+                        <div class="stat-label">Выполнено работ</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="profileAchievements">0</div>
+                        <div class="stat-label">Достижения</div>
+                    </div>
+                </div>
+                <button class="btn" style="width: 100%; margin-top: 15px;" onclick="openBankModal()">🏦 Банк</button>
+            </div>
+
+            <div class="section">
+                <div class="section-title">🏆 Достижения</div>
+                <div id="achievementsList"></div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">📊 Рейтинг игроков</div>
+                <div id="leaderboardList"></div>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <!-- Инвентарь -->
-  <div class="tabs" id="inventory">
-    <div class="panel">
-      <h2>Инвентарь</h2>
-      <ul id="inventoryItems"></ul>
-      <button id="buyItem">Купить предмет</button>
+    <!-- Банк Modal -->
+    <div id="bankModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-title">🏦 Банк</div>
+            <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 15px;">
+                Храните золото в банке с процентом 5% в день!
+            </p>
+            <div class="input-group">
+                <label>Сумма</label>
+                <input type="number" id="bankInput" placeholder="Введите сумму">
+            </div>
+            <div class="bank-actions">
+                <button class="btn" onclick="depositGold()">Положить</button>
+                <button class="btn btn-secondary" onclick="withdrawGold()">Снять</button>
+                <button class="btn btn-secondary" onclick="closeBankModal()">Закрыть</button>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <!-- Рынок -->
-  <div class="tabs" id="market">
-    <div class="panel">
-      <h2>Рынок</h2>
-      <ul id="marketItems"></ul>
+    <div class="bottom-nav">
+        <button class="nav-btn active" onclick="switchPage('jobs')">
+            <span class="nav-icon">⚒️</span>
+            <span>Работы</span>
+        </button>
+        <button class="nav-btn" onclick="switchPage('inventory')">
+            <span class="nav-icon">🎒</span>
+            <span>Инвентарь</span>
+        </button>
+        <button class="nav-btn" onclick="switchPage('quests')">
+            <span class="nav-icon">📜</span>
+            <span>Квесты</span>
+        </button>
+        <button class="nav-btn" onclick="switchPage('market')">
+            <span class="nav-icon">🏪</span>
+            <span>Рынок</span>
+        </button>
+        <button class="nav-btn" onclick="switchPage('profile')">
+            <span class="nav-icon">👤</span>
+            <span>Профиль</span>
+        </button>
     </div>
-  </div>
 
-  <!-- Банк -->
-  <div class="tabs" id="bank">
-    <div class="panel">
-      <h2>Банк</h2>
-      <p>Баланс банка: <span id="bankBalance">0</span></p>
-      <button id="depositBtn">Вложить</button>
-      <button id="withdrawBtn">Снять</button>
-    </div>
-  </div>
+    <script>
+        // Telegram Web App initialization
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.enableClosingConfirmation();
 
-  <!-- Ежедневные квесты -->
-  <div class="tabs" id="quests">
-    <div class="panel">
-      <h2>Ежедневные квесты</h2>
-      <p>Выполнено квестов: <span id="questsCount">0</span></p>
-      <button id="dailyQuestBtn">Выполнить квест</button>
-    </div>
-  </div>
+        // Game State
+        let gameState = {
+            userId: null,
+            userName: 'Игрок',
+            userPhoto: null,
+            level: 1,
+            exp: 0,
+            expToLevel: 100,
+            gold: 0,
+            bank: 0,
+            energy: 100,
+            maxEnergy: 100,
+            inventory: {},
+            completedJobs: 0,
+            quests: [],
+            lastQuestReset: null,
+            achievements: {},
+            lastBankInterest: null
+        };
 
-  <!-- Достижения -->
-  <div class="tabs" id="achievements">
-    <div class="panel">
-      <h2>Достижения</h2>
-      <ul id="achievementList"></ul>
-    </div>
-  </div>
+        // Jobs Data
+        const jobs = [
+            { id: 'farmer', name: 'Фермер', icon: '🌾', reward: 10, exp: 5, time: 3000, energy: 5, items: ['🌾'] },
+            { id: 'miner', name: 'Шахтёр', icon: '⛏️', reward: 20, exp: 8, time: 5000, energy: 10, items: ['⛏️', '💎'] },
+            { id: 'hunter', name: 'Охотник', icon: '🏹', reward: 30, exp: 12, time: 7000, energy: 15, items: ['🏹', '🦌'] },
+            { id: 'blacksmith', name: 'Кузнец', icon: '🔨', reward: 40, exp: 15, time: 8000, energy: 20, items: ['🔨', '⚔️'] },
+            { id: 'merchant', name: 'Торговец', icon: '💼', reward: 50, exp: 20, time: 10000, energy: 15, items: ['💼', '📦'] },
+            { id: 'knight', name: 'Рыцарь', icon: '🛡️', reward: 100, exp: 40, time: 15000, energy: 30, items: ['🛡️', '👑'] }
+        ];
 
-  <!-- Рейтинг -->
-  <div class="tabs" id="rating">
-    <div class="panel">
-      <h2>Рейтинг игроков</h2>
-      <ol id="playersRanking"></ol>
-    </div>
-  </div>
-</div>
+        // Market Items
+        const marketItems = [
+            { id: 'sword', name: 'Меч', icon: '⚔️', price: 100 },
+            { id: 'shield', name: 'Щит', icon: '🛡️', price: 150 },
+            { id: 'potion', name: 'Зелье здоровья', icon: '🧪', price: 50 },
+            { id: 'armor', name: 'Броня', icon: '🦺', price: 200 },
+            { id: 'horse', name: 'Лошадь', icon: '🐴', price: 500 },
+            { id: 'castle', name: 'Замок', icon: '🏰', price: 5000 }
+        ];
 
-<script>
-  // Объект пользователя
-  const userData = {
-    nickname: "Игрок",
-    avatar: "https://via.placeholder.com/60",
-    level: 1,
-    experience: 0,
-    gold: 0,
-    inventory: [],
-    bank: 0,
-    questsCompleted: 0,
-    achievements: [],
-    rating: []
-  };
+        // Achievements
+        const achievements = [
+            { id: 'first_job', name: 'Первая работа', description: 'Выполнить первую работу', icon: '⭐', check: (s) => s.completedJobs >= 1 },
+            { id: 'hard_worker', name: 'Трудяга', description: 'Выполнить 50 работ', icon: '💪', check: (s) => s.completedJobs >= 50 },
+            { id: 'rich', name: 'Богач', description: 'Накопить 1000 золота', icon: '💰', check: (s) => s.gold >= 1000 },
+            { id: 'collector', name: 'Коллекционер', description: 'Собрать 20 предметов', icon: '🎒', check: (s) => Object.values(s.inventory).reduce((a,b) => a+b, 0) >= 20 },
+            { id: 'level_10', name: 'Опытный', description: 'Достичь 10 уровня', icon: '🏆', check: (s) => s.level >= 10 },
+            { id: 'banker', name: 'Банкир', description: 'Положить 500 золота в банк', icon: '🏦', check: (s) => s.bank >= 500 }
+        ];
 
-  // Хранилище данных
-  function saveData() {
-    localStorage.setItem('medieval_rpg_save', JSON.stringify(userData));
-  }
-  function loadData() {
-    const data = localStorage.getItem('medieval_rpg_save');
-    if (data) {
-      Object.assign(userData, JSON.parse(data));
-    }
-  }
+        // Initialize Telegram User
+        function initTelegramUser() {
+            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                const user = tg.initDataUnsafe.user;
+                gameState.userId = user.id;
+                gameState.userName = user.first_name + (user.last_name ? ' ' + user.last_name : '');
+                
+                if (user.photo_url) {
+                    gameState.userPhoto = user.photo_url;
+                }
+                
+                const avatar = document.getElementById('userAvatar');
+                if (gameState.userPhoto) {
+                    avatar.style.backgroundImage = `url(${gameState.userPhoto})`;
+                    avatar.style.backgroundSize = 'cover';
+                    avatar.textContent = '';
+                } else {
+                    avatar.textContent = gameState.userName.charAt(0).toUpperCase();
+                }
+            } else {
+                // Fallback для тестирования
+                gameState.userId = 'demo_' + Date.now();
+                gameState.userName = 'Демо Игрок';
+                document.getElementById('userAvatar').textContent = 'Д';
+            }
+            
+            document.getElementById('userName').textContent = gameState.userName;
+        }
 
-  // Обновление интерфейса
-  function updateUI() {
-    document.getElementById('nickname').innerText = userData.nickname;
-    document.getElementById('avatar').src = userData.avatar;
-    document.getElementById('playerLevel').innerText = userData.level;
-    document.getElementById('playerXP').innerText = userData.experience;
-    document.getElementById('xpNeeded').innerText = userData.level * 10;
-    document.getElementById('playerGold').innerText = userData.gold;
-    document.getElementById('bankBalance').innerText = userData.bank;
-    document.getElementById('questsCount').innerText = userData.questsCompleted;
-    // прогресс XP
-    const xpPercent = (userData.experience / (userData.level * 10)) * 100;
-    document.getElementById('xpProgress').style.width = Math.min(xpPercent, 100) + '%';
+        // Load Game
+        function loadGame() {
+            const saved = localStorage.getItem('medievalRPG_' + gameState.userId);
+            if (saved) {
+                const data = JSON.parse(saved);
+                Object.assign(gameState, data);
+                
+                // Reset daily quests
+                const today = new Date().toDateString();
+                if (gameState.lastQuestReset !== today) {
+                    generateDailyQuests();
+                }
+                
+                // Apply bank interest
+                applyBankInterest();
+            } else {
+                generateDailyQuests();
+            }
+            
+            updateUI();
+        }
 
-    // Инвентарь
-    const invList = document.getElementById('inventoryItems');
-    invList.innerHTML = '';
-    userData.inventory.forEach(item => {
-      const li = document.createElement('li');
-      li.innerText = item.name + ' x' + item.count;
-      invList.appendChild(li);
-    });
+        // Save Game
+        function saveGame() {
+            localStorage.setItem('medievalRPG_' + gameState.userId, JSON.stringify(gameState));
+            
+            // Update leaderboard
+            updateLeaderboard();
+        }
 
-    // Достижения
-    const achList = document.getElementById('achievementList');
-    achList.innerHTML = '';
-    userData.achievements.forEach(a => {
-      const li = document.createElement('li');
-      li.innerText = a;
-      achList.appendChild(li);
-    });
+        // Generate Daily Quests
+        function generateDailyQuests() {
+            gameState.quests = [
+                { id: 'daily_work', name: 'Выполнить 5 работ', description: 'Выполните любые 5 работ', progress: 0, target: 5, reward: 100, completed: false },
+                { id: 'daily_gold', name: 'Заработать 200 золота', description: 'Заработайте 200 золота', progress: 0, target: 200, reward: 150, completed: false },
+                { id: 'daily_energy', name: 'Потратить 100 энергии', description: 'Потратьте 100 энергии на работы', progress: 0, target: 100, reward: 80, completed: false }
+            ];
+            gameState.lastQuestReset = new Date().toDateString();
+        }
 
-    // Рейтинг (заглушка)
-    const ratingList = document.getElementById('playersRanking');
-    ratingList.innerHTML = '';
-    userData.rating.forEach((player, index) => {
-      const li = document.createElement('li');
-      li.innerText = `{player.name} — ${player.level} уровень`;
-      ratingList.appendChild(li);
-    });
-  }
+        // Apply Bank Interest
+        function applyBankInterest() {
+            const now = Date.now();
+            const lastInterest = gameState.lastBankInterest || now;
+            const daysPassed = Math.floor((now - lastInterest) / (1000 * 60 * 60 * 24));
+            
+            if (daysPassed > 0 && gameState.bank > 0) {
+                const interest = Math.floor(gameState.bank * 0.05 * daysPassed);
+                gameState.bank += interest;
+                gameState.lastBankInterest = now;
+                showNotification(`Получено ${interest} золота процентов от банка!`);
+            }
+        }
 
-  // Инициализация
-  loadData();
-  updateUI();
+        // Update UI
+        function updateUI() {
+            document.getElementById('userLevel').textContent = gameState.level;
+            document.getElementById('goldAmount').textContent = gameState.gold;
+            document.getElementById('bankAmount').textContent = gameState.bank;
+            document.getElementById('energyAmount').textContent = gameState.energy;
+            
+            const expPercent = (gameState.exp / gameState.expToLevel) * 100;
+            const expBar = document.getElementById('expBar');
+            expBar.style.width = expPercent + '%';
+            expBar.textContent = `${gameState.exp} / ${gameState.expToLevel} XP`;
+            
+            // Profile stats
+            document.getElementById('profileLevel').textContent = gameState.level;
+            document.getElementById('profileGold').textContent = gameState.gold;
+            document.getElementById('profileWork').textContent = gameState.completedJobs;
+            
+            renderJobs();
+            renderInventory();
+            renderQuests();
+            renderMarket();
+            renderAchievements();
+            renderLeaderboard();
+            
+            // Energy regeneration
+            if (gameState.energy < gameState.maxEnergy) {
+                setTimeout(() => {
+                    gameState.energy = Math.min(gameState.energy + 1, gameState.maxEnergy);
+                    updateUI();
+                    saveGame();
+                }, 30000); // 1 energy per 30 seconds
+            }
+        }
 
-  // Логика кнопок
-  document.querySelectorAll('.menu button').forEach(btn => {
-    btn.onclick = () => {
-      document.querySelectorAll('.tabs').forEach(tab => tab.classList.remove('active'));
-      document.getElementById(btn.dataset.tab).classList.add('active');
-    };
-  });
+        // Render Jobs
+        function renderJobs() {
+            const grid = document.getElementById('jobsGrid');
+            grid.innerHTML = '';
+            
+            jobs.forEach(job => {
+                const canWork = gameState.energy >= job.energy;
+                const card = document.createElement('div');
+                card.className = 'job-card';
+                card.innerHTML = `
+                    <span class="job-icon">${job.icon}</span>
+                    <div class="job-name">${job.name}</div>
+                    <div class="job-reward">+${job.reward} 💰</div>
+                    <div style="font-size: 11px; color: var(--text-secondary); margin-top: 3px;">
+                        ${job.exp} XP | ${job.energy} ⚡
+                    </div>
+                    <div class="progress-bar"><div class="progress-fill" id="progress-${job.id}"></div></div>
+                `;
+                
+                if (!canWork) {
+                    card.style.opacity = '0.5';
+                }
+                
+                card.onclick = () => canWork && startJob(job);
+                grid.appendChild(card);
+            });
+        }
 
-  // Зарабатывать опыт
-  document.getElementById('clickerBtn').onclick = () => {
-    userData.experience += 1;
-    if (userData.experience >= userData.level * 10) {
-      userData.level++;
-      userData.experience = 0;
-      userData.achievements.push(`Достигнут уровень ${userData.level}`);
-    }
-    saveData();
-    updateUI();
-  };
+        // Start Job
+        function startJob(job) {
+            if (gameState.energy < job.energy) {
+                showNotification('Недостаточно энергии!');
+                return;
+            }
+            
+            gameState.energy -= job.energy;
+            
+            const card = event.currentTarget;
+            card.classList.add('working');
+            card.style.pointerEvents = 'none';
+            
+            const progressBar = document.getElementById(`progress-${job.id}`);
+            let progress = 0;
+            const interval = 50;
+            const steps = job.time / interval;
+            const increment = 100 / steps;
+            
+            const timer = setInterval(() => {
+                progress += increment;
+                progressBar.style.width = progress + '%';
+                
+                if (progress >= 100) {
+                    clearInterval(timer);
+                    completeJob(job, card, progressBar);
+                }
+            }, interval);
+            
+            updateUI();
+        }
 
-  // Работа
-  document.getElementById('workBtn').onclick = () => {
-    const earnings = Math.floor(Math.random() * 10) + 5;
-    userData.gold += earnings;
-    userData.achievements.push(`Заработано за работу: ${earnings} золота`);
-    document.getElementById('workEarnings').innerText = '+' + earnings;
-    // история
-    const history = document.getElementById('workHistory');
-    const li = document.createElement('li');
-    li.innerText = `Заработано: ${earnings} золота за работу.`;
-    history.appendChild(li);
-    saveData();
-    updateUI();
-  };
+        // Complete Job
+        function completeJob(job, card, progressBar) {
+            gameState.gold += job.reward;
+            gameState.exp += job.exp;
+            gameState.completedJobs++;
+            
+            // Add random item
+            const item = job.items[Math.floor(Math.random() * job.items.length)];
+            gameState.inventory[item] = (gameState.inventory[item] || 0) + 1;
+            
+            // Update quests
+            updateQuest('daily_work', 1);
+            updateQuest('daily_gold', job.reward);
+            updateQuest('daily_energy', job.energy);
+            
+            // Level up
+            if (gameState.exp >= gameState.expToLevel) {
+                gameState.level++;
+                gameState.exp = 0;
+                gameState.expToLevel = Math.floor(gameState.expToLevel * 1.5);
+                gameState.maxEnergy += 10;
+                gameState.energy = gameState.maxEnergy;
+                showNotification(`🎉 Уровень ${gameState.level}!`);
+            }
+            
+            showNotification(`+${job.reward} 💰 +${job.exp} XP +${item}`);
+            
+            progressBar.style.width = '0%';
+            card.classList.remove('working');
+            card.style.pointerEvents = '';
+            
+            checkAchievements();
+            updateUI();
+            saveGame();
+        }
 
-  // Инвентарь
-  document.getElementById('buyItem').onclick = () => {
-    const item = {name: 'Меч', count: 1};
-    const existing = userData.inventory.find(i => i.name === item.name);
-    if (existing) {
-      existing.count++;
-    } else {
-      userData.inventory.push(item);
-    }
-    userData.gold -= 10; // Цена
-    if (userData.gold < 0) userData.gold = 0;
-    saveData();
-    updateUI();
-  };
+        // Update Quest Progress
+        function updateQuest(questId, amount) {
+            const quest = gameState.quests.find(q => q.id === questId);
+            if (quest && !quest.completed) {
+                quest.progress = Math.min(quest.progress + amount, quest.target);
+                if (quest.progress >= quest.target) {
+                    quest.completed = true;
+                    gameState.gold += quest.reward;
+                    showNotification(`✅ Квест выполнен! +${quest.reward} 💰`);
+                }
+            }
+        }
 
-  // Ежедневный квест
-  document.getElementById('dailyQuestBtn').onclick = () => {
-    userData.questsCompleted++;
-    userData.gold += 20;
-    userData.achievements.push('Выполнен ежедневный квест');
-    // Добавление в рейтинг
-    userData.rating.push({name: userData.nickname, level: userData.level});
-    saveData();
-    updateUI();
-  };
+        // Render Inventory
+        function renderInventory() {
+            const grid = document.getElementById('inventoryGrid');
+            grid.innerHTML = '';
+            
+            const allItems = ['🌾', '⛏️', '💎', '🏹', '🦌', '🔨', '⚔️', '💼', '📦', '🛡️', '👑'];
+            
+            for (let i = 0; i < 16; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'item-slot';
+                
+                if (i < allItems.length) {
+                    const item = allItems[i];
+                    const count = gameState.inventory[item] || 0;
+                    
+                    if (count > 0) {
+                        slot.classList.add('has-item');
+                        slot.innerHTML = `
+                            <span class="item-icon">${item}</span>
+                            <span class="item-count">${count}</span>
+                        `;
+                    }
+                }
+                
+                grid.appendChild(slot);
+            }
+        }
 
-  // Вложить в банк
-  document.getElementById('depositBtn').onclick = () => {
-    if (userData.gold > 0) {
-      userData.bank += userData.gold;
-      userData.gold = 0;
-    }
-    saveData();
-    updateUI();
-  };
-  // Снять со счета
-  document.getElementById('withdrawBtn').onclick = () => {
-    if (userData.bank > 0) {
-      userData.gold += userData.bank;
-      userData.bank = 0;
-    }
-    saveData();
-    updateUI();
-  };
+        // Render Quests
+        function renderQuests() {
+            const list = document.getElementById('questsList');
+            list.innerHTML = '';
+            
+            gameState.quests.forEach(quest => {
+                const item = document.createElement('div');
+                item.className = 'quest-item';
+                item.style.opacity = quest.completed ? '0.6' : '1';
+                item.innerHTML = `
+                    <div class="quest-title">${quest.completed ? '✅ ' : ''}${quest.name}</div>
+                    <div class="quest-description">${quest.description}</div>
+                    <div class="quest-progress">
+                        <span>${quest.progress} / ${quest.target}</span>
+                        <span class="quest-reward">+${quest.reward} 💰</span>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
 
-  // Обновление рейтинга (по уровню)
-  function updateRating() {
-    userData.rating.sort((a, b) => b.level - a.level);
-  }
+        // Render Market
+        function renderMarket() {
+            const list = document.getElementById('marketList');
+            list.innerHTML = '';
+            
+            marketItems.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'market-item';
+                div.innerHTML = `
+                    <div class="market-info">
+                        <span class="market-icon">${item.icon}</span>
+                        <div class="market-details">
+                            <h3>${item.name}</h3>
+                            <div class="market-price">${item.price} 💰</div>
+                        </div>
+                    </div>
+                    <button class="btn" onclick="buyItem('${item.id}', ${item.price}, '${item.icon}')">Купить</button>
+                `;
+                list.appendChild(div);
+            });
+        }
 
-  // Инициализация и обновление
-  setInterval(() => {
-    // Постоянное увеличение опыта для симуляции
-    userData.experience += 0.1;
-    if (userData.experience >= userData.level * 10) {
-      userData.level++;
-      userData.experience = 0;
-      userData.achievements.push(`Автоматический уровень ${userData.level} достигнут`);
-    }
-    saveData();
-    updateUI();
-  }, 60000); // каждую минуту
+        // Buy Item
+        function buyItem(id, price, icon) {
+            if (gameState.gold >= price) {
+                gameState.gold -= price;
+                gameState.inventory[icon] = (gameState.inventory[icon] || 0) + 1;
+                showNotification(`Куплено: ${icon}`);
+                checkAchievements();
+                updateUI();
+                saveGame();
+            } else {
+                showNotification('Недостаточно золота!');
+            }
+        }
 
-  // Сохраняем прогресс при закрытии
-  window.onbeforeunload = () => {
-    saveData();
-  };
-</script>
+        // Check Achievements
+        function checkAchievements() {
+            achievements.forEach(achievement => {
+                if (!gameState.achievements[achievement.id] && achievement.check(gameState)) {
+                    gameState.achievements[achievement.id] = true;
+                    showNotification(`🏆 Достижение: ${achievement.name}`);
+                }
+            });
+        }
+
+        // Render Achievements
+        function renderAchievements() {
+            const list = document.getElementById('achievementsList');
+            list.innerHTML = '';
+            
+            const unlockedCount = Object.keys(gameState.achievements).length;
+            document.getElementById('profileAchievements').textContent = unlockedCount;
+            
+            achievements.forEach(achievement => {
+                const unlocked = gameState.achievements[achievement.id];
+                const div = document.createElement('div');
+                div.className = 'achievement-item' + (unlocked ? ' unlocked' : '');
+                div.innerHTML = `
+                    <span class="achievement-icon">${achievement.icon}</span>
+                    <div class="achievement-info">
+                        <h3>${achievement.name}</h3>
+                        <div class="achievement-description">${achievement.description}</div>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        // Update Leaderboard
+        function updateLeaderboard() {
+            let leaderboard = JSON.parse(localStorage.getItem('medievalRPG_leaderboard') || '[]');
+            
+            const playerIndex = leaderboard.findIndex(p => p.userId === gameState.userId);
+            const playerData = {
+                userId: gameState.userId,
+                userName: gameState.userName,
+                level: gameState.level,
+                gold: gameState.gold,
+                completedJobs: gameState.completedJobs
+            };
+            
+            if (playerIndex >= 0) {
+                leaderboard[playerIndex] = playerData;
+            } else {
+                leaderboard.push(playerData);
+            }
+            
+            leaderboard.sort((a, b) => {
+                if (b.level !== a.level) return b.level - a.level;
+                return b.gold - a.gold;
+            });
+            
+            leaderboard = leaderboard.slice(0, 50);
+            localStorage.setItem('medievalRPG_leaderboard', JSON.stringify(leaderboard));
+        }
+
+        // Render Leaderboard
+        function renderLeaderboard() {
+            const list = document.getElementById('leaderboardList');
+            list.innerHTML = '';
+            
+            const leaderboard = JSON.parse(localStorage.getItem('medievalRPG_leaderboard') || '[]');
+            
+            if (leaderboard.length === 0) {
+                list.innerHTML = '<div class="empty-state"><div class="empty-icon">🏆</div><p>Рейтинг пока пуст</p></div>';
+                return;
+            }
+            
+            leaderboard.slice(0, 10).forEach((player, index) => {
+                const div = document.createElement('div');
+                div.className = 'leaderboard-item';
+                div.innerHTML = `
+                    <div class="rank ${index < 3 ? 'top3' : ''}">#${index + 1}</div>
+                    <div class="player-info">
+                        <div class="player-name">${player.userName}</div>
+                        <div class="player-stats">Уровень ${player.level} • ${player.gold} 💰 • ${player.completedJobs} работ</div>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        // Bank Functions
+        function openBankModal() {
+            document.getElementById('bankModal').classList.add('active');
+        }
+
+        function closeBankModal() {
+            document.getElementById('bankModal').classList.remove('active');
+        }
+
+        function depositGold() {
+            const amount = parseInt(document.getElementById('bankInput').value);
+            if (amount > 0 && gameState.gold >= amount) {
+                gameState.gold -= amount;
+                gameState.bank += amount;
+                showNotification(`Положено в банк: ${amount} 💰`);
+                checkAchievements();
+                updateUI();
+                saveGame();
+                closeBankModal();
+            } else {
+                showNotification('Недостаточно золота!');
+            }
+        }
+
+        function withdrawGold() {
+            const amount = parseInt(document.getElementById('bankInput').value);
+            if (amount > 0 && gameState.bank >= amount) {
+                gameState.bank -= amount;
+                gameState.gold += amount;
+                showNotification(`Снято из банка: ${amount} 💰`);
+                updateUI();
+                saveGame();
+                closeBankModal();
+            } else {
+                showNotification('Недостаточно золота в банке!');
+            }
+        }
+
+        // Show Notification
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Switch Page
+        function switchPage(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(page + 'Page').classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // Initialize Game
+        initTelegramUser();
+        loadGame();
+    </script>
 </body>
 </html>
