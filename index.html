@@ -1,287 +1,648 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Dark Ages RPG</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+import React, { useState, useEffect } from 'react';
+import { User, Briefcase, ShoppingBag, Building2, Package, Trophy, Coins, Heart, Zap, Award } from 'lucide-react';
 
-    <!-- Telegram Mini App -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+const TelegramRPG = () => {
+  const [currentPage, setCurrentPage] = useState('profile');
+  const [player, setPlayer] = useState({
+    name: 'Игрок',
+    level: 1,
+    experience: 0,
+    experienceToNext: 100,
+    health: 100,
+    maxHealth: 100,
+    energy: 100,
+    maxEnergy: 100,
+    money: 1000,
+    bankMoney: 0,
+    strength: 5,
+    intelligence: 5,
+    luck: 5,
+    currentJob: null,
+    workProgress: 0
+  });
 
-    <!-- Styles -->
-    <link rel="stylesheet" href="style.css">
-</head>
+  const [inventory, setInventory] = useState([
+    { id: 1, name: 'Деревянный меч', type: 'weapon', power: 5, price: 50, equipped: false },
+    { id: 2, name: 'Зелье здоровья', type: 'potion', healing: 30, price: 20, count: 3 }
+  ]);
 
-<body>
+  const [market] = useState([
+    { id: 101, name: 'Железный меч', type: 'weapon', power: 15, price: 300 },
+    { id: 102, name: 'Стальная броня', type: 'armor', defense: 10, price: 500 },
+    { id: 103, name: 'Зелье здоровья', type: 'potion', healing: 30, price: 25 },
+    { id: 104, name: 'Зелье энергии', type: 'potion', energy: 40, price: 30 },
+    { id: 105, name: 'Магический амулет', type: 'accessory', luck: 3, price: 400 },
+    { id: 106, name: 'Книга знаний', type: 'book', intelligence: 2, price: 200 },
+    { id: 107, name: 'Легендарный меч', type: 'weapon', power: 30, price: 1500 },
+    { id: 108, name: 'Эликсир силы', type: 'potion', strength: 5, price: 500 }
+  ]);
 
-<div id="game-root">
+  const [jobs] = useState([
+    { id: 1, name: 'Курьер', pay: 50, energyCost: 10, duration: 3000, minLevel: 1 },
+    { id: 2, name: 'Охранник', pay: 100, energyCost: 20, duration: 5000, minLevel: 3 },
+    { id: 3, name: 'Торговец', pay: 200, energyCost: 15, duration: 4000, minLevel: 5 },
+    { id: 4, name: 'Кузнец', pay: 300, energyCost: 30, duration: 6000, minLevel: 8 },
+    { id: 5, name: 'Маг', pay: 500, energyCost: 25, duration: 7000, minLevel: 10 },
+    { id: 6, name: 'Рыцарь', pay: 700, energyCost: 40, duration: 8000, minLevel: 15 }
+  ]);
 
-    <!-- ================= HEADER ================= -->
-    <header class="game-header">
-        <div class="header-top">
-            <div class="game-logo">
-                🏰 Dark Ages
+  const [quests] = useState([
+    { id: 1, name: 'Первое задание', description: 'Заработай 500 монет', reward: 100, type: 'money', target: 500, completed: false },
+    { id: 2, name: 'Повышение уровня', description: 'Достигни 3 уровня', reward: 200, type: 'level', target: 3, completed: false },
+    { id: 3, name: 'Коллекционер', description: 'Собери 5 предметов', reward: 150, type: 'items', target: 5, completed: false }
+  ]);
+
+  const [achievements, setAchievements] = useState([
+    { id: 1, name: 'Первые шаги', description: 'Достигни 2 уровня', unlocked: false },
+    { id: 2, name: 'Богач', description: 'Накопи 5000 монет', unlocked: false },
+    { id: 3, name: 'Трудоголик', description: 'Выполни 10 работ', unlocked: false },
+    { id: 4, name: 'Коллекционер', description: 'Собери 10 предметов', unlocked: false }
+  ]);
+
+  const [workCount, setWorkCount] = useState(0);
+  const [notifications, setNotifications] = useState([]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPlayer(prev => ({
+        ...prev,
+        energy: Math.min(prev.energy + 1, prev.maxEnergy)
+      }));
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const addNotification = (message, type = 'info') => {
+    const notification = { id: Date.now(), message, type };
+    setNotifications(prev => [...prev, notification]);
+    setTimeout(() => {
+      setNotifications(prev => prev.filter(n => n.id !== notification.id));
+    }, 3000);
+  };
+
+  const gainExperience = (amount) => {
+    setPlayer(prev => {
+      let newExp = prev.experience + amount;
+      let newLevel = prev.level;
+      let expNeeded = prev.experienceToNext;
+
+      while (newExp >= expNeeded) {
+        newExp -= expNeeded;
+        newLevel++;
+        expNeeded = Math.floor(expNeeded * 1.5);
+        addNotification(`Поздравляем! Вы достигли ${newLevel} уровня!`, 'success');
+      }
+
+      return {
+        ...prev,
+        experience: newExp,
+        level: newLevel,
+        experienceToNext: expNeeded,
+        maxHealth: prev.maxHealth + (newLevel - prev.level) * 10,
+        maxEnergy: prev.maxEnergy + (newLevel - prev.level) * 5
+      };
+    });
+  };
+
+  const startWork = (job) => {
+    if (player.energy < job.energyCost) {
+      addNotification('Недостаточно энергии!', 'error');
+      return;
+    }
+
+    if (player.level < job.minLevel) {
+      addNotification(`Требуется ${job.minLevel} уровень!`, 'error');
+      return;
+    }
+
+    setPlayer(prev => ({
+      ...prev,
+      currentJob: job,
+      workProgress: 0,
+      energy: prev.energy - job.energyCost
+    }));
+
+    const progressInterval = setInterval(() => {
+      setPlayer(prev => {
+        if (prev.workProgress >= 100) {
+          clearInterval(progressInterval);
+          const bonus = Math.floor(Math.random() * 20) - 10;
+          const finalPay = job.pay + bonus;
+          addNotification(`Работа завершена! Получено: ${finalPay} монет`, 'success');
+          gainExperience(20);
+          setWorkCount(c => c + 1);
+          return {
+            ...prev,
+            currentJob: null,
+            workProgress: 0,
+            money: prev.money + finalPay
+          };
+        }
+        return {
+          ...prev,
+          workProgress: prev.workProgress + (100 / (job.duration / 100))
+        };
+      });
+    }, 100);
+  };
+
+  const buyItem = (item) => {
+    if (player.money < item.price) {
+      addNotification('Недостаточно денег!', 'error');
+      return;
+    }
+
+    const existingItem = inventory.find(i => i.id === item.id);
+    if (existingItem && item.type === 'potion') {
+      setInventory(prev => prev.map(i => 
+        i.id === item.id ? { ...i, count: (i.count || 1) + 1 } : i
+      ));
+    } else {
+      setInventory(prev => [...prev, { ...item, count: 1 }]);
+    }
+
+    setPlayer(prev => ({ ...prev, money: prev.money - item.price }));
+    addNotification(`Куплено: ${item.name}`, 'success');
+  };
+
+  const sellItem = (item) => {
+    const sellPrice = Math.floor(item.price * 0.6);
+    
+    if (item.count && item.count > 1) {
+      setInventory(prev => prev.map(i => 
+        i.id === item.id ? { ...i, count: i.count - 1 } : i
+      ));
+    } else {
+      setInventory(prev => prev.filter(i => i.id !== item.id));
+    }
+
+    setPlayer(prev => ({ ...prev, money: prev.money + sellPrice }));
+    addNotification(`Продано: ${item.name} за ${sellPrice} монет`, 'success');
+  };
+
+  const useItem = (item) => {
+    if (item.type === 'potion') {
+      if (item.healing) {
+        setPlayer(prev => ({
+          ...prev,
+          health: Math.min(prev.health + item.healing, prev.maxHealth)
+        }));
+        addNotification(`Восстановлено ${item.healing} HP`, 'success');
+      }
+      if (item.energy) {
+        setPlayer(prev => ({
+          ...prev,
+          energy: Math.min(prev.energy + item.energy, prev.maxEnergy)
+        }));
+        addNotification(`Восстановлено ${item.energy} энергии`, 'success');
+      }
+
+      if (item.count > 1) {
+        setInventory(prev => prev.map(i => 
+          i.id === item.id ? { ...i, count: i.count - 1 } : i
+        ));
+      } else {
+        setInventory(prev => prev.filter(i => i.id !== item.id));
+      }
+    }
+  };
+
+  const depositMoney = (amount) => {
+    if (player.money < amount) {
+      addNotification('Недостаточно денег!', 'error');
+      return;
+    }
+    setPlayer(prev => ({
+      ...prev,
+      money: prev.money - amount,
+      bankMoney: prev.bankMoney + amount
+    }));
+    addNotification(`Внесено в банк: ${amount} монет`, 'success');
+  };
+
+  const withdrawMoney = (amount) => {
+    if (player.bankMoney < amount) {
+      addNotification('Недостаточно денег в банке!', 'error');
+      return;
+    }
+    setPlayer(prev => ({
+      ...prev,
+      money: prev.money + amount,
+      bankMoney: prev.bankMoney - amount
+    }));
+    addNotification(`Снято из банка: ${amount} монет`, 'success');
+  };
+
+  const ProfilePage = () => (
+    <div className="space-y-4">
+      <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg p-6 text-white">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="text-2xl font-bold">{player.name}</h2>
+            <div className="flex items-center gap-2 mt-1">
+              <Award className="w-4 h-4" />
+              <span>Уровень {player.level}</span>
             </div>
-            <div class="game-subtitle">
-                Эпоха стали, камня и крови
-            </div>
+          </div>
+          <div className="text-right">
+            <div className="text-2xl font-bold">{player.money} 💰</div>
+            <div className="text-sm opacity-80">Банк: {player.bankMoney} 💰</div>
+          </div>
         </div>
 
-        <div class="header-resources">
-            <div class="resource gold">
-                <span class="icon">💰</span>
-                <span id="gold">0</span>
+        <div className="space-y-2">
+          <div>
+            <div className="flex justify-between text-sm mb-1">
+              <span>Опыт</span>
+              <span>{player.experience} / {player.experienceToNext}</span>
             </div>
-            <div class="resource emerald">
-                <span class="icon">💎</span>
-                <span id="emeralds">0</span>
+            <div className="w-full bg-purple-900 rounded-full h-2">
+              <div 
+                className="bg-yellow-400 h-2 rounded-full transition-all"
+                style={{ width: `${(player.experience / player.experienceToNext) * 100}%` }}
+              />
             </div>
-            <div class="resource energy">
-                <span class="icon">⚡</span>
-                <span id="energy">100</span>/<span id="maxEnergy">100</span>
+          </div>
+
+          <div>
+            <div className="flex justify-between text-sm mb-1">
+              <span>❤️ Здоровье</span>
+              <span>{player.health} / {player.maxHealth}</span>
             </div>
-        </div>
-    </header>
-
-    <!-- ================= PLAYER PANEL ================= -->
-    <section class="player-panel">
-        <div class="player-row">
-            <span class="label">Имя:</span>
-            <span class="value" id="playerName">Безымянный</span>
-        </div>
-
-        <div class="player-row">
-            <span class="label">Уровень:</span>
-            <span class="value" id="level">1</span>
-        </div>
-
-        <div class="player-row">
-            <span class="label">Титул:</span>
-            <span class="value" id="title">Бродяга</span>
-        </div>
-
-        <div class="player-row">
-            <span class="label">Опыт:</span>
-            <span class="value">
-                <span id="exp">0</span>/<span id="expNext">100</span>
-            </span>
-        </div>
-
-        <div class="player-progress">
-            <div class="exp-bar">
-                <div class="exp-fill" id="expBar"></div>
+            <div className="w-full bg-red-900 rounded-full h-2">
+              <div 
+                className="bg-red-400 h-2 rounded-full"
+                style={{ width: `${(player.health / player.maxHealth) * 100}%` }}
+              />
             </div>
-        </div>
-    </section>
+          </div>
 
-    <!-- ================= MAIN NAVIGATION ================= -->
-    <nav class="main-navigation">
-        <button data-tab="city">🏰 Город</button>
-        <button data-tab="jobs">⚒️ Работы</button>
-        <button data-tab="locations">🗺️ Локации</button>
-        <button data-tab="market">🛒 Рынок</button>
-        <button data-tab="inventory">🎒 Инвентарь</button>
-        <button data-tab="bank">🏦 Банк</button>
-        <button data-tab="profile">🧍 Профиль</button>
-    </nav>
-
-    <!-- ================= CONTENT ================= -->
-    <main class="game-content">
-
-        <!-- ================= CITY ================= -->
-        <section class="tab-content active" id="city">
-            <h2>🏰 Город</h2>
-
-            <div class="city-description">
-                Сердце королевства. Здесь решается судьба людей и золота.
+          <div>
+            <div className="flex justify-between text-sm mb-1">
+              <span>⚡ Энергия</span>
+              <span>{player.energy} / {player.maxEnergy}</span>
             </div>
+            <div className="w-full bg-blue-900 rounded-full h-2">
+              <div 
+                className="bg-blue-400 h-2 rounded-full"
+                style={{ width: `${(player.energy / player.maxEnergy) * 100}%` }}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
 
-            <div class="city-buildings">
-                <div class="building-card">
-                    <h3>🛒 Рынок</h3>
-                    <p>Торговцы оружием, бронёй и инструментами</p>
+      <div className="grid grid-cols-3 gap-4">
+        <div className="bg-white rounded-lg p-4 text-center shadow">
+          <div className="text-3xl font-bold text-red-600">{player.strength}</div>
+          <div className="text-sm text-gray-600">Сила</div>
+        </div>
+        <div className="bg-white rounded-lg p-4 text-center shadow">
+          <div className="text-3xl font-bold text-blue-600">{player.intelligence}</div>
+          <div className="text-sm text-gray-600">Интеллект</div>
+        </div>
+        <div className="bg-white rounded-lg p-4 text-center shadow">
+          <div className="text-3xl font-bold text-green-600">{player.luck}</div>
+          <div className="text-sm text-gray-600">Удача</div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-lg p-4 shadow">
+        <h3 className="font-bold text-lg mb-3">🏆 Достижения</h3>
+        <div className="space-y-2">
+          {achievements.map(achievement => (
+            <div 
+              key={achievement.id}
+              className={`p-3 rounded-lg ${achievement.unlocked ? 'bg-yellow-100' : 'bg-gray-100'}`}
+            >
+              <div className="font-semibold">{achievement.name}</div>
+              <div className="text-sm text-gray-600">{achievement.description}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  const WorkPage = () => (
+    <div className="space-y-4">
+      <div className="bg-white rounded-lg p-4 shadow">
+        <h2 className="text-xl font-bold mb-4">💼 Доступные работы</h2>
+        
+        {player.currentJob && (
+          <div className="mb-4 p-4 bg-blue-50 rounded-lg">
+            <div className="flex justify-between items-center mb-2">
+              <span className="font-semibold">Работаю: {player.currentJob.name}</span>
+              <span>{Math.floor(player.workProgress)}%</span>
+            </div>
+            <div className="w-full bg-gray-300 rounded-full h-3">
+              <div 
+                className="bg-blue-600 h-3 rounded-full transition-all"
+                style={{ width: `${player.workProgress}%` }}
+              />
+            </div>
+          </div>
+        )}
+
+        <div className="space-y-3">
+          {jobs.map(job => (
+            <div key={job.id} className="border rounded-lg p-4">
+              <div className="flex justify-between items-start mb-2">
+                <div>
+                  <h3 className="font-bold text-lg">{job.name}</h3>
+                  <div className="text-sm text-gray-600">
+                    Требуется уровень: {job.minLevel}
+                  </div>
                 </div>
-
-                <div class="building-card">
-                    <h3>🏦 Банк</h3>
-                    <p>Обмен валют и хранение золота</p>
+                <div className="text-right">
+                  <div className="text-green-600 font-bold">{job.pay} 💰</div>
+                  <div className="text-sm text-red-600">-{job.energyCost} ⚡</div>
                 </div>
-
-                <div class="building-card">
-                    <h3>🏠 Таверна</h3>
-                    <p>Слухи, задания и наёмники</p>
-                </div>
+              </div>
+              <button
+                onClick={() => startWork(job)}
+                disabled={player.currentJob || player.energy < job.energyCost || player.level < job.minLevel}
+                className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-blue-700 transition"
+              >
+                {player.level < job.minLevel ? 'Требуется выше уровень' : 
+                 player.energy < job.energyCost ? 'Недостаточно энергии' : 
+                 player.currentJob ? 'Занят работой' : 'Начать работу'}
+              </button>
             </div>
-        </section>
+          ))}
+        </div>
+      </div>
 
-        <!-- ================= JOBS ================= -->
-        <section class="tab-content" id="jobs">
-            <h2>⚒️ Работы</h2>
+      <div className="bg-white rounded-lg p-4 shadow">
+        <h3 className="font-bold text-lg mb-3">📋 Задания</h3>
+        <div className="space-y-2">
+          {quests.map(quest => (
+            <div key={quest.id} className="p-3 border rounded-lg">
+              <div className="font-semibold">{quest.name}</div>
+              <div className="text-sm text-gray-600">{quest.description}</div>
+              <div className="text-sm text-green-600 mt-1">Награда: {quest.reward} 💰</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 
-            <!-- PORT -->
-            <div class="job-card">
-                <div class="job-header">
-                    <h3>⚓ Порт — Рыбалка</h3>
-                    <span class="job-level">Уровень: 1+</span>
+  const InventoryPage = () => (
+    <div className="space-y-4">
+      <div className="bg-white rounded-lg p-4 shadow">
+        <h2 className="text-xl font-bold mb-4">🎒 Инвентарь</h2>
+        {inventory.length === 0 ? (
+          <p className="text-gray-500 text-center py-8">Инвентарь пуст</p>
+        ) : (
+          <div className="grid grid-cols-1 gap-3">
+            {inventory.map(item => (
+              <div key={item.id} className="border rounded-lg p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <h3 className="font-bold">{item.name}</h3>
+                    {item.count && <span className="text-sm text-gray-600">x{item.count}</span>}
+                    <div className="text-sm text-gray-600 mt-1">
+                      {item.type === 'weapon' && `⚔️ Урон: ${item.power}`}
+                      {item.type === 'armor' && `🛡️ Защита: ${item.defense}`}
+                      {item.type === 'potion' && item.healing && `❤️ +${item.healing} HP`}
+                      {item.type === 'potion' && item.energy && `⚡ +${item.energy} энергии`}
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-green-600 font-semibold">{Math.floor(item.price * 0.6)} 💰</div>
+                  </div>
                 </div>
-
-                <div class="job-body">
-                    <p>Простая работа для выживания.</p>
-                    <ul>
-                        <li>Доход: 1–2 💰</li>
-                        <li>Энергия: −1</li>
-                        <li>Опыт: +5</li>
-                    </ul>
+                <div className="flex gap-2">
+                  {item.type === 'potion' && (
+                    <button
+                      onClick={() => useItem(item)}
+                      className="flex-1 bg-green-600 text-white py-2 rounded-lg font-semibold hover:bg-green-700 transition"
+                    >
+                      Использовать
+                    </button>
+                  )}
+                  <button
+                    onClick={() => sellItem(item)}
+                    className="flex-1 bg-red-600 text-white py-2 rounded-lg font-semibold hover:bg-red-700 transition"
+                  >
+                    Продать
+                  </button>
                 </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 
-                <button class="job-action" id="jobFishing">
-                    Выйти на ловлю
+  const MarketPage = () => (
+    <div className="space-y-4">
+      <div className="bg-white rounded-lg p-4 shadow">
+        <h2 className="text-xl font-bold mb-4">🏪 Рынок</h2>
+        <div className="mb-4 p-3 bg-gray-100 rounded-lg">
+          <div className="text-center">
+            <span className="text-lg font-bold">Ваши деньги: {player.money} 💰</span>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 gap-3">
+          {market.map(item => (
+            <div key={item.id} className="border rounded-lg p-4">
+              <div className="flex justify-between items-start mb-3">
+                <div>
+                  <h3 className="font-bold">{item.name}</h3>
+                  <div className="text-sm text-gray-600 mt-1">
+                    {item.type === 'weapon' && `⚔️ Урон: ${item.power}`}
+                    {item.type === 'armor' && `🛡️ Защита: ${item.defense}`}
+                    {item.type === 'potion' && item.healing && `❤️ +${item.healing} HP`}
+                    {item.type === 'potion' && item.energy && `⚡ +${item.energy} энергии`}
+                    {item.type === 'accessory' && `🍀 Удача: +${item.luck}`}
+                    {item.type === 'book' && `📚 Интеллект: +${item.intelligence}`}
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-yellow-600 font-bold text-lg">{item.price} 💰</div>
+                </div>
+              </div>
+              <button
+                onClick={() => buyItem(item)}
+                disabled={player.money < item.price}
+                className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-blue-700 transition"
+              >
+                {player.money < item.price ? 'Недостаточно денег' : 'Купить'}
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  const BankPage = () => {
+    const [depositAmount, setDepositAmount] = useState('');
+    const [withdrawAmount, setWithdrawAmount] = useState('');
+
+    return (
+      <div className="space-y-4">
+        <div className="bg-white rounded-lg p-4 shadow">
+          <h2 className="text-xl font-bold mb-4">🏦 Банк</h2>
+          
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="bg-green-50 rounded-lg p-4 text-center">
+              <div className="text-sm text-gray-600 mb-1">На руках</div>
+              <div className="text-2xl font-bold text-green-600">{player.money} 💰</div>
+            </div>
+            <div className="bg-blue-50 rounded-lg p-4 text-center">
+              <div className="text-sm text-gray-600 mb-1">В банке</div>
+              <div className="text-2xl font-bold text-blue-600">{player.bankMoney} 💰</div>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="border rounded-lg p-4">
+              <h3 className="font-bold mb-3">💵 Внести деньги</h3>
+              <input
+                type="number"
+                value={depositAmount}
+                onChange={(e) => setDepositAmount(e.target.value)}
+                placeholder="Сумма"
+                className="w-full border rounded-lg p-2 mb-3"
+              />
+              <div className="flex gap-2 mb-3">
+                <button
+                  onClick={() => setDepositAmount('100')}
+                  className="flex-1 bg-gray-200 py-2 rounded-lg hover:bg-gray-300"
+                >
+                  100
                 </button>
-            </div>
-
-            <!-- MINE -->
-            <div class="job-card locked" id="jobMineCard">
-                <div class="job-header">
-                    <h3>⛏️ Рудник</h3>
-                    <span class="job-level">Уровень: 5+</span>
-                </div>
-
-                <div class="job-body">
-                    <p>Тяжёлая и опасная работа под землёй.</p>
-                    <ul>
-                        <li>Доход: 4–6 💰</li>
-                        <li>Шанс: 1% 💎</li>
-                        <li>Энергия: −2</li>
-                        <li>Опыт: +8</li>
-                    </ul>
-                </div>
-
-                <button class="job-action" id="jobMine">
-                    Спуститься в рудник
+                <button
+                  onClick={() => setDepositAmount('500')}
+                  className="flex-1 bg-gray-200 py-2 rounded-lg hover:bg-gray-300"
+                >
+                  500
                 </button>
-            </div>
-
-            <!-- HUNT -->
-            <div class="job-card locked" id="jobHuntCard">
-                <div class="job-header">
-                    <h3>🏹 Охота</h3>
-                    <span class="job-level">Уровень: 15+</span>
-                </div>
-
-                <div class="job-body">
-                    <p>Опасная охота в диких землях.</p>
-                    <ul>
-                        <li>Доход: 8–12 💰</li>
-                        <li>Требуется: Лук</li>
-                        <li>Энергия: −3</li>
-                        <li>Опыт: +12</li>
-                    </ul>
-                </div>
-
-                <button class="job-action" id="jobHunt">
-                    Отправиться на охоту
+                <button
+                  onClick={() => setDepositAmount(player.money.toString())}
+                  className="flex-1 bg-gray-200 py-2 rounded-lg hover:bg-gray-300"
+                >
+                  Всё
                 </button>
-            </div>
-        </section>
-
-        <!-- ================= LOCATIONS ================= -->
-        <section class="tab-content" id="locations">
-            <h2>🗺️ Локации</h2>
-
-            <div class="location-card">
-                <h3>🌲 Лес</h3>
-                <p>Охота, редкие ресурсы</p>
-            </div>
-
-            <div class="location-card">
-                <h3>⛰️ Горы</h3>
-                <p>Рудники и опасности</p>
+              </div>
+              <button
+                onClick={() => {
+                  const amount = parseInt(depositAmount);
+                  if (amount > 0) {
+                    depositMoney(amount);
+                    setDepositAmount('');
+                  }
+                }}
+                className="w-full bg-green-600 text-white py-2 rounded-lg font-semibold hover:bg-green-700"
+              >
+                Внести
+              </button>
             </div>
 
-            <div class="location-card">
-                <h3>🏞️ Равнины</h3>
-                <p>Путешествия и квесты</p>
+            <div className="border rounded-lg p-4">
+              <h3 className="font-bold mb-3">💸 Снять деньги</h3>
+              <input
+                type="number"
+                value={withdrawAmount}
+                onChange={(e) => setWithdrawAmount(e.target.value)}
+                placeholder="Сумма"
+                className="w-full border rounded-lg p-2 mb-3"
+              />
+              <div className="flex gap-2 mb-3">
+                <button
+                  onClick={() => setWithdrawAmount('100')}
+                  className="flex-1 bg-gray-200 py-2 rounded-lg hover:bg-gray-300"
+                >
+                  100
+                </button>
+                <button
+                  onClick={() => setWithdrawAmount('500')}
+                  className="flex-1 bg-gray-200 py-2 rounded-lg hover:bg-gray-300"
+                >
+                  500
+                </button>
+                <button
+                  onClick={() => setWithdrawAmount(player.bankMoney.toString())}
+                  className="flex-1 bg-gray-200 py-2 rounded-lg hover:bg-gray-300"
+                >
+                  Всё
+                </button>
+              </div>
+              <button
+                onClick={() => {
+                  const amount = parseInt(withdrawAmount);
+                  if (amount > 0) {
+                    withdrawMoney(amount);
+                    setWithdrawAmount('');
+                  }
+                }}
+                className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700"
+              >
+                Снять
+              </button>
             </div>
-        </section>
+          </div>
 
-        <!-- ================= MARKET ================= -->
-        <section class="tab-content" id="market">
-            <h2>🛒 Рынок</h2>
+          <div className="mt-6 p-4 bg-yellow-50 rounded-lg">
+            <h3 className="font-bold mb-2">ℹ️ Информация</h3>
+            <ul className="text-sm text-gray-700 space-y-1">
+              <li>• Деньги в банке защищены от кражи</li>
+              <li>• Накопите деньги для крупных покупок</li>
+              <li>• Операции проходят мгновенно</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
-            <div class="market-category">
-                <h3>⚔️ Оружие</h3>
-
-                <div class="item-card">
-                    <h4>🏹 Лук</h4>
-                    <p>Необходим для охоты</p>
-                    <p>Цена: 1000 💰</p>
-                    <button>Купить</button>
-                </div>
-
-                <div class="item-card locked">
-                    <h4>🏹 Арбалет</h4>
-                    <p>Повышает доход охоты</p>
-                    <p>Цена: 5000 💰</p>
-                    <button>Купить</button>
-                </div>
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-gray-100 to-gray-200">
+      {notifications.length > 0 && (
+        <div className="fixed top-4 right-4 z-50 space-y-2">
+          {notifications.map(notif => (
+            <div
+              key={notif.id}
+              className={`px-4 py-3 rounded-lg shadow-lg text-white ${
+                notif.type === 'success' ? 'bg-green-500' :
+                notif.type === 'error' ? 'bg-red-500' :
+                'bg-blue-500'
+              }`}
+            >
+              {notif.message}
             </div>
+          ))}
+        </div>
+      )}
 
-            <div class="market-category">
-                <h3>🛡️ Броня</h3>
+      <div className="max-w-2xl mx-auto pb-20">
+        <div className="p-4">
+          {currentPage === 'profile' && <ProfilePage />}
+          {currentPage === 'work' && <WorkPage />}
+          {currentPage === 'inventory' && <InventoryPage />}
+          {currentPage === 'market' && <MarketPage />}
+          {currentPage === 'bank' && <BankPage />}
+        </div>
+      </div>
 
-                <div class="item-card">
-                    <h4>Кожаная броня</h4>
-                    <p>Снижает расход энергии</p>
-                    <p>Цена: 800 💰</p>
-                    <button>Купить</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- ================= INVENTORY ================= -->
-        <section class="tab-content" id="inventory">
-            <h2>🎒 Инвентарь</h2>
-
-            <div class="inventory-grid">
-                <!-- items -->
-            </div>
-        </section>
-
-        <!-- ================= BANK ================= -->
-        <section class="tab-content" id="bank">
-            <h2>🏦 Банк</h2>
-
-            <div class="bank-card">
-                <h3>Обмен валют</h3>
-                <button>100 💰 → 1 💎</button>
-                <button>1 💎 → 80 💰</button>
-            </div>
-
-            <div class="bank-card">
-                <h3>Депозит</h3>
-                <p>Пассивный доход</p>
-            </div>
-        </section>
-
-        <!-- ================= PROFILE ================= -->
-        <section class="tab-content" id="profile">
-            <h2>🧍 Профиль</h2>
-
-            <div class="profile-row">
-                <span>Дней в игре:</span>
-                <span id="daysPlayed">1</span>
-            </div>
-
-            <div class="profile-row">
-                <span>Ежедневный бонус:</span>
-                <button id="dailyBonus">Получить</button>
-            </div>
-        </section>
-
-    </main>
-
-</div>
-
-<script src="script.js"></script>
-</body>
-</html>
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg">
+        <div className="max-w-2xl mx-auto flex">
+          <button
+            onClick={() => setCurrentPage('profile')}
+            className={`flex-1 py-3 flex flex-col items-center gap-1 ${
+              currentPage === 'profile' ? 'text-blue-600' : 'text-gray-600'
+            }`}
+          >
+            <User size={24} />
+            <span className="text-xs">Профиль</span>
+          </button>
+          <button
+            onClick={() => setCurrentPage('work')}
+            className={`flex-1 py-3 flex flex-col items-center gap-1 ${
+              currentPage === 'work' ? 'text-blue-600' : 'text-gray-600'
+            }`}
