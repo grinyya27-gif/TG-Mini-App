@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Средневековое Королевство</title>
+    <title>Средневековая Жизнь RPG</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -12,226 +12,134 @@
             box-sizing: border-box;
         }
 
-        :root {
-            --bg-primary: #1a1a1a;
-            --bg-secondary: #2a2a2a;
-            --bg-tertiary: #3a3a3a;
-            --accent-red: #dc143c;
-            --accent-red-dark: #a00a28;
-            --accent-red-light: #ff1744;
-            --text-primary: #e0e0e0;
-            --text-secondary: #b0b0b0;
-            --border-color: #4a4a4a;
-            --gold: #ffd700;
-            --silver: #c0c0c0;
-            --success: #28a745;
-            --warning: #ffc107;
-        }
-
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, var(--bg-primary) 0%, #0d0d0d 100%);
-            color: var(--text-primary);
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #e0e0e0;
             overflow-x: hidden;
-            min-height: 100vh;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         .container {
-            max-width: 100%;
+            max-width: 500px;
             margin: 0 auto;
             padding-bottom: 80px;
         }
 
-        /* Header */
         .header {
-            background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+            background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
             padding: 15px;
-            border-bottom: 2px solid var(--accent-red);
+            border-bottom: 3px solid #c41e3a;
+            box-shadow: 0 4px 15px rgba(196, 30, 58, 0.3);
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 4px 20px rgba(220, 20, 60, 0.3);
         }
 
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .player-info {
+        .profile-header {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
+            margin-bottom: 15px;
         }
 
         .avatar {
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
-            border: 3px solid var(--accent-red);
-            background: linear-gradient(135deg, var(--accent-red) 0%, var(--accent-red-dark) 100%);
+            border: 3px solid #c41e3a;
+            background: #3a3a3a;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 24px;
-            box-shadow: 0 0 15px rgba(220, 20, 60, 0.5);
-        }
-
-        .player-stats {
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-        }
-
-        .player-name {
-            font-size: 16px;
             font-weight: bold;
-            color: var(--accent-red-light);
+            color: #c41e3a;
         }
 
-        .player-level {
-            font-size: 12px;
-            color: var(--text-secondary);
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .username {
+            font-size: 18px;
+            font-weight: bold;
+            color: #c41e3a;
+            margin-bottom: 5px;
+        }
+
+        .level {
+            font-size: 14px;
+            color: #b0b0b0;
         }
 
         .resources {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            align-items: flex-end;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
         }
 
-        .resource-item {
+        .resource {
+            background: rgba(196, 30, 58, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #c41e3a;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 5px;
-            background: var(--bg-tertiary);
-            padding: 5px 10px;
-            border-radius: 15px;
-            border: 1px solid var(--border-color);
         }
 
-        .resource-icon {
-            font-size: 14px;
+        .resource-name {
+            font-size: 12px;
+            color: #b0b0b0;
         }
 
         .resource-value {
+            font-size: 16px;
             font-weight: bold;
-            color: var(--gold);
-            font-size: 14px;
+            color: #c41e3a;
         }
 
-        /* Progress Bar */
-        .progress-container {
-            background: var(--bg-secondary);
-            padding: 10px 15px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .progress-label {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            margin-bottom: 5px;
-            color: var(--text-secondary);
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 20px;
-            background: var(--bg-tertiary);
-            border-radius: 10px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-            position: relative;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent-red-dark) 0%, var(--accent-red) 50%, var(--accent-red-light) 100%);
-            transition: width 0.3s ease;
-            box-shadow: 0 0 10px rgba(220, 20, 60, 0.5);
-        }
-
-        .progress-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 11px;
-            font-weight: bold;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
-        }
-
-        /* Navigation */
         .navigation {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--bg-secondary);
-            border-top: 2px solid var(--accent-red);
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            z-index: 100;
-            box-shadow: 0 -4px 20px rgba(220, 20, 60, 0.3);
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
             gap: 5px;
-            padding: 5px 15px;
+            padding: 10px;
+            background: #1f1f1f;
+            border-bottom: 2px solid #c41e3a;
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
+            border: 2px solid #c41e3a;
+            color: #e0e0e0;
+            padding: 12px 5px;
+            border-radius: 8px;
             cursor: pointer;
+            font-size: 11px;
             transition: all 0.3s;
-            border-radius: 10px;
-            position: relative;
+            text-align: center;
         }
 
-        .nav-item:hover {
-            background: var(--bg-tertiary);
+        .nav-btn:hover {
+            background: linear-gradient(135deg, #c41e3a 0%, #a01830 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(196, 30, 58, 0.4);
         }
 
-        .nav-item.active {
-            background: var(--accent-red);
-            box-shadow: 0 0 15px rgba(220, 20, 60, 0.5);
+        .nav-btn.active {
+            background: linear-gradient(135deg, #c41e3a 0%, #a01830 100%);
+            box-shadow: 0 4px 12px rgba(196, 30, 58, 0.6);
         }
 
-        .nav-icon {
-            font-size: 24px;
-        }
-
-        .nav-label {
-            font-size: 10px;
-            color: var(--text-secondary);
-        }
-
-        .nav-item.active .nav-label {
-            color: var(--text-primary);
-            font-weight: bold;
-        }
-
-        .notification-badge {
-            position: absolute;
-            top: 0;
-            right: 5px;
-            background: var(--accent-red-light);
-            color: white;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            font-weight: bold;
-            box-shadow: 0 0 10px rgba(255, 23, 68, 0.8);
-        }
-
-        /* Content Sections */
         .content {
             padding: 15px;
         }
@@ -250,2500 +158,639 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .section-title {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            color: var(--accent-red-light);
-            text-shadow: 0 0 10px rgba(220, 20, 60, 0.5);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* Cards */
-        .card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            transition: all 0.3s;
-        }
-
-        .card:hover {
-            border-color: var(--accent-red);
-            box-shadow: 0 4px 20px rgba(220, 20, 60, 0.3);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .card-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: var(--accent-red);
-        }
-
-        .card-subtitle {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-bottom: 10px;
-        }
-
-        .card-content {
-            color: var(--text-secondary);
-            line-height: 1.6;
-        }
-
-        /* Buttons */
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--accent-red) 0%, var(--accent-red-dark) 100%);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: linear-gradient(135deg, var(--accent-red-light) 0%, var(--accent-red) 100%);
-            box-shadow: 0 6px 20px rgba(220, 20, 60, 0.5);
-            transform: translateY(-2px);
-        }
-
-        .btn-primary:active {
-            transform: translateY(0);
-        }
-
-        .btn-primary:disabled {
-            background: var(--bg-tertiary);
-            color: var(--text-secondary);
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-
-        .btn-secondary {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
-        }
-
-        .btn-secondary:hover {
-            background: var(--bg-secondary);
-            border-color: var(--accent-red);
-        }
-
-        .btn-success {
-            background: var(--success);
-            color: white;
-        }
-
-        .btn-warning {
-            background: var(--warning);
-            color: var(--bg-primary);
-        }
-
-        .btn-small {
-            padding: 8px 16px;
-            font-size: 12px;
-        }
-
-        .btn-full {
-            width: 100%;
-        }
-
-        /* Work Section */
-        .work-grid {
+        .job-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 15px;
-            margin-top: 15px;
         }
 
-        .work-card {
-            background: var(--bg-secondary);
-            border: 2px solid var(--border-color);
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
+        .job-card {
+            background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
+            border: 2px solid #c41e3a;
+            border-radius: 12px;
+            padding: 20px;
             cursor: pointer;
             transition: all 0.3s;
             position: relative;
             overflow: hidden;
         }
 
-        .work-card::before {
+        .job-card::before {
             content: '';
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(220, 20, 60, 0.2), transparent);
+            background: linear-gradient(90deg, transparent, rgba(196, 30, 58, 0.2), transparent);
             transition: left 0.5s;
         }
 
-        .work-card:hover::before {
+        .job-card:hover::before {
             left: 100%;
         }
 
-        .work-card:hover {
-            border-color: var(--accent-red);
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(220, 20, 60, 0.4);
+        .job-card:active {
+            transform: scale(0.98);
         }
 
-        .work-card.active {
-            border-color: var(--accent-red-light);
-            background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(220, 20, 60, 0.1) 100%);
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
         }
 
-        .work-icon {
-            font-size: 48px;
-            margin-bottom: 10px;
-            filter: drop-shadow(0 0 5px rgba(220, 20, 60, 0.3));
-        }
-
-        .work-name {
-            font-size: 16px;
+        .job-title {
+            font-size: 18px;
             font-weight: bold;
-            color: var(--accent-red);
-            margin-bottom: 5px;
+            color: #c41e3a;
         }
 
-        .work-reward {
-            font-size: 14px;
-            color: var(--gold);
-            margin-bottom: 5px;
-        }
-
-        .work-energy {
+        .job-level {
+            background: rgba(196, 30, 58, 0.2);
+            padding: 5px 10px;
+            border-radius: 5px;
             font-size: 12px;
-            color: var(--text-secondary);
-            margin-bottom: 10px;
+            border: 1px solid #c41e3a;
         }
 
-        .work-level-req {
-            font-size: 11px;
-            color: var(--warning);
-            margin-bottom: 10px;
+        .job-info {
+            margin-bottom: 15px;
+            color: #b0b0b0;
+            font-size: 14px;
         }
 
-        .work-progress {
+        .job-rewards {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .reward {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+        }
+
+        .reward-icon {
+            color: #c41e3a;
+        }
+
+        .progress-bar {
             width: 100%;
             height: 8px;
-            background: var(--bg-tertiary);
+            background: #1a1a1a;
             border-radius: 4px;
             overflow: hidden;
-            margin-top: 10px;
+            margin-bottom: 10px;
         }
 
-        .work-progress-fill {
+        .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, var(--accent-red) 0%, var(--accent-red-light) 100%);
-            transition: width 0.1s linear;
+            background: linear-gradient(90deg, #c41e3a 0%, #ff4d6d 100%);
+            border-radius: 4px;
+            transition: width 0.3s;
         }
 
-        /* Inventory */
-        .inventory-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .inventory-slot {
-            aspect-ratio: 1;
-            background: var(--bg-tertiary);
-            border: 2px solid var(--border-color);
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+        .work-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #c41e3a 0%, #a01830 100%);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
-            position: relative;
-            padding: 10px;
         }
 
-        .inventory-slot:hover {
-            border-color: var(--accent-red);
-            transform: scale(1.05);
+        .work-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(196, 30, 58, 0.4);
         }
 
-        .inventory-slot.empty {
-            opacity: 0.3;
-            cursor: default;
+        .work-btn:disabled {
+            background: #3a3a3a;
+            cursor: not-allowed;
+            opacity: 0.5;
         }
 
-        .inventory-slot.empty:hover {
-            border-color: var(--border-color);
-            transform: scale(1);
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .item-card {
+            background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
+            border: 2px solid #c41e3a;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(196, 30, 58, 0.3);
         }
 
         .item-icon {
             font-size: 36px;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
         }
 
         .item-name {
-            font-size: 10px;
-            text-align: center;
-            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: bold;
+            color: #c41e3a;
+            margin-bottom: 5px;
         }
 
         .item-count {
-            position: absolute;
-            bottom: 5px;
-            right: 5px;
-            background: var(--accent-red);
-            color: white;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 11px;
+            font-size: 18px;
             font-weight: bold;
-            box-shadow: 0 0 10px rgba(220, 20, 60, 0.5);
-        }
-
-        .item-rarity {
-            position: absolute;
-            top: 5px;
-            left: 5px;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            box-shadow: 0 0 8px currentColor;
-        }
-
-        .rarity-common { color: #9e9e9e; }
-        .rarity-uncommon { color: #4caf50; }
-        .rarity-rare { color: #2196f3; }
-        .rarity-epic { color: #9c27b0; }
-        .rarity-legendary { color: #ff9800; }
-
-        /* Market */
-        .market-filters {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-
-        .filter-btn {
-            padding: 8px 16px;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 12px;
-        }
-
-        .filter-btn:hover {
-            border-color: var(--accent-red);
-            color: var(--text-primary);
-        }
-
-        .filter-btn.active {
-            background: var(--accent-red);
-            border-color: var(--accent-red);
-            color: white;
+            color: #e0e0e0;
         }
 
         .market-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
+            background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
+            border: 2px solid #c41e3a;
             border-radius: 10px;
             padding: 15px;
             margin-bottom: 10px;
-            transition: all 0.3s;
-        }
-
-        .market-item:hover {
-            border-color: var(--accent-red);
-            box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3);
-        }
-
-        .market-item-icon {
-            font-size: 48px;
-            min-width: 60px;
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .market-item-info {
-            flex: 1;
-        }
-
-        .market-item-name {
-            font-size: 16px;
-            font-weight: bold;
-            color: var(--accent-red);
-            margin-bottom: 5px;
-        }
-
-        .market-item-description {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-bottom: 5px;
-        }
-
-        .market-item-stats {
             display: flex;
+            align-items: center;
             gap: 15px;
-            font-size: 11px;
-            color: var(--text-secondary);
+        }
+
+        .market-item-icon {
+            font-size: 32px;
+        }
+
+        .market-item-details h3 {
+            color: #c41e3a;
+            margin-bottom: 5px;
         }
 
         .market-item-price {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 10px;
-        }
-
-        .price-tag {
-            font-size: 20px;
-            font-weight: bold;
-            color: var(--gold);
-        }
-
-        /* Bank */
-        .bank-section {
-            margin-bottom: 20px;
-        }
-
-        .bank-balance {
-            background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(220, 20, 60, 0.1) 100%);
-            border: 2px solid var(--accent-red);
-            border-radius: 15px;
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .bank-balance-label {
+            color: #b0b0b0;
             font-size: 14px;
-            color: var(--text-secondary);
-            margin-bottom: 10px;
         }
 
-        .bank-balance-amount {
-            font-size: 36px;
-            font-weight: bold;
-            color: var(--gold);
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-        }
-
-        .bank-interest {
-            font-size: 12px;
-            color: var(--success);
-            margin-top: 10px;
-        }
-
-        .bank-actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .input-group {
-            margin-bottom: 15px;
-        }
-
-        .input-label {
-            display: block;
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-bottom: 5px;
-        }
-
-        .input-field {
-            width: 100%;
-            padding: 12px;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
+        .buy-btn, .sell-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #c41e3a 0%, #a01830 100%);
+            border: none;
             border-radius: 8px;
-            color: var(--text-primary);
-            font-size: 14px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
             transition: all 0.3s;
         }
 
-        .input-field:focus {
-            outline: none;
-            border-color: var(--accent-red);
-            box-shadow: 0 0 10px rgba(220, 20, 60, 0.3);
+        .buy-btn:hover, .sell-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(196, 30, 58, 0.4);
         }
 
-        /* Quests */
         .quest-card {
-            background: var(--bg-secondary);
-            border-left: 4px solid var(--accent-red);
+            background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
+            border: 2px solid #c41e3a;
             border-radius: 10px;
-            padding: 15px;
+            padding: 20px;
             margin-bottom: 15px;
-            transition: all 0.3s;
-        }
-
-        .quest-card:hover {
-            box-shadow: 0 4px 20px rgba(220, 20, 60, 0.3);
-            transform: translateX(5px);
-        }
-
-        .quest-card.completed {
-            border-left-color: var(--success);
-            opacity: 0.7;
-        }
-
-        .quest-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 10px;
         }
 
         .quest-title {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
-            color: var(--accent-red);
-            margin-bottom: 5px;
-        }
-
-        .quest-type {
-            font-size: 11px;
-            color: var(--text-secondary);
-            background: var(--bg-tertiary);
-            padding: 3px 8px;
-            border-radius: 10px;
+            color: #c41e3a;
+            margin-bottom: 10px;
         }
 
         .quest-description {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 10px;
-            line-height: 1.4;
+            color: #b0b0b0;
+            margin-bottom: 15px;
+            font-size: 14px;
         }
 
         .quest-progress {
             margin-bottom: 10px;
         }
 
-        .quest-progress-text {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-bottom: 5px;
-        }
-
-        .quest-rewards {
+        .quest-status {
             display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-            flex-wrap: wrap;
-        }
-
-        .quest-reward {
-            background: var(--bg-tertiary);
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 12px;
-            display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 5px;
+            font-size: 14px;
+            color: #b0b0b0;
         }
 
-        .quest-timer {
-            font-size: 12px;
-            color: var(--warning);
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        /* Profile */
-        .profile-header {
-            background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(220, 20, 60, 0.1) 100%);
-            border: 2px solid var(--accent-red);
-            border-radius: 15px;
+        .bank-section {
+            background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
+            border: 2px solid #c41e3a;
+            border-radius: 10px;
             padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .bank-balance {
             text-align: center;
             margin-bottom: 20px;
         }
 
-        .profile-avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            border: 4px solid var(--accent-red);
-            background: linear-gradient(135deg, var(--accent-red) 0%, var(--accent-red-dark) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-            margin: 0 auto 15px;
-            box-shadow: 0 0 30px rgba(220, 20, 60, 0.5);
-        }
-
-        .profile-name {
+        .bank-balance h2 {
+            color: #c41e3a;
             font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .bank-balance .amount {
+            font-size: 36px;
             font-weight: bold;
-            color: var(--accent-red-light);
-            margin-bottom: 5px;
+            color: #e0e0e0;
         }
 
-        .profile-title {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin-bottom: 15px;
-        }
-
-        .profile-stats {
+        .bank-actions {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: 1fr 1fr;
             gap: 10px;
-            margin-bottom: 20px;
         }
 
-        .stat-box {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
+        .bank-input {
+            width: 100%;
+            padding: 12px;
+            background: #1a1a1a;
+            border: 2px solid #c41e3a;
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .achievement-card {
+            background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
+            border: 2px solid #c41e3a;
             border-radius: 10px;
             padding: 15px;
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--accent-red);
-            margin-bottom: 5px;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        .achievements-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .achievement-badge {
-            aspect-ratio: 1;
-            background: var(--bg-tertiary);
-            border: 2px solid var(--border-color);
-            border-radius: 10px;
+            margin-bottom: 10px;
             display: flex;
-            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding: 10px;
-            transition: all 0.3s;
+            gap: 15px;
         }
 
-        .achievement-badge.unlocked {
-            border-color: var(--gold);
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
-        }
-
-        .achievement-badge.locked {
-            opacity: 0.3;
-            filter: grayscale(100%);
+        .achievement-card.completed {
+            border-color: #4CAF50;
+            background: linear-gradient(135deg, #1a3a1a 0%, #1f1f1f 100%);
         }
 
         .achievement-icon {
-            font-size: 32px;
-            margin-bottom: 5px;
+            font-size: 40px;
+            opacity: 0.5;
         }
 
-        .achievement-name {
-            font-size: 9px;
-            text-align: center;
-            color: var(--text-secondary);
-        }
-
-        /* Skills */
-        .skills-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .skill-item {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 15px;
-        }
-
-        .skill-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .skill-name {
-            font-size: 16px;
-            font-weight: bold;
-            color: var(--accent-red);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .skill-level {
-            background: var(--accent-red);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .skill-description {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-bottom: 10px;
-        }
-
-        .skill-benefits {
-            font-size: 11px;
-            color: var(--success);
-            margin-bottom: 10px;
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            animation: fadeIn 0.3s;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: var(--bg-secondary);
-            border: 2px solid var(--accent-red);
-            border-radius: 15px;
-            padding: 25px;
-            max-width: 400px;
-            width: 100%;
-            max-height: 80vh;
-            overflow-y: auto;
-            box-shadow: 0 10px 40px rgba(220, 20, 60, 0.5);
-            animation: slideUp 0.3s;
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .modal-title {
-            font-size: 20px;
-            font-weight: bold;
-            color: var(--accent-red-light);
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 24px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .modal-close:hover {
-            color: var(--accent-red);
-            transform: rotate(90deg);
-        }
-
-        .modal-body {
-            color: var(--text-secondary);
-        }
-
-        .modal-footer {
-            margin-top: 20px;
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-        }
-
-        /* Notifications */
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--bg-secondary);
-            border: 2px solid var(--accent-red);
-            border-radius: 10px;
-            padding: 15px 20px;
-            box-shadow: 0 4px 20px rgba(220, 20, 60, 0.5);
-            z-index: 2000;
-            animation: slideInRight 0.3s;
-            max-width: 300px;
-        }
-
-        @keyframes slideInRight {
-            from { transform: translateX(400px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        .notification.success {
-            border-color: var(--success);
-        }
-
-        .notification.warning {
-            border-color: var(--warning);
-        }
-
-        .notification-content {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .notification-icon {
-            font-size: 24px;
-        }
-
-        .notification-text {
-            flex: 1;
-            font-size: 14px;
-        }
-
-        /* Tabs */
-        .tabs {
-            display: flex;
-            gap: 5px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--border-color);
-        }
-
-        .tab {
-            padding: 10px 20px;
-            background: transparent;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.3s;
-            border-bottom: 2px solid transparent;
-            font-size: 14px;
-        }
-
-        .tab:hover {
-            color: var(--text-primary);
-        }
-
-        .tab.active {
-            color: var(--accent-red);
-            border-bottom-color: var(--accent-red);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-            animation: fadeIn 0.3s;
-        }
-
-        /* Animations */
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-
-        .shake {
-            animation: shake 0.5s;
-        }
-
-        @keyframes glow {
-            0%, 100% { box-shadow: 0 0 5px rgba(220, 20, 60, 0.5); }
-            50% { box-shadow: 0 0 20px rgba(220, 20, 60, 0.8); }
-        }
-
-        .glow {
-            animation: glow 2s infinite;
-        }
-
-        /* Loading */
-        .loading {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 40px;
-        }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid var(--bg-tertiary);
-            border-top-color: var(--accent-red);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Tooltip */
-        .tooltip {
-            position: relative;
-            display: inline-block;
-        }
-
-        .tooltip .tooltiptext {
-            visibility: hidden;
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            text-align: center;
-            border-radius: 6px;
-            padding: 8px 12px;
-            position: absolute;
-            z-index: 1;
-            bottom: 125%;
-            left: 50%;
-            transform: translateX(-50%);
-            opacity: 0;
-            transition: opacity 0.3s;
-            font-size: 12px;
-            white-space: nowrap;
-            border: 1px solid var(--accent-red);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-        }
-
-        .tooltip:hover .tooltiptext {
-            visibility: visible;
+        .achievement-card.completed .achievement-icon {
             opacity: 1;
         }
 
-        /* Energy Bar */
-        .energy-container {
-            background: var(--bg-secondary);
-            padding: 10px 15px;
-            border-bottom: 1px solid var(--border-color);
+        .achievement-info h3 {
+            color: #c41e3a;
+            margin-bottom: 5px;
         }
 
-        .energy-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
+        .achievement-card.completed .achievement-info h3 {
+            color: #4CAF50;
         }
 
-        .energy-label {
-            font-size: 12px;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .energy-value {
-            font-size: 14px;
-            font-weight: bold;
-            color: var(--accent-red-light);
-        }
-
-        /* Shop Categories */
-        .shop-categories {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .category-card {
-            background: var(--bg-secondary);
-            border: 2px solid var(--border-color);
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .category-card:hover {
-            border-color: var(--accent-red);
-            transform: translateY(-3px);
-        }
-
-        .category-card.active {
-            border-color: var(--accent-red);
-            background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(220, 20, 60, 0.1) 100%);
-        }
-
-        .category-icon {
-            font-size: 32px;
-            margin-bottom: 8px;
-        }
-
-        .category-name {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        /* Leaderboard */
-        .leaderboard-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+        .achievement-description {
+            color: #b0b0b0;
+            font-size: 13px;
         }
 
         .leaderboard-item {
+            background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
+            border: 2px solid #c41e3a;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
             gap: 15px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 15px;
-            transition: all 0.3s;
         }
 
-        .leaderboard-item:hover {
-            border-color: var(--accent-red);
-        }
-
-        .leaderboard-rank {
+        .rank {
             font-size: 24px;
             font-weight: bold;
-            color: var(--accent-red);
+            color: #c41e3a;
             min-width: 40px;
             text-align: center;
         }
 
-        .leaderboard-rank.top1 { color: var(--gold); }
-        .leaderboard-rank.top2 { color: var(--silver); }
-        .leaderboard-rank.top3 { color: #cd7f32; }
+        .rank.top1 { color: #FFD700; }
+        .rank.top2 { color: #C0C0C0; }
+        .rank.top3 { color: #CD7F32; }
 
-        .leaderboard-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            border: 2px solid var(--accent-red);
-            background: linear-gradient(135deg, var(--accent-red) 0%, var(--accent-red-dark) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-        }
-
-        .leaderboard-info {
+        .player-info {
             flex: 1;
         }
 
-        .leaderboard-name {
+        .player-name {
             font-size: 16px;
             font-weight: bold;
-            color: var(--text-primary);
-            margin-bottom: 3px;
+            margin-bottom: 5px;
         }
 
-        .leaderboard-level {
-            font-size: 12px;
-            color: var(--text-secondary);
+        .player-stats {
+            font-size: 13px;
+            color: #b0b0b0;
         }
 
-        .leaderboard-score {
-            font-size: 18px;
-            font-weight: bold;
-            color: var(--gold);
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
         }
 
-        /* Settings */
-        .settings-section {
-            margin-bottom: 25px;
-        }
-
-        .settings-title {
-            font-size: 16px;
-            font-weight: bold;
-            color: var(--accent-red);
-            margin-bottom: 15px;
-        }
-
-        .setting-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
+        .stat-card {
+            background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
+            border: 2px solid #c41e3a;
             border-radius: 10px;
             padding: 15px;
+            text-align: center;
+        }
+
+        .stat-icon {
+            font-size: 32px;
             margin-bottom: 10px;
         }
 
-        .setting-label {
-            font-size: 14px;
-            color: var(--text-primary);
+        .stat-label {
+            font-size: 12px;
+            color: #b0b0b0;
+            margin-bottom: 5px;
         }
 
-        .setting-description {
-            font-size: 11px;
-            color: var(--text-secondary);
-            margin-top: 3px;
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #c41e3a;
         }
 
-        .toggle-switch {
-            position: relative;
-            width: 50px;
-            height: 26px;
-            background: var(--bg-tertiary);
-            border-radius: 13px;
-            cursor: pointer;
-            transition: all 0.3s;
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #c41e3a 0%, #a01830 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(196, 30, 58, 0.5);
+            animation: slideIn 0.3s, slideOut 0.3s 2.7s;
+            z-index: 1000;
         }
 
-        .toggle-switch.active {
-            background: var(--accent-red);
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
 
-        .toggle-slider {
-            position: absolute;
-            top: 3px;
-            left: 3px;
-            width: 20px;
-            height: 20px;
-            background: white;
-            border-radius: 50%;
-            transition: all 0.3s;
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(400px); opacity: 0; }
         }
 
-        .toggle-switch.active .toggle-slider {
-            left: 27px;
+        .floating-text {
+            position: fixed;
+            font-size: 24px;
+            font-weight: bold;
+            color: #4CAF50;
+            pointer-events: none;
+            animation: floatUp 1s ease-out;
+            z-index: 999;
         }
 
-        /* Responsive */
-        @media (max-width: 480px) {
-            .header-content {
-                flex-direction: column;
-                gap: 10px;
+        @keyframes floatUp {
+            from { transform: translateY(0); opacity: 1; }
+            to { transform: translateY(-100px); opacity: 0; }
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #c41e3a;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #c41e3a;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #b0b0b0;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 400px) {
+            .navigation {
+                grid-template-columns: repeat(3, 1fr);
             }
-
-            .resources {
-                width: 100%;
-                flex-direction: row;
-                justify-content: space-between;
-            }
-
-            .work-grid {
+            
+            .inventory-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
-
-            .profile-stats {
-                grid-template-columns: 1fr;
-            }
-
-            .bank-actions {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg-primary);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--accent-red);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--accent-red-light);
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
         <div class="header">
-            <div class="header-content">
-                <div class="player-info">
-                    <div class="avatar">⚔️</div>
-                    <div class="player-stats">
-                        <div class="player-name" id="playerName">Рыцарь</div>
-                        <div class="player-level">Уровень <span id="playerLevel">1</span></div>
-                    </div>
+            <div class="profile-header">
+                <div class="avatar" id="avatar">👤</div>
+                <div class="user-info">
+                    <div class="username" id="username">Игрок</div>
+                    <div class="level">Уровень: <span id="level">1</span> | Опыт: <span id="exp">0</span>/100</div>
                 </div>
-                <div class="resources">
-                    <div class="resource-item">
-                        <span class="resource-icon">💰</span>
-                        <span class="resource-value" id="goldAmount">0</span>
-                    </div>
-                    <div class="resource-item">
-                        <span class="resource-icon">💎</span>
-                        <span class="resource-value" id="gemsAmount">0</span>
-                    </div>
+            </div>
+            <div class="resources">
+                <div class="resource">
+                    <span class="resource-name">💰 Золото</span>
+                    <span class="resource-value" id="gold">100</span>
+                </div>
+                <div class="resource">
+                    <span class="resource-name">💎 Драгоценности</span>
+                    <span class="resource-value" id="gems">0</span>
+                </div>
+                <div class="resource">
+                    <span class="resource-name">⚡ Энергия</span>
+                    <span class="resource-value" id="energy">100</span>
+                </div>
+                <div class="resource">
+                    <span class="resource-name">🏆 Рейтинг</span>
+                    <span class="resource-value" id="rating">0</span>
                 </div>
             </div>
         </div>
 
-        <!-- Progress Bar -->
-        <div class="progress-container">
-            <div class="progress-label">
-                <span>Опыт до следующего уровня</span>
-                <span id="expText">0/100</span>
-            </div>
-            <div class="progress-bar">
-                <div class="progress-fill" id="expBar" style="width: 0%"></div>
-                <div class="progress-text" id="expPercent">0%</div>
-            </div>
-        </div>
-
-        <!-- Energy Bar -->
-        <div class="energy-container">
-            <div class="energy-info">
-                <div class="energy-label">
-                    <span>⚡</span>
-                    <span>Энергия</span>
-                </div>
-                <div class="energy-value">
-                    <span id="currentEnergy">100</span>/<span id="maxEnergy">100</span>
-                </div>
-            </div>
-            <div class="progress-bar">
-                <div class="progress-fill" id="energyBar" style="width: 100%"></div>
-            </div>
-        </div>
-
-        <!-- Content -->
-        <div class="content">
-            <!-- Work Section -->
-            <div class="section active" id="workSection">
-                <div class="section-title">
-                    <span>⚒️</span>
-                    <span>Работы</span>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">Выберите работу</div>
-                    </div>
-                    <div class="card-subtitle">Зарабатывайте золото, выполняя различные работы</div>
-                </div>
-
-                <div class="work-grid" id="workGrid">
-                    <!-- Work cards will be generated here -->
-                </div>
-            </div>
-
-            <!-- Inventory Section -->
-            <div class="section" id="inventorySection">
-                <div class="section-title">
-                    <span>🎒</span>
-                    <span>Инвентарь</span>
-                </div>
-
-                <div class="tabs">
-                    <button class="tab active" onclick="switchInventoryTab('all')">Все</button>
-                    <button class="tab" onclick="switchInventoryTab('weapons')">Оружие</button>
-                    <button class="tab" onclick="switchInventoryTab('armor')">Броня</button>
-                    <button class="tab" onclick="switchInventoryTab('consumables')">Расходники</button>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">Вместимость</div>
-                        <div class="card-subtitle"><span id="inventoryCount">0</span>/50</div>
-                    </div>
-                </div>
-
-                <div class="inventory-grid" id="inventoryGrid">
-                    <!-- Inventory slots will be generated here -->
-                </div>
-            </div>
-
-            <!-- Market Section -->
-            <div class="section" id="marketSection">
-                <div class="section-title">
-                    <span>🏪</span>
-                    <span>Рынок</span>
-                </div>
-
-                <div class="shop-categories">
-                    <div class="category-card active" onclick="filterMarket('all')">
-                        <div class="category-icon">📦</div>
-                        <div class="category-name">Все</div>
-                    </div>
-                    <div class="category-card" onclick="filterMarket('weapons')">
-                        <div class="category-icon">⚔️</div>
-                        <div class="category-name">Оружие</div>
-                    </div>
-                    <div class="category-card" onclick="filterMarket('armor')">
-                        <div class="category-icon">🛡️</div>
-                        <div class="category-name">Броня</div>
-                    </div>
-                    <div class="category-card" onclick="filterMarket('tools')">
-                        <div class="category-icon">🔨</div>
-                        <div class="category-name">Инструменты</div>
-                    </div>
-                    <div class="category-card" onclick="filterMarket('consumables')">
-                        <div class="category-icon">🧪</div>
-                        <div class="category-name">Зелья</div>
-                    </div>
-                </div>
-
-                <div id="marketItems">
-                    <!-- Market items will be generated here -->
-                </div>
-            </div>
-
-            <!-- Bank Section -->
-            <div class="section" id="bankSection">
-                <div class="section-title">
-                    <span>🏦</span>
-                    <span>Банк</span>
-                </div>
-
-                <div class="bank-balance">
-                    <div class="bank-balance-label">Баланс в банке</div>
-                    <div class="bank-balance-amount">
-                        <span id="bankBalance">0</span> 💰
-                    </div>
-                    <div class="bank-interest">
-                        +<span id="dailyInterest">0</span> золота в день (5% годовых)
-                    </div>
-                </div>
-
-                <div class="tabs">
-                    <button class="tab active" onclick="switchBankTab('deposit')">Внести</button>
-                    <button class="tab" onclick="switchBankTab('withdraw')">Снять</button>
-                    <button class="tab" onclick="switchBankTab('loan')">Кредит</button>
-                </div>
-
-                <div class="tab-content active" id="depositTab">
-                    <div class="card">
-                        <div class="card-title">Внести золото</div>
-                        <div class="card-subtitle">Храните золото в безопасности и получайте проценты</div>
-                        <div class="input-group">
-                            <label class="input-label">Сумма</label>
-                            <input type="number" class="input-field" id="depositAmount" placeholder="Введите сумму">
-                        </div>
-                        <button class="btn btn-primary btn-full" onclick="depositGold()">Внести</button>
-                    </div>
-                </div>
-
-                <div class="tab-content" id="withdrawTab">
-                    <div class="card">
-                        <div class="card-title">Снять золото</div>
-                        <div class="card-subtitle">Снимите золото со своего счета</div>
-                        <div class="input-group">
-                            <label class="input-label">Сумма</label>
-                            <input type="number" class="input-field" id="withdrawAmount" placeholder="Введите сумму">
-                        </div>
-                        <button class="btn btn-primary btn-full" onclick="withdrawGold()">Снять</button>
-                    </div>
-                </div>
-
-                <div class="tab-content" id="loanTab">
-                    <div class="card">
-                        <div class="card-title">Взять кредит</div>
-                        <div class="card-subtitle">Процентная ставка: 10% в день</div>
-                        <div class="card-content">
-                            <div style="margin-bottom: 15px;">
-                                <strong>Текущий кредит:</strong> <span id="currentLoan">0</span> 💰
-                            </div>
-                            <div class="input-group">
-                                <label class="input-label">Сумма кредита</label>
-                                <input type="number" class="input-field" id="loanAmount" placeholder="Максимум: 1000">
-                            </div>
-                            <button class="btn btn-primary btn-full" onclick="takeLoan()">Взять кредит</button>
-                            <button class="btn btn-secondary btn-full" style="margin-top: 10px;" onclick="repayLoan()">Погасить кредит</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-title">История транзакций</div>
-                    <div id="transactionHistory">
-                        <div style="text-align: center; color: var(--text-secondary); padding: 20px;">
-                            Нет транзакций
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Quests Section -->
-            <div class="section" id="questsSection">
-                <div class="section-title">
-                    <span>📜</span>
-                    <span>Квесты</span>
-                </div>
-
-                <div class="tabs">
-                    <button class="tab active" onclick="switchQuestTab('daily')">Ежедневные</button>
-                    <button class="tab" onclick="switchQuestTab('story')">Сюжетные</button>
-                    <button class="tab" onclick="switchQuestTab('completed')">Завершенные</button>
-                </div>
-
-                <div class="tab-content active" id="dailyQuests">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-title">Ежедневные квесты</div>
-                            <div class="quest-timer">
-                                <span>⏰</span>
-                                <span id="questResetTimer">23:59:59</span>
-                            </div>
-                        </div>
-                        <div class="card-subtitle">Обновляются каждый день в полночь</div>
-                    </div>
-                    <div id="dailyQuestsList">
-                        <!-- Daily quests will be generated here -->
-                    </div>
-                </div>
-
-                <div class="tab-content" id="storyQuests">
-                    <div id="storyQuestsList">
-                        <!-- Story quests will be generated here -->
-                    </div>
-                </div>
-
-                <div class="tab-content" id="completedQuests">
-                    <div id="completedQuestsList">
-                        <div style="text-align: center; color: var(--text-secondary); padding: 40px;">
-                            Вы еще не завершили ни одного квеста
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Profile Section -->
-            <div class="section" id="profileSection">
-                <div class="section-title">
-                    <span>👤</span>
-                    <span>Профиль</span>
-                </div>
-
-                <div class="profile-header">
-                    <div class="profile-avatar">⚔️</div>
-                    <div class="profile-name" id="profileName">Рыцарь</div>
-                    <div class="profile-title" id="profileTitle">Начинающий искатель приключений</div>
-                </div>
-
-                <div class="profile-stats">
-                    <div class="stat-box">
-                        <div class="stat-value" id="totalGoldEarned">0</div>
-                        <div class="stat-label">Заработано золота</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-value" id="totalWorksDone">0</div>
-                        <div class="stat-label">Выполнено работ</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-value" id="totalQuestsCompleted">0</div>
-                        <div class="stat-label">Квестов завершено</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-value" id="daysPlayed">1</div>
-                        <div class="stat-label">Дней в игре</div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-title">Навыки</div>
-                    <div class="skills-list" id="skillsList">
-                        <!-- Skills will be generated here -->
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-title">Достижения</div>
-                    <div class="achievements-grid" id="achievementsGrid">
-                        <!-- Achievements will be generated here -->
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-title">Настройки</div>
-                    <div class="settings-section">
-                        <div class="setting-item">
-                            <div>
-                                <div class="setting-label">Звуковые эффекты</div>
-                                <div class="setting-description">Включить звуки в игре</div>
-                            </div>
-                            <div class="toggle-switch active" onclick="toggleSetting(this, 'sound')">
-                                <div class="toggle-slider"></div>
-                            </div>
-                        </div>
-                        <div class="setting-item">
-                            <div>
-                                <div class="setting-label">Уведомления</div>
-                                <div class="setting-description">Получать уведомления о событиях</div>
-                            </div>
-                            <div class="toggle-switch active" onclick="toggleSetting(this, 'notifications')">
-                                <div class="toggle-slider"></div>
-                            </div>
-                        </div>
-                        <div class="setting-item">
-                            <div>
-                                <div class="setting-label">Автосохранение</div>
-                                <div class="setting-description">Автоматически сохранять прогресс</div>
-                            </div>
-                            <div class="toggle-switch active" onclick="toggleSetting(this, 'autosave')">
-                                <div class="toggle-slider"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <button class="btn btn-primary btn-full" onclick="saveGame()">Сохранить игру</button>
-                    <button class="btn btn-secondary btn-full" style="margin-top: 10px;" onclick="resetGame()">Сбросить прогресс</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Navigation -->
         <div class="navigation">
-            <div class="nav-item active" onclick="switchSection('work')">
-                <div class="nav-icon">⚒️</div>
-                <div class="nav-label">Работа</div>
-            </div>
-            <div class="nav-item" onclick="switchSection('inventory')">
-                <div class="nav-icon">🎒</div>
-                <div class="nav-label">Инвентарь</div>
-            </div>
-            <div class="nav-item" onclick="switchSection('market')">
-                <div class="nav-icon">🏪</div>
-                <div class="nav-label">Рынок</div>
-            </div>
-            <div class="nav-item" onclick="switchSection('bank')">
-                <div class="nav-icon">🏦</div>
-                <div class="nav-label">Банк</div>
-            </div>
-            <div class="nav-item" onclick="switchSection('quests')">
-                <div class="nav-icon">📜</div>
-                <div class="nav-label">Квесты</div>
-                <div class="notification-badge" id="questBadge" style="display: none;">3</div>
-            </div>
-            <div class="nav-item" onclick="switchSection('profile')">
-                <div class="nav-icon">👤</div>
-                <div class="nav-label">Профиль</div>
-            </div>
+            <button class="nav-btn active" onclick="showSection('work')">⚒️ Работа</button>
+            <button class="nav-btn" onclick="showSection('inventory')">🎒 Инвентарь</button>
+            <button class="nav-btn" onclick="showSection('market')">🏪 Рынок</button>
+            <button class="nav-btn" onclick="showSection('quests')">📜 Квесты</button>
+            <button class="nav-btn" onclick="showSection('bank')">🏦 Банк</button>
+            <button class="nav-btn" onclick="showSection('achievements')">🏅 Достижения</button>
+            <button class="nav-btn" onclick="showSection('leaderboard')">👑 Рейтинг</button>
+            <button class="nav-btn" onclick="showSection('profile')">📊 Профиль</button>
         </div>
-    </div>
 
-    <!-- Item Detail Modal -->
-    <div class="modal" id="itemModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title" id="itemModalTitle">Предмет</div>
-                <button class="modal-close" onclick="closeModal('itemModal')">×</button>
+        <div class="content">
+            <div id="work-section" class="section active">
+                <h2 class="section-title">⚒️ Доступные работы</h2>
+                <div class="job-grid" id="jobs-container"></div>
             </div>
-            <div class="modal-body" id="itemModalBody">
-                <!-- Item details will be shown here -->
+
+            <div id="inventory-section" class="section">
+                <h2 class="section-title">🎒 Ваш инвентарь</h2>
+                <div class="inventory-grid" id="inventory-container"></div>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal('itemModal')">Закрыть</button>
-                <button class="btn btn-primary" id="itemModalAction">Использовать</button>
+
+            <div id="market-section" class="section">
+                <h2 class="section-title">🏪 Рынок</h2>
+                <div id="market-container"></div>
+            </div>
+
+            <div id="quests-section" class="section">
+                <h2 class="section-title">📜 Ежедневные квесты</h2>
+                <div id="quests-container"></div>
+            </div>
+
+            <div id="bank-section" class="section">
+                <h2 class="section-title">🏦 Банк</h2>
+                <div class="bank-section">
+                    <div class="bank-balance">
+                        <h2>Баланс в банке</h2>
+                        <div class="amount" id="bank-balance">0</div>
+                        <div style="color: #b0b0b0; margin-top: 10px;">Процент: 5% в день</div>
+                    </div>
+                    <input type="number" class="bank-input" id="bank-amount" placeholder="Введите сумму">
+                    <div class="bank-actions">
+                        <button class="buy-btn" onclick="depositBank()">Внести</button>
+                        <button class="sell-btn" onclick="withdrawBank()">Снять</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="achievements-section" class="section">
+                <h2 class="section-title">🏅 Достижения</h2>
+                <div id="achievements-container"></div>
+            </div>
+
+            <div id="leaderboard-section" class="section">
+                <h2 class="section-title">👑 Таблица лидеров</h2>
+                <div id="leaderboard-container"></div>
+            </div>
+
+            <div id="profile-section" class="section">
+                <h2 class="section-title">📊 Статистика</h2>
+                <div class="stats-grid" id="stats-container"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // Game State
-        let gameState = {
-            player: {
-                name: "Рыцарь",
-                level: 1,
-                exp: 0,
-                expToNext: 100,
-                gold: 100,
-                gems: 0,
-                energy: 100,
-                maxEnergy: 100,
-                title: "Начинающий искатель приключений"
-            },
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        let gameData = {
+            username: 'Игрок',
+            avatar: null,
+            level: 1,
+            exp: 0,
+            gold: 100,
+            gems: 0,
+            energy: 100,
+            maxEnergy: 100,
+            bankBalance: 0,
+            rating: 0,
+            inventory: {},
+            jobLevels: {},
+            completedQuests: [],
+            achievements: [],
             stats: {
                 totalGoldEarned: 0,
-                totalWorksDone: 0,
-                totalQuestsCompleted: 0,
-                daysPlayed: 1
+                totalWorkDone: 0,
+                itemsCrafted: 0,
+                questsCompleted: 0
             },
-            inventory: [],
-            bank: {
-                balance: 0,
-                loan: 0,
-                transactions: []
-            },
-            skills: {
-                mining: { level: 1, exp: 0 },
-                woodcutting: { level: 1, exp: 0 },
-                farming: { level: 1, exp: 0 },
-                fishing: { level: 1, exp: 0 },
-                crafting: { level: 1, exp: 0 },
-                combat: { level: 1, exp: 0 }
-            },
-            achievements: [],
-            quests: {
-                daily: [],
-                story: [],
-                completed: []
-            },
-            settings: {
-                sound: true,
-                notifications: true,
-                autosave: true
-            },
-            lastLogin: Date.now()
+            lastLogin: Date.now(),
+            lastBankUpdate: Date.now()
         };
 
-        // Work Types
-        const workTypes = [
-            {
-                id: 'mining',
-                name: 'Добыча руды',
-                icon: '⛏️',
-                baseReward: 15,
-                energyCost: 10,
-                duration: 3000,
-                levelRequired: 1,
-                expReward: 10,
-                skill: 'mining'
-            },
-            {
-                id: 'woodcutting',
-                name: 'Рубка леса',
-                icon: '🪓',
-                baseReward: 12,
-                energyCost: 8,
-                duration: 2500,
-                levelRequired: 1,
-                expReward: 8,
-                skill: 'woodcutting'
-            },
-            {
-                id: 'farming',
-                name: 'Фермерство',
-                icon: '🌾',
-                baseReward: 10,
-                energyCost: 6,
-                duration: 2000,
-                levelRequired: 1,
-                expReward: 6,
-                skill: 'farming'
-            },
-            {
-                id: 'fishing',
-                name: 'Рыбалка',
-                icon: '🎣',
-                baseReward: 8,
-                energyCost: 5,
-                duration: 1500,
-                levelRequired: 1,
-                expReward: 5,
-                skill: 'fishing'
-            },
-            {
-                id: 'blacksmith',
-                name: 'Кузнечное дело',
-                icon: '⚒️',
-                baseReward: 25,
-                energyCost: 15,
-                duration: 4000,
-                levelRequired: 3,
-                expReward: 15,
-                skill: 'crafting'
-            },
-            {
-                id: 'hunting',
-                name: 'Охота',
-                icon: '🏹',
-                baseReward: 20,
-                energyCost: 12,
-                duration: 3500,
-                levelRequired: 2,
-                expReward: 12,
-                skill: 'combat'
-            },
-            {
-                id: 'alchemy',
-                name: 'Алхимия',
-                icon: '🧪',
-                baseReward: 30,
-                energyCost: 18,
-                duration: 4500,
-                levelRequired: 5,
-                expReward: 20,
-                skill: 'crafting'
-            },
-            {
-                id: 'trading',
-                name: 'Торговля',
-                icon: '💼',
-                baseReward: 35,
-                energyCost: 20,
-                duration: 5000,
-                levelRequired: 7,
-                expReward: 25,
-                skill: 'crafting'
-            }
+        const jobs = [
+            { id: 'farming', name: '🌾 Фермерство', description: 'Выращивайте урожай и зарабатывайте золото', reward: 15, expReward: 10, energyCost: 10, time: 2000, requiredLevel: 1 },
+            { id: 'mining', name: '⛏️ Добыча руды', description: 'Добывайте ценную руду в шахтах', reward: 25, expReward: 15, energyCost: 15, time: 3000, requiredLevel: 3 },
+            { id: 'smithing', name: '⚒️ Кузнечное дело', description: 'Создавайте оружие и доспехи', reward: 40, expReward: 25, energyCost: 20, time: 4000, requiredLevel: 5 },
+            { id: 'trading', name: '💼 Торговля', description: 'Покупайте и продавайте товары', reward: 50, expReward: 30, energyCost: 15, time: 3500, requiredLevel: 7 },
+            { id: 'alchemy', name: '🧪 Алхимия', description: 'Создавайте зелья и эликсиры', reward: 70, expReward: 40, energyCost: 25, time: 5000, requiredLevel: 10 },
+            { id: 'hunting', name: '🏹 Охота', description: 'Охотьтесь на диких зверей', reward: 60, expReward: 35, energyCost: 30, time: 4500, requiredLevel: 8 }
         ];
 
-        // Market Items
         const marketItems = [
-            {
-                id: 'sword_basic',
-                name: 'Железный меч',
-                icon: '⚔️',
-                description: 'Простой железный меч',
-                price: 100,
-                category: 'weapons',
-                rarity: 'common',
-                stats: { attack: 5 }
-            },
-            {
-                id: 'sword_steel',
-                name: 'Стальной меч',
-                icon: '🗡️',
-                description: 'Прочный стальной меч',
-                price: 250,
-                category: 'weapons',
-                rarity: 'uncommon',
-                stats: { attack: 10 }
-            },
-            {
-                id: 'armor_leather',
-                name: 'Кожаная броня',
-                icon: '🦺',
-                description: 'Легкая кожаная броня',
-                price: 150,
-                category: 'armor',
-                rarity: 'common',
-                stats: { defense: 5 }
-            },
-            {
-                id: 'armor_chain',
-                name: 'Кольчуга',
-                icon: '🛡️',
-                description: 'Прочная кольчужная броня',
-                price: 300,
-                category: 'armor',
-                rarity: 'uncommon',
-                stats: { defense: 10 }
-            },
-            {
-                id: 'pickaxe_iron',
-                name: 'Железная кирка',
-                icon: '⛏️',
-                description: 'Улучшает добычу руды',
-                price: 200,
-                category: 'tools',
-                rarity: 'common',
-                stats: { miningBonus: 20 }
-            },
-            {
-                id: 'axe_iron',
-                name: 'Железный топор',
-                icon: '🪓',
-                description: 'Улучшает рубку леса',
-                price: 180,
-                category: 'tools',
-                rarity: 'common',
-                stats: { woodcuttingBonus: 20 }
-            },
-            {
-                id: 'potion_health',
-                name: 'Зелье здоровья',
-                icon: '🧪',
-                description: 'Восстанавливает 50 энергии',
-                price: 50,
-                category: 'consumables',
-                rarity: 'common',
-                consumable: true,
-                effect: { energy: 50 }
-            },
-            {
-                id: 'potion_exp',
-                name: 'Зелье опыта',
-                icon: '✨',
-                description: 'Дает 100 опыта',
-                price: 100,
-                category: 'consumables',
-                rarity: 'uncommon',
-                consumable: true,
-                effect: { exp: 100 }
-            },
-            {
-                id: 'sword_legendary',
-                name: 'Экскалибур',
-                icon: '⚔️',
-                description: 'Легендарный меч короля',
-                price: 5000,
-                category: 'weapons',
-                rarity: 'legendary',
-                stats: { attack: 50 }
-            },
-            {
-                id: 'armor_legendary',
-                name: 'Доспехи дракона',
-                icon: '🛡️',
-                description: 'Легендарные доспехи из чешуи дракона',
-                price: 5000,
-                category: 'armor',
-                rarity: 'legendary',
-                stats: { defense: 50 }
-            }
+            { id: 'sword', name: '⚔️ Меч', icon: '⚔️', buyPrice: 200, sellPrice: 100, description: 'Острый боевой меч' },
+            { id: 'shield', name: '🛡️ Щит', icon: '🛡️', buyPrice: 150, sellPrice: 75, description: 'Крепкий защитный щит' },
+            { id: 'potion', name: '🧪 Зелье здоровья', icon: '🧪', buyPrice: 50, sellPrice: 25, description: 'Восстанавливает здоровье' },
+            { id: 'armor', name: '🛡️ Доспехи', icon: '🛡️', buyPrice: 300, sellPrice: 150, description: 'Прочные металлические доспехи' },
+            { id: 'gem', name: '💎 Драгоценный камень', icon: '💎', buyPrice: 500, sellPrice: 250, description: 'Редкий драгоценный камень' },
+            { id: 'food', name: '🍖 Еда', icon: '🍖', buyPrice: 30, sellPrice: 15, description: 'Восстанавливает энергию' }
         ];
 
-        // Daily Quests
-        const dailyQuestTemplates = [
-            {
-                id: 'work_5_times',
-                name: 'Трудовой день',
-                description: 'Выполните любую работу 5 раз',
-                type: 'daily',
-                requirement: { type: 'work', count: 5 },
-                rewards: { gold: 100, exp: 50 }
-            },
-            {
-                id: 'earn_gold',
-                name: 'Золотоискатель',
-                description: 'Заработайте 200 золота',
-                type: 'daily',
-                requirement: { type: 'earnGold', count: 200 },
-                rewards: { gold: 150, exp: 75 }
-            },
-            {
-                id: 'spend_energy',
-                name: 'Энергичный',
-                description: 'Потратьте 50 энергии',
-                type: 'daily',
-                requirement: { type: 'spendEnergy', count: 50 },
-                rewards: { gold: 80, exp: 40 }
-            }
-        ];
-
-        // Story Quests
-        const storyQuests = [
-            {
-                id: 'first_steps',
-                name: 'Первые шаги',
-                description: 'Выполните свою первую работу',
-                type: 'story',
-                requirement: { type: 'work', count: 1 },
-                rewards: { gold: 50, exp: 25 },
-                completed: false
-            },
-            {
-                id: 'merchant',
-                name: 'Начинающий торговец',
-                description: 'Купите свой первый предмет на рынке',
-                type: 'story',
-                requirement: { type: 'buyItem', count: 1 },
-                rewards: { gold: 100, exp: 50 },
-                completed: false
-            },
-            {
-                id: 'banker',
-                name: 'Финансист',
-                description: 'Положите 500 золота в банк',
-                type: 'story',
-                requirement: { type: 'deposit', count: 500 },
-                rewards: { gold: 200, exp: 100 },
-                completed: false
-            },
-            {
-                id: 'level_5',
-                name: 'Опытный искатель',
-                description: 'Достигните 5 уровня',
-                type: 'story',
-                requirement: { type: 'level', count: 5 },
-                rewards: { gold: 500, exp: 250, gems: 10 },
-                completed: false
-            }
-        ];
-
-        // Achievements
         const achievements = [
-            { id: 'first_work', name: 'Первая работа', icon: '⚒️', description: 'Выполните первую работу', unlocked: false },
-            { id: 'rich', name: 'Богач', icon: '💰', description: 'Накопите 1000 золота', unlocked: false },
-            { id: 'level_10', name: 'Ветеран', icon: '⭐', description: 'Достигните 10 уровня', unlocked: false },
-            { id: 'collector', name: 'Коллекционер', icon: '🎒', description: 'Соберите 20 предметов', unlocked: false },
-            { id: 'quest_master', name: 'Мастер квестов', icon: '📜', description: 'Завершите 50 квестов', unlocked: false },
-            { id: 'banker', name: 'Банкир', icon: '🏦', description: 'Положите 5000 золота в банк', unlocked: false },
-            { id: 'merchant', name: 'Торговец', icon: '🏪', description: 'Купите 30 предметов', unlocked: false },
-            { id: 'worker', name: 'Трудяга', icon: '💪', description: 'Выполните 100 работ', unlocked: false }
+            { id: 'first_gold', name: 'Первое золото', description: 'Заработайте 100 золота', icon: '💰', check: () => gameData.stats.totalGoldEarned >= 100 },
+            { id: 'hard_worker', name: 'Трудяга', description: 'Выполните 50 работ', icon: '⚒️', check: () => gameData.stats.totalWorkDone >= 50 },
+            { id: 'level_5', name: 'Опытный искатель', description: 'Достигните 5 уровня', icon: '⭐', check: () => gameData.level >= 5 },
+            { id: 'rich', name: 'Богач', description: 'Накопите 1000 золота', icon: '💎', check: () => gameData.gold >= 1000 },
+            { id: 'craftsman', name: 'Мастер ремесла', description: 'Создайте 20 предметов', icon: '🔨', check: () => gameData.stats.itemsCrafted >= 20 },
+            { id: 'quest_master', name: 'Мастер квестов', description: 'Выполните 10 квестов', icon: '📜', check: () => gameData.stats.questsCompleted >= 10 },
+            { id: 'banker', name: 'Банкир', description: 'Положите в банк 500 золота', icon: '🏦', check: () => gameData.bankBalance >= 500 },
+            { id: 'level_10', name: 'Легендарный герой', description: 'Достигните 10 уровня', icon: '👑', check: () => gameData.level >= 10 }
         ];
 
-        // Current work
-        let currentWork = null;
-        let workProgress = 0;
-        let workInterval = null;
+        let dailyQuests = [];
+        let workingJobs = new Set();
 
-        // Initialize game
-        function initGame() {
-            loadGame();
-            updateUI();
-            generateWorkCards();
-            generateInventory();
-            generateMarketItems();
-            generateSkills();
-            generateAchievements();
-            generateDailyQuests();
-            generateStoryQuests();
-            startEnergyRegeneration();
-            startQuestTimer();
-            
-            // Telegram WebApp
-            if (window.Telegram && window.Telegram.WebApp) {
-                const tg = window.Telegram.WebApp;
-                tg.ready();
-                tg.expand();
+        function initTelegramData() {
+            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                const user = tg.initDataUnsafe.user;
+                gameData.username = user.first_name || user.username || 'Игрок';
                 
-                if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                    gameState.player.name = tg.initDataUnsafe.user.first_name || "Рыцарь";
-                    document.getElementById('playerName').textContent = gameState.player.name;
-                    document.getElementById('profileName').textContent = gameState.player.name;
+                if (user.photo_url) {
+                    gameData.avatar = user.photo_url;
+                    document.getElementById('avatar').innerHTML = `<img src="${user.photo_url}" alt="Avatar">`;
+                } else {
+                    const firstLetter = gameData.username.charAt(0).toUpperCase();
+                    document.getElementById('avatar').textContent = firstLetter;
                 }
             }
+            document.getElementById('username').textContent = gameData.username;
         }
 
-        // Update UI
-        function updateUI() {
-            // Player info
-            document.getElementById('playerLevel').textContent = gameState.player.level;
-            document.getElementById('goldAmount').textContent = gameState.player.gold;
-            document.getElementById('gemsAmount').textContent = gameState.player.gems;
-            
-            // Experience
-            const expPercent = (gameState.player.exp / gameState.player.expToNext) * 100;
-            document.getElementById('expBar').style.width = expPercent + '%';
-            document.getElementById('expText').textContent = `${gameState.player.exp}/${gameState.player.expToNext}`;
-            document.getElementById('expPercent').textContent = Math.floor(expPercent) + '%';
-            
-            // Energy
-            const energyPercent = (gameState.player.energy / gameState.player.maxEnergy) * 100;
-            document.getElementById('energyBar').style.width = energyPercent + '%';
-            document.getElementById('currentEnergy').textContent = Math.floor(gameState.player.energy);
-            document.getElementById('maxEnergy').textContent = gameState.player.maxEnergy;
-            
-            // Bank
-            document.getElementById('bankBalance').textContent = gameState.bank.balance;
-            document.getElementById('dailyInterest').textContent = Math.floor(gameState.bank.balance * 0.05 / 365);
-            document.getElementById('currentLoan').textContent = gameState.bank.loan;
-            
-            // Stats
-            document.getElementById('totalGoldEarned').textContent = gameState.stats.totalGoldEarned;
-            document.getElementById('totalWorksDone').textContent = gameState.stats.totalWorksDone;
-            document.getElementById('totalQuestsCompleted').textContent = gameState.stats.totalQuestsCompleted;
-            document.getElementById('daysPlayed').textContent = gameState.stats.daysPlayed;
-            
-            // Profile
-            document.getElementById('profileTitle').textContent = gameState.player.title;
-            
-            // Inventory count
-            document.getElementById('inventoryCount').textContent = gameState.inventory.length;
-        }
-
-        // Generate work cards
-        function generateWorkCards() {
-            const workGrid = document.getElementById('workGrid');
-            workGrid.innerHTML = '';
-            
-            workTypes.forEach(work => {
-                const isLocked = gameState.player.level < work.levelRequired;
-                const skillLevel = gameState.skills[work.skill].level;
-                const bonus = (skillLevel - 1) * 0.1;
-                const reward = Math.floor(work.baseReward * (1 + bonus));
-                
-                const card = document.createElement('div');
-                card.className = 'work-card';
-                if (isLocked) {
-                    card.style.opacity = '0.5';
-                    card.style.cursor = 'not-allowed';
-                }
-                
-                card.innerHTML = `
-                    <div class="work-icon">${work.icon}</div>
-                    <div class="work-name">${work.name}</div>
-                    <div class="work-reward">+${reward} 💰</div>
-                    <div class="work-energy">-${work.energyCost} ⚡</div>
-                    ${isLocked ? `<div class="work-level-req">Требуется ${work.levelRequired} ур.</div>` : ''}
-                    <div class="work-progress" style="display: none;">
-                        <div class="work-progress-fill"></div>
-                    </div>
-                `;
-                
-                if (!isLocked) {
-                    card.onclick = () => startWork(work);
-                }
-                
-                workGrid.appendChild(card);
-            });
-        }
-
-        // Start work
-        function startWork(work) {
-            if (currentWork) {
-                showNotification('Вы уже работаете!', 'warning');
-                return;
-            }
-            
-            if (gameState.player.energy < work.energyCost) {
-                showNotification('Недостаточно энергии!', 'warning');
-                return;
-            }
-            
-            currentWork = work;
-            workProgress = 0;
-            
-            const cards = document.querySelectorAll('.work-card');
-            cards.forEach(card => {
-                if (card.querySelector('.work-name').textContent === work.name) {
-                    card.classList.add('active');
-                    card.querySelector('.work-progress').style.display = 'block';
-                }
-            });
-            
-            workInterval = setInterval(() => {
-                workProgress += 100;
-                const percent = (workProgress / work.duration) * 100;
-                
-                const activeCard = document.querySelector('.work-card.active');
-                if (activeCard) {
-                    activeCard.querySelector('.work-progress-fill').style.width = percent + '%';
-                }
-                
-                if (workProgress >= work.duration) {
-                    completeWork(work);
-                }
-            }, 100);
-        }
-
-        // Complete work
-        function completeWork(work) {
-            clearInterval(workInterval);
-            workInterval = null;
-            currentWork = null;
-            
-            const skillLevel = gameState.skills[work.skill].level;
-            const bonus = (skillLevel - 1) * 0.1;
-            const reward = Math.floor(work.baseReward * (1 + bonus));
-            
-            gameState.player.gold += reward;
-            gameState.player.energy -= work.energyCost;
-            gameState.player.exp += work.expReward;
-            gameState.stats.totalGoldEarned += reward;
-            gameState.stats.totalWorksDone++;
-            
-            // Skill exp
-            gameState.skills[work.skill].exp += work.expReward;
-            if (gameState.skills[work.skill].exp >= 100) {
-                gameState.skills[work.skill].level++;
-                gameState.skills[work.skill].exp = 0;
-                showNotification(`Навык ${work.skill} повышен до ${gameState.skills[work.skill].level} уровня!`, 'success');
-            }
-            
-            checkLevelUp();
-            updateQuestProgress('work', 1);
-            updateQuestProgress('earnGold', reward);
-            updateQuestProgress('spendEnergy', work.energyCost);
-            checkAchievements();
-            updateUI();
-            
-            const cards = document.querySelectorAll('.work-card');
-            cards.forEach(card => {
-                card.classList.remove('active');
-                card.querySelector('.work-progress').style.display = 'none';
-                card.querySelector('.work-progress-fill').style.width = '0%';
-            });
-            
-            showNotification(`Получено ${reward} 💰 и ${work.expReward} опыта!`, 'success');
-            
-            if (gameState.settings.autosave) {
-                saveGame();
-            }
-        }
-
-        // Check level up
-        function checkLevelUp() {
-            while (gameState.player.exp >= gameState.player.expToNext) {
-                gameState.player.level++;
-                gameState.player.exp -= gameState.player.expToNext;
-                gameState.player.expToNext = Math.floor(gameState.player.expToNext * 1.5);
-                gameState.player.maxEnergy += 10;
-                gameState.player.energy = gameState.player.maxEnergy;
-                
-                showNotification(`Поздравляем! Вы достигли ${gameState.player.level} уровня!`, 'success');
-                updatePlayerTitle();
-                generateWorkCards();
-                updateQuestProgress('level', gameState.player.level);
-            }
-        }
-
-        // Update player title
-        function updatePlayerTitle() {
-            const level = gameState.player.level;
-            if (level >= 50) gameState.player.title = "Легендарный герой";
-            else if (level >= 40) gameState.player.title = "Великий воин";
-            else if (level >= 30) gameState.player.title = "Мастер своего дела";
-            else if (level >= 20) gameState.player.title = "Опытный искатель приключений";
-            else if (level >= 10) gameState.player.title = "Умелый работник";
-            else if (level >= 5) gameState.player.title = "Подающий надежды";
-            else gameState.player.title = "Начинающий искатель приключений";
-        }
-
-        // Energy regeneration
-        function startEnergyRegeneration() {
-            setInterval(() => {
-                if (gameState.player.energy < gameState.player.maxEnergy) {
-                    gameState.player.energy = Math.min(gameState.player.energy + 1, gameState.player.maxEnergy);
-                    updateUI();
-                }
-            }, 10000); // 1 energy per 10 seconds
-        }
-
-        // Generate inventory
-        function generateInventory() {
-            const inventoryGrid = document.getElementById('inventoryGrid');
-            inventoryGrid.innerHTML = '';
-            
-            for (let i = 0; i < 50; i++) {
-                const slot = document.createElement('div');
-                slot.className = 'inventory-slot empty';
-                
-                if (i < gameState.inventory.length) {
-                    const item = gameState.inventory[i];
-                    const itemData = marketItems.find(mi => mi.id === item.id);
-                    
-                    slot.classList.remove('empty');
-                    slot.innerHTML = `
-                        <div class="item-rarity rarity-${itemData.rarity}"></div>
-                        <div class="item-icon">${itemData.icon}</div>
-                        <div class="item-name">${itemData.name}</div>
-                        ${item.count > 1 ? `<div class="item-count">${item.count}</div>` : ''}
-                    `;
-                    slot.onclick = () => showItemDetails(itemData, item);
-                }
-                
-                inventoryGrid.appendChild(slot);
-            }
-        }
-
-        // Show item details
-        function showItemDetails(itemData, inventoryItem) {
-            const modal = document.getElementById('itemModal');
-            const modalTitle = document.getElementById('itemModalTitle');
-            const modalBody = document.getElementById('itemModalBody');
-            const modalAction = document.getElementById('itemModalAction');
-            
-            modalTitle.textContent = itemData.name;
-            
-            let statsHtml = '';
-            if (itemData.stats) {
-                statsHtml = '<div style="margin-top: 15px;"><strong>Характеристики:</strong><ul style="margin-top: 5px;">';
-                for (let [key, value] of Object.entries(itemData.stats)) {
-                    statsHtml += `<li>${key}: +${value}</li>`;
-                }
-                statsHtml += '</ul></div>';
-            }
-            
-            modalBody.innerHTML = `
-                <div style="text-align: center; margin-bottom: 15px;">
-                    <div style="font-size: 64px;">${itemData.icon}</div>
-                    <div style="color: var(--text-secondary); margin-top: 10px;">${itemData.description}</div>
-                </div>
-                <div><strong>Редкость:</strong> <span class="rarity-${itemData.rarity}">${itemData.rarity}</span></div>
-                <div><strong>Категория:</strong> ${itemData.category}</div>
-                <div><strong>Цена:</strong> ${itemData.price} 💰</div>
-                ${inventoryItem ? `<div><strong>Количество:</strong> ${inventoryItem.count}</div>` : ''}
-                ${statsHtml}
-            `;
-            
-            if (itemData.consumable) {
-                modalAction.textContent = 'Использовать';
-                modalAction.onclick = () => useItem(itemData, inventoryItem);
-                modalAction.style.display = 'block';
-            } else {
-                modalAction.style.display = 'none';
-            }
-            
-            modal.classList.add('active');
-        }
-
-        // Use item
-        function useItem(itemData, inventoryItem) {
-            if (itemData.effect) {
-                if (itemData.effect.energy) {
-                    gameState.player.energy = Math.min(
-                        gameState.player.energy + itemData.effect.energy,
-                        gameState.player.maxEnergy
-                    );
-                }
-                if (itemData.effect.exp) {
-                    gameState.player.exp += itemData.effect.exp;
-                    checkLevelUp();
-                }
-            }
-            
-            inventoryItem.count--;
-            if (inventoryItem.count <= 0) {
-                const index = gameState.inventory.indexOf(inventoryItem);
-                gameState.inventory.splice(index, 1);
-            }
-            
-            updateUI();
-            generateInventory();
-            closeModal('itemModal');
-            showNotification(`Использован предмет: ${itemData.name}`, 'success');
-            saveGame();
-        }
-
-        // Generate market items
-        function generateMarketItems(filter = 'all') {
-            const marketItemsContainer = document.getElementById('marketItems');
-            marketItemsContainer.innerHTML = '';
-            
-            const filteredItems = filter === 'all' 
-                ? marketItems 
-                : marketItems.filter(item => item.category === filter);
-            
-            filteredItems.forEach(item => {
-                const itemCard = document.createElement('div');
-                itemCard.className = 'market-item';
-                
-                let statsHtml = '';
-                if (item.stats) {
-                    for (let [key, value] of Object.entries(item.stats)) {
-                        statsHtml += `<span>${key}: +${value}</span>`;
-                    }
-                }
-                
-                itemCard.innerHTML = `
-                    <div class="market-item-icon">${item.icon}</div>
-                    <div class="market-item-info">
-                        <div class="market-item-name">${item.name}</div>
-                        <div class="market-item-description">${item.description}</div>
-                        <div class="market-item-stats">
-                            <span class="rarity-${item.rarity}">${item.rarity}</span>
-                            ${statsHtml}
-                        </div>
-                    </div>
-                    <div class="market-item-price">
-                        <div class="price-tag">${item.price} 💰</div>
-                        <button class="btn btn-primary btn-small" onclick="buyItem('${item.id}')">Купить</button>
-                    </div>
-                `;
-                
-                marketItemsContainer.appendChild(itemCard);
-            });
-        }
-
-        // Buy item
-        function buyItem(itemId) {
-            const item = marketItems.find(i => i.id === itemId);
-            
-            if (gameState.player.gold < item.price) {
-                showNotification('Недостаточно золота!', 'warning');
-                return;
-            }
-            
-            if (gameState.inventory.length >= 50) {
-                showNotification('Инвентарь полон!', 'warning');
-                return;
-            }
-            
-            gameState.player.gold -= item.price;
-            
-            const existingItem = gameState.inventory.find(i => i.id === itemId);
-            if (existingItem) {
-                existingItem.count++;
-            } else {
-                gameState.inventory.push({ id: itemId, count: 1 });
-            }
-            
-            updateUI();
-            generateInventory();
-            updateQuestProgress('buyItem', 1);
-            checkAchievements();
-            showNotification(`Куплен предмет: ${item.name}`, 'success');
-            saveGame();
-        }
-
-        // Filter market
-        function filterMarket(category) {
-            const categories = document.querySelectorAll('.category-card');
-            categories.forEach(cat => cat.classList.remove('active'));
-            event.target.closest('.category-card').classList.add('active');
-            generateMarketItems(category);
-        }
-
-        // Bank functions
-        function depositGold() {
-            const amount = parseInt(document.getElementById('depositAmount').value);
-            
-            if (!amount || amount <= 0) {
-                showNotification('Введите корректную сумму', 'warning');
-                return;
-            }
-            
-            if (gameState.player.gold < amount) {
-                showNotification('Недостаточно золота!', 'warning');
-                return;
-            }
-            
-            gameState.player.gold -= amount;
-            gameState.bank.balance += amount;
-            gameState.bank.transactions.push({
-                type: 'deposit',
-                amount: amount,
-                date: new Date().toLocaleString()
-            });
-            
-            updateUI();
-            updateQuestProgress('deposit', amount);
-            checkAchievements();
-            showNotification(`Внесено ${amount} золота в банк`, 'success');
-            document.getElementById('depositAmount').value = '';
-            saveGame();
-        }
-
-        function withdrawGold() {
-            const amount = parseInt(document.getElementById('withdrawAmount').value);
-            
-            if (!amount || amount <= 0) {
-                showNotification('Введите корректную сумму', 'warning');
-                return;
-            }
-            
-            if (gameState.bank.balance < amount) {
-                showNotification('Недостаточно средств в банке!', 'warning');
-                return;
-            }
-            
-            gameState.bank.balance -= amount;
-            gameState.player.gold += amount;
-            gameState.bank.transactions.push({
-                type: 'withdraw',
-                amount: amount,
-                date: new Date().toLocaleString()
-            });
-            
-            updateUI();
-            showNotification(`Снято ${amount} золота из банка`, 'success');
-            document.getElementById('withdrawAmount').value = '';
-            saveGame();
-        }
-
-        function takeLoan() {
-            const amount = parseInt(document.getElementById('loanAmount').value);
-            
-            if (!amount || amount <= 0 || amount > 1000) {
-                showNotification('Введите сумму от 1 до 1000', 'warning');
-                return;
-            }
-            
-            if (gameState.bank.loan > 0) {
-                showNotification('Сначала погасите текущий кредит!', 'warning');
-                return;
-            }
-            
-            gameState.bank.loan = amount;
-            gameState.player.gold += amount;
-            gameState.bank.transactions.push({
-                type: 'loan',
-                amount: amount,
-                date: new Date().toLocaleString()
-            });
-            
-            updateUI();
-            showNotification(`Взят кредит на ${amount} золота`, 'success');
-            document.getElementById('loanAmount').value = '';
-            saveGame();
-        }
-
-        function repayLoan() {
-            if (gameState.bank.loan <= 0) {
-                showNotification('У вас нет активного кредита', 'warning');
-                return;
-            }
-            
-            const totalDebt = Math.floor(gameState.bank.loan * 1.1);
-            
-            if (gameState.player.gold < totalDebt) {
-                showNotification(`Недостаточно золота! Нужно ${totalDebt} золота`, 'warning');
-                return;
-            }
-            
-            gameState.player.gold -= totalDebt;
-            gameState.bank.loan = 0;
-            gameState.bank.transactions.push({
-                type: 'repay',
-                amount: totalDebt,
-                date: new Date().toLocaleString()
-            });
-            
-            updateUI();
-            showNotification('Кредит погашен!', 'success');
-            saveGame();
-        }
-
-        // Generate daily quests
-        function generateDailyQuests() {
-            const container = document.getElementById('dailyQuestsList');
-            container.innerHTML = '';
-            
-            if (gameState.quests.daily.length === 0) {
-                dailyQuestTemplates.forEach(template => {
-                    gameState.quests.daily.push({
-                        ...template,
-                        progress: 0,
-                        completed: false
-                    });
-                });
-            }
-            
-            gameState.quests.daily.forEach(quest => {
-                const questCard = createQuestCard(quest);
-                container.appendChild(questCard);
-            });
-        }
-
-        // Generate story quests
-        function generateStoryQuests() {
-            const container = document.getElementById('storyQuestsList');
-            container.innerHTML = '';
-            
-            if (gameState.quests.story.length === 0) {
-                gameState.quests.story = [...storyQuests];
-            }
-            
-            gameState.quests.story.forEach(quest => {
-                if (!quest.completed) {
-                    const questCard = createQuestCard(quest);
-                    container.appendChild(questCard);
-                }
-            });
-        }
-
-        // Create quest card
-        function createQuestCard(quest) {
-            const card = document.createElement('div');
-            card.className = 'quest-card';
-            if (quest.completed) card.classList.add('completed');
-            
-            const progress = quest.progress || 0;
-            const required = quest.requirement.count;
-            const progressPercent = Math.min((progress / required) * 100, 100);
-            
-            let rewardsHtml = '';
-            if (quest.rewards.gold) rewardsHtml += `<div class="quest-reward">💰 ${quest.rewards.gold}</div>`;
-            if (quest.rewards.exp) rewardsHtml += `<div class="quest-reward">⭐ ${quest.rewards.exp} опыта</div>`;
-            if (quest.rewards.gems) rewardsHtml += `<div class="quest-reward">💎 ${quest.rewards.gems}</div>`;
-            
-            card.innerHTML = `
-                <div class="quest-header">
-                    <div>
-                        <div class="quest-title">${quest.name}</div>
-                        <div class="quest-type">${quest.type === 'daily' ? 'Ежедневный' : 'Сюжетный'}</div>
-                    </div>
-                </div>
-                <div class="quest-description">${quest.description}</div>
-                <div class="quest-progress">
-                    <div class="quest-progress-text">${progress}/${required}</div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${progressPercent}%"></div>
-                    </div>
-                </div>
-                <div class="quest-rewards">
-                    ${rewardsHtml}
-                </div>
-                ${quest.completed 
-                    ? '<button class="btn btn-secondary btn-small btn-full" disabled>Завершено</button>'
-                    : progressPercent >= 100 
-                        ? `<button class="btn btn-primary btn-small btn-full" onclick="claimQuest('${quest.id}', '${quest.type}')">Получить награду</button>`
-                        : '<button class="btn btn-secondary btn-small btn-full" disabled>В процессе</button>'
-                }
-            `;
-            
-            return card;
-        }
-
-        // Update quest progress
-        function updateQuestProgress(type, amount) {
-            let updated = false;
-            
-            gameState.quests.daily.forEach(quest => {
-                if (!quest.completed && quest.requirement.type === type) {
-                    quest.progress = (quest.progress || 0) + amount;
-                    updated = true;
-                }
-            });
-            
-            gameState.quests.story.forEach(quest => {
-                if (!quest.completed && quest.requirement.type === type) {
-                    if (type === 'level') {
-                        quest.progress = amount;
-                    } else {
-                        quest.progress = (quest.progress || 0) + amount;
-                    }
-                    updated = true;
-                }
-            
-
-## Ошибка max_tokens пересоздайте чат
-
-
+        async function loadGameData() {
+            try {
+                const savedData = await window.storage.get('medieval_rpg_save', false);
+                if (savedData && savedData.value) {
+                    gameData = JSON.parse(savedData.value
