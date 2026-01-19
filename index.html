@@ -1,1619 +1,2752 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Users, Briefcase, Package, ShoppingCart, DollarSign, Target, Trophy, Award, Sword, Shield, Hammer, Axe, Crown, Coins, Heart, Zap, Star, TrendingUp, Gift, Lock, CheckCircle, Medal } from 'lucide-react';
-
-const MedievalRPG = () => {
-  // Инициализация Telegram WebApp
-  useEffect(() => {
-    if (window.Telegram?.WebApp) {
-      window.Telegram.WebApp.ready();
-      window.Telegram.WebApp.expand();
-    }
-  }, []);
-
-  // Получение данных пользователя из Telegram
-  const getTelegramUser = () => {
-    if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
-      const user = window.Telegram.WebApp.initDataUnsafe.user;
-      return {
-        id: user.id,
-        username: user.username || 'Путник',
-        firstName: user.first_name || 'Путник',
-        photoUrl: user.photo_url || null
-      };
-    }
-    return {
-      id: Date.now(),
-      username: 'Путник',
-      firstName: 'Путник',
-      photoUrl: null
-    };
-  };
-
-  const telegramUser = getTelegramUser();
-
-  // Начальное состояние игрока
-  const initialPlayerState = {
-    username: telegramUser.username,
-    firstName: telegramUser.firstName,
-    photoUrl: telegramUser.photoUrl,
-    telegramId: telegramUser.id,
-    level: 1,
-    exp: 0,
-    expToNext: 100,
-    gold: 100,
-    health: 100,
-    maxHealth: 100,
-    energy: 100,
-    maxEnergy: 100,
-    strength: 5,
-    intelligence: 5,
-    luck: 5,
-    totalClicks: 0,
-    totalEarned: 0
-  };
-
-  // Состояния
-  const [player, setPlayer] = useState(initialPlayerState);
-  const [activeTab, setActiveTab] = useState('work');
-  const [inventory, setInventory] = useState([]);
-  const [equippedItems, setEquippedItems] = useState({
-    weapon: null,
-    armor: null,
-    accessory: null
-  });
-  const [dailyQuests, setDailyQuests] = useState([]);
-  const [achievements, setAchievements] = useState([]);
-  const [leaderboard, setLeaderboard] = useState([]);
-  const [bankAccount, setBankAccount] = useState({
-    balance: 0,
-    depositAmount: '',
-    withdrawAmount: ''
-  });
-  const [notifications, setNotifications] = useState([]);
-  const [lastWorkTime, setLastWorkTime] = useState({});
-  const [clickAnimations, setClickAnimations] = useState([]);
-
-  // Работы
-  const jobs = [
-    { id: 'farmer', name: 'Фермер', icon: '🌾', income: 10, energy: 5, time: 3000, exp: 5 },
-    { id: 'miner', name: 'Шахтер', icon: '⛏️', income: 15, energy: 8, time: 4000, exp: 8 },
-    { id: 'blacksmith', name: 'Кузнец', icon: '⚒️', income: 25, energy: 12, time: 5000, exp: 12, requiredLevel: 3 },
-    { id: 'merchant', name: 'Торговец', icon: '💰', income: 35, energy: 10, time: 6000, exp: 15, requiredLevel: 5 },
-    { id: 'hunter', name: 'Охотник', icon: '🏹', income: 45, energy: 15, time: 7000, exp: 20, requiredLevel: 8 },
-    { id: 'knight', name: 'Рыцарь', icon: '⚔️', income: 60, energy: 20, time: 8000, exp: 30, requiredLevel: 12 },
-    { id: 'wizard', name: 'Маг', icon: '🔮', income: 80, energy: 25, time: 9000, exp: 40, requiredLevel: 15 },
-    { id: 'lord', name: 'Лорд', icon: '👑', income: 120, energy: 30, time: 10000, exp: 60, requiredLevel: 20 }
-  ];
-
-  // Предметы в магазине
-  const marketItems = [
-    { id: 'sword1', name: 'Деревянный меч', type: 'weapon', price: 50, strength: 2, icon: '🗡️' },
-    { id: 'sword2', name: 'Железный меч', type: 'weapon', price: 200, strength: 5, icon: '⚔️', requiredLevel: 5 },
-    { id: 'sword3', name: 'Стальной меч', type: 'weapon', price: 500, strength: 10, icon: '🗡️', requiredLevel: 10 },
-    { id: 'sword4', name: 'Легендарный меч', type: 'weapon', price: 2000, strength: 25, icon: '⚔️', requiredLevel: 15 },
-    { id: 'armor1', name: 'Кожаная броня', type: 'armor', price: 80, maxHealth: 20, icon: '🛡️' },
-    { id: 'armor2', name: 'Кольчуга', type: 'armor', price: 300, maxHealth: 50, icon: '🛡️', requiredLevel: 5 },
-    { id: 'armor3', name: 'Латы', type: 'armor', price: 800, maxHealth: 100, icon: '🛡️', requiredLevel: 10 },
-    { id: 'armor4', name: 'Королевские латы', type: 'armor', price: 3000, maxHealth: 200, icon: '🛡️', requiredLevel: 15 },
-    { id: 'ring1', name: 'Кольцо удачи', type: 'accessory', price: 150, luck: 3, icon: '💍' },
-    { id: 'ring2', name: 'Амулет силы', type: 'accessory', price: 400, strength: 5, icon: '📿', requiredLevel: 8 },
-    { id: 'ring3', name: 'Корона мудрости', type: 'accessory', price: 1000, intelligence: 10, icon: '👑', requiredLevel: 12 },
-    { id: 'potion1', name: 'Зелье здоровья', type: 'consumable', price: 30, effect: 'health', value: 50, icon: '🧪' },
-    { id: 'potion2', name: 'Зелье энергии', type: 'consumable', effect: 'energy', price: 25, value: 50, icon: '⚡' },
-    { id: 'potion3', name: 'Зелье опыта', type: 'consumable', price: 100, effect: 'exp', value: 50, icon: '✨', requiredLevel: 5 }
-  ];
-
-  // Достижения
-  const achievementsList = [
-    { id: 'clicks100', name: 'Новичок', desc: 'Выполнить 100 кликов', icon: '👆', requirement: 100, type: 'clicks', reward: 50 },
-    { id: 'clicks500', name: 'Опытный работник', desc: 'Выполнить 500 кликов', icon: '💪', requirement: 500, type: 'clicks', reward: 200 },
-    { id: 'clicks1000', name: 'Мастер труда', desc: 'Выполнить 1000 кликов', icon: '⭐', requirement: 1000, type: 'clicks', reward: 500 },
-    { id: 'gold1000', name: 'Богач', desc: 'Заработать 1000 золота', icon: '💰', requirement: 1000, type: 'earned', reward: 100 },
-    { id: 'gold5000', name: 'Магнат', desc: 'Заработать 5000 золота', icon: '💎', requirement: 5000, type: 'earned', reward: 500 },
-    { id: 'level5', name: 'Воин 5 уровня', desc: 'Достичь 5 уровня', icon: '🎖️', requirement: 5, type: 'level', reward: 200 },
-    { id: 'level10', name: 'Воин 10 уровня', desc: 'Достичь 10 уровня', icon: '🏆', requirement: 10, type: 'level', reward: 500 },
-    { id: 'level20', name: 'Легенда', desc: 'Достичь 20 уровня', icon: '👑', requirement: 20, type: 'level', reward: 2000 },
-    { id: 'quest10', name: 'Искатель приключений', desc: 'Выполнить 10 квестов', icon: '🎯', requirement: 10, type: 'quests', reward: 300 },
-    { id: 'quest50', name: 'Герой королевства', desc: 'Выполнить 50 квестов', icon: '⚔️', requirement: 50, type: 'quests', reward: 1000 }
-  ];
-
-  // Генерация ежедневных квестов
-  const generateDailyQuests = useCallback(() => {
-    const quests = [
-      { id: 1, name: 'Заработать 100 золота', type: 'earn', target: 100, current: 0, reward: 50, exp: 20, icon: '💰' },
-      { id: 2, name: 'Выполнить 20 работ', type: 'work', target: 20, current: 0, reward: 80, exp: 30, icon: '⚒️' },
-      { id: 3, name: 'Купить предмет в магазине', type: 'buy', target: 1, current: 0, reward: 40, exp: 15, icon: '🛒' },
-      { id: 4, name: 'Достичь полной энергии', type: 'energy', target: 1, current: 0, reward: 30, exp: 10, icon: '⚡' },
-      { id: 5, name: 'Заработать 50 опыта', type: 'exp', target: 50, current: 0, reward: 60, exp: 25, icon: '⭐' }
-    ];
-    
-    // Выбираем 3 случайных квеста
-    const shuffled = quests.sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, 3);
-  }, []);
-
-  // Загрузка данных
-  useEffect(() => {
-    const loadGame = async () => {
-      try {
-        const savedPlayer = await window.storage.get('player');
-        const savedInventory = await window.storage.get('inventory');
-        const savedEquipped = await window.storage.get('equipped');
-        const savedQuests = await window.storage.get('dailyQuests');
-        const savedAchievements = await window.storage.get('achievements');
-        const savedBank = await window.storage.get('bank');
-        const savedLeaderboard = await window.storage.get('leaderboard', true);
-        const savedLastWork = await window.storage.get('lastWorkTime');
-
-        if (savedPlayer) {
-          const playerData = JSON.parse(savedPlayer.value);
-          // Обновляем данные из Telegram
-          playerData.username = telegramUser.username;
-          playerData.firstName = telegramUser.firstName;
-          playerData.photoUrl = telegramUser.photoUrl;
-          playerData.telegramId = telegramUser.id;
-          setPlayer(playerData);
-        }
-        if (savedInventory) setInventory(JSON.parse(savedInventory.value));
-        if (savedEquipped) setEquippedItems(JSON.parse(savedEquipped.value));
-        if (savedQuests) setDailyQuests(JSON.parse(savedQuests.value));
-        else setDailyQuests(generateDailyQuests());
-        if (savedAchievements) setAchievements(JSON.parse(savedAchievements.value));
-        if (savedBank) setBankAccount(JSON.parse(savedBank.value));
-        if (savedLeaderboard) setLeaderboard(JSON.parse(savedLeaderboard.value));
-        if (savedLastWork) setLastWorkTime(JSON.parse(savedLastWork.value));
-      } catch (err) {
-        console.log('Начинаем новую игру');
-        setDailyQuests(generateDailyQuests());
-      }
-    };
-    loadGame();
-  }, [generateDailyQuests, telegramUser]);
-
-  // Сохранение данных
-  useEffect(() => {
-    const saveGame = async () => {
-      try {
-        await window.storage.set('player', JSON.stringify(player));
-        await window.storage.set('inventory', JSON.stringify(inventory));
-        await window.storage.set('equipped', JSON.stringify(equippedItems));
-        await window.storage.set('dailyQuests', JSON.stringify(dailyQuests));
-        await window.storage.set('achievements', JSON.stringify(achievements));
-        await window.storage.set('bank', JSON.stringify(bankAccount));
-        await window.storage.set('lastWorkTime', JSON.stringify(lastWorkTime));
-        
-        // Обновление рейтинга (общий доступ)
-        const newLeaderboard = [...leaderboard];
-        const playerIndex = newLeaderboard.findIndex(p => p.telegramId === player.telegramId);
-        const playerData = {
-          telegramId: player.telegramId,
-          username: player.username,
-          level: player.level,
-          gold: player.gold,
-          totalEarned: player.totalEarned,
-          photoUrl: player.photoUrl
-        };
-        
-        if (playerIndex >= 0) {
-          newLeaderboard[playerIndex] = playerData;
-        } else {
-          newLeaderboard.push(playerData);
-        }
-        
-        newLeaderboard.sort((a, b) => b.totalEarned - a.totalEarned);
-        const top100 = newLeaderboard.slice(0, 100);
-        
-        await window.storage.set('leaderboard', JSON.stringify(top100), true);
-        setLeaderboard(top100);
-      } catch (err) {
-        console.error('Ошибка сохранения:', err);
-      }
-    };
-    saveGame();
-  }, [player, inventory, equippedItems, dailyQuests, achievements, bankAccount, lastWorkTime]);
-
-  // Функция добавления уведомлений
-  const addNotification = (message, type = 'success') => {
-    const id = Date.now();
-    setNotifications(prev => [...prev, { id, message, type }]);
-    setTimeout(() => {
-      setNotifications(prev => prev.filter(n => n.id !== id));
-    }, 3000);
-  };
-
-  // Добавление анимации клика
-  const addClickAnimation = (x, y, text) => {
-    const id = Date.now();
-    setClickAnimations(prev => [...prev, { id, x, y, text }]);
-    setTimeout(() => {
-      setClickAnimations(prev => prev.filter(a => a.id !== id));
-    }, 1000);
-  };
-
-  // Проверка достижений
-  const checkAchievements = useCallback((newPlayer) => {
-    achievementsList.forEach(achievement => {
-      if (achievements.includes(achievement.id)) return;
-
-      let unlocked = false;
-      switch (achievement.type) {
-        case 'clicks':
-          unlocked = newPlayer.totalClicks >= achievement.requirement;
-          break;
-        case 'earned':
-          unlocked = newPlayer.totalEarned >= achievement.requirement;
-          break;
-        case 'level':
-          unlocked = newPlayer.level >= achievement.requirement;
-          break;
-        case 'quests':
-          const completedQuests = dailyQuests.filter(q => q.completed).length;
-          unlocked = completedQuests >= achievement.requirement;
-          break;
-        default:
-          break;
-      }
-
-      if (unlocked) {
-        setAchievements(prev => [...prev, achievement.id]);
-        setPlayer(p => ({ ...p, gold: p.gold + achievement.reward }));
-        addNotification(`🏆 Достижение: ${achievement.name}! +${achievement.reward} золота`, 'achievement');
-      }
-    });
-  }, [achievements, dailyQuests]);
-
-  // Обновление квестов
-  const updateQuest = useCallback((type, amount = 1) => {
-    setDailyQuests(prev => prev.map(quest => {
-      if (quest.type === type && !quest.completed) {
-        const newCurrent = quest.current + amount;
-        const completed = newCurrent >= quest.target;
-        
-        if (completed && !quest.completed) {
-          setPlayer(p => ({
-            ...p,
-            gold: p.gold + quest.reward,
-            exp: p.exp + quest.exp
-          }));
-          addNotification(`✅ Квест выполнен: ${quest.name}! +${quest.reward} золота`, 'success');
-        }
-        
-        return { ...quest, current: Math.min(newCurrent, quest.target), completed };
-      }
-      return quest;
-    }));
-  }, []);
-
-  // Работа
-  const performWork = (job) => {
-    const now = Date.now();
-    const lastTime = lastWorkTime[job.id] || 0;
-    
-    if (now - lastTime < job.time) {
-      const remaining = Math.ceil((job.time - (now - lastTime)) / 1000);
-      addNotification(`⏰ Подождите ${remaining} сек`, 'warning');
-      return;
-    }
-
-    if (player.energy < job.energy) {
-      addNotification('❌ Недостаточно энергии', 'error');
-      return;
-    }
-
-    if (job.requiredLevel && player.level < job.requiredLevel) {
-      addNotification(`❌ Требуется ${job.requiredLevel} уровень`, 'error');
-      return;
-    }
-
-    const bonus = Math.floor(job.income * (player.strength / 100));
-    const totalIncome = job.income + bonus;
-
-    setPlayer(prev => {
-      const newExp = prev.exp + job.exp;
-      const newLevel = newExp >= prev.expToNext ? prev.level + 1 : prev.level;
-      const newExpToNext = newLevel > prev.level ? prev.expToNext * 1.5 : prev.expToNext;
-      
-      const newPlayer = {
-        ...prev,
-        gold: prev.gold + totalIncome,
-        energy: prev.energy - job.energy,
-        exp: newLevel > prev.level ? newExp - prev.expToNext : newExp,
-        level: newLevel,
-        expToNext: newExpToNext,
-        totalClicks: prev.totalClicks + 1,
-        totalEarned: prev.totalEarned + totalIncome,
-        maxHealth: newLevel > prev.level ? prev.maxHealth + 10 : prev.maxHealth,
-        maxEnergy: newLevel > prev.level ? prev.maxEnergy + 5 : prev.maxEnergy,
-        strength: newLevel > prev.level ? prev.strength + 1 : prev.strength,
-        intelligence: newLevel > prev.level ? prev.intelligence + 1 : prev.intelligence
-      };
-
-      if (newLevel > prev.level) {
-        addNotification(`🎉 Уровень повышен! Теперь ${newLevel} уровень`, 'success');
-      }
-
-      checkAchievements(newPlayer);
-      return newPlayer;
-    });
-
-    setLastWorkTime(prev => ({ ...prev, [job.id]: now }));
-    updateQuest('work');
-    updateQuest('earn', totalIncome);
-    updateQuest('exp', job.exp);
-    
-    addClickAnimation(
-      Math.random() * 200 + 100,
-      Math.random() * 100 + 100,
-      `+${totalIncome} 💰`
-    );
-    addNotification(`${job.icon} +${totalIncome} золота`, 'success');
-  };
-
-  // Покупка предмета
-  const buyItem = (item) => {
-    if (player.gold < item.price) {
-      addNotification('❌ Недостаточно золота', 'error');
-      return;
-    }
-
-    if (item.requiredLevel && player.level < item.requiredLevel) {
-      addNotification(`❌ Требуется ${item.requiredLevel} уровень`, 'error');
-      return;
-    }
-
-    setPlayer(prev => ({ ...prev, gold: prev.gold - item.price }));
-    setInventory(prev => [...prev, { ...item, id: Date.now() }]);
-    updateQuest('buy');
-    addNotification(`✅ Куплено: ${item.name}`, 'success');
-  };
-
-  // Экипировка предмета
-  const equipItem = (item) => {
-    if (item.type === 'consumable') {
-      useConsumable(item);
-      return;
-    }
-
-    const oldItem = equippedItems[item.type];
-    
-    setEquippedItems(prev => ({ ...prev, [item.type]: item }));
-    setInventory(prev => {
-      const filtered = prev.filter(i => i.id !== item.id);
-      return oldItem ? [...filtered, oldItem] : filtered;
-    });
-
-    // Применяем бонусы
-    setPlayer(prev => {
-      let newStats = { ...prev };
-      
-      // Убираем бонусы старого предмета
-      if (oldItem) {
-        if (oldItem.strength) newStats.strength -= oldItem.strength;
-        if (oldItem.intelligence) newStats.intelligence -= oldItem.intelligence;
-        if (oldItem.luck) newStats.luck -= oldItem.luck;
-        if (oldItem.maxHealth) newStats.maxHealth -= oldItem.maxHealth;
-      }
-      
-      // Добавляем бонусы нового предмета
-      if (item.strength) newStats.strength += item.strength;
-      if (item.intelligence) newStats.intelligence += item.intelligence;
-      if (item.luck) newStats.luck += item.luck;
-      if (item.maxHealth) newStats.maxHealth += item.maxHealth;
-      
-      return newStats;
-    });
-
-    addNotification(`✅ Экипировано: ${item.name}`, 'success');
-  };
-
-  // Использование расходника
-  const useConsumable = (item) => {
-    setPlayer(prev => {
-      let newStats = { ...prev };
-      switch (item.effect) {
-        case 'health':
-          newStats.health = Math.min(prev.health + item.value, prev.maxHealth);
-          break;
-        case 'energy':
-          newStats.energy = Math.min(prev.energy + item.value, prev.maxEnergy);
-          if (newStats.energy === newStats.maxEnergy) updateQuest('energy');
-          break;
-        case 'exp':
-          newStats.exp += item.value;
-          break;
-        default:
-          break;
-      }
-      return newStats;
-    });
-
-    setInventory(prev => prev.filter(i => i.id !== item.id));
-    addNotification(`✅ Использовано: ${item.name}`, 'success');
-  };
-
-  // Снятие предмета
-  const unequipItem = (type) => {
-    const item = equippedItems[type];
-    if (!item) return;
-
-    setEquippedItems(prev => ({ ...prev, [type]: null }));
-    setInventory(prev => [...prev, item]);
-
-    // Убираем бонусы
-    setPlayer(prev => {
-      let newStats = { ...prev };
-      if (item.strength) newStats.strength -= item.strength;
-      if (item.intelligence) newStats.intelligence -= item.intelligence;
-      if (item.luck) newStats.luck -= item.luck;
-      if (item.maxHealth) newStats.maxHealth -= item.maxHealth;
-      return newStats;
-    });
-
-    addNotification(`✅ Снято: ${item.name}`, 'success');
-  };
-
-  // Банковские операции
-  const depositToBank = () => {
-    const amount = parseInt(bankAccount.depositAmount);
-    if (isNaN(amount) || amount <= 0) {
-      addNotification('❌ Неверная сумма', 'error');
-      return;
-    }
-    if (player.gold < amount) {
-      addNotification('❌ Недостаточно золота', 'error');
-      return;
-    }
-
-    setPlayer(prev => ({ ...prev, gold: prev.gold - amount }));
-    setBankAccount(prev => ({ ...prev, balance: prev.balance + amount, depositAmount: '' }));
-    addNotification(`✅ Внесено ${amount} золота в банк`, 'success');
-  };
-
-  const withdrawFromBank = () => {
-    const amount = parseInt(bankAccount.withdrawAmount);
-    if (isNaN(amount) || amount <= 0) {
-      addNotification('❌ Неверная сумма', 'error');
-      return;
-    }
-    if (bankAccount.balance < amount) {
-      addNotification('❌ Недостаточно средств в банке', 'error');
-      return;
-    }
-
-    setPlayer(prev => ({ ...prev, gold: prev.gold + amount }));
-    setBankAccount(prev => ({ ...prev, balance: prev.balance - amount, withdrawAmount: '' }));
-    addNotification(`✅ Снято ${amount} золота из банка`, 'success');
-  };
-
-  // Восстановление энергии
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setPlayer(prev => {
-        if (prev.energy < prev.maxEnergy) {
-          const newEnergy = Math.min(prev.energy + 1, prev.maxEnergy);
-          if (newEnergy === prev.maxEnergy) updateQuest('energy');
-          return { ...prev, energy: newEnergy };
-        }
-        return prev;
-      });
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [updateQuest]);
-
-  // Рендер компонентов
-  const renderProfile = () => (
-    <div className="space-y-4">
-      <div className="bg-gray-800 rounded-lg p-6 border-2 border-red-900">
-        <div className="bg-gray-800 rounded-lg p-4 border border-red-900">
-          <div className="flex items-center justify-between mb-2">
-            <TrendingUp className="w-6 h-6 text-green-500" />
-            <span className="text-gray-400 text-sm">Заработано</span>
-          </div>
-          <p className="text-2xl font-bold text-green-400">{player.totalEarned}</p>
-        </div>
-      </div>
-
-      <div className="bg-gray-800 rounded-lg p-4 border border-red-900">
-        <h3 className="text-lg font-bold text-red-400 mb-3">Характеристики</h3>
-        <div className="grid grid-cols-3 gap-3">
-          <div className="text-center">
-            <Sword className="w-6 h-6 text-red-500 mx-auto mb-1" />
-            <p className="text-sm text-gray-400">Сила</p>
-            <p className="text-xl font-bold text-white">{player.strength}</p>
-          </div>
-          <div className="text-center">
-            <Star className="w-6 h-6 text-blue-500 mx-auto mb-1" />
-            <p className="text-sm text-gray-400">Интеллект</p>
-            <p className="text-xl font-bold text-white">{player.intelligence}</p>
-          </div>
-          <div className="text-center">
-            <Gift className="w-6 h-6 text-purple-500 mx-auto mb-1" />
-            <p className="text-sm text-gray-400">Удача</p>
-            <p className="text-xl font-bold text-white">{player.luck}</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-gray-800 rounded-lg p-4 border border-red-900">
-        <h3 className="text-lg font-bold text-red-400 mb-3">Экипировка</h3>
-        <div className="space-y-2">
-          {['weapon', 'armor', 'accessory'].map(slot => (
-            <div key={slot} className="flex items-center justify-between bg-gray-700 p-3 rounded">
-              <div className="flex items-center space-x-3">
-                {slot === 'weapon' && <Sword className="w-5 h-5 text-red-400" />}
-                {slot === 'armor' && <Shield className="w-5 h-5 text-blue-400" />}
-                {slot === 'accessory' && <Star className="w-5 h-5 text-purple-400" />}
-                <div>
-                  <p className="text-sm text-gray-400 capitalize">
-                    {slot === 'weapon' ? 'Оружие' : slot === 'armor' ? 'Броня' : 'Аксессуар'}
-                  </p>
-                  {equippedItems[slot] ? (
-                    <p className="text-white font-semibold">{equippedItems[slot].icon} {equippedItems[slot].name}</p>
-                  ) : (
-                    <p className="text-gray-500 italic">Пусто</p>
-                  )}
-                </div>
-              </div>
-              {equippedItems[slot] && (
-                <button
-                  onClick={() => unequipItem(slot)}
-                  className="px-3 py-1 bg-red-700 hover:bg-red-600 rounded text-white text-sm"
-                >
-                  Снять
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderWork = () => (
-    <div className="space-y-3">
-      <div className="bg-gray-800 rounded-lg p-4 border border-red-900">
-        <h2 className="text-xl font-bold text-red-400 mb-2">💼 Доступные работы</h2>
-        <p className="text-gray-400 text-sm">Выполняйте работы, чтобы заработать золото и опыт</p>
-      </div>
-
-      {jobs.map(job => {
-        const isLocked = job.requiredLevel && player.level < job.requiredLevel;
-        const lastTime = lastWorkTime[job.id] || 0;
-        const now = Date.now();
-        const canWork = now - lastTime >= job.time;
-        const remaining = canWork ? 0 : Math.ceil((job.time - (now - lastTime)) / 1000);
-
-        return (
-          <div key={job.id} className={`bg-gray-800 rounded-lg p-4 border-2 ${isLocked ? 'border-gray-700 opacity-50' : 'border-red-900'}`}>
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center space-x-3">
-                <div className="text-4xl">{job.icon}</div>
-                <div>
-                  <h3 className="text-lg font-bold text-white">{job.name}</h3>
-                  <div className="flex items-center space-x-2 text-sm">
-                    <span className="text-yellow-400">+{job.income} 💰</span>
-                    <span className="text-purple-400">+{job.exp} ⭐</span>
-                    <span className="text-red-400">-{job.energy} ⚡</span>
-                  </div>
-                </div>
-              </div>
-              {isLocked && <Lock className="w-6 h-6 text-gray-500" />}
-            </div>
-
-            {isLocked ? (
-              <div className="bg-gray-700 text-center py-2 rounded text-gray-400">
-                Требуется {job.requiredLevel} уровень
-              </div>
-            ) : (
-              <button
-                onClick={() => performWork(job)}
-                disabled={!canWork || player.energy < job.energy}
-                className={`w-full py-2 rounded font-semibold transition-all ${
-                  canWork && player.energy >= job.energy
-                    ? 'bg-red-600 hover:bg-red-700 text-white'
-                    : 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                }`}
-              >
-                {!canWork ? `Ожидание ${remaining}с` : player.energy < job.energy ? 'Недостаточно энергии' : 'Работать'}
-              </button>
-            )}
-          </div>
-        );
-      })}
-    </div>
-  );
-
-  const renderInventory = () => (
-    <div className="space-y-3">
-      <div className="bg-gray-800 rounded-lg p-4 border border-red-900">
-        <h2 className="text-xl font-bold text-red-400 mb-2">🎒 Инвентарь</h2>
-        <p className="text-gray-400 text-sm">Предметов: {inventory.length}</p>
-      </div>
-
-      {inventory.length === 0 ? (
-        <div className="bg-gray-800 rounded-lg p-8 text-center border border-red-900">
-          <Package className="w-16 h-16 text-gray-600 mx-auto mb-3" />
-          <p className="text-gray-400">Инвентарь пуст</p>
-          <p className="text-gray-500 text-sm">Купите предметы в магазине</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 gap-3">
-          {inventory.map(item => (
-            <div key={item.id} className="bg-gray-800 rounded-lg p-4 border border-red-900">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center space-x-3">
-                  <div className="text-3xl">{item.icon}</div>
-                  <div>
-                    <h3 className="font-bold text-white">{item.name}</h3>
-                    <p className="text-sm text-gray-400 capitalize">{
-                      item.type === 'weapon' ? 'Оружие' :
-                      item.type === 'armor' ? 'Броня' :
-                      item.type === 'accessory' ? 'Аксессуар' : 'Расходник'
-                    }</p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => equipItem(item)}
-                  className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded text-white font-semibold"
-                >
-                  {item.type === 'consumable' ? 'Использовать' : 'Экипировать'}
-                </button>
-              </div>
-              <div className="flex flex-wrap gap-2 text-sm">
-                {item.strength && <span className="text-red-400">+{item.strength} 💪 Сила</span>}
-                {item.intelligence && <span className="text-blue-400">+{item.intelligence} 🧠 Интеллект</span>}
-                {item.luck && <span className="text-purple-400">+{item.luck} 🍀 Удача</span>}
-                {item.maxHealth && <span className="text-green-400">+{item.maxHealth} ❤️ Здоровье</span>}
-                {item.value && <span className="text-yellow-400">+{item.value} {item.effect === 'health' ? '❤️' : item.effect === 'energy' ? '⚡' : '⭐'}</span>}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-
-  const renderMarket = () => (
-    <div className="space-y-3">
-      <div className="bg-gray-800 rounded-lg p-4 border border-red-900">
-        <h2 className="text-xl font-bold text-red-400 mb-2">🏪 Рынок</h2>
-        <div className="flex items-center justify-between">
-          <p className="text-gray-400 text-sm">Покупайте улучшения и расходники</p>
-          <div className="flex items-center space-x-2">
-            <Coins className="w-5 h-5 text-yellow-500" />
-            <span className="text-yellow-400 font-bold">{player.gold}</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 gap-3">
-        {marketItems.map(item => {
-          const isLocked = item.requiredLevel && player.level < item.requiredLevel;
-          const canAfford = player.gold >= item.price;
-
-          return (
-            <div key={item.id} className={`bg-gray-800 rounded-lg p-4 border-2 ${isLocked ? 'border-gray-700 opacity-50' : canAfford ? 'border-red-900' : 'border-gray-700'}`}>
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center space-x-3">
-                  <div className="text-3xl">{item.icon}</div>
-                  <div>
-                    <h3 className="font-bold text-white">{item.name}</h3>
-                    <p className="text-sm text-gray-400 capitalize">{
-                      item.type === 'weapon' ? 'Оружие' :
-                      item.type === 'armor' ? 'Броня' :
-                      item.type === 'accessory' ? 'Аксессуар' : 'Расходник'
-                    }</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="flex items-center space-x-1">
-                    <Coins className="w-5 h-5 text-yellow-500" />
-                    <span className={`font-bold ${canAfford ? 'text-yellow-400' : 'text-red-500'}`}>{item.price}</span>
-                  </div>
-                  {isLocked && (
-                    <div className="flex items-center space-x-1 mt-1">
-                      <Lock className="w-4 h-4 text-gray-500" />
-                      <span className="text-xs text-gray-500">Ур.{item.requiredLevel}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex flex-wrap gap-2 text-sm mb-3">
-                {item.strength && <span className="text-red-400">+{item.strength} 💪</span>}
-                {item.intelligence && <span className="text-blue-400">+{item.intelligence} 🧠</span>}
-                {item.luck && <span className="text-purple-400">+{item.luck} 🍀</span>}
-                {item.maxHealth && <span className="text-green-400">+{item.maxHealth} ❤️</span>}
-                {item.value && <span className="text-yellow-400">+{item.value} {item.effect === 'health' ? '❤️' : item.effect === 'energy' ? '⚡' : '⭐'}</span>}
-              </div>
-
-              <button
-                onClick={() => buyItem(item)}
-                disabled={!canAfford || isLocked}
-                className={`w-full py-2 rounded font-semibold transition-all ${
-                  canAfford && !isLocked
-                    ? 'bg-red-600 hover:bg-red-700 text-white'
-                    : 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                }`}
-              >
-                {isLocked ? `Требуется ${item.requiredLevel} ур.` : !canAfford ? 'Недостаточно золота' : 'Купить'}
-              </button>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-
-  const renderBank = () => (
-    <div className="space-y-4">
-      <div className="bg-gray-800 rounded-lg p-4 border border-red-900">
-        <h2 className="text-xl font-bold text-red-400 mb-2">🏦 Банк</h2>
-        <p className="text-gray-400 text-sm">Храните золото в безопасности</p>
-      </div>
-
-      <div className="bg-gray-800 rounded-lg p-6 border-2 border-red-900">
-        <div className="text-center mb-6">
-          <DollarSign className="w-16 h-16 text-yellow-500 mx-auto mb-3" />
-          <p className="text-gray-400 mb-2">Баланс в банке</p>
-          <p className="text-4xl font-bold text-yellow-400">{bankAccount.balance}</p>
-        </div>
-
-        <div className="space-y-4">
-          <div>
-            <label className="block text-gray-400 mb-2 text-sm">Внести в банк</label>
-            <div className="flex space-x-2">
-              <input
-                type="number"
-                value={bankAccount.depositAmount}
-                onChange={(e) => setBankAccount(prev => ({ ...prev, depositAmount: e.target.value }))}
-                placeholder="Сумма"
-                className="flex-1 px-4 py-2 bg-gray-700 border border-red-900 rounded text-white"
-              />
-              <button
-                onClick={depositToBank}
-                className="px-6 py-2 bg-green-600 hover:bg-green-700 rounded text-white font-semibold"
-              >
-                Внести
-              </button>
-            </div>
-            <p className="text-xs text-gray-500 mt-1">Доступно: {player.gold} золота</p>
-          </div>
-
-          <div>
-            <label className="block text-gray-400 mb-2 text-sm">Снять из банка</label>
-            <div className="flex space-x-2">
-              <input
-                type="number"
-                value={bankAccount.withdrawAmount}
-                onChange={(e) => setBankAccount(prev => ({ ...prev, withdrawAmount: e.target.value }))}
-                placeholder="Сумма"
-                className="flex-1 px-4 py-2 bg-gray-700 border border-red-900 rounded text-white"
-              />
-              <button
-                onClick={withdrawFromBank}
-                className="px-6 py-2 bg-red-600 hover:bg-red-700 rounded text-white font-semibold"
-              >
-                Снять
-              </button>
-            </div>
-            <p className="text-xs text-gray-500 mt-1">В банке: {bankAccount.balance} золота</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-gray-800 rounded-lg p-4 border border-red-900">
-        <h3 className="font-bold text-red-400 mb-2">ℹ️ Информация</h3>
-        <ul className="text-sm text-gray-400 space-y-1">
-          <li>• Храните золото в безопасности</li>
-          <li>• Банк защищает от потерь</li>
-          <li>• Снимайте когда понадобится</li>
-        </ul>
-      </div>
-    </div>
-  );
-
-  const renderQuests = () => (
-    <div className="space-y-3">
-      <div className="bg-gray-800 rounded-lg p-4 border border-red-900">
-        <h2 className="text-xl font-bold text-red-400 mb-2">📋 Ежедневные квесты</h2>
-        <p className="text-gray-400 text-sm">Выполняйте квесты для получения наград</p>
-      </div>
-
-      {dailyQuests.map(quest => (
-        <div key={quest.id} className={`bg-gray-800 rounded-lg p-4 border-2 ${quest.completed ? 'border-green-600' : 'border-red-900'}`}>
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center space-x-3">
-              <div className="text-3xl">{quest.icon}</div>
-              <div>
-                <h3 className="font-bold text-white">{quest.name}</h3>
-                <p className="text-sm text-gray-400">Награда: {quest.reward} 💰 + {quest.exp} ⭐</p>
-              </div>
-            </div>
-            {quest.completed && <CheckCircle className="w-6 h-6 text-green-500" />}
-          </div>
-
-          <div className="mb-2">
-            <div className="flex justify-between text-sm mb-1">
-              <span className="text-gray-400">Прогресс</span>
-              <span className="text-red-400">{quest.current}/{quest.target}</span>
-            </div>
-            <div className="w-full bg-gray-700 rounded-full h-2">
-              <div 
-                className={`h-2 rounded-full transition-all ${quest.completed ? 'bg-green-500' : 'bg-red-500'}`}
-                style={{ width: `${Math.min((quest.current / quest.target) * 100, 100)}%` }}
-              ></div>
-            </div>
-          </div>
-        </div>
-      ))}
-
-      <button
-        onClick={() => setDailyQuests(generateDailyQuests())}
-        className="w-full py-3 bg-red-600 hover:bg-red-700 rounded text-white font-semibold"
-      >
-        🔄 Обновить квесты
-      </button>
-    </div>
-  );
-
-  const renderAchievements = () => (
-    <div className="space-y-3">
-      <div className="bg-gray-800 rounded-lg p-4 border border-red-900">
-        <h2 className="text-xl font-bold text-red-400 mb-2">🏆 Достижения</h2>
-        <p className="text-gray-400 text-sm">Получено: {achievements.length}/{achievementsList.length}</p>
-      </div>
-
-      {achievementsList.map(achievement => {
-        const unlocked = achievements.includes(achievement.id);
-        let progress = 0;
-
-        switch (achievement.type) {
-          case 'clicks':
-            progress = player.totalClicks;
-            break;
-          case 'earned':
-            progress = player.totalEarned;
-            break;
-          case 'level':
-            progress = player.level;
-            break;
-          case 'quests':
-            progress = dailyQuests.filter(q => q.completed).length;
-            break;
-          default:
-            break;
+# Средневековая RPG для Telegram Mini App
+
+Вот полноценная игра-кликер с темно-серым дизайном и красными элементами:
+
+```html
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Средневековое Королевство</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        return (
-          <div key={achievement.id} className={`bg-gray-800 rounded-lg p-4 border-2 ${unlocked ? 'border-yellow-600' : 'border-gray-700'} ${!unlocked && 'opacity-60'}`}>
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center space-x-3">
-                <div className="text-3xl">{achievement.icon}</div>
-                <div>
-                  <h3 className="font-bold text-white flex items-center space-x-2">
-                    <span>{achievement.name}</span>
-                    {unlocked && <Award className="w-5 h-5 text-yellow-500" />}
-                  </h3>
-                  <p className="text-sm text-gray-400">{achievement.desc}</p>
-                </div>
-              </div>
-            </div>
+        :root {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2a2a2a;
+            --bg-tertiary: #3a3a3a;
+            --accent-red: #dc143c;
+            --accent-red-dark: #a00a28;
+            --accent-red-light: #ff1744;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --border-color: #4a4a4a;
+            --gold: #ffd700;
+            --silver: #c0c0c0;
+            --success: #28a745;
+            --warning: #ffc107;
+        }
 
-            <div className="mb-2">
-              <div className="flex justify-between text-sm mb-1">
-                <span className="text-gray-400">Прогресс</span>
-                <span className={unlocked ? 'text-yellow-400' : 'text-red-400'}>
-                  {Math.min(progress, achievement.requirement)}/{achievement.requirement}
-                </span>
-              </div>
-              <div className="w-full bg-gray-700 rounded-full h-2">
-                <div 
-                  className={`h-2 rounded-full transition-all ${unlocked ? 'bg-yellow-500' : 'bg-red-500'}`}
-                  style={{ width: `${Math.min((progress / achievement.requirement) * 100, 100)}%` }}
-                ></div>
-              </div>
-            </div>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #0d0d0d 100%);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
 
-            {unlocked && (
-              <div className="bg-yellow-900 bg-opacity-30 rounded p-2 text-center">
-                <span className="text-yellow-400 font-semibold">Награда: {achievement.reward} 💰</span>
-              </div>
-            )}
-          </div>
-        );
-      })}
-    </div>
-  );
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding-bottom: 80px;
+        }
 
-  const renderLeaderboard = () => (
-    <div className="space-y-3">
-      <div className="bg-gray-800 rounded-lg p-4 border border-red-900">
-        <h2 className="text-xl font-bold text-red-400 mb-2">👥 Рейтинг игроков</h2>
-        <p className="text-gray-400 text-sm">Топ игроков по заработанному золоту</p>
-      </div>
+        /* Header */
+        .header {
+            background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+            padding: 15px;
+            border-bottom: 2px solid var(--accent-red);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(220, 20, 60, 0.3);
+        }
 
-      {leaderboard.length === 0 ? (
-        <div className="bg-gray-800 rounded-lg p-8 text-center border border-red-900">
-          <Users className="w-16 h-16 text-gray-600 mx-auto mb-3" />
-          <p className="text-gray-400">Рейтинг пуст</p>
-          <p className="text-gray-500 text-sm">Начните играть, чтобы попасть в топ!</p>
-        </div>
-      ) : (
-        <div className="space-y-2">
-          {leaderboard.map((p, index) => (
-            <div 
-              key={p.telegramId} 
-              className={`bg-gray-800 rounded-lg p-4 border-2 ${
-                p.telegramId === player.telegramId ? 'border-red-500' : 'border-red-900'
-              }`}
-            >
-              <div className="flex items-center space-x-3">
-                <div className="text-2xl font-bold w-8 text-center">
-                  {index === 0 && '🥇'}
-                  {index === 1 && '🥈'}
-                  {index === 2 && '🥉'}
-                  {index > 2 && <span className="text-gray-400">{index + 1}</span>}
-                </div>
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-                {p.photoUrl ? (
-                  <img src={p.photoUrl} alt="Avatar" className="w-12 h-12 rounded-full border-2 border-red-500" />
-                ) : (
-                  <div className="w-12 h-12 rounded-full bg-red-900 flex items-center justify-center border-2 border-red-500">
-                    <Users className="w-6 h-6 text-red-300" />
-                  </div>
-                )}
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-                <div className="flex-1">
-                  <h3 className="font-bold text-white">{p.username}</h3>
-                  <div className="flex items-center space-x-3 text-sm">
-                    <span className="text-gray-400">Ур. {p.level}</span>
-                    <span className="text-yellow-400">{p.totalEarned} 💰</span>
-                  </div>
-                </div>
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 3px solid var(--accent-red);
+            background: linear-gradient(135deg, var(--accent-red) 0%, var(--accent-red-dark) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 0 15px rgba(220, 20, 60, 0.5);
+        }
 
-                {p.telegramId === player.telegramId && (
-                  <Medal className="w-6 h-6 text-red-500" />
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+        .player-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white pb-20">
-      {/* Анимации кликов */}
-      {clickAnimations.map(anim => (
-        <div
-          key={anim.id}
-          className="fixed text-2xl font-bold text-yellow-400 pointer-events-none animate-bounce"
-          style={{
-            left: anim.x,
-            top: anim.y,
-            animation: 'float-up 1s ease-out forwards'
-          }}
-        >
-          {anim.text}
-        </div>
-      ))}
+        .player-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--accent-red-light);
+        }
 
-      {/* Уведомления */}
-      <div className="fixed top-4 right-4 z-50 space-y-2">
-        {notifications.map(notif => (
-          <div
-            key={notif.id}
-            className={`px-4 py-3 rounded-lg shadow-lg max-w-sm animate-slide-in ${
-              notif.type === 'success' ? 'bg-green-600' :
-              notif.type === 'error' ? 'bg-red-600' :
-              notif.type === 'warning' ? 'bg-yellow-600' :
-              notif.type === 'achievement' ? 'bg-purple-600' :
-              'bg-blue-600'
-            }`}
-          >
-            <p className="text-white font-semibold">{notif.message}</p>
-          </div>
-        ))}
-      </div>
+        .player-level {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
 
-      {/* Заголовок */}
-      <div className="bg-gradient-to-r from-red-900 to-gray-900 p-4 shadow-lg border-b-2 border-red-700">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-red-400">⚔️ Средневековая RPG</h1>
-            <p className="text-sm text-gray-400">Уровень {player.level} • {player.gold} 💰</p>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="text-right">
-              <p className="text-xs text-gray-400">Энергия</p>
-              <p className="text-sm font-bold text-yellow-400">{player.energy}/{player.maxEnergy}</p>
-            </div>
-          </div>
-        </div>
-      </div>
+        .resources {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            align-items: flex-end;
+        }
 
-      {/* Контент */}
-      <div className="p-4 max-w-2xl mx-auto">
-        {activeTab === 'profile' && renderProfile()}
-        {activeTab === 'work' && renderWork()}
-        {activeTab === 'inventory' && renderInventory()}
-        {activeTab === 'market' && renderMarket()}
-        {activeTab === 'bank' && renderBank()}
-        {activeTab === 'quests' && renderQuests()}
-        {activeTab === 'achievements' && renderAchievements()}
-        {activeTab === 'leaderboard' && renderLeaderboard()}
-      </div>
+        .resource-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: var(--bg-tertiary);
+            padding: 5px 10px;
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+        }
 
-      {/* Навигация */}
-      <div className="fixed bottom-0 left-0 right-0 bg-gray-900 border-t-2 border-red-900 shadow-lg">
-        <div className="flex justify-around py-2 max-w-2xl mx-auto">
-          {[
-            { id: 'profile', icon: Users, label: 'Профиль' },
-            { id: 'work', icon: Briefcase, label: 'Работа' },
-            { id: 'inventory', icon: Package, label: 'Инвентарь' },
-            { id: 'market', icon: ShoppingCart, label: 'Рынок' },
-            { id: 'bank', icon: DollarSign, label: 'Банк' },
-            { id: 'quests', icon: Target, label: 'Квесты' },
-            { id: 'achievements', icon: Trophy, label: 'Награды' },
-            { id: 'leaderboard', icon: Medal, label: 'Рейтинг' }
-          ].map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex flex-col items-center space-y-1 px-2 py-1 rounded transition-all ${
-                activeTab === tab.id ? 'text-red-400' : 'text-gray-400 hover:text-red-300'
-              }`}
-            >
-              <tab.icon className="w-5 h-5" />
-              <span className="text-xs">{tab.label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
+        .resource-icon {
+            font-size: 14px;
+        }
 
-      {/* CSS анимации */}
-      <style jsx>{`
-        @keyframes float-up {
-          0% {
-            opacity: 1;
+        .resource-value {
+            font-weight: bold;
+            color: var(--gold);
+            font-size: 14px;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            background: var(--bg-secondary);
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-bottom: 5px;
+            color: var(--text-secondary);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-red-dark) 0%, var(--accent-red) 50%, var(--accent-red-light) 100%);
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(220, 20, 60, 0.5);
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 11px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        /* Navigation */
+        .navigation {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-secondary);
+            border-top: 2px solid var(--accent-red);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 100;
+            box-shadow: 0 -4px 20px rgba(220, 20, 60, 0.3);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .nav-item.active {
+            background: var(--accent-red);
+            box-shadow: 0 0 15px rgba(220, 20, 60, 0.5);
+        }
+
+        .nav-icon {
+            font-size: 24px;
+        }
+
+        .nav-label {
+            font-size: 10px;
+            color: var(--text-secondary);
+        }
+
+        .nav-item.active .nav-label {
+            color: var(--text-primary);
+            font-weight: bold;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 5px;
+            background: var(--accent-red-light);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(255, 23, 68, 0.8);
+        }
+
+        /* Content Sections */
+        .content {
+            padding: 15px;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--accent-red-light);
+            text-shadow: 0 0 10px rgba(220, 20, 60, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            border-color: var(--accent-red);
+            box-shadow: 0 4px 20px rgba(220, 20, 60, 0.3);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--accent-red);
+        }
+
+        .card-subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .card-content {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-red) 0%, var(--accent-red-dark) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--accent-red-light) 0%, var(--accent-red) 100%);
+            box-shadow: 0 6px 20px rgba(220, 20, 60, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:active {
             transform: translateY(0);
-          }
-          100% {
-            opacity: 0;
-            transform: translateY(-100px);
-          }
         }
 
-        @keyframes slide-in {
-          from {
-            transform: translateX(100%);
-            opacity: 0;
-          }
-          to {
-            transform: translateX(0);
-            opacity: 1;
-          }
+        .btn-primary:disabled {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            cursor: not-allowed;
+            box-shadow: none;
         }
 
-        .animate-slide-in {
-          animation: slide-in 0.3s ease-out;
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
         }
 
+        .btn-secondary:hover {
+            background: var(--bg-secondary);
+            border-color: var(--accent-red);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: var(--bg-primary);
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        /* Work Section */
+        .work-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .work-card {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .work-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(220, 20, 60, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .work-card:hover::before {
+            left: 100%;
+        }
+
+        .work-card:hover {
+            border-color: var(--accent-red);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(220, 20, 60, 0.4);
+        }
+
+        .work-card.active {
+            border-color: var(--accent-red-light);
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(220, 20, 60, 0.1) 100%);
+        }
+
+        .work-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 0 5px rgba(220, 20, 60, 0.3));
+        }
+
+        .work-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--accent-red);
+            margin-bottom: 5px;
+        }
+
+        .work-reward {
+            font-size: 14px;
+            color: var(--gold);
+            margin-bottom: 5px;
+        }
+
+        .work-energy {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .work-level-req {
+            font-size: 11px;
+            color: var(--warning);
+            margin-bottom: 10px;
+        }
+
+        .work-progress {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .work-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-red) 0%, var(--accent-red-light) 100%);
+            transition: width 0.1s linear;
+        }
+
+        /* Inventory */
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .inventory-slot {
+            aspect-ratio: 1;
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            padding: 10px;
+        }
+
+        .inventory-slot:hover {
+            border-color: var(--accent-red);
+            transform: scale(1.05);
+        }
+
+        .inventory-slot.empty {
+            opacity: 0.3;
+            cursor: default;
+        }
+
+        .inventory-slot.empty:hover {
+            border-color: var(--border-color);
+            transform: scale(1);
+        }
+
+        .item-icon {
+            font-size: 36px;
+            margin-bottom: 5px;
+        }
+
+        .item-name {
+            font-size: 10px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .item-count {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background: var(--accent-red);
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(220, 20, 60, 0.5);
+        }
+
+        .item-rarity {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            box-shadow: 0 0 8px currentColor;
+        }
+
+        .rarity-common { color: #9e9e9e; }
+        .rarity-uncommon { color: #4caf50; }
+        .rarity-rare { color: #2196f3; }
+        .rarity-epic { color: #9c27b0; }
+        .rarity-legendary { color: #ff9800; }
+
+        /* Market */
+        .market-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 12px;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--accent-red);
+            color: var(--text-primary);
+        }
+
+        .filter-btn.active {
+            background: var(--accent-red);
+            border-color: var(--accent-red);
+            color: white;
+        }
+
+        .market-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+
+        .market-item:hover {
+            border-color: var(--accent-red);
+            box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3);
+        }
+
+        .market-item-icon {
+            font-size: 48px;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .market-item-info {
+            flex: 1;
+        }
+
+        .market-item-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--accent-red);
+            margin-bottom: 5px;
+        }
+
+        .market-item-description {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .market-item-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .market-item-price {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+        }
+
+        .price-tag {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--gold);
+        }
+
+        /* Bank */
+        .bank-section {
+            margin-bottom: 20px;
+        }
+
+        .bank-balance {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(220, 20, 60, 0.1) 100%);
+            border: 2px solid var(--accent-red);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .bank-balance-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .bank-balance-amount {
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--gold);
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .bank-interest {
+            font-size: 12px;
+            color: var(--success);
+            margin-top: 10px;
+        }
+
+        .bank-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent-red);
+            box-shadow: 0 0 10px rgba(220, 20, 60, 0.3);
+        }
+
+        /* Quests */
+        .quest-card {
+            background: var(--bg-secondary);
+            border-left: 4px solid var(--accent-red);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        .quest-card:hover {
+            box-shadow: 0 4px 20px rgba(220, 20, 60, 0.3);
+            transform: translateX(5px);
+        }
+
+        .quest-card.completed {
+            border-left-color: var(--success);
+            opacity: 0.7;
+        }
+
+        .quest-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .quest-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--accent-red);
+            margin-bottom: 5px;
+        }
+
+        .quest-type {
+            font-size: 11px;
+            color: var(--text-secondary);
+            background: var(--bg-tertiary);
+            padding: 3px 8px;
+            border-radius: 10px;
+        }
+
+        .quest-description {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .quest-progress {
+            margin-bottom: 10px;
+        }
+
+        .quest-progress-text {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .quest-rewards {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .quest-reward {
+            background: var(--bg-tertiary);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .quest-timer {
+            font-size: 12px;
+            color: var(--warning);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Profile */
+        .profile-header {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(220, 20, 60, 0.1) 100%);
+            border: 2px solid var(--accent-red);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 4px solid var(--accent-red);
+            background: linear-gradient(135deg, var(--accent-red) 0%, var(--accent-red-dark) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            margin: 0 auto 15px;
+            box-shadow: 0 0 30px rgba(220, 20, 60, 0.5);
+        }
+
+        .profile-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--accent-red-light);
+            margin-bottom: 5px;
+        }
+
+        .profile-title {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--accent-red);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .achievement-badge {
+            aspect-ratio: 1;
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            transition: all 0.3s;
+        }
+
+        .achievement-badge.unlocked {
+            border-color: var(--gold);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .achievement-badge.locked {
+            opacity: 0.3;
+            filter: grayscale(100%);
+        }
+
+        .achievement-icon {
+            font-size: 32px;
+            margin-bottom: 5px;
+        }
+
+        .achievement-name {
+            font-size: 9px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        /* Skills */
+        .skills-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .skill-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .skill-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .skill-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--accent-red);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .skill-level {
+            background: var(--accent-red);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .skill-description {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .skill-benefits {
+            font-size: 11px;
+            color: var(--success);
+            margin-bottom: 10px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border: 2px solid var(--accent-red);
+            border-radius: 15px;
+            padding: 25px;
+            max-width: 400px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(220, 20, 60, 0.5);
+            animation: slideUp 0.3s;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--accent-red-light);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            color: var(--accent-red);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            color: var(--text-secondary);
+        }
+
+        .modal-footer {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--bg-secondary);
+            border: 2px solid var(--accent-red);
+            border-radius: 10px;
+            padding: 15px 20px;
+            box-shadow: 0 4px 20px rgba(220, 20, 60, 0.5);
+            z-index: 2000;
+            animation: slideInRight 0.3s;
+            max-width: 300px;
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .notification.success {
+            border-color: var(--success);
+        }
+
+        .notification.warning {
+            border-color: var(--warning);
+        }
+
+        .notification-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .notification-icon {
+            font-size: 24px;
+        }
+
+        .notification-text {
+            flex: 1;
+            font-size: 14px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 2px solid transparent;
+            font-size: 14px;
+        }
+
+        .tab:hover {
+            color: var(--text-primary);
+        }
+
+        .tab.active {
+            color: var(--accent-red);
+            border-bottom-color: var(--accent-red);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        /* Animations */
         @keyframes pulse {
-          0%, 100% {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .shake {
+            animation: shake 0.5s;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(220, 20, 60, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(220, 20, 60, 0.8); }
+        }
+
+        .glow {
+            animation: glow 2s infinite;
+        }
+
+        /* Loading */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--bg-tertiary);
+            border-top-color: var(--accent-red);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px 12px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+            white-space: nowrap;
+            border: 1px solid var(--accent-red);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
             opacity: 1;
-          }
-          50% {
-            opacity: 0.5;
-          }
         }
 
-        .animate-pulse {
-          animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        /* Energy Bar */
+        .energy-container {
+            background: var(--bg-secondary);
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        @keyframes bounce {
-          0%, 100% {
-            transform: translateY(-25%);
-            animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
-          }
-          50% {
-            transform: translateY(0);
-            animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
-          }
+        .energy-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
         }
 
-        .animate-bounce {
-          animation: bounce 1s infinite;
+        .energy-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
-        /* Скроллбар */
+        .energy-value {
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--accent-red-light);
+        }
+
+        /* Shop Categories */
+        .shop-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .category-card {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .category-card:hover {
+            border-color: var(--accent-red);
+            transform: translateY(-3px);
+        }
+
+        .category-card.active {
+            border-color: var(--accent-red);
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(220, 20, 60, 0.1) 100%);
+        }
+
+        .category-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .category-name {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Leaderboard */
+        .leaderboard-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 15px;
+            transition: all 0.3s;
+        }
+
+        .leaderboard-item:hover {
+            border-color: var(--accent-red);
+        }
+
+        .leaderboard-rank {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--accent-red);
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .leaderboard-rank.top1 { color: var(--gold); }
+        .leaderboard-rank.top2 { color: var(--silver); }
+        .leaderboard-rank.top3 { color: #cd7f32; }
+
+        .leaderboard-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-red);
+            background: linear-gradient(135deg, var(--accent-red) 0%, var(--accent-red-dark) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .leaderboard-info {
+            flex: 1;
+        }
+
+        .leaderboard-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--text-primary);
+            margin-bottom: 3px;
+        }
+
+        .leaderboard-level {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .leaderboard-score {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--gold);
+        }
+
+        /* Settings */
+        .settings-section {
+            margin-bottom: 25px;
+        }
+
+        .settings-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--accent-red);
+            margin-bottom: 15px;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        .setting-label {
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .setting-description {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 3px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+            background: var(--bg-tertiary);
+            border-radius: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: var(--accent-red);
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .toggle-switch.active .toggle-slider {
+            left: 27px;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .header-content {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .resources {
+                width: 100%;
+                flex-direction: row;
+                justify-content: space-between;
+            }
+
+            .work-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .profile-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .bank-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Custom Scrollbar */
         ::-webkit-scrollbar {
-          width: 8px;
+            width: 8px;
         }
 
         ::-webkit-scrollbar-track {
-          background: #1f2937;
+            background: var(--bg-primary);
         }
 
         ::-webkit-scrollbar-thumb {
-          background: #7f1d1d;
-          border-radius: 4px;
+            background: var(--accent-red);
+            border-radius: 4px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-          background: #991b1b;
+            background: var(--accent-red-light);
         }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="player-info">
+                    <div class="avatar">⚔️</div>
+                    <div class="player-stats">
+                        <div class="player-name" id="playerName">Рыцарь</div>
+                        <div class="player-level">Уровень <span id="playerLevel">1</span></div>
+                    </div>
+                </div>
+                <div class="resources">
+                    <div class="resource-item">
+                        <span class="resource-icon">💰</span>
+                        <span class="resource-value" id="goldAmount">0</span>
+                    </div>
+                    <div class="resource-item">
+                        <span class="resource-icon">💎</span>
+                        <span class="resource-value" id="gemsAmount">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        /* Отключаем выделение текста для лучшего UX */
-        * {
-          -webkit-tap-highlight-color: transparent;
-          -webkit-touch-callout: none;
-          -webkit-user-select: none;
-          user-select: none;
-        }
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-label">
+                <span>Опыт до следующего уровня</span>
+                <span id="expText">0/100</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="expBar" style="width: 0%"></div>
+                <div class="progress-text" id="expPercent">0%</div>
+            </div>
+        </div>
 
-        input {
-          -webkit-user-select: text;
-          user-select: text;
-        }
+        <!-- Energy Bar -->
+        <div class="energy-container">
+            <div class="energy-info">
+                <div class="energy-label">
+                    <span>⚡</span>
+                    <span>Энергия</span>
+                </div>
+                <div class="energy-value">
+                    <span id="currentEnergy">100</span>/<span id="maxEnergy">100</span>
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="energyBar" style="width: 100%"></div>
+            </div>
+        </div>
 
-        /* Плавные переходы */
-        button {
-          transition: all 0.2s ease;
-        }
+        <!-- Content -->
+        <div class="content">
+            <!-- Work Section -->
+            <div class="section active" id="workSection">
+                <div class="section-title">
+                    <span>⚒️</span>
+                    <span>Работы</span>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Выберите работу</div>
+                    </div>
+                    <div class="card-subtitle">Зарабатывайте золото, выполняя различные работы</div>
+                </div>
 
-        button:active {
-          transform: scale(0.95);
-        }
+                <div class="work-grid" id="workGrid">
+                    <!-- Work cards will be generated here -->
+                </div>
+            </div>
 
-        /* Градиенты для карточек */
-        .bg-gray-800 {
-          background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-        }
+            <!-- Inventory Section -->
+            <div class="section" id="inventorySection">
+                <div class="section-title">
+                    <span>🎒</span>
+                    <span>Инвентарь</span>
+                </div>
 
-        /* Свечение для активных элементов */
-        .border-red-900 {
-          box-shadow: 0 0 10px rgba(127, 29, 29, 0.3);
-        }
+                <div class="tabs">
+                    <button class="tab active" onclick="switchInventoryTab('all')">Все</button>
+                    <button class="tab" onclick="switchInventoryTab('weapons')">Оружие</button>
+                    <button class="tab" onclick="switchInventoryTab('armor')">Броня</button>
+                    <button class="tab" onclick="switchInventoryTab('consumables')">Расходники</button>
+                </div>
 
-        .border-red-500 {
-          box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
-        }
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Вместимость</div>
+                        <div class="card-subtitle"><span id="inventoryCount">0</span>/50</div>
+                    </div>
+                </div>
 
-        /* Анимация для кнопок */
-        @keyframes glow {
-          0%, 100% {
-            box-shadow: 0 0 5px rgba(239, 68, 68, 0.5);
-          }
-          50% {
-            box-shadow: 0 0 20px rgba(239, 68, 68, 0.8);
-          }
-        }
+                <div class="inventory-grid" id="inventoryGrid">
+                    <!-- Inventory slots will be generated here -->
+                </div>
+            </div>
 
-        .bg-red-600:hover {
-          animation: glow 2s ease-in-out infinite;
-        }
+            <!-- Market Section -->
+            <div class="section" id="marketSection">
+                <div class="section-title">
+                    <span>🏪</span>
+                    <span>Рынок</span>
+                </div>
 
-        /* Адаптивность */
-        @media (max-width: 640px) {
-          .text-2xl {
-            font-size: 1.25rem;
-          }
+                <div class="shop-categories">
+                    <div class="category-card active" onclick="filterMarket('all')">
+                        <div class="category-icon">📦</div>
+                        <div class="category-name">Все</div>
+                    </div>
+                    <div class="category-card" onclick="filterMarket('weapons')">
+                        <div class="category-icon">⚔️</div>
+                        <div class="category-name">Оружие</div>
+                    </div>
+                    <div class="category-card" onclick="filterMarket('armor')">
+                        <div class="category-icon">🛡️</div>
+                        <div class="category-name">Броня</div>
+                    </div>
+                    <div class="category-card" onclick="filterMarket('tools')">
+                        <div class="category-icon">🔨</div>
+                        <div class="category-name">Инструменты</div>
+                    </div>
+                    <div class="category-card" onclick="filterMarket('consumables')">
+                        <div class="category-icon">🧪</div>
+                        <div class="category-name">Зелья</div>
+                    </div>
+                </div>
 
-          .text-xl {
-            font-size: 1.125rem;
-          }
+                <div id="marketItems">
+                    <!-- Market items will be generated here -->
+                </div>
+            </div>
 
-          .p-6 {
-            padding: 1rem;
-          }
+            <!-- Bank Section -->
+            <div class="section" id="bankSection">
+                <div class="section-title">
+                    <span>🏦</span>
+                    <span>Банк</span>
+                </div>
 
-          .space-y-4 > * + * {
-            margin-top: 0.75rem;
-          }
-        }
+                <div class="bank-balance">
+                    <div class="bank-balance-label">Баланс в банке</div>
+                    <div class="bank-balance-amount">
+                        <span id="bankBalance">0</span> 💰
+                    </div>
+                    <div class="bank-interest">
+                        +<span id="dailyInterest">0</span> золота в день (5% годовых)
+                    </div>
+                </div>
 
-        /* Эффекты для достижений */
-        @keyframes shine {
-          0% {
-            background-position: -100px;
-          }
-          100% {
-            background-position: 200px;
-          }
-        }
+                <div class="tabs">
+                    <button class="tab active" onclick="switchBankTab('deposit')">Внести</button>
+                    <button class="tab" onclick="switchBankTab('withdraw')">Снять</button>
+                    <button class="tab" onclick="switchBankTab('loan')">Кредит</button>
+                </div>
 
-        .border-yellow-600 {
-          background: linear-gradient(
-            90deg,
-            transparent 0%,
-            rgba(202, 138, 4, 0.1) 50%,
-            transparent 100%
-          );
-          background-size: 200px 100%;
-          animation: shine 3s ease-in-out infinite;
-        }
+                <div class="tab-content active" id="depositTab">
+                    <div class="card">
+                        <div class="card-title">Внести золото</div>
+                        <div class="card-subtitle">Храните золото в безопасности и получайте проценты</div>
+                        <div class="input-group">
+                            <label class="input-label">Сумма</label>
+                            <input type="number" class="input-field" id="depositAmount" placeholder="Введите сумму">
+                        </div>
+                        <button class="btn btn-primary btn-full" onclick="depositGold()">Внести</button>
+                    </div>
+                </div>
 
-        /* Эффект для энергии */
-        @keyframes energy-pulse {
-          0%, 100% {
-            opacity: 1;
-            transform: scale(1);
-          }
-          50% {
-            opacity: 0.8;
-            transform: scale(1.05);
-          }
-        }
+                <div class="tab-content" id="withdrawTab">
+                    <div class="card">
+                        <div class="card-title">Снять золото</div>
+                        <div class="card-subtitle">Снимите золото со своего счета</div>
+                        <div class="input-group">
+                            <label class="input-label">Сумма</label>
+                            <input type="number" class="input-field" id="withdrawAmount" placeholder="Введите сумму">
+                        </div>
+                        <button class="btn btn-primary btn-full" onclick="withdrawGold()">Снять</button>
+                    </div>
+                </div>
 
-        .bg-yellow-500 {
-          animation: energy-pulse 1.5s ease-in-out infinite;
-        }
+                <div class="tab-content" id="loanTab">
+                    <div class="card">
+                        <div class="card-title">Взять кредит</div>
+                        <div class="card-subtitle">Процентная ставка: 10% в день</div>
+                        <div class="card-content">
+                            <div style="margin-bottom: 15px;">
+                                <strong>Текущий кредит:</strong> <span id="currentLoan">0</span> 💰
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Сумма кредита</label>
+                                <input type="number" class="input-field" id="loanAmount" placeholder="Максимум: 1000">
+                            </div>
+                            <button class="btn btn-primary btn-full" onclick="takeLoan()">Взять кредит</button>
+                            <button class="btn btn-secondary btn-full" style="margin-top: 10px;" onclick="repayLoan()">Погасить кредит</button>
+                        </div>
+                    </div>
+                </div>
 
-        /* Эффект для здоровья */
-        @keyframes health-pulse {
-          0%, 100% {
-            opacity: 1;
-          }
-          50% {
-            opacity: 0.7;
-          }
-        }
+                <div class="card">
+                    <div class="card-title">История транзакций</div>
+                    <div id="transactionHistory">
+                        <div style="text-align: center; color: var(--text-secondary); padding: 20px;">
+                            Нет транзакций
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-        .bg-red-600 {
-          animation: health-pulse 2s ease-in-out infinite;
-        }
+            <!-- Quests Section -->
+            <div class="section" id="questsSection">
+                <div class="section-title">
+                    <span>📜</span>
+                    <span>Квесты</span>
+                </div>
 
-        /* Тени для карточек */
-        .bg-gray-800:hover {
-          transform: translateY(-2px);
-          transition: transform 0.2s ease;
-        }
+                <div class="tabs">
+                    <button class="tab active" onclick="switchQuestTab('daily')">Ежедневные</button>
+                    <button class="tab" onclick="switchQuestTab('story')">Сюжетные</button>
+                    <button class="tab" onclick="switchQuestTab('completed')">Завершенные</button>
+                </div>
 
-        /* Эффект для золота */
-        @keyframes gold-shine {
-          0%, 100% {
-            text-shadow: 0 0 5px rgba(251, 191, 36, 0.5);
-          }
-          50% {
-            text-shadow: 0 0 15px rgba(251, 191, 36, 0.8);
-          }
-        }
+                <div class="tab-content active" id="dailyQuests">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Ежедневные квесты</div>
+                            <div class="quest-timer">
+                                <span>⏰</span>
+                                <span id="questResetTimer">23:59:59</span>
+                            </div>
+                        </div>
+                        <div class="card-subtitle">Обновляются каждый день в полночь</div>
+                    </div>
+                    <div id="dailyQuestsList">
+                        <!-- Daily quests will be generated here -->
+                    </div>
+                </div>
 
-        .text-yellow-400 {
-          animation: gold-shine 2s ease-in-out infinite;
-        }
+                <div class="tab-content" id="storyQuests">
+                    <div id="storyQuestsList">
+                        <!-- Story quests will be generated here -->
+                    </div>
+                </div>
 
-        /* Загрузка */
-        @keyframes spin {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
-        }
+                <div class="tab-content" id="completedQuests">
+                    <div id="completedQuestsList">
+                        <div style="text-align: center; color: var(--text-secondary); padding: 40px;">
+                            Вы еще не завершили ни одного квеста
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-        .animate-spin {
-          animation: spin 1s linear infinite;
-        }
+            <!-- Profile Section -->
+            <div class="section" id="profileSection">
+                <div class="section-title">
+                    <span>👤</span>
+                    <span>Профиль</span>
+                </div>
 
-        /* Фон для приложения */
-        .bg-gradient-to-b {
-          background: linear-gradient(
-            to bottom,
-            #111827 0%,
-            #1f2937 25%,
-            #111827 50%,
-            #000000 100%
-          );
-        }
+                <div class="profile-header">
+                    <div class="profile-avatar">⚔️</div>
+                    <div class="profile-name" id="profileName">Рыцарь</div>
+                    <div class="profile-title" id="profileTitle">Начинающий искатель приключений</div>
+                </div>
 
-        /* Эффект для топ-3 в рейтинге */
-        .border-yellow-600::before {
-          content: '';
-          position: absolute;
-          top: -2px;
-          left: -2px;
-          right: -2px;
-          bottom: -2px;
-          background: linear-gradient(45deg, #fbbf24, #f59e0b, #d97706, #fbbf24);
-          border-radius: 0.5rem;
-          z-index: -1;
-          opacity: 0.3;
-          animation: border-glow 3s ease-in-out infinite;
-        }
+                <div class="profile-stats">
+                    <div class="stat-box">
+                        <div class="stat-value" id="totalGoldEarned">0</div>
+                        <div class="stat-label">Заработано золота</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="totalWorksDone">0</div>
+                        <div class="stat-label">Выполнено работ</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="totalQuestsCompleted">0</div>
+                        <div class="stat-label">Квестов завершено</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="daysPlayed">1</div>
+                        <div class="stat-label">Дней в игре</div>
+                    </div>
+                </div>
 
-        @keyframes border-glow {
-          0%, 100% {
-            opacity: 0.3;
-          }
-          50% {
-            opacity: 0.6;
-          }
-        }
+                <div class="card">
+                    <div class="card-title">Навыки</div>
+                    <div class="skills-list" id="skillsList">
+                        <!-- Skills will be generated here -->
+                    </div>
+                </div>
 
-        /* Эффект для заблокированных предметов */
-        .opacity-50 {
-          filter: grayscale(50%);
-        }
+                <div class="card">
+                    <div class="card-title">Достижения</div>
+                    <div class="achievements-grid" id="achievementsGrid">
+                        <!-- Achievements will be generated here -->
+                    </div>
+                </div>
 
-        /* Индикатор прогресса */
-        .h-2 {
-          position: relative;
-          overflow: hidden;
-        }
+                <div class="card">
+                    <div class="card-title">Настройки</div>
+                    <div class="settings-section">
+                        <div class="setting-item">
+                            <div>
+                                <div class="setting-label">Звуковые эффекты</div>
+                                <div class="setting-description">Включить звуки в игре</div>
+                            </div>
+                            <div class="toggle-switch active" onclick="toggleSetting(this, 'sound')">
+                                <div class="toggle-slider"></div>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <div>
+                                <div class="setting-label">Уведомления</div>
+                                <div class="setting-description">Получать уведомления о событиях</div>
+                            </div>
+                            <div class="toggle-switch active" onclick="toggleSetting(this, 'notifications')">
+                                <div class="toggle-slider"></div>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <div>
+                                <div class="setting-label">Автосохранение</div>
+                                <div class="setting-description">Автоматически сохранять прогресс</div>
+                            </div>
+                            <div class="toggle-switch active" onclick="toggleSetting(this, 'autosave')">
+                                <div class="toggle-slider"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-full" onclick="saveGame()">Сохранить игру</button>
+                    <button class="btn btn-secondary btn-full" style="margin-top: 10px;" onclick="resetGame()">Сбросить прогресс</button>
+                </div>
+            </div>
+        </div>
 
-        .h-2::after {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(
-            90deg,
-            transparent,
-            rgba(255, 255, 255, 0.3),
-            transparent
-          );
-          animation: progress-shine 2s ease-in-out infinite;
-        }
-
-        @keyframes progress-shine {
-          0% {
-            left: -100%;
-          }
-          100% {
-            left: 100%;
-          }
-        }
-
-        /* Кнопки навигации */
-        .fixed.bottom-0 button:active {
-          background: rgba(127, 29, 29, 0.3);
-          border-radius: 0.5rem;
-        }
-
-        /* Модальные окна и оверлеи */
-        .backdrop-blur {
-          backdrop-filter: blur(4px);
-        }
-
-        /* Эффект наведения для карточек */
-        @keyframes card-hover {
-          0%, 100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-5px);
-          }
-        }
-
-        .hover\:shadow-xl:hover {
-          box-shadow: 0 20px 25px -5px rgba(127, 29, 29, 0.3),
-                      0 10px 10px -5px rgba(127, 29, 29, 0.2);
-          animation: card-hover 0.5s ease-in-out;
-        }
-
-        /* Улучшенные тени */
-        .shadow-lg {
-          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5),
-                      0 4px 6px -2px rgba(0, 0, 0, 0.3);
-        }
-
-        /* Эффект для иконок */
-        @keyframes icon-bounce {
-          0%, 100% {
-            transform: scale(1);
-          }
-          50% {
-            transform: scale(1.1);
-          }
-        }
-
-        button:hover svg {
-          animation: icon-bounce 0.5s ease-in-out;
-        }
-
-        /* Градиент для текста */
-        .text-gradient {
-          background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
-
-        /* Улучшенный фокус для доступности */
-        button:focus-visible {
-          outline: 2px solid #ef4444;
-          outline-offset: 2px;
-        }
-
-        /* Переходы для всех интерактивных элементов */
-        button, input, .bg-gray-800 {
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* Эффект рипл при клике */
-        @keyframes ripple {
-          0% {
-            transform: scale(0);
-            opacity: 1;
-          }
-          100% {
-            transform: scale(4);
-            opacity: 0;
-          }
-        }
-
-        button::after {
-          content: '';
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          width: 5px;
-          height: 5px;
-          background: rgba(255, 255, 255, 0.5);
-          border-radius: 50%;
-          transform: translate(-50%, -50%) scale(0);
-          pointer-events: none;
-        }
-
-        button:active::after {
-          animation: ripple 0.6s ease-out;
-        }
-
-        /* Стили для input */
-        input:focus {
-          outline: none;
-          border-color: #ef4444;
-          box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
-        }
-
-        /* Плавная прокрутка */
-        html {
-          scroll-behavior: smooth;
-        }
-
-        /* Оптимизация производительности */
-        * {
-          will-change: auto;
-        }
-
-        button, .bg-gray-800 {
-          will-change: transform;
-        }
-
-        /* Темная тема для системных элементов */
-        ::selection {
-          background: #7f1d1d;
-          color: white;
-        }
-
-        /* Курсор */
-        button {
-          cursor: pointer;
-        }
-
-        button:disabled {
-          cursor: not-allowed;
-        }
-
-        /* Адаптивные отступы */
-        @media (max-width: 768px) {
-          .p-4 {
-            padding: 0.75rem;
-          }
-
-          .space-y-3 > * + * {
-            margin-top: 0.5rem;
-          }
-        }
-
-        /* Улучшенная читаемость */
-        body {
-          -webkit-font-smoothing: antialiased;
-          -moz-osx-font-smoothing: grayscale;
-          text-rendering: optimizeLegibility;
-        }
-
-        /* Эффект для медалей */
-        @keyframes medal-spin {
-          from {
-            transform: rotateY(0deg);
-          }
-          to {
-            transform: rotateY(360deg);
-          }
-        }
-
-        .text-yellow-500:hover {
-          animation: medal-spin 1s ease-in-out;
-        }
-
-        /* Финальные штрихи */
-        .max-w-2xl {
-          max-width: 42rem;
-        }
-
-        /* Безопасная зона для iOS */
-        @supports (padding: max(0px)) {
-          .pb-20 {
-            padding-bottom: max(5rem, env(safe-area-inset-bottom));
-          }
-
-          .fixed.bottom-0 {
-            padding-bottom: env(safe-area-inset-bottom);
-          }
-        }
-      `}</style>
+        <!-- Navigation -->
+        <div class="navigation">
+            <div class="nav-item active" onclick="switchSection('work')">
+                <div class="nav-icon">⚒️</div>
+                <div class="nav-label">Работа</div>
+            </div>
+            <div class="nav-item" onclick="switchSection('inventory')">
+                <div class="nav-icon">🎒</div>
+                <div class="nav-label">Инвентарь</div>
+            </div>
+            <div class="nav-item" onclick="switchSection('market')">
+                <div class="nav-icon">🏪</div>
+                <div class="nav-label">Рынок</div>
+            </div>
+            <div class="nav-item" onclick="switchSection('bank')">
+                <div class="nav-icon">🏦</div>
+                <div class="nav-label">Банк</div>
+            </div>
+            <div class="nav-item" onclick="switchSection('quests')">
+                <div class="nav-icon">📜</div>
+                <div class="nav-label">Квесты</div>
+                <div class="notification-badge" id="questBadge" style="display: none;">3</div>
+            </div>
+            <div class="nav-item" onclick="switchSection('profile')">
+                <div class="nav-icon">👤</div>
+                <div class="nav-label">Профиль</div>
+            </div>
+        </div>
     </div>
-  );
-};
 
-export default MedievalRPG;="flex items-center space-x-4 mb-4">
-          {player.photoUrl ? (
-            <img src={player.photoUrl} alt="Avatar" className="w-20 h-20 rounded-full border-2 border-red-500" />
-          ) : (
-            <div className="w-20 h-20 rounded-full bg-red-900 flex items-center justify-center border-2 border-red-500">
-              <Users className="w-10 h-10 text-red-300" />
+    <!-- Item Detail Modal -->
+    <div class="modal" id="itemModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="itemModalTitle">Предмет</div>
+                <button class="modal-close" onclick="closeModal('itemModal')">×</button>
             </div>
-          )}
-          <div className="flex-1">
-            <h2 className="text-2xl font-bold text-red-400">{player.firstName}</h2>
-            <p className="text-gray-400">@{player.username}</p>
-            <div className="flex items-center space-x-2 mt-2">
-              <Crown className="w-5 h-5 text-yellow-500" />
-              <span className="text-white font-semibold">Уровень {player.level}</span>
+            <div class="modal-body" id="itemModalBody">
+                <!-- Item details will be shown here -->
             </div>
-          </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('itemModal')">Закрыть</button>
+                <button class="btn btn-primary" id="itemModalAction">Использовать</button>
+            </div>
         </div>
+    </div>
 
-        <div className="space-y-3">
-          <div>
-            <div className="flex justify-between text-sm mb-1">
-              <span className="text-gray-400">Опыт</span>
-              <span className="text-red-400">{Math.floor(player.exp)}/{Math.floor(player.expToNext)}</span>
-            </div>
-            <div className="w-full bg-gray-700 rounded-full h-2">
-              <div className="bg-red-500 h-2 rounded-full transition-all" style={{ width: `${(player.exp / player.expToNext) * 100}%` }}></div>
-            </div>
-          </div>
+    <script>
+        // Game State
+        let gameState = {
+            player: {
+                name: "Рыцарь",
+                level: 1,
+                exp: 0,
+                expToNext: 100,
+                gold: 100,
+                gems: 0,
+                energy: 100,
+                maxEnergy: 100,
+                title: "Начинающий искатель приключений"
+            },
+            stats: {
+                totalGoldEarned: 0,
+                totalWorksDone: 0,
+                totalQuestsCompleted: 0,
+                daysPlayed: 1
+            },
+            inventory: [],
+            bank: {
+                balance: 0,
+                loan: 0,
+                transactions: []
+            },
+            skills: {
+                mining: { level: 1, exp: 0 },
+                woodcutting: { level: 1, exp: 0 },
+                farming: { level: 1, exp: 0 },
+                fishing: { level: 1, exp: 0 },
+                crafting: { level: 1, exp: 0 },
+                combat: { level: 1, exp: 0 }
+            },
+            achievements: [],
+            quests: {
+                daily: [],
+                story: [],
+                completed: []
+            },
+            settings: {
+                sound: true,
+                notifications: true,
+                autosave: true
+            },
+            lastLogin: Date.now()
+        };
 
-          <div>
-            <div className="flex justify-between text-sm mb-1">
-              <span className="text-gray-400 flex items-center"><Heart className="w-4 h-4 mr-1" />Здоровье</span>
-              <span className="text-red-400">{player.health}/{player.maxHealth}</span>
-            </div>
-            <div className="w-full bg-gray-700 rounded-full h-2">
-              <div className="bg-red-600 h-2 rounded-full transition-all" style={{ width: `${(player.health / player.maxHealth) * 100}%` }}></div>
-            </div>
-          </div>
+        // Work Types
+        const workTypes = [
+            {
+                id: 'mining',
+                name: 'Добыча руды',
+                icon: '⛏️',
+                baseReward: 15,
+                energyCost: 10,
+                duration: 3000,
+                levelRequired: 1,
+                expReward: 10,
+                skill: 'mining'
+            },
+            {
+                id: 'woodcutting',
+                name: 'Рубка леса',
+                icon: '🪓',
+                baseReward: 12,
+                energyCost: 8,
+                duration: 2500,
+                levelRequired: 1,
+                expReward: 8,
+                skill: 'woodcutting'
+            },
+            {
+                id: 'farming',
+                name: 'Фермерство',
+                icon: '🌾',
+                baseReward: 10,
+                energyCost: 6,
+                duration: 2000,
+                levelRequired: 1,
+                expReward: 6,
+                skill: 'farming'
+            },
+            {
+                id: 'fishing',
+                name: 'Рыбалка',
+                icon: '🎣',
+                baseReward: 8,
+                energyCost: 5,
+                duration: 1500,
+                levelRequired: 1,
+                expReward: 5,
+                skill: 'fishing'
+            },
+            {
+                id: 'blacksmith',
+                name: 'Кузнечное дело',
+                icon: '⚒️',
+                baseReward: 25,
+                energyCost: 15,
+                duration: 4000,
+                levelRequired: 3,
+                expReward: 15,
+                skill: 'crafting'
+            },
+            {
+                id: 'hunting',
+                name: 'Охота',
+                icon: '🏹',
+                baseReward: 20,
+                energyCost: 12,
+                duration: 3500,
+                levelRequired: 2,
+                expReward: 12,
+                skill: 'combat'
+            },
+            {
+                id: 'alchemy',
+                name: 'Алхимия',
+                icon: '🧪',
+                baseReward: 30,
+                energyCost: 18,
+                duration: 4500,
+                levelRequired: 5,
+                expReward: 20,
+                skill: 'crafting'
+            },
+            {
+                id: 'trading',
+                name: 'Торговля',
+                icon: '💼',
+                baseReward: 35,
+                energyCost: 20,
+                duration: 5000,
+                levelRequired: 7,
+                expReward: 25,
+                skill: 'crafting'
+            }
+        ];
 
-          <div>
-            <div className="flex justify-between text-sm mb-1">
-              <span className="text-gray-400 flex items-center"><Zap className="w-4 h-4 mr-1" />Энергия</span>
-              <span className="text-red-400">{player.energy}/{player.maxEnergy}</span>
-            </div>
-            <div className="w-full bg-gray-700 rounded-full h-2">
-              <div className="bg-yellow-500 h-2 rounded-full transition-all" style={{ width: `${(player.energy / player.maxEnergy) * 100}%` }}></div>
-            </div>
-          </div>
-        </div>
-      </div>
+        // Market Items
+        const marketItems = [
+            {
+                id: 'sword_basic',
+                name: 'Железный меч',
+                icon: '⚔️',
+                description: 'Простой железный меч',
+                price: 100,
+                category: 'weapons',
+                rarity: 'common',
+                stats: { attack: 5 }
+            },
+            {
+                id: 'sword_steel',
+                name: 'Стальной меч',
+                icon: '🗡️',
+                description: 'Прочный стальной меч',
+                price: 250,
+                category: 'weapons',
+                rarity: 'uncommon',
+                stats: { attack: 10 }
+            },
+            {
+                id: 'armor_leather',
+                name: 'Кожаная броня',
+                icon: '🦺',
+                description: 'Легкая кожаная броня',
+                price: 150,
+                category: 'armor',
+                rarity: 'common',
+                stats: { defense: 5 }
+            },
+            {
+                id: 'armor_chain',
+                name: 'Кольчуга',
+                icon: '🛡️',
+                description: 'Прочная кольчужная броня',
+                price: 300,
+                category: 'armor',
+                rarity: 'uncommon',
+                stats: { defense: 10 }
+            },
+            {
+                id: 'pickaxe_iron',
+                name: 'Железная кирка',
+                icon: '⛏️',
+                description: 'Улучшает добычу руды',
+                price: 200,
+                category: 'tools',
+                rarity: 'common',
+                stats: { miningBonus: 20 }
+            },
+            {
+                id: 'axe_iron',
+                name: 'Железный топор',
+                icon: '🪓',
+                description: 'Улучшает рубку леса',
+                price: 180,
+                category: 'tools',
+                rarity: 'common',
+                stats: { woodcuttingBonus: 20 }
+            },
+            {
+                id: 'potion_health',
+                name: 'Зелье здоровья',
+                icon: '🧪',
+                description: 'Восстанавливает 50 энергии',
+                price: 50,
+                category: 'consumables',
+                rarity: 'common',
+                consumable: true,
+                effect: { energy: 50 }
+            },
+            {
+                id: 'potion_exp',
+                name: 'Зелье опыта',
+                icon: '✨',
+                description: 'Дает 100 опыта',
+                price: 100,
+                category: 'consumables',
+                rarity: 'uncommon',
+                consumable: true,
+                effect: { exp: 100 }
+            },
+            {
+                id: 'sword_legendary',
+                name: 'Экскалибур',
+                icon: '⚔️',
+                description: 'Легендарный меч короля',
+                price: 5000,
+                category: 'weapons',
+                rarity: 'legendary',
+                stats: { attack: 50 }
+            },
+            {
+                id: 'armor_legendary',
+                name: 'Доспехи дракона',
+                icon: '🛡️',
+                description: 'Легендарные доспехи из чешуи дракона',
+                price: 5000,
+                category: 'armor',
+                rarity: 'legendary',
+                stats: { defense: 50 }
+            }
+        ];
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="bg-gray-800 rounded-lg p-4 border border-red-900">
-          <div className="flex items-center justify-between mb-2">
-            <Coins className="w-6 h-6 text-yellow-500" />
-            <span className="text-gray-400 text-sm">Золото</span>
-          </div>
-          <p className="text-2xl font-bold text-yellow-400">{player.gold}</p>
-        </div>
+        // Daily Quests
+        const dailyQuestTemplates = [
+            {
+                id: 'work_5_times',
+                name: 'Трудовой день',
+                description: 'Выполните любую работу 5 раз',
+                type: 'daily',
+                requirement: { type: 'work', count: 5 },
+                rewards: { gold: 100, exp: 50 }
+            },
+            {
+                id: 'earn_gold',
+                name: 'Золотоискатель',
+                description: 'Заработайте 200 золота',
+                type: 'daily',
+                requirement: { type: 'earnGold', count: 200 },
+                rewards: { gold: 150, exp: 75 }
+            },
+            {
+                id: 'spend_energy',
+                name: 'Энергичный',
+                description: 'Потратьте 50 энергии',
+                type: 'daily',
+                requirement: { type: 'spendEnergy', count: 50 },
+                rewards: { gold: 80, exp: 40 }
+            }
+        ];
 
-        <div className
+        // Story Quests
+        const storyQuests = [
+            {
+                id: 'first_steps',
+                name: 'Первые шаги',
+                description: 'Выполните свою первую работу',
+                type: 'story',
+                requirement: { type: 'work', count: 1 },
+                rewards: { gold: 50, exp: 25 },
+                completed: false
+            },
+            {
+                id: 'merchant',
+                name: 'Начинающий торговец',
+                description: 'Купите свой первый предмет на рынке',
+                type: 'story',
+                requirement: { type: 'buyItem', count: 1 },
+                rewards: { gold: 100, exp: 50 },
+                completed: false
+            },
+            {
+                id: 'banker',
+                name: 'Финансист',
+                description: 'Положите 500 золота в банк',
+                type: 'story',
+                requirement: { type: 'deposit', count: 500 },
+                rewards: { gold: 200, exp: 100 },
+                completed: false
+            },
+            {
+                id: 'level_5',
+                name: 'Опытный искатель',
+                description: 'Достигните 5 уровня',
+                type: 'story',
+                requirement: { type: 'level', count: 5 },
+                rewards: { gold: 500, exp: 250, gems: 10 },
+                completed: false
+            }
+        ];
+
+        // Achievements
+        const achievements = [
+            { id: 'first_work', name: 'Первая работа', icon: '⚒️', description: 'Выполните первую работу', unlocked: false },
+            { id: 'rich', name: 'Богач', icon: '💰', description: 'Накопите 1000 золота', unlocked: false },
+            { id: 'level_10', name: 'Ветеран', icon: '⭐', description: 'Достигните 10 уровня', unlocked: false },
+            { id: 'collector', name: 'Коллекционер', icon: '🎒', description: 'Соберите 20 предметов', unlocked: false },
+            { id: 'quest_master', name: 'Мастер квестов', icon: '📜', description: 'Завершите 50 квестов', unlocked: false },
+            { id: 'banker', name: 'Банкир', icon: '🏦', description: 'Положите 5000 золота в банк', unlocked: false },
+            { id: 'merchant', name: 'Торговец', icon: '🏪', description: 'Купите 30 предметов', unlocked: false },
+            { id: 'worker', name: 'Трудяга', icon: '💪', description: 'Выполните 100 работ', unlocked: false }
+        ];
+
+        // Current work
+        let currentWork = null;
+        let workProgress = 0;
+        let workInterval = null;
+
+        // Initialize game
+        function initGame() {
+            loadGame();
+            updateUI();
+            generateWorkCards();
+            generateInventory();
+            generateMarketItems();
+            generateSkills();
+            generateAchievements();
+            generateDailyQuests();
+            generateStoryQuests();
+            startEnergyRegeneration();
+            startQuestTimer();
+            
+            // Telegram WebApp
+            if (window.Telegram && window.Telegram.WebApp) {
+                const tg = window.Telegram.WebApp;
+                tg.ready();
+                tg.expand();
+                
+                if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                    gameState.player.name = tg.initDataUnsafe.user.first_name || "Рыцарь";
+                    document.getElementById('playerName').textContent = gameState.player.name;
+                    document.getElementById('profileName').textContent = gameState.player.name;
+                }
+            }
+        }
+
+        // Update UI
+        function updateUI() {
+            // Player info
+            document.getElementById('playerLevel').textContent = gameState.player.level;
+            document.getElementById('goldAmount').textContent = gameState.player.gold;
+            document.getElementById('gemsAmount').textContent = gameState.player.gems;
+            
+            // Experience
+            const expPercent = (gameState.player.exp / gameState.player.expToNext) * 100;
+            document.getElementById('expBar').style.width = expPercent + '%';
+            document.getElementById('expText').textContent = `${gameState.player.exp}/${gameState.player.expToNext}`;
+            document.getElementById('expPercent').textContent = Math.floor(expPercent) + '%';
+            
+            // Energy
+            const energyPercent = (gameState.player.energy / gameState.player.maxEnergy) * 100;
+            document.getElementById('energyBar').style.width = energyPercent + '%';
+            document.getElementById('currentEnergy').textContent = Math.floor(gameState.player.energy);
+            document.getElementById('maxEnergy').textContent = gameState.player.maxEnergy;
+            
+            // Bank
+            document.getElementById('bankBalance').textContent = gameState.bank.balance;
+            document.getElementById('dailyInterest').textContent = Math.floor(gameState.bank.balance * 0.05 / 365);
+            document.getElementById('currentLoan').textContent = gameState.bank.loan;
+            
+            // Stats
+            document.getElementById('totalGoldEarned').textContent = gameState.stats.totalGoldEarned;
+            document.getElementById('totalWorksDone').textContent = gameState.stats.totalWorksDone;
+            document.getElementById('totalQuestsCompleted').textContent = gameState.stats.totalQuestsCompleted;
+            document.getElementById('daysPlayed').textContent = gameState.stats.daysPlayed;
+            
+            // Profile
+            document.getElementById('profileTitle').textContent = gameState.player.title;
+            
+            // Inventory count
+            document.getElementById('inventoryCount').textContent = gameState.inventory.length;
+        }
+
+        // Generate work cards
+        function generateWorkCards() {
+            const workGrid = document.getElementById('workGrid');
+            workGrid.innerHTML = '';
+            
+            workTypes.forEach(work => {
+                const isLocked = gameState.player.level < work.levelRequired;
+                const skillLevel = gameState.skills[work.skill].level;
+                const bonus = (skillLevel - 1) * 0.1;
+                const reward = Math.floor(work.baseReward * (1 + bonus));
+                
+                const card = document.createElement('div');
+                card.className = 'work-card';
+                if (isLocked) {
+                    card.style.opacity = '0.5';
+                    card.style.cursor = 'not-allowed';
+                }
+                
+                card.innerHTML = `
+                    <div class="work-icon">${work.icon}</div>
+                    <div class="work-name">${work.name}</div>
+                    <div class="work-reward">+${reward} 💰</div>
+                    <div class="work-energy">-${work.energyCost} ⚡</div>
+                    ${isLocked ? `<div class="work-level-req">Требуется ${work.levelRequired} ур.</div>` : ''}
+                    <div class="work-progress" style="display: none;">
+                        <div class="work-progress-fill"></div>
+                    </div>
+                `;
+                
+                if (!isLocked) {
+                    card.onclick = () => startWork(work);
+                }
+                
+                workGrid.appendChild(card);
+            });
+        }
+
+        // Start work
+        function startWork(work) {
+            if (currentWork) {
+                showNotification('Вы уже работаете!', 'warning');
+                return;
+            }
+            
+            if (gameState.player.energy < work.energyCost) {
+                showNotification('Недостаточно энергии!', 'warning');
+                return;
+            }
+            
+            currentWork = work;
+            workProgress = 0;
+            
+            const cards = document.querySelectorAll('.work-card');
+            cards.forEach(card => {
+                if (card.querySelector('.work-name').textContent === work.name) {
+                    card.classList.add('active');
+                    card.querySelector('.work-progress').style.display = 'block';
+                }
+            });
+            
+            workInterval = setInterval(() => {
+                workProgress += 100;
+                const percent = (workProgress / work.duration) * 100;
+                
+                const activeCard = document.querySelector('.work-card.active');
+                if (activeCard) {
+                    activeCard.querySelector('.work-progress-fill').style.width = percent + '%';
+                }
+                
+                if (workProgress >= work.duration) {
+                    completeWork(work);
+                }
+            }, 100);
+        }
+
+        // Complete work
+        function completeWork(work) {
+            clearInterval(workInterval);
+            workInterval = null;
+            currentWork = null;
+            
+            const skillLevel = gameState.skills[work.skill].level;
+            const bonus = (skillLevel - 1) * 0.1;
+            const reward = Math.floor(work.baseReward * (1 + bonus));
+            
+            gameState.player.gold += reward;
+            gameState.player.energy -= work.energyCost;
+            gameState.player.exp += work.expReward;
+            gameState.stats.totalGoldEarned += reward;
+            gameState.stats.totalWorksDone++;
+            
+            // Skill exp
+            gameState.skills[work.skill].exp += work.expReward;
+            if (gameState.skills[work.skill].exp >= 100) {
+                gameState.skills[work.skill].level++;
+                gameState.skills[work.skill].exp = 0;
+                showNotification(`Навык ${work.skill} повышен до ${gameState.skills[work.skill].level} уровня!`, 'success');
+            }
+            
+            checkLevelUp();
+            updateQuestProgress('work', 1);
+            updateQuestProgress('earnGold', reward);
+            updateQuestProgress('spendEnergy', work.energyCost);
+            checkAchievements();
+            updateUI();
+            
+            const cards = document.querySelectorAll('.work-card');
+            cards.forEach(card => {
+                card.classList.remove('active');
+                card.querySelector('.work-progress').style.display = 'none';
+                card.querySelector('.work-progress-fill').style.width = '0%';
+            });
+            
+            showNotification(`Получено ${reward} 💰 и ${work.expReward} опыта!`, 'success');
+            
+            if (gameState.settings.autosave) {
+                saveGame();
+            }
+        }
+
+        // Check level up
+        function checkLevelUp() {
+            while (gameState.player.exp >= gameState.player.expToNext) {
+                gameState.player.level++;
+                gameState.player.exp -= gameState.player.expToNext;
+                gameState.player.expToNext = Math.floor(gameState.player.expToNext * 1.5);
+                gameState.player.maxEnergy += 10;
+                gameState.player.energy = gameState.player.maxEnergy;
+                
+                showNotification(`Поздравляем! Вы достигли ${gameState.player.level} уровня!`, 'success');
+                updatePlayerTitle();
+                generateWorkCards();
+                updateQuestProgress('level', gameState.player.level);
+            }
+        }
+
+        // Update player title
+        function updatePlayerTitle() {
+            const level = gameState.player.level;
+            if (level >= 50) gameState.player.title = "Легендарный герой";
+            else if (level >= 40) gameState.player.title = "Великий воин";
+            else if (level >= 30) gameState.player.title = "Мастер своего дела";
+            else if (level >= 20) gameState.player.title = "Опытный искатель приключений";
+            else if (level >= 10) gameState.player.title = "Умелый работник";
+            else if (level >= 5) gameState.player.title = "Подающий надежды";
+            else gameState.player.title = "Начинающий искатель приключений";
+        }
+
+        // Energy regeneration
+        function startEnergyRegeneration() {
+            setInterval(() => {
+                if (gameState.player.energy < gameState.player.maxEnergy) {
+                    gameState.player.energy = Math.min(gameState.player.energy + 1, gameState.player.maxEnergy);
+                    updateUI();
+                }
+            }, 10000); // 1 energy per 10 seconds
+        }
+
+        // Generate inventory
+        function generateInventory() {
+            const inventoryGrid = document.getElementById('inventoryGrid');
+            inventoryGrid.innerHTML = '';
+            
+            for (let i = 0; i < 50; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'inventory-slot empty';
+                
+                if (i < gameState.inventory.length) {
+                    const item = gameState.inventory[i];
+                    const itemData = marketItems.find(mi => mi.id === item.id);
+                    
+                    slot.classList.remove('empty');
+                    slot.innerHTML = `
+                        <div class="item-rarity rarity-${itemData.rarity}"></div>
+                        <div class="item-icon">${itemData.icon}</div>
+                        <div class="item-name">${itemData.name}</div>
+                        ${item.count > 1 ? `<div class="item-count">${item.count}</div>` : ''}
+                    `;
+                    slot.onclick = () => showItemDetails(itemData, item);
+                }
+                
+                inventoryGrid.appendChild(slot);
+            }
+        }
+
+        // Show item details
+        function showItemDetails(itemData, inventoryItem) {
+            const modal = document.getElementById('itemModal');
+            const modalTitle = document.getElementById('itemModalTitle');
+            const modalBody = document.getElementById('itemModalBody');
+            const modalAction = document.getElementById('itemModalAction');
+            
+            modalTitle.textContent = itemData.name;
+            
+            let statsHtml = '';
+            if (itemData.stats) {
+                statsHtml = '<div style="margin-top: 15px;"><strong>Характеристики:</strong><ul style="margin-top: 5px;">';
+                for (let [key, value] of Object.entries(itemData.stats)) {
+                    statsHtml += `<li>${key}: +${value}</li>`;
+                }
+                statsHtml += '</ul></div>';
+            }
+            
+            modalBody.innerHTML = `
+                <div style="text-align: center; margin-bottom: 15px;">
+                    <div style="font-size: 64px;">${itemData.icon}</div>
+                    <div style="color: var(--text-secondary); margin-top: 10px;">${itemData.description}</div>
+                </div>
+                <div><strong>Редкость:</strong> <span class="rarity-${itemData.rarity}">${itemData.rarity}</span></div>
+                <div><strong>Категория:</strong> ${itemData.category}</div>
+                <div><strong>Цена:</strong> ${itemData.price} 💰</div>
+                ${inventoryItem ? `<div><strong>Количество:</strong> ${inventoryItem.count}</div>` : ''}
+                ${statsHtml}
+            `;
+            
+            if (itemData.consumable) {
+                modalAction.textContent = 'Использовать';
+                modalAction.onclick = () => useItem(itemData, inventoryItem);
+                modalAction.style.display = 'block';
+            } else {
+                modalAction.style.display = 'none';
+            }
+            
+            modal.classList.add('active');
+        }
+
+        // Use item
+        function useItem(itemData, inventoryItem) {
+            if (itemData.effect) {
+                if (itemData.effect.energy) {
+                    gameState.player.energy = Math.min(
+                        gameState.player.energy + itemData.effect.energy,
+                        gameState.player.maxEnergy
+                    );
+                }
+                if (itemData.effect.exp) {
+                    gameState.player.exp += itemData.effect.exp;
+                    checkLevelUp();
+                }
+            }
+            
+            inventoryItem.count--;
+            if (inventoryItem.count <= 0) {
+                const index = gameState.inventory.indexOf(inventoryItem);
+                gameState.inventory.splice(index, 1);
+            }
+            
+            updateUI();
+            generateInventory();
+            closeModal('itemModal');
+            showNotification(`Использован предмет: ${itemData.name}`, 'success');
+            saveGame();
+        }
+
+        // Generate market items
+        function generateMarketItems(filter = 'all') {
+            const marketItemsContainer = document.getElementById('marketItems');
+            marketItemsContainer.innerHTML = '';
+            
+            const filteredItems = filter === 'all' 
+                ? marketItems 
+                : marketItems.filter(item => item.category === filter);
+            
+            filteredItems.forEach(item => {
+                const itemCard = document.createElement('div');
+                itemCard.className = 'market-item';
+                
+                let statsHtml = '';
+                if (item.stats) {
+                    for (let [key, value] of Object.entries(item.stats)) {
+                        statsHtml += `<span>${key}: +${value}</span>`;
+                    }
+                }
+                
+                itemCard.innerHTML = `
+                    <div class="market-item-icon">${item.icon}</div>
+                    <div class="market-item-info">
+                        <div class="market-item-name">${item.name}</div>
+                        <div class="market-item-description">${item.description}</div>
+                        <div class="market-item-stats">
+                            <span class="rarity-${item.rarity}">${item.rarity}</span>
+                            ${statsHtml}
+                        </div>
+                    </div>
+                    <div class="market-item-price">
+                        <div class="price-tag">${item.price} 💰</div>
+                        <button class="btn btn-primary btn-small" onclick="buyItem('${item.id}')">Купить</button>
+                    </div>
+                `;
+                
+                marketItemsContainer.appendChild(itemCard);
+            });
+        }
+
+        // Buy item
+        function buyItem(itemId) {
+            const item = marketItems.find(i => i.id === itemId);
+            
+            if (gameState.player.gold < item.price) {
+                showNotification('Недостаточно золота!', 'warning');
+                return;
+            }
+            
+            if (gameState.inventory.length >= 50) {
+                showNotification('Инвентарь полон!', 'warning');
+                return;
+            }
+            
+            gameState.player.gold -= item.price;
+            
+            const existingItem = gameState.inventory.find(i => i.id === itemId);
+            if (existingItem) {
+                existingItem.count++;
+            } else {
+                gameState.inventory.push({ id: itemId, count: 1 });
+            }
+            
+            updateUI();
+            generateInventory();
+            updateQuestProgress('buyItem', 1);
+            checkAchievements();
+            showNotification(`Куплен предмет: ${item.name}`, 'success');
+            saveGame();
+        }
+
+        // Filter market
+        function filterMarket(category) {
+            const categories = document.querySelectorAll('.category-card');
+            categories.forEach(cat => cat.classList.remove('active'));
+            event.target.closest('.category-card').classList.add('active');
+            generateMarketItems(category);
+        }
+
+        // Bank functions
+        function depositGold() {
+            const amount = parseInt(document.getElementById('depositAmount').value);
+            
+            if (!amount || amount <= 0) {
+                showNotification('Введите корректную сумму', 'warning');
+                return;
+            }
+            
+            if (gameState.player.gold < amount) {
+                showNotification('Недостаточно золота!', 'warning');
+                return;
+            }
+            
+            gameState.player.gold -= amount;
+            gameState.bank.balance += amount;
+            gameState.bank.transactions.push({
+                type: 'deposit',
+                amount: amount,
+                date: new Date().toLocaleString()
+            });
+            
+            updateUI();
+            updateQuestProgress('deposit', amount);
+            checkAchievements();
+            showNotification(`Внесено ${amount} золота в банк`, 'success');
+            document.getElementById('depositAmount').value = '';
+            saveGame();
+        }
+
+        function withdrawGold() {
+            const amount = parseInt(document.getElementById('withdrawAmount').value);
+            
+            if (!amount || amount <= 0) {
+                showNotification('Введите корректную сумму', 'warning');
+                return;
+            }
+            
+            if (gameState.bank.balance < amount) {
+                showNotification('Недостаточно средств в банке!', 'warning');
+                return;
+            }
+            
+            gameState.bank.balance -= amount;
+            gameState.player.gold += amount;
+            gameState.bank.transactions.push({
+                type: 'withdraw',
+                amount: amount,
+                date: new Date().toLocaleString()
+            });
+            
+            updateUI();
+            showNotification(`Снято ${amount} золота из банка`, 'success');
+            document.getElementById('withdrawAmount').value = '';
+            saveGame();
+        }
+
+        function takeLoan() {
+            const amount = parseInt(document.getElementById('loanAmount').value);
+            
+            if (!amount || amount <= 0 || amount > 1000) {
+                showNotification('Введите сумму от 1 до 1000', 'warning');
+                return;
+            }
+            
+            if (gameState.bank.loan > 0) {
+                showNotification('Сначала погасите текущий кредит!', 'warning');
+                return;
+            }
+            
+            gameState.bank.loan = amount;
+            gameState.player.gold += amount;
+            gameState.bank.transactions.push({
+                type: 'loan',
+                amount: amount,
+                date: new Date().toLocaleString()
+            });
+            
+            updateUI();
+            showNotification(`Взят кредит на ${amount} золота`, 'success');
+            document.getElementById('loanAmount').value = '';
+            saveGame();
+        }
+
+        function repayLoan() {
+            if (gameState.bank.loan <= 0) {
+                showNotification('У вас нет активного кредита', 'warning');
+                return;
+            }
+            
+            const totalDebt = Math.floor(gameState.bank.loan * 1.1);
+            
+            if (gameState.player.gold < totalDebt) {
+                showNotification(`Недостаточно золота! Нужно ${totalDebt} золота`, 'warning');
+                return;
+            }
+            
+            gameState.player.gold -= totalDebt;
+            gameState.bank.loan = 0;
+            gameState.bank.transactions.push({
+                type: 'repay',
+                amount: totalDebt,
+                date: new Date().toLocaleString()
+            });
+            
+            updateUI();
+            showNotification('Кредит погашен!', 'success');
+            saveGame();
+        }
+
+        // Generate daily quests
+        function generateDailyQuests() {
+            const container = document.getElementById('dailyQuestsList');
+            container.innerHTML = '';
+            
+            if (gameState.quests.daily.length === 0) {
+                dailyQuestTemplates.forEach(template => {
+                    gameState.quests.daily.push({
+                        ...template,
+                        progress: 0,
+                        completed: false
+                    });
+                });
+            }
+            
+            gameState.quests.daily.forEach(quest => {
+                const questCard = createQuestCard(quest);
+                container.appendChild(questCard);
+            });
+        }
+
+        // Generate story quests
+        function generateStoryQuests() {
+            const container = document.getElementById('storyQuestsList');
+            container.innerHTML = '';
+            
+            if (gameState.quests.story.length === 0) {
+                gameState.quests.story = [...storyQuests];
+            }
+            
+            gameState.quests.story.forEach(quest => {
+                if (!quest.completed) {
+                    const questCard = createQuestCard(quest);
+                    container.appendChild(questCard);
+                }
+            });
+        }
+
+        // Create quest card
+        function createQuestCard(quest) {
+            const card = document.createElement('div');
+            card.className = 'quest-card';
+            if (quest.completed) card.classList.add('completed');
+            
+            const progress = quest.progress || 0;
+            const required = quest.requirement.count;
+            const progressPercent = Math.min((progress / required) * 100, 100);
+            
+            let rewardsHtml = '';
+            if (quest.rewards.gold) rewardsHtml += `<div class="quest-reward">💰 ${quest.rewards.gold}</div>`;
+            if (quest.rewards.exp) rewardsHtml += `<div class="quest-reward">⭐ ${quest.rewards.exp} опыта</div>`;
+            if (quest.rewards.gems) rewardsHtml += `<div class="quest-reward">💎 ${quest.rewards.gems}</div>`;
+            
+            card.innerHTML = `
+                <div class="quest-header">
+                    <div>
+                        <div class="quest-title">${quest.name}</div>
+                        <div class="quest-type">${quest.type === 'daily' ? 'Ежедневный' : 'Сюжетный'}</div>
+                    </div>
+                </div>
+                <div class="quest-description">${quest.description}</div>
+                <div class="quest-progress">
+                    <div class="quest-progress-text">${progress}/${required}</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${progressPercent}%"></div>
+                    </div>
+                </div>
+                <div class="quest-rewards">
+                    ${rewardsHtml}
+                </div>
+                ${quest.completed 
+                    ? '<button class="btn btn-secondary btn-small btn-full" disabled>Завершено</button>'
+                    : progressPercent >= 100 
+                        ? `<button class="btn btn-primary btn-small btn-full" onclick="claimQuest('${quest.id}', '${quest.type}')">Получить награду</button>`
+                        : '<button class="btn btn-secondary btn-small btn-full" disabled>В процессе</button>'
+                }
+            `;
+            
+            return card;
+        }
+
+        // Update quest progress
+        function updateQuestProgress(type, amount) {
+            let updated = false;
+            
+            gameState.quests.daily.forEach(quest => {
+                if (!quest.completed && quest.requirement.type === type) {
+                    quest.progress = (quest.progress || 0) + amount;
+                    updated = true;
+                }
+            });
+            
+            gameState.quests.story.forEach(quest => {
+                if (!quest.completed && quest.requirement.type === type) {
+                    if (type === 'level') {
+                        quest.progress = amount;
+                    } else {
+                        quest.progress = (quest.progress || 0) + amount;
+                    }
+                    updated = true;
+                }
+            
+
+## Ошибка max_tokens пересоздайте чат
