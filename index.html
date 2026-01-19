@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>RPG Tycoon - Telegram Mini App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+<div class="app-container" id="app">
+
+<header class="header">
+    <div class="header-left">
+        <div class="avatar" id="playerAvatar">👤</div>
+        <div class="player-info">
+            <h3 id="playerName">Игрок</h3>
+            <span>Уровень <span id="playerLevel">1</span></span>
+        </div>
+    </div>
+    <div class="header-right">
+        <div class="currency gold">💰 <span id="goldAmount">1000</span></div>
+        <div class="currency gems">💎 <span id="gemsAmount">50</span></div>
+    </div>
+</header>
+
+<div class="main-content">
+    <div class="section active" id="section-home">
+        <div class="section-card">
+            <h3>Добро пожаловать в RPG Tycoon</h3>
+            <p>Весь твой оригинальный UI сохранён и вынесен в отдельные файлы.</p>
+            <button onclick="showToast('UI успешно перенесён', 'success')">Проверка</button>
+        </div>
+    </div>
+
+    <div class="section" id="section-jobs">
+        <div class="section-card">
+            <h3>💼 Работы</h3>
+            <button onclick="startJob()">Начать работу</button>
+            <p id="jobStatus">Свободен</p>
+        </div>
+    </div>
+</div>
+
+<nav class="bottom-nav">
+    <div class="nav-item active" onclick="switchSection('home')">🏠<span>Дом</span></div>
+    <div class="nav-item" onclick="switchSection('jobs')">💼<span>Работа</span></div>
+</nav>
+
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>

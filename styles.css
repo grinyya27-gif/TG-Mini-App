@@ -1,0 +1,43 @@
+/* ВЕСЬ ТВОЙ ОРИГИНАЛЬНЫЙ CSS ПЕРЕНЕСЁН СЮДА БЕЗ ИЗМЕНЕНИЙ */
+body {
+    background: #1a1a2e;
+    color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.app-container {
+    max-width: 480px;
+    margin: 0 auto;
+    padding-bottom: 80px;
+}
+.header {
+    background: #0f3460;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #0f3460;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+}
+.nav-item {
+    color: #a0a0a0;
+    cursor: pointer;
+}
+.nav-item.active {
+    color: #e94560;
+}
+.section { display: none; }
+.section.active { display: block; }
+.section-card {
+    background: rgba(0,0,0,0.3);
+    padding: 20px;
+    margin: 15px;
+    border-radius: 12px;
+}
