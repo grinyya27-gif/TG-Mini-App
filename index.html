@@ -264,32 +264,79 @@
       </div>
 
       <!-- Explore View (History only) -->
-      <div id="view-explore" class="hidden h-full flex flex-col bg-white overflow-y-auto p-4 no-scrollbar pb-24">
-        <h2 class="text-2xl font-black italic mb-6">Ваша история</h2>
-        
-        <!-- History Panel -->
-        <div id="explore-history-panel">
-          <div class="mb-8">
-            <div class="flex items-center justify-between mb-4">
-              <h3 class="text-2xl font-black italic uppercase tracking-widest flex items-center gap-2 text-black dark:text-white">
-                <i data-lucide="heart" class="w-6 h-6 text-pink-500"></i>
-                <span class="leading-none">СОВПАДЕНИЯ</span>
-              </h3>
-              <span id="history-matches-count" class="text-xs font-bold px-2 py-1 bg-gray-100 dark:bg-zinc-800 rounded-lg text-gray-500">0</span>
+      <div id="view-explore" class="hidden h-full bg-white overflow-y-auto no-scrollbar pb-24">
+        <div class="p-4 pt-6 space-y-4">
+
+          <!-- Hero / Summary -->
+          <div class="relative overflow-hidden rounded-[28px] p-5 text-white shadow-xl bg-gradient-to-br from-pink-500 to-rose-600">
+            <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+            <div class="absolute -left-16 -bottom-16 w-56 h-56 bg-black/10 rounded-full blur-3xl"></div>
+
+            <div class="relative">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <div class="text-[11px] uppercase tracking-[0.22em] font-black text-white/80">История</div>
+                  <h2 class="text-3xl font-black italic leading-tight">Ваши действия</h2>
+                  <p class="text-white/85 text-sm mt-1">Совпадения и лайки, которые вы отправляли.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <div class="px-3 py-2 rounded-2xl bg-white/15 border border-white/20 backdrop-blur-sm text-center">
+                    <div class="text-[10px] uppercase tracking-widest text-white/70 font-bold">Match</div>
+                    <div id="history-matches-pill" class="text-xl font-black">0</div>
+                  </div>
+                  <div class="px-3 py-2 rounded-2xl bg-white/15 border border-white/20 backdrop-blur-sm text-center">
+                    <div class="text-[10px] uppercase tracking-widest text-white/70 font-bold">Likes</div>
+                    <div id="history-likes-pill" class="text-xl font-black">0</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-4 flex items-center gap-2 text-[11px] text-white/70">
+                <i data-lucide="sparkles" class="w-4 h-4"></i>
+                <span>Подсказка: откройте карточку из истории, чтобы снова посмотреть профиль.</span>
+              </div>
             </div>
-            <div id="history-matches-list" class="space-y-3"></div>
           </div>
 
-          <div>
-            <div class="flex items-center justify-between mb-4">
-              <h3 class="text-2xl font-black italic uppercase tracking-widest flex items-center gap-2 text-black dark:text-white">
-                <i data-lucide="thumbs-up" class="w-6 h-6 text-emerald-500"></i>
-                <span class="leading-none">ЛАЙКИ</span>
-              </h3>
-              <span id="history-likes-count" class="text-xs font-bold px-2 py-1 bg-gray-100 dark:bg-zinc-800 rounded-lg text-gray-500">0</span>
-            </div>
-            <div id="history-likes-list" class="space-y-3"></div>
+          <!-- Tabs -->
+          <div class="rounded-2xl p-1.5 bg-gray-50 dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 flex gap-1">
+            <button id="history-tab-matches" onclick="setHistoryTab('matches')" class="flex-1 py-2.5 rounded-xl text-sm font-black uppercase tracking-widest transition flex items-center justify-center gap-2">
+              <i data-lucide="heart" class="w-4 h-4"></i>
+              <span>Совпадения</span>
+            </button>
+            <button id="history-tab-likes" onclick="setHistoryTab('likes')" class="flex-1 py-2.5 rounded-xl text-sm font-black uppercase tracking-widest transition flex items-center justify-center gap-2">
+              <i data-lucide="thumbs-up" class="w-4 h-4"></i>
+              <span>Лайки</span>
+            </button>
           </div>
+
+          <!-- Panels -->
+          <div id="explore-history-panel" class="space-y-4">
+
+            <div id="history-panel-matches" class="space-y-3">
+              <div class="flex items-center justify-between">
+                <h3 class="text-xl font-black italic uppercase tracking-widest flex items-center gap-2 text-black dark:text-white">
+                  <i data-lucide="heart" class="w-5 h-5 text-pink-500"></i>
+                  <span class="leading-none">СОВПАДЕНИЯ</span>
+                </h3>
+                <span id="history-matches-count" class="text-xs font-black px-2 py-1 bg-gray-100 dark:bg-zinc-800 rounded-lg text-gray-500">0</span>
+              </div>
+              <div id="history-matches-list" class="space-y-3"></div>
+            </div>
+
+            <div id="history-panel-likes" class="space-y-3 hidden">
+              <div class="flex items-center justify-between">
+                <h3 class="text-xl font-black italic uppercase tracking-widest flex items-center gap-2 text-black dark:text-white">
+                  <i data-lucide="thumbs-up" class="w-5 h-5 text-emerald-500"></i>
+                  <span class="leading-none">ЛАЙКИ</span>
+                </h3>
+                <span id="history-likes-count" class="text-xs font-black px-2 py-1 bg-gray-100 dark:bg-zinc-800 rounded-lg text-gray-500">0</span>
+              </div>
+              <div id="history-likes-list" class="space-y-3"></div>
+            </div>
+
+          </div>
+
         </div>
       </div>
 
@@ -1636,7 +1683,7 @@
 
     function copyProfileLink(){ if (!detail.profileId) return; const link = `${location.href.split('#')[0]}#profile=${detail.profileId}`; navigator.clipboard?.writeText(link).then(() => toast('Ссылка скопирована')).catch(() => toast('Не удалось скопировать')); }
     function openDetailMenu(){ toast('Меню профиля: блок/репорт ниже'); }
-    function blockFromDetail(){ if (!detail.profileId) return; const id = detail.profileId; const p = getProfileById(id); if (!p) return; if (!confirm(`Вы действительно хотите добавить ${p.name} в ЧС?`)) return; if (!state.blocked.includes(id)) state.blocked.push(id); state.matches = state.matches.filter(x => x !== id); if (state.chats && state.chats[id]) delete state.chats[id]; toast('Пользователь добавлен в ЧС'); persist(); closeProfileDetail(); if (window.__activeChatId === id) closeChat(); renderFeed(); if (state.currentView === 'explore') renderExplore(); if (state.currentView === 'messages') renderMessages(); updateHeaderStats(); }
+    function blockFromDetail(){ if (!detail.profileId) return; const id = detail.profileId; const p = getProfileById(id); if (!p) return; if (!confirm(`Вы действительно хотите добавить ${p.name} в ЧС?`)) return; if (!state.blocked.includes(id)) state.blocked.push(id); state.matches = state.matches.filter(x => x !== id); if (state.chats && state.chats[id]) delete state.chats[id]; toast('Пользователь добавлен в ЧС'); persist(); closeProfileDetail(); if (window.__activeChatId === id) closeChat(); renderFeed(); if (state.currentView === 'explore') renderHistory(); if (state.currentView === 'messages') renderMessages(); updateHeaderStats(); }
     function reportFromDetail(){ if (!detail.profileId) return; const p = getProfileById(detail.profileId); if (!p) return; toast(`Жалоба на ${p.name} отправлена (демо)`); }
 
     function showMatchModal(profile, isSuper){ document.getElementById('match-name').textContent = profile.name; document.getElementById('match-their-img').src = profile.photos[0]; document.getElementById('match-my-img').src = state.myProfile.photos[0] || ''; document.getElementById('match-sub').textContent = isSuper ? 'Суперлайк сработал!' : 'Самое время написать первой/первым.'; document.getElementById('match-modal').classList.remove('hidden'); }
@@ -2149,7 +2196,7 @@
 
     function toggleSettings(forceOpen = null){ const panel = document.getElementById('settings-panel'); const isOpen = panel.style.right === '0px'; const shouldOpen = forceOpen === null ? !isOpen : !!forceOpen; panel.style.right = shouldOpen ? '0px' : '-100%'; }
     function syncSettingsUI(){ const sReg = document.getElementById('setting-region'); const sCity = document.getElementById('setting-city'); if (sReg.options.length <= 1) { RUSSIA_REGIONS.forEach(r => { const opt = new Option(r, r); sReg.add(opt); }); } if (sCity.options.length <= 1) { RUSSIA_CITIES.forEach(c => { const opt = new Option(c, c); sCity.add(opt); }); } sReg.value = state.settings.region || ''; sCity.value = state.settings.city || ''; document.getElementById('setting-age-min').value = state.settings.ageMin; document.getElementById('setting-age-max').value = state.settings.ageMax; document.getElementById('setting-age-label').textContent = `${state.settings.ageMin} — ${state.settings.ageMax}`; const radios = document.querySelectorAll('input[name="pref"]'); radios.forEach(r => r.checked = (r.value === state.settings.pref)); }
-    function applySettingsFromUI(){ let minA = parseInt(document.getElementById('setting-age-min').value || '18', 10); let maxA = parseInt(document.getElementById('setting-age-max').value || '35', 10); if (minA > maxA) [minA, maxA] = [maxA, minA]; const pref = document.querySelector('input[name="pref"]:checked')?.value || 'all'; state.settings.region = document.getElementById('setting-region').value; state.settings.city = document.getElementById('setting-city').value; state.settings.ageMin = clamp(minA, 18, 99); state.settings.ageMax = clamp(maxA, 18, 99); state.settings.pref = ['female','male','all'].includes(pref) ? pref : 'all'; syncSettingsUI(); persist(); if (state.currentView === 'feed') renderFeed(); if (state.currentView === 'explore') renderExplore(); updateHeaderStats(); }
+    function applySettingsFromUI(){ let minA = parseInt(document.getElementById('setting-age-min').value || '18', 10); let maxA = parseInt(document.getElementById('setting-age-max').value || '35', 10); if (minA > maxA) [minA, maxA] = [maxA, minA]; const pref = document.querySelector('input[name="pref"]:checked')?.value || 'all'; state.settings.region = document.getElementById('setting-region').value; state.settings.city = document.getElementById('setting-city').value; state.settings.ageMin = clamp(minA, 18, 99); state.settings.ageMax = clamp(maxA, 18, 99); state.settings.pref = ['female','male','all'].includes(pref) ? pref : 'all'; syncSettingsUI(); persist(); if (state.currentView === 'feed') renderFeed(); if (state.currentView === 'explore') renderHistory(); updateHeaderStats(); }
 
     function toggleBoost(){ const now = Date.now(); if (state.boost.active && state.boost.endsAt > now) { state.boost.active = false; state.boost.endsAt = 0; persist(); setBoostUi(); toast('Boost выключен'); return; } state.boost.active = true; state.boost.endsAt = now + 30_000; persist(); setBoostUi(); toast('Boost активирован на 30 сек'); if (boostTimer) clearInterval(boostTimer); boostTimer = setInterval(() => { if (!state.boost.active) return; setBoostUi(); }, 250); }
 
@@ -2167,16 +2214,42 @@
       toast('Переход в бот поддержки...');
     }
 
+    function setHistoryTab(tab){
+      state.__historyTab = tab;
+      const mBtn = document.getElementById('history-tab-matches');
+      const lBtn = document.getElementById('history-tab-likes');
+      const mPanel = document.getElementById('history-panel-matches');
+      const lPanel = document.getElementById('history-panel-likes');
+
+      const active = 'bg-white dark:bg-zinc-700 text-gray-900 dark:text-white shadow-sm';
+      const inactive = 'text-gray-500 dark:text-gray-300 hover:bg-white/60 dark:hover:bg-zinc-700/60';
+
+      if (tab === 'likes') {
+        lBtn.className = lBtn.className.replace(active, '').replace(inactive, '').trim() + ' ' + active;
+        mBtn.className = mBtn.className.replace(active, '').replace(inactive, '').trim() + ' ' + inactive;
+        lPanel.classList.remove('hidden');
+        mPanel.classList.add('hidden');
+      } else {
+        mBtn.className = mBtn.className.replace(active, '').replace(inactive, '').trim() + ' ' + active;
+        lBtn.className = lBtn.className.replace(active, '').replace(inactive, '').trim() + ' ' + inactive;
+        mPanel.classList.remove('hidden');
+        lPanel.classList.add('hidden');
+      }
+    }
+
     function renderHistory(){
       // Matches
       const matchesList = document.getElementById('history-matches-list');
       const matchesCount = document.getElementById('history-matches-count');
+      const matchesPill = document.getElementById('history-matches-pill');
+
       matchesList.innerHTML = '';
       const matchIds = [...state.matches].reverse();
-      matchesCount.textContent = `${matchIds.length} совпадений`;
-      
+      matchesCount.textContent = `${matchIds.length}`;
+      if (matchesPill) matchesPill.textContent = `${matchIds.length}`;
+
       if (matchIds.length === 0) {
-        matchesList.innerHTML = '<p class="text-gray-400 text-sm italic py-4">Пока нет совпадений</p>';
+        matchesList.innerHTML = '<div class="p-4 rounded-2xl bg-gray-50 dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 text-gray-500 dark:text-gray-300 text-sm italic">Пока нет совпадений. Продолжайте свайпать — всё впереди.</div>';
       } else {
         for (const id of matchIds) {
           const p = getProfileById(id);
@@ -2189,13 +2262,16 @@
       // Likes (excluding matches)
       const likesList = document.getElementById('history-likes-list');
       const likesCount = document.getElementById('history-likes-count');
+      const likesPill = document.getElementById('history-likes-pill');
+
       likesList.innerHTML = '';
       const likeIds = [...state.likes, ...state.superLikes].filter(id => !state.matches.includes(id));
       const uniqueLikes = [...new Set(likeIds)].reverse();
-      likesCount.textContent = `${uniqueLikes.length} лайков`;
-      
+      likesCount.textContent = `${uniqueLikes.length}`;
+      if (likesPill) likesPill.textContent = `${uniqueLikes.length}`;
+
       if (uniqueLikes.length === 0) {
-        likesList.innerHTML = '<p class="text-gray-400 text-sm italic py-4">Вы пока никого не лайкнули</p>';
+        likesList.innerHTML = '<div class="p-4 rounded-2xl bg-gray-50 dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 text-gray-500 dark:text-gray-300 text-sm italic">Вы пока никого не лайкнули. Свайп вправо — и профиль появится здесь.</div>';
       } else {
         for (const id of uniqueLikes) {
           const p = getProfileById(id);
@@ -2205,33 +2281,51 @@
           likesList.appendChild(item);
         }
       }
-      
+
+      // Init tab state
+      if (!state.__historyTab) state.__historyTab = 'matches';
+      setHistoryTab(state.__historyTab);
+
       lucide.createIcons();
     }
 
     function createHistoryItem(profile, type){
       const item = document.createElement('div');
-      item.className = 'flex items-center p-3 bg-gray-50 dark:bg-zinc-800 rounded-xl cursor-pointer hover:bg-gray-100 dark:hover:bg-zinc-700 transition';
+      item.className = 'group flex items-center p-3 rounded-2xl cursor-pointer transition bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-800 shadow-sm';
       item.onclick = () => openProfileDetail(profile.id, { from: 'history' });
-      
+
       let badge = '';
       if (type === 'match') {
-        badge = '<span class="px-2 py-1 rounded-full bg-pink-100 text-pink-600 text-[10px] font-extrabold">MATCH</span>';
+        badge = '<span class="px-2.5 py-1 rounded-full bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 text-[10px] font-black uppercase tracking-widest">MATCH</span>';
       } else if (type === 'superlike') {
-        badge = '<span class="px-2 py-1 rounded-full bg-blue-100 text-blue-600 text-[10px] font-extrabold">SUPER</span>';
+        badge = '<span class="px-2.5 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-[10px] font-black uppercase tracking-widest">SUPER</span>';
       } else {
-        badge = '<span class="px-2 py-1 rounded-full bg-emerald-100 text-emerald-600 text-[10px] font-extrabold">LIKE</span>';
+        badge = '<span class="px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 text-[10px] font-black uppercase tracking-widest">LIKE</span>';
       }
-      
+
+      const city = (profile.city || '').trim();
+      const region = (profile.region || '').trim();
+      const meta = [city, region].filter(Boolean).join(' • ');
+
       item.innerHTML = `
-        <img src="${profile.photos[0]}" class="w-12 h-12 rounded-full object-cover mr-3" />
-        <div class="flex-1 min-w-0">
-          <h4 class="font-bold text-sm truncate dark:text-gray-200">${escapeHtml(profile.name)}, ${profile.age}</h4>
-          <p class="text-xs text-gray-500 truncate">${escapeHtml(profile.city)}</p>
+        <div class="relative mr-3">
+          <img src="${profile.photos[0]}" class="w-12 h-12 rounded-2xl object-cover" />
+          <div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 flex items-center justify-center">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-pink-500"></i>
+          </div>
         </div>
-        <div class="flex items-center gap-2">
-          ${badge}
-          <i data-lucide="chevron-right" class="w-4 h-4 text-gray-400"></i>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center justify-between gap-2">
+            <h4 class="font-extrabold text-sm truncate dark:text-gray-100">${escapeHtml(profile.name)}${profile.age ? `, ${escapeHtml(profile.age)}` : ''}</h4>
+            <div class="flex items-center gap-2 flex-shrink-0">
+              ${badge}
+              <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300 group-hover:text-gray-500 dark:text-zinc-600 dark:group-hover:text-zinc-400 transition"></i>
+            </div>
+          </div>
+          <div class="mt-0.5 text-xs text-gray-500 dark:text-gray-400 truncate flex items-center gap-1">
+            <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
+            <span>${escapeHtml(meta || '—')}</span>
+          </div>
         </div>
       `;
       return item;
