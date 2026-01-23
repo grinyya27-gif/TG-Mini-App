@@ -1,0 +1,2060 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Spark — приложение для знакомств</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+    :root{
+      --spark-pink:#ec4899;
+      --spark-rose:#f43f5e;
+      --bg-app: #ffffff;
+      --bg-body: #f8fafc;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border-color: #f1f5f9;
+      --card-bg: #ffffff;
+    }
+
+    .dark {
+      --bg-app: #18181b;
+      --bg-body: #09090b;
+      --text-main: #f4f4f5;
+      --text-muted: #a1a1aa;
+      --border-color: #27272a;
+      --card-bg: #27272a;
+    }
+
+    body{
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: var(--bg-body);
+      color: var(--text-main);
+      overflow:hidden;
+      height:100vh;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    #app {
+      background: var(--bg-app);
+      border-color: var(--border-color);
+    }
+
+    header, nav, .swipe-card, #view-messages, #view-explore, #view-profile, #settings-panel, #shop-modal > div, #chat-window {
+      background-color: var(--bg-app) !important;
+      color: var(--text-main) !important;
+    }
+
+    header, nav, .border-b, .border-t, .border {
+      border-color: var(--border-color) !important;
+    }
+
+    input, textarea, select {
+      background-color: var(--bg-body) !important;
+      color: var(--text-main) !important;
+      border-color: var(--border-color) !important;
+    }
+
+    .text-gray-400, .text-gray-500 { color: var(--text-muted) !important; }
+    .bg-gray-50, .bg-gray-100 { background-color: var(--bg-body) !important; }
+
+    .no-scrollbar::-webkit-scrollbar{display:none;}
+    .no-scrollbar{ -ms-overflow-style:none; scrollbar-width:none; }
+
+    .card-stack{
+      position:relative;
+      width:calc(100% - 32px);
+      height:70vh;
+      max-width:420px;
+      margin:0 auto;
+    }
+
+    .swipe-card{
+      position:absolute;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      border-radius:22px;
+      user-select:none;
+      touch-action:none;
+      cursor:grab;
+      will-change:transform,opacity;
+      transition: transform .25s ease, opacity .25s ease;
+      overflow:hidden;
+      background:white;
+    }
+
+    .swipe-card:active{ cursor:grabbing; }
+
+    .gradient-overlay{
+      background: linear-gradient(0deg, rgba(0,0,0,.86) 0%, rgba(0,0,0,0) 55%);
+    }
+
+    .btn-shadow{ box-shadow: 0 10px 24px rgba(15,23,42,.10); }
+
+    .nav-active{ color: var(--spark-pink); }
+
+    .line-clamp-2{
+      display:-webkit-box;
+      -webkit-line-clamp:2;
+      -webkit-box-orient:vertical;
+      overflow:hidden;
+    }
+
+    .safe-bottom{ padding-bottom: calc(1rem + env(safe-area-inset-bottom)); }
+
+    .kbd{ border:1px solid rgba(148,163,184,.45); background:rgba(241,245,249,.8); border-bottom-width:2px; }
+
+    .pulse-ring{
+      box-shadow: 0 0 0 0 rgba(236,72,153,.45);
+      animation: ring 1.6s infinite;
+    }
+
+    @keyframes ring{
+      0%{ box-shadow:0 0 0 0 rgba(236,72,153,.45); }
+      70%{ box-shadow:0 0 0 18px rgba(236,72,153,0); }
+      100%{ box-shadow:0 0 0 0 rgba(236,72,153,0); }
+    }
+    
+    /* Animations */
+    @keyframes bounceIn {
+      0% { opacity: 0; transform: scale(0.3); }
+      50% { opacity: 1; transform: scale(1.05); }
+      70% { transform: scale(0.9); }
+      100% { transform: scale(1); }
+    }
+    .animate-bounce-in {
+      animation: bounceIn 0.3s cubic-bezier(0.215, 0.610, 0.355, 1.000) both;
+    }
+  </style>
+</head>
+<body class="flex flex-col">
+
+  <div id="app" class="relative max-w-md mx-auto w-full h-screen bg-white shadow-2xl overflow-hidden flex flex-col">
+
+    <!-- Header -->
+    <header id="main-header" class="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-white z-20">
+      <div class="flex items-center gap-2 cursor-pointer" onclick="switchView('feed')">
+        <div class="w-9 h-9 bg-pink-500 rounded-xl flex items-center justify-center">
+          <i data-lucide="flame" class="text-white w-5 h-5"></i>
+        </div>
+        <div class="leading-tight">
+          <h1 class="text-2xl font-extrabold bg-gradient-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent italic">Spark</h1>
+          <div class="flex items-center gap-2 text-[11px] text-gray-400 -mt-0.5">
+            <span id="boost-pill" class="hidden px-2 py-0.5 rounded-full bg-pink-50 text-pink-600 font-semibold">Boost 00:30</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button onclick="toggleTheme()" class="w-9 h-9 rounded-full flex items-center justify-center text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+          <i data-lucide="moon" id="theme-icon-moon" class="w-5 h-5"></i>
+          <i data-lucide="sun" id="theme-icon-sun" class="w-5 h-5 hidden"></i>
+        </button>
+        <div onclick="toggleShop()" class="flex items-center bg-amber-50 dark:bg-amber-900/20 px-2 py-1 rounded-full border border-amber-200 dark:border-amber-800 cursor-pointer hover:bg-amber-100 transition shadow-sm">
+          <i data-lucide="coins" class="w-4 h-4 text-amber-500 mr-1.5"></i>
+          <span id="header-coins" class="text-sm font-bold text-amber-600 dark:text-amber-400">0</span>
+        </div>
+        <button onclick="openSupportModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition" title="Поддержка">
+          <i data-lucide="life-buoy" class="w-5 h-5"></i>
+        </button>
+        <button id="btn-filters" onclick="toggleSettings()" class="text-gray-400 hover:text-gray-600" title="Фильтры">
+          <i data-lucide="sliders-horizontal"></i>
+        </button>
+        <button id="btn-settings" onclick="toggleAppSettings()" class="hidden text-gray-400 hover:text-gray-600" title="Настройки приложения">
+          <i data-lucide="settings"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main -->
+    <main id="main-content" class="flex-1 relative overflow-hidden bg-gray-50">
+
+      <!-- Feed View -->
+      <div id="view-feed" class="h-full flex flex-col pt-6 pb-20">
+        <div id="card-container" class="card-stack relative">
+          <div id="empty-state" class="hidden absolute inset-0 flex flex-col items-center justify-center text-center p-8">
+            <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+              <i data-lucide="users" class="text-gray-400 w-10 h-10"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Профили закончились</h3>
+            <p class="text-gray-500 mt-2">Измените фильтры или обновите ленту.</p>
+            <div class="flex gap-2 mt-6">
+              <button onclick="resetFeed()" class="px-6 py-2 bg-pink-500 text-white rounded-full font-medium shadow-lg shadow-pink-200 dark:shadow-none">Обновить</button>
+              <button onclick="toggleSettings(true)" class="px-6 py-2 bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-full font-medium text-gray-700 dark:text-gray-300">Фильтры</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div id="action-buttons" class="flex items-center justify-center space-x-4 mt-auto mb-4 px-4 pb-2 z-30">
+          <button id="btn-rewind" onclick="undoSwipe()" class="w-12 h-12 flex items-center justify-center rounded-full bg-white text-yellow-500 btn-shadow border border-gray-100 hover:scale-110 transition active:scale-90" title="Отменить">
+            <i data-lucide="rotate-ccw" class="w-6 h-6"></i>
+          </button>
+          <button id="btn-nope" onclick="handleManualAction('pass')" class="w-16 h-16 flex items-center justify-center rounded-full bg-white text-rose-500 btn-shadow border border-gray-100 hover:scale-110 transition active:scale-90" title="Нет">
+            <i data-lucide="x" class="w-8 h-8"></i>
+          </button>
+          <button id="btn-super" onclick="handleManualAction('superlike')" class="w-12 h-12 flex items-center justify-center rounded-full bg-white text-blue-500 btn-shadow border border-gray-100 hover:scale-110 transition active:scale-90" title="Суперлайк">
+            <i data-lucide="star" class="w-6 h-6 fill-current"></i>
+          </button>
+          <button id="btn-like" onclick="handleManualAction('like')" class="w-16 h-16 flex items-center justify-center rounded-full bg-white text-emerald-500 btn-shadow border border-gray-100 hover:scale-110 transition active:scale-90" title="Лайк">
+            <i data-lucide="heart" class="w-8 h-8 fill-current"></i>
+          </button>
+          <button id="btn-boost" onclick="toggleBoost()" class="w-12 h-12 flex items-center justify-center rounded-full bg-white text-purple-500 btn-shadow border border-gray-100 hover:scale-110 transition active:scale-90" title="Boost (30 сек)">
+            <i data-lucide="zap" class="w-6 h-6 fill-current"></i>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Messages View -->
+      <div id="view-messages" class="hidden h-full flex flex-col bg-white">
+        <div id="messages-list-container" class="flex flex-col h-full">
+          <div class="px-6 py-4">
+            <h2 class="text-xl font-extrabold mb-4">Новые пары</h2>
+            <div id="matches-row" class="flex space-x-4 overflow-x-auto no-scrollbar pb-2 min-h-[90px]"></div>
+          </div>
+
+          <div class="px-6 py-4 border-t border-gray-100 flex-1 overflow-y-auto no-scrollbar">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-xl font-extrabold">Сообщения</h2>
+              <button onclick="markAllRead()" class="text-xs text-gray-400 hover:text-gray-600">Прочитать всё</button>
+            </div>
+            <div id="chats-list" class="space-y-4"></div>
+          </div>
+        </div>
+
+        <!-- Chat Window -->
+        <div id="chat-window" class="hidden flex flex-col h-full bg-white z-50 absolute inset-0">
+          <div class="flex items-center px-4 py-3 border-b border-gray-100 bg-white">
+            <button onclick="closeChat()" class="p-2 -ml-2 text-gray-500 hover:bg-gray-100 rounded-full"><i data-lucide="chevron-left"></i></button>
+            <button id="chat-user-header" onclick="openProfileDetail(window.__activeChatId, {from:'chat'})" class="flex items-center space-x-3 ml-2 flex-1">
+              <img id="chat-user-img" src="" class="w-10 h-10 rounded-full object-cover ring-2 ring-gray-100" />
+              <div class="text-left">
+                <h3 id="chat-user-name" class="font-extrabold text-sm"></h3>
+                <span id="chat-user-status" class="text-xs text-emerald-500 font-medium">В сети</span>
+              </div>
+            </button>
+            <div class="ml-auto flex items-center space-x-1 text-gray-400">
+              <button class="p-2 hover:bg-gray-100 rounded-full transition" onclick="toast('Видеозвонки в разработке')"><i data-lucide="video" class="w-5 h-5"></i></button>
+              <button class="p-2 hover:bg-gray-100 rounded-full transition" onclick="openChatMenu()"><i data-lucide="more-vertical" class="w-5 h-5"></i></button>
+            </div>
+          </div>
+
+          <div id="chat-messages" class="flex-1 p-4 overflow-y-auto bg-gray-50 space-y-3 no-scrollbar pb-24"></div>
+
+          <div class="p-3 bg-white border-t border-gray-100 flex items-end space-x-2 safe-bottom absolute bottom-0 left-0 right-0 z-10">
+            <button onclick="toast('Стикеры в разработке')" class="w-10 h-10 flex-shrink-0 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200 transition">
+              <i data-lucide="smile" class="w-5 h-5"></i>
+            </button>
+            <div class="flex-1 bg-gray-100 rounded-2xl px-4 py-2 relative">
+              <textarea id="chat-input" rows="1" placeholder="Ваше сообщение..." class="w-full resize-none bg-transparent text-sm focus:outline-none max-h-24 py-1"></textarea>
+            </div>
+            <button id="chat-send" onclick="sendChatMessage()" class="w-10 h-10 flex-shrink-0 bg-pink-500 rounded-full flex items-center justify-center text-white shadow-md hover:bg-pink-600 transition active:scale-95">
+              <i data-lucide="send" class="w-5 h-5 ml-0.5"></i>
+            </button>
+          </div>
+          <div id="typing-indicator" class="absolute bottom-20 left-6 text-[11px] text-gray-400 hidden bg-white/80 px-2 py-1 rounded-full backdrop-blur-sm">Печатает…</div>
+        </div>
+      </div>
+
+      <!-- Explore View (History only) -->
+      <div id="view-explore" class="hidden h-full flex flex-col bg-white overflow-y-auto p-4 no-scrollbar pb-24">
+        <h2 class="text-2xl font-black italic mb-6">Ваша история</h2>
+        
+        <!-- History Panel -->
+        <div id="explore-history-panel">
+          <div class="mb-8">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-2xl font-black italic uppercase tracking-widest flex items-center gap-2 text-black dark:text-white">
+                <i data-lucide="heart" class="w-6 h-6 text-pink-500"></i>
+                <span class="leading-none">СОВПАДЕНИЯ</span>
+              </h3>
+              <span id="history-matches-count" class="text-xs font-bold px-2 py-1 bg-gray-100 dark:bg-zinc-800 rounded-lg text-gray-500">0</span>
+            </div>
+            <div id="history-matches-list" class="space-y-3"></div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-2xl font-black italic uppercase tracking-widest flex items-center gap-2 text-black dark:text-white">
+                <i data-lucide="thumbs-up" class="w-6 h-6 text-emerald-500"></i>
+                <span class="leading-none">ЛАЙКИ</span>
+              </h3>
+              <span id="history-likes-count" class="text-xs font-bold px-2 py-1 bg-gray-100 dark:bg-zinc-800 rounded-lg text-gray-500">0</span>
+            </div>
+            <div id="history-likes-list" class="space-y-3"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile View -->
+      <div id="view-profile" class="hidden h-full overflow-y-auto bg-white p-6 no-scrollbar pb-24">
+        <div class="relative flex flex-col items-center mb-7">
+          <div class="absolute top-0 right-0 bg-amber-50 dark:bg-amber-900/30 px-3 py-1.5 rounded-2xl border border-amber-200 dark:border-amber-800 flex items-center shadow-sm">
+            <i data-lucide="coins" class="w-4 h-4 text-amber-500 mr-2"></i>
+            <span id="profile-coins" class="text-sm font-black text-amber-600 dark:text-amber-400">0</span>
+          </div>
+
+          <div class="w-32 h-32 rounded-full ring-4 ring-pink-50 dark:ring-pink-900 overflow-hidden mb-4 relative group shadow-lg">
+            <img id="my-profile-pic" src="" class="w-full h-full object-cover" />
+            <label class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition cursor-pointer">
+              <i data-lucide="camera" class="text-white w-8 h-8"></i>
+              <input id="my-avatar-input" type="file" accept="image/*" class="hidden" />
+            </label>
+            <div id="premium-badge" class="hidden absolute -bottom-1 left-1/2 -translate-x-1/2 bg-gradient-to-r from-pink-500 to-rose-500 text-white px-3 py-1 rounded-full text-[10px] font-black italic shadow-lg flex items-center gap-1 border-2 border-white dark:border-zinc-800">
+              <i data-lucide="sparkles" class="w-3 h-3"></i> Spark Plus
+            </div>
+          </div>
+
+          <div class="w-full space-y-3">
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="text-xs text-gray-500 ml-1">Имя</label>
+                <input id="my-name" type="text" class="w-full mt-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-500 focus:outline-none" />
+              </div>
+              <div>
+                <label class="text-xs text-gray-500 ml-1">Возраст</label>
+                <input id="my-age" type="number" min="18" max="99" class="w-full mt-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-500 focus:outline-none" />
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="text-xs text-gray-500 ml-1">Город</label>
+                <select id="my-city" class="w-full mt-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-500 focus:outline-none"></select>
+              </div>
+              <div>
+                <label class="text-xs text-gray-500 ml-1">Область</label>
+                <select id="my-region" class="w-full mt-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-500 focus:outline-none"></select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-6">
+          <section>
+            <div class="flex items-center justify-between ml-1">
+              <h3 class="font-semibold text-gray-700 dark:text-gray-300">О себе</h3>
+              <span id="bio-counter" class="text-xs text-gray-400">0/240</span>
+            </div>
+            <textarea id="my-bio" maxlength="240" class="w-full mt-2 p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-500 focus:outline-none h-28 resize-none" placeholder="Расскажите о себе: чем горите, что ищете, какой идеальный вечер..."></textarea>
+          </section>
+
+          <section>
+            <button type="button" onclick="toggleAboutInfo()" class="w-full mt-2 flex items-center justify-between px-4 py-3 rounded-2xl border border-gray-200 bg-gray-50 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+              <div class="flex items-center gap-2">
+                <i data-lucide="info" class="w-4 h-4 text-pink-500"></i>
+                <span class="text-sm font-semibold text-gray-800 dark:text-gray-200">Информация обо мне</span>
+              </div>
+              <i id="about-info-chevron" data-lucide="chevron-down" class="w-4 h-4 text-gray-400 transition-transform"></i>
+            </button>
+
+            <div id="about-info-panel" class="mt-4 space-y-6 hidden pl-1">
+              <section>
+                <div class="flex items-center justify-between mb-2">
+                  <h3 class="font-semibold text-gray-700 dark:text-gray-300">Интересы</h3>
+                </div>
+                <div id="interests-view" class="flex flex-wrap gap-2 text-sm text-gray-700 dark:text-gray-300"></div>
+                <div id="interests-edit" class="flex flex-wrap gap-2 mt-2 hidden"></div>
+              </section>
+
+              <section>
+                <div class="flex items-center justify-between mb-2">
+                  <h3 class="font-semibold text-gray-700 dark:text-gray-300">Любимая еда</h3>
+                </div>
+                <div id="foods-view" class="flex flex-wrap gap-2 text-sm text-gray-700 dark:text-gray-300"></div>
+                <div id="foods-edit" class="flex flex-wrap gap-2 mt-2 hidden"></div>
+              </section>
+
+              <section>
+                <div class="flex items-center justify-between mb-2">
+                  <h3 class="font-semibold text-gray-700 dark:text-gray-300">Стиль жизни</h3>
+                </div>
+                <div id="lifestyle-view" class="flex flex-wrap gap-2 text-sm text-gray-700 dark:text-gray-300"></div>
+                <div id="lifestyle-edit" class="flex gap-2 mt-2 flex-wrap hidden"></div>
+              </section>
+
+              <section>
+                <div class="flex items-center justify-between mb-2">
+                  <h3 class="font-semibold text-gray-700 dark:text-gray-300">Хобби</h3>
+                  <button onclick="randomizeHobbies()" class="text-xs text-gray-400 hover:text-gray-600">Подобрать</button>
+                </div>
+                <div id="hobbies-view" class="flex flex-wrap gap-2 text-sm text-gray-700 dark:text-gray-300"></div>
+                <div id="hobbies-edit" class="flex flex-wrap gap-2 mt-2 hidden"></div>
+              </section>
+
+              <section>
+                <div class="flex items-center justify-between mb-2">
+                  <h3 class="font-semibold text-gray-700 dark:text-gray-300">Цели знакомства</h3>
+                </div>
+                <div id="goals-view" class="flex flex-wrap gap-2 text-sm text-gray-700 dark:text-gray-300"></div>
+                <div id="goals-edit" class="flex flex-wrap gap-2 mt-2 hidden"></div>
+              </section>
+
+              <section>
+                <div class="flex items-center justify-between mb-2">
+                  <h3 class="font-semibold text-gray-700 dark:text-gray-300">Знак зодиака</h3>
+                </div>
+                <select id="my-zodiac" class="w-full mt-2 px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-500 focus:outline-none">
+                  <option value="">Выберите знак</option>
+                </select>
+              </section>
+
+              <section class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="text-xs text-gray-500 block mb-1 ml-1">Курение</label>
+                  <select id="my-smoking" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-500 focus:outline-none"></select>
+                </div>
+                <div>
+                  <label class="text-xs text-gray-500 block mb-1 ml-1">Алкоголь</label>
+                  <select id="my-drinking" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-500 focus:outline-none"></select>
+                </div>
+              </section>
+            </div>
+          </section>
+
+          <section>
+            <div class="flex items-center justify-between mb-2 ml-1">
+              <h3 class="font-semibold text-gray-700 dark:text-gray-300">Мои фото</h3>
+              <button onclick="toast('Перетащите фото, чтобы изменить порядок — в разработке')" class="text-xs text-gray-400 hover:text-gray-600">Управление</button>
+            </div>
+            <div id="my-photos-grid" class="grid grid-cols-3 gap-2"></div>
+            <input id="my-photos-input" type="file" accept="image/*" class="hidden" />
+          </section>
+
+          <div class="grid grid-cols-2 gap-3 pt-4">
+            <button onclick="previewMyProfile()" id="btn-preview-profile" class="w-full py-4 bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 text-gray-900 dark:text-white rounded-xl font-extrabold text-base shadow-sm active:scale-95 transition col-span-2 hover:bg-gray-50 dark:hover:bg-zinc-700 flex items-center justify-center gap-2">
+              <i data-lucide="eye" class="w-5 h-5"></i>
+              <span>Предпросмотр</span>
+            </button>
+            <button onclick="saveProfile()" id="btn-save-profile" class="w-full py-4 bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-xl font-extrabold text-base shadow-lg active:scale-95 transition col-span-2">Сохранить</button>
+          </div>
+
+          <div class="mt-8">
+            <button onclick="openDeleteModal()" class="w-full py-4 rounded-xl bg-rose-50 dark:bg-rose-900/10 border border-rose-200 dark:border-rose-900 text-rose-600 dark:text-rose-400 font-extrabold flex items-center justify-center gap-2 hover:bg-rose-100 dark:hover:bg-rose-900/30 transition">
+              <i data-lucide="trash-2" class="w-5 h-5"></i> Удалить мой аккаунт
+            </button>
+            <p class="text-[10px] text-gray-400 mt-2 text-center uppercase tracking-widest">Аккаунт не подлежит восстановлению</p>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="flex items-center justify-around px-6 py-4 bg-white border-t border-gray-100 safe-bottom z-30">
+      <button onclick="switchView('feed')" id="nav-feed" class="nav-active transition p-1 hover:scale-110" title="Лента">
+        <i data-lucide="flame" class="w-7 h-7"></i>
+      </button>
+      <button onclick="switchView('explore')" id="nav-explore" class="text-gray-300 transition p-1 hover:scale-110" title="История">
+        <i data-lucide="clock" class="w-7 h-7"></i>
+      </button>
+      <button onclick="switchView('messages')" id="nav-messages" class="text-gray-300 transition relative p-1 hover:scale-110" title="Сообщения">
+        <i data-lucide="message-circle" class="w-7 h-7"></i>
+        <span id="nav-messages-badge" class="hidden absolute -top-1 -right-1 min-w-5 h-5 px-1 bg-pink-500 text-white text-[10px] rounded-full flex items-center justify-center border-2 border-white font-extrabold animate-bounce">1</span>
+      </button>
+      <button onclick="switchView('profile')" id="nav-profile" class="text-gray-300 transition p-1 hover:scale-110" title="Профиль">
+        <i data-lucide="user" class="w-7 h-7"></i>
+      </button>
+    </nav>
+
+    <!-- Profile Detail Overlay -->
+    <div id="profile-detail" class="hidden fixed inset-0 bg-white z-50 overflow-y-auto no-scrollbar">
+      <div class="relative h-[60vh]">
+        <img id="detail-img" src="" class="w-full h-full object-cover" />
+
+        <button onclick="closeProfileDetail()" class="absolute top-6 left-6 w-10 h-10 bg-black/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-black/30 transition">
+          <i data-lucide="chevron-left"></i>
+        </button>
+
+        <div class="absolute top-6 right-6 flex gap-2">
+          <button onclick="copyProfileLink()" class="w-10 h-10 bg-black/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-black/30 transition" title="Поделиться">
+            <i data-lucide="share-2" class="w-5 h-5"></i>
+          </button>
+          <button onclick="openDetailMenu()" class="w-10 h-10 bg-black/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-black/30 transition" title="Меню">
+            <i data-lucide="more-horizontal" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <button id="detail-prev" onclick="detailPrevPhoto()" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/20 text-white flex items-center justify-center backdrop-blur-md hover:bg-black/30 transition">
+          <i data-lucide="chevron-left" class="w-5 h-5"></i>
+        </button>
+        <button id="detail-next" onclick="detailNextPhoto()" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/20 text-white flex items-center justify-center backdrop-blur-md hover:bg-black/30 transition">
+          <i data-lucide="chevron-right" class="w-5 h-5"></i>
+        </button>
+
+        <div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 via-black/40 to-transparent pt-20">
+          <div class="flex items-end justify-between gap-3">
+            <div>
+              <h2 id="detail-name-age" class="text-3xl font-extrabold text-white"></h2>
+              <p id="detail-meta" class="text-white/80 text-sm"></p>
+            </div>
+            <div id="detail-badges" class="flex gap-2"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6 space-y-6 bg-white dark:bg-zinc-900 min-h-[40vh]">
+        <div id="detail-photo-thumbs" class="flex gap-2 overflow-x-auto no-scrollbar"></div>
+
+        <div>
+          <h3 class="font-extrabold text-gray-800 dark:text-gray-200 mb-2 italic text-lg underline decoration-pink-300">О себе</h3>
+          <p id="detail-bio" class="text-gray-600 dark:text-gray-400 leading-relaxed"></p>
+        </div>
+
+        <div>
+          <h3 class="font-extrabold text-gray-800 dark:text-gray-200 mb-3">Интересы</h3>
+          <div id="detail-interests" class="flex flex-wrap gap-2"></div>
+        </div>
+
+        <div>
+          <h3 class="font-extrabold text-gray-800 dark:text-gray-200 mb-3">Знак зодиака</h3>
+          <p id="detail-zodiac" class="text-gray-600 dark:text-gray-400 text-lg font-semibold capitalize"></p>
+        </div>
+
+        <div>
+          <h3 class="font-extrabold text-gray-800 dark:text-gray-200 mb-3">Стиль жизни</h3>
+          <p id="detail-lifestyle" class="text-gray-600 dark:text-gray-400 text-lg font-semibold"></p>
+        </div>
+
+        <div>
+          <h3 class="font-extrabold text-gray-800 dark:text-gray-200 mb-3">Хобби</h3>
+          <div id="detail-hobbies" class="flex flex-wrap gap-2 mb-3"></div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-6">
+          <div>
+            <strong class="text-gray-700 dark:text-gray-300 block mb-1 text-sm">Курение:</strong>
+            <span id="detail-smoking" class="text-gray-600 dark:text-gray-400 text-sm bg-gray-100 dark:bg-zinc-800 px-2 py-1 rounded-md inline-block"></span>
+          </div>
+          <div>
+            <strong class="text-gray-700 dark:text-gray-300 block mb-1 text-sm">Алкоголь:</strong>
+            <span id="detail-drinking" class="text-gray-600 dark:text-gray-400 text-sm bg-gray-100 dark:bg-zinc-800 px-2 py-1 rounded-md inline-block"></span>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="font-extrabold text-gray-800 dark:text-gray-200 mb-3">Любимая еда</h3>
+          <div id="detail-foods" class="flex flex-wrap gap-2"></div>
+        </div>
+
+        <div>
+          <h3 class="font-extrabold text-gray-800 dark:text-gray-200 mb-3">Цели знакомства</h3>
+          <div id="detail-goals" class="flex flex-wrap gap-2"></div>
+        </div>
+
+        <div class="pb-28">
+          <h3 class="font-extrabold text-gray-800 dark:text-gray-200 mb-3">Действия</h3>
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="blockFromDetail()" class="py-3 rounded-xl bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-gray-300 font-bold flex items-center justify-center gap-2 hover:bg-gray-200 transition">
+              <i data-lucide="shield-ban" class="w-4 h-4"></i> <span>Заблокировать</span>
+            </button>
+            <button onclick="reportFromDetail()" class="py-3 rounded-xl bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 font-bold flex items-center justify-center gap-2 hover:bg-rose-100 transition">
+              <i data-lucide="flag" class="w-4 h-4"></i> <span>Пожаловаться</span>
+            </button>
+          </div>
+          <p class="text-xs text-gray-400 mt-2">В демо действия сохраняются локально.</p>
+        </div>
+      </div>
+
+      <div id="detail-actions-bar" class="fixed bottom-6 left-0 right-0 flex justify-center space-x-4 px-6 z-50">
+        <button onclick="closeProfileDetail(); handleManualAction('pass')" class="flex-1 py-4 bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl text-rose-500 font-extrabold shadow-xl flex items-center justify-center space-x-2 active:scale-95 transition">
+          <i data-lucide="x" class="w-5 h-5"></i> <span>Нет</span>
+        </button>
+        <button onclick="closeProfileDetail(); handleManualAction('superlike')" class="py-4 px-4 bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl text-blue-500 font-extrabold shadow-xl flex items-center justify-center active:scale-95 transition">
+          <i data-lucide="star" class="w-5 h-5 fill-current"></i>
+        </button>
+        <button onclick="closeProfileDetail(); handleManualAction('like')" class="flex-1 py-4 bg-pink-500 rounded-2xl text-white font-extrabold shadow-xl shadow-pink-200 dark:shadow-none flex items-center justify-center space-x-2 active:scale-95 transition">
+          <i data-lucide="heart" class="w-5 h-5 fill-current"></i> <span>Лайк</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Match Modal -->
+    <div id="match-modal" class="hidden fixed inset-0 bg-black/90 flex flex-col items-center justify-center p-8 z-[60] animate-bounce-in">
+      <div class="text-center">
+        <h2 class="text-5xl font-black italic text-pink-500 mb-2">Match!</h2>
+        <p class="text-white text-center mb-3">Вы и <span id="match-name" class="font-extrabold">Анна</span> понравились друг другу</p>
+        <div id="match-sub" class="text-xs text-white/70 mb-7"></div>
+      </div>
+
+      <div class="flex items-center space-x-4 mb-10">
+        <div class="w-24 h-24 rounded-full border-4 border-white overflow-hidden -rotate-6 shadow-2xl">
+          <img id="match-my-img" src="" class="w-full h-full object-cover" />
+        </div>
+        <div class="w-24 h-24 rounded-full border-4 border-white overflow-hidden rotate-6 shadow-2xl">
+          <img id="match-their-img" src="" class="w-full h-full object-cover" />
+        </div>
+      </div>
+
+      <div class="w-full space-y-4 max-w-xs">
+        <button onclick="goToMatchChat()" class="w-full py-4 bg-pink-500 text-white rounded-full font-extrabold shadow-lg hover:bg-pink-600 transition">Написать</button>
+        <button onclick="closeMatchModal()" class="w-full py-4 border-2 border-white text-white rounded-full font-extrabold hover:bg-white/10 transition">Продолжить</button>
+      </div>
+    </div>
+
+    <!-- Settings Sidebar -->
+    <div id="settings-panel" class="fixed inset-y-0 right-[-100%] w-full max-w-md bg-white z-40 transition-all duration-300 shadow-2xl overflow-y-auto no-scrollbar">
+      <div class="p-6 pb-24">
+        <div class="flex items-center justify-between mb-8">
+          <h2 class="text-2xl font-extrabold">Настройки поиска</h2>
+          <button onclick="toggleSettings()" class="p-2 bg-gray-100 rounded-full hover:bg-gray-200"><i data-lucide="x"></i></button>
+        </div>
+
+        <div class="space-y-8">
+          <section>
+            <div class="flex justify-between mb-4">
+              <span class="font-semibold">Локация поиска</span>
+            </div>
+            <div class="space-y-3">
+              <select id="setting-region" class="w-full p-2 bg-gray-50 border rounded-lg outline-none cursor-pointer hover:bg-gray-100">
+                <option value="">Все области</option>
+              </select>
+              <select id="setting-city" class="w-full p-2 bg-gray-50 border rounded-lg outline-none cursor-pointer hover:bg-gray-100">
+                <option value="">Все города</option>
+              </select>
+            </div>
+          </section>
+
+          <section>
+            <div class="flex justify-between mb-4">
+              <span class="font-semibold">Возрастной диапазон</span>
+              <span id="setting-age-label" class="text-pink-500 font-extrabold">18 — 35</span>
+            </div>
+            <div class="flex space-x-4">
+              <input id="setting-age-min" type="number" value="18" min="18" max="99" class="w-1/2 p-2 bg-gray-50 border rounded-lg text-center" />
+              <input id="setting-age-max" type="number" value="35" min="18" max="99" class="w-1/2 p-2 bg-gray-50 border rounded-lg text-center" />
+            </div>
+          </section>
+
+          <section>
+            <h3 class="font-semibold mb-4">Показывать мне</h3>
+            <div class="space-y-2">
+              <label class="flex items-center justify-between p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100">
+                <span>Женщин</span>
+                <input type="radio" name="pref" value="female" class="w-5 h-5 accent-pink-500" />
+              </label>
+              <label class="flex items-center justify-between p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100">
+                <span>Мужчин</span>
+                <input type="radio" name="pref" value="male" class="w-5 h-5 accent-pink-500" />
+              </label>
+              <label class="flex items-center justify-between p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100">
+                <span>Всех</span>
+                <input type="radio" name="pref" value="all" class="w-5 h-5 accent-pink-500" />
+              </label>
+            </div>
+          </section>
+
+          <section>
+            <h3 class="font-semibold mb-3">Быстрые действия</h3>
+            <div class="grid grid-cols-2 gap-2">
+              <button onclick="resetFeed()" class="py-3 rounded-xl bg-gray-900 text-white font-extrabold hover:bg-gray-800">Обновить ленту</button>
+              <button onclick="clearAllData()" class="py-3 rounded-xl bg-white border border-gray-200 text-gray-700 font-extrabold hover:bg-gray-50">Сбросить демо</button>
+            </div>
+            <p class="text-xs text-gray-400 mt-2">Сброс удалит чаты, матчи и профиль на этом устройстве.</p>
+          </section>
+
+          <div class="pt-2">
+            <button onclick="toggleSettings()" class="w-full py-4 bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-xl font-extrabold shadow-lg active:scale-95 transition">Готово</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- App Settings Sidebar -->
+    <div id="app-settings-panel" class="fixed inset-y-0 right-[-100%] w-full max-w-md bg-white dark:bg-zinc-900 z-50 transition-all duration-300 shadow-2xl overflow-y-auto no-scrollbar">
+      <div class="p-6 pb-24">
+        <div class="flex items-center justify-between mb-8">
+          <h2 class="text-2xl font-extrabold text-gray-900 dark:text-white">Настройки</h2>
+          <button onclick="toggleAppSettings()" class="p-2 bg-gray-100 dark:bg-zinc-800 rounded-full hover:bg-gray-200 dark:hover:bg-zinc-700 text-gray-600 dark:text-gray-300"><i data-lucide="x"></i></button>
+        </div>
+
+        <div class="space-y-8">
+          <section>
+            <h3 class="font-semibold text-gray-700 dark:text-gray-300 mb-4">Внешний вид</h3>
+            <div class="bg-gray-50 dark:bg-zinc-800 rounded-xl p-2 flex">
+              <button onclick="setTheme('light')" id="theme-btn-light" class="flex-1 py-2 rounded-lg text-sm font-bold transition text-gray-600 dark:text-gray-400">Светлая</button>
+              <button onclick="setTheme('dark')" id="theme-btn-dark" class="flex-1 py-2 rounded-lg text-sm font-bold transition text-gray-600 dark:text-gray-400">Темная</button>
+            </div>
+          </section>
+
+          <section>
+            <h3 class="font-semibold text-gray-700 dark:text-gray-300 mb-4">Язык / Language</h3>
+            <select id="app-lang" onchange="changeLanguage()" class="w-full p-3 bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-xl outline-none text-gray-800 dark:text-gray-200">
+              <option value="ru">Русский</option>
+              <option value="en">English</option>
+            </select>
+          </section>
+
+          <section>
+            <h3 class="font-semibold text-gray-700 dark:text-gray-300 mb-4">Информация</h3>
+            <div class="space-y-2">
+              <button onclick="openInfoModal('tos')" class="w-full flex items-center justify-between p-4 bg-gray-50 dark:bg-zinc-800 rounded-xl hover:bg-gray-100 dark:hover:bg-zinc-700 transition text-gray-800 dark:text-gray-200">
+                <span class="font-medium">Пользовательское соглашение</span>
+                <i data-lucide="chevron-right" class="w-4 h-4 text-gray-400"></i>
+              </button>
+              <button onclick="openInfoModal('faq')" class="w-full flex items-center justify-between p-4 bg-gray-50 dark:bg-zinc-800 rounded-xl hover:bg-gray-100 dark:hover:bg-zinc-700 transition text-gray-800 dark:text-gray-200">
+                <span class="font-medium">FAQ / Помощь</span>
+                <i data-lucide="chevron-right" class="w-4 h-4 text-gray-400"></i>
+              </button>
+            </div>
+          </section>
+
+          <div class="pt-4 text-center">
+             <p class="text-xs text-gray-400">Spark v2.1.0 (Demo)</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info Modals (TOS / FAQ) -->
+    <div id="info-modal" class="hidden fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4">
+      <div class="w-full max-w-lg bg-white dark:bg-zinc-900 rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh] animate-bounce-in">
+        <div class="p-6 border-b border-gray-100 dark:border-zinc-800 flex items-center justify-between">
+          <h2 id="info-modal-title" class="text-xl font-black text-gray-900 dark:text-white"></h2>
+          <button onclick="closeInfoModal()" class="p-2 bg-gray-100 dark:bg-zinc-800 rounded-full hover:bg-gray-200 dark:hover:bg-zinc-700 text-gray-600 dark:text-gray-300"><i data-lucide="x"></i></button>
+        </div>
+        <div id="info-modal-body" class="p-6 overflow-y-auto text-sm text-gray-600 dark:text-gray-300 leading-relaxed space-y-4"></div>
+      </div>
+    </div>
+
+    <!-- Daily Reward Modal -->
+    <div id="reward-modal" class="hidden fixed inset-0 bg-black/60 z-[70] flex items-center justify-center p-6 animate-bounce-in">
+      <div class="w-full max-w-sm bg-white rounded-3xl p-8 text-center shadow-2xl relative overflow-hidden">
+        <div class="absolute -top-12 -left-12 w-32 h-32 bg-amber-100 rounded-full blur-3xl opacity-50"></div>
+        <div class="absolute -bottom-12 -right-12 w-32 h-32 bg-pink-100 rounded-full blur-3xl opacity-50"></div>
+        
+        <div class="relative">
+          <div class="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
+            <i data-lucide="coins" class="w-10 h-10 text-amber-500"></i>
+          </div>
+          <h2 class="text-2xl font-black text-gray-800 mb-2">Ежедневная награда!</h2>
+          <p class="text-gray-500 mb-6">Вы зашли в Spark <span id="reward-streak" class="font-bold text-pink-500">1-й</span> день подряд.</p>
+          
+          <div class="bg-gray-50 rounded-2xl p-4 mb-6 flex items-center justify-center">
+            <span class="text-4xl font-black text-amber-500 mr-2">+<span id="reward-amount">10</span></span>
+            <i data-lucide="coins" class="w-6 h-6 text-amber-500"></i>
+          </div>
+          
+          <div class="mb-6">
+            <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mb-2">Награды за посещение</p>
+            <div id="reward-schedule-list" class="grid grid-cols-5 gap-1.5">
+              <!-- JS Populated -->
+            </div>
+          </div>
+
+          <button onclick="closeRewardModal()" class="w-full py-4 bg-gray-900 text-white rounded-2xl font-extrabold shadow-lg active:scale-95 transition hover:bg-gray-800">Забрать награду</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toasts -->
+    <div id="toast-container" class="fixed left-0 right-0 bottom-24 z-[60] px-4 pointer-events-none flex justify-center">
+      <div id="toast" class="hidden max-w-md bg-gray-900 text-white text-sm px-6 py-3 rounded-full shadow-2xl opacity-90 backdrop-blur-md"></div>
+    </div>
+
+    <!-- Delete Account Modal -->
+    <div id="delete-modal" class="hidden fixed inset-0 bg-black/60 z-[90] flex items-center justify-center p-4">
+      <div class="w-full max-w-md bg-white rounded-3xl overflow-hidden shadow-2xl">
+        <div class="p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-black text-rose-600 flex items-center gap-2">
+              <i data-lucide="alert-triangle" class="w-6 h-6"></i> Удаление аккаунта
+            </h2>
+            <button onclick="closeDeleteModal()" class="p-2 bg-gray-100 rounded-full hover:bg-gray-200"><i data-lucide="x"></i></button>
+          </div>
+
+          <div class="bg-rose-50 border border-rose-200 rounded-2xl p-4 mb-6">
+            <p class="text-rose-700 text-sm font-medium">
+              <i data-lucide="alert-circle" class="w-4 h-4 inline mr-1"></i>
+              <strong>Внимание!</strong> Аккаунт не подлежит восстановлению после удаления. Все ваши данные, матчи, переписки и монеты будут безвозвратно утеряны.
+            </p>
+          </div>
+
+          <div class="mb-6">
+            <h3 class="font-semibold text-gray-700 mb-3">Укажите причину удаления:</h3>
+            <div class="space-y-2">
+              <label class="flex items-center p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition">
+                <input type="radio" name="delete-reason" value="found" class="w-5 h-5 accent-pink-500 mr-3" />
+                <span class="text-sm">Вторая половинка уже найдена</span>
+              </label>
+              <label class="flex items-center p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition">
+                <input type="radio" name="delete-reason" value="not-interested" class="w-5 h-5 accent-pink-500 mr-3" />
+                <span class="text-sm">Не интересует поиск второй половинки</span>
+              </label>
+              <label class="flex items-center p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition">
+                <input type="radio" name="delete-reason" value="problems" class="w-5 h-5 accent-pink-500 mr-3" />
+                <span class="text-sm">У меня возникли проблемы с приложением</span>
+              </label>
+              <label class="flex items-center p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition">
+                <input type="radio" name="delete-reason" value="other" class="w-5 h-5 accent-pink-500 mr-3" onchange="toggleOtherReason()" />
+                <span class="text-sm">Указать свою причину ниже</span>
+              </label>
+            </div>
+            <textarea id="delete-other-reason" class="hidden w-full mt-3 p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-rose-500 focus:outline-none h-20" placeholder="Опишите вашу причину..."></textarea>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <button onclick="closeDeleteModal()" class="py-4 bg-gray-100 text-gray-700 rounded-xl font-bold hover:bg-gray-200">Отмена</button>
+            <button onclick="confirmDeleteAccount()" class="py-4 bg-rose-500 text-white rounded-xl font-extrabold hover:bg-rose-600">Удалить навсегда</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Support Modal -->
+    <div id="support-modal" class="hidden fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4">
+      <div class="w-full max-w-sm bg-white dark:bg-zinc-900 rounded-3xl p-6 shadow-2xl relative animate-bounce-in">
+        <button onclick="closeSupportModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1 bg-gray-100 dark:bg-zinc-800 rounded-full">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+        <div class="flex flex-col items-center text-center mt-2">
+          <div class="w-16 h-16 bg-blue-50 dark:bg-blue-900/30 text-blue-500 rounded-full flex items-center justify-center mb-5 ring-4 ring-blue-50 dark:ring-blue-900/20">
+            <i data-lucide="life-buoy" class="w-8 h-8"></i>
+          </div>
+          <h3 class="text-xl font-black text-gray-900 dark:text-white mb-3">Поддержка</h3>
+          <p class="text-gray-500 dark:text-gray-400 text-sm mb-6 leading-relaxed px-2">
+            Столкнулись с технической проблемой или хотите пожаловаться на пользователя? Пожалуйста, подробно опишите ситуацию нашему официальному боту.
+          </p>
+          <button onclick="contactSupport()" class="w-full py-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl font-bold hover:shadow-lg hover:scale-[1.02] active:scale-95 transition flex items-center justify-center gap-2">
+            <i data-lucide="message-circle" class="w-5 h-5"></i>
+            <span>Обратиться в поддержку</span>
+          </button>
+          <p class="text-[10px] text-gray-400 mt-4">Среднее время ответа: 15 минут</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shop Modal -->
+    <div id="shop-modal" class="hidden fixed inset-0 bg-black/60 z-[80] flex items-center justify-center p-4">
+      <div class="w-full max-w-md bg-white rounded-3xl overflow-y-auto max-h-[90vh] no-scrollbar shadow-2xl">
+        <div class="p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-black italic">Spark Shop</h2>
+            <button onclick="toggleShop()" class="p-2 bg-gray-100 rounded-full hover:bg-gray-200"><i data-lucide="x"></i></button>
+          </div>
+
+          <!-- Premium Section -->
+          <div class="bg-gradient-to-br from-pink-500 to-rose-600 rounded-3xl p-6 text-white mb-8 relative overflow-hidden shadow-xl group">
+            <div class="absolute -right-4 -top-4 opacity-10 group-hover:opacity-20 transition transform group-hover:rotate-12"><i data-lucide="crown" class="w-32 h-32"></i></div>
+            <div class="relative z-10">
+              <div class="flex items-center gap-2 mb-2">
+                <i data-lucide="sparkles" class="w-5 h-5"></i>
+                <span class="font-black text-xl italic uppercase tracking-wider">Spark Plus</span>
+              </div>
+              <ul class="text-sm space-y-2 mb-6 opacity-90">
+                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4"></i> Безлимитные лайки</li>
+                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4"></i> 5 суперлайков каждый день</li>
+                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4"></i> Премиум-бейдж в профиле</li>
+                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4"></i> Приоритет в ленте</li>
+              </ul>
+              <div class="flex items-end gap-3 mb-4">
+                <span class="text-3xl font-black">500₽</span>
+                <span class="text-lg line-through opacity-50 mb-1">800₽</span>
+                <span class="text-xs bg-white text-pink-600 px-2 py-0.5 rounded-full font-bold mb-1.5">-37%</span>
+              </div>
+              <button onclick="buyPremium()" class="w-full py-3 bg-white text-pink-600 rounded-xl font-black shadow-lg active:scale-95 transition hover:bg-gray-50">Купить доступ</button>
+            </div>
+          </div>
+
+          <!-- Coins Section -->
+          <div class="space-y-4">
+            <h3 class="font-extrabold text-gray-800 flex items-center gap-2">
+              <i data-lucide="coins" class="text-amber-500"></i> Пополнение баланса
+            </h3>
+            <div class="bg-gray-50 p-4 rounded-2xl border-2 border-dashed border-gray-200">
+              <label class="text-xs text-gray-400 block mb-2">Количество монет (50 — 10 000)</label>
+              <div class="flex items-center gap-4">
+                <input id="shop-coin-input" type="number" value="100" min="50" max="10000" oninput="updateShopPrice()" class="flex-1 bg-transparent text-2xl font-black text-gray-800 outline-none" />
+                <div class="text-right">
+                  <div id="shop-total-price" class="text-xl font-black text-emerald-500">500₽</div>
+                  <div class="text-[10px] text-gray-400 italic">1 монета = 5₽</div>
+                </div>
+              </div>
+            </div>
+            <button onclick="buyCoins()" class="w-full py-4 bg-gray-900 text-white rounded-2xl font-extrabold shadow-lg active:scale-95 transition hover:bg-gray-800">Оплатить монеты</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Onboarding Tutorial Modal -->
+    <div id="tutorial-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[110] flex items-center justify-center p-6 animate-bounce-in">
+      <div class="bg-white w-full max-w-sm rounded-[32px] overflow-hidden shadow-2xl relative">
+        <div id="tut-step-1" class="p-8 text-center flex flex-col items-center">
+          <div class="w-20 h-20 bg-pink-100 rounded-full flex items-center justify-center mb-6">
+            <i data-lucide="hand-metal" class="text-pink-500 w-10 h-10"></i>
+          </div>
+          <h3 class="text-2xl font-black mb-3 text-gray-900">Листайте карточки</h3>
+          <p class="text-gray-500 mb-8 leading-relaxed">Вправо — чтобы лайкнуть, влево — если не подходит. Свайп вверх для Суперлайка!</p>
+          <button onclick="nextTutorial(2)" class="w-full py-4 bg-gray-900 text-white rounded-2xl font-bold hover:bg-gray-800 transition">Понятно</button>
+        </div>
+
+        <div id="tut-step-2" class="hidden p-8 text-center flex flex-col items-center">
+          <div class="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mb-6">
+            <i data-lucide="coins" class="text-amber-500 w-10 h-10"></i>
+          </div>
+          <h3 class="text-2xl font-black mb-3 text-gray-900">Собирайте монеты</h3>
+          <p class="text-gray-500 mb-8 leading-relaxed">Заходите каждый день и получайте награды. Монеты можно тратить на Бусты и подарки!</p>
+          <button onclick="nextTutorial(3)" class="w-full py-4 bg-gray-900 text-white rounded-2xl font-bold hover:bg-gray-800 transition">Далее</button>
+        </div>
+
+        <div id="tut-step-3" class="hidden p-8 text-center flex flex-col items-center">
+          <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mb-6">
+            <i data-lucide="sparkles" class="text-blue-500 w-10 h-10"></i>
+          </div>
+          <h3 class="text-2xl font-black mb-3 text-gray-900">Spark Plus</h3>
+          <p class="text-gray-500 mb-8 leading-relaxed">Премиум статус дает безлимитные лайки и выделяет ваш профиль среди других.</p>
+          <button onclick="finishTutorial()" class="w-full py-4 bg-pink-500 text-white rounded-2xl font-black hover:bg-pink-600 transition">Начать поиск</button>
+        </div>
+        
+        <div class="flex justify-center gap-1.5 pb-8">
+          <div id="tut-dot-1" class="w-2 h-2 rounded-full bg-pink-500 transition-colors"></div>
+          <div id="tut-dot-2" class="w-2 h-2 rounded-full bg-gray-200 transition-colors"></div>
+          <div id="tut-dot-3" class="w-2 h-2 rounded-full bg-gray-200 transition-colors"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const RUSSIA_CITIES = [
+      'Москва', 'Санкт-Петербург', 'Новосибирск', 'Екатеринбург', 'Казань', 'Нижний Новгород', 'Челябинск', 'Самара', 'Омск', 'Ростов-на-Дону', 'Уфа', 'Красноярск', 'Пермь', 'Воронеж', 'Волгоград', 'Краснодар', 'Саратов', 'Тюмень', 'Тольятти', 'Ижевск', 'Барнаул', 'Ульяновск', 'Иркутск', 'Хабаровск', 'Махачкала', 'Владивосток'
+    ];
+
+    const RUSSIA_REGIONS = [
+      'Московская обл.', 'Ленинградская обл.', 'Краснодарский край', 'Свердловская обл.', 'Республика Татарстан', 'Ростовская обл.', 'Башкортостан', 'Челябинская обл.', 'Нижегородская обл.', 'Самарская обл.'
+    ];
+
+    // System / Official chat
+    const SYSTEM_CHAT_ID = 'spark';
+    const SAFETY_MESSAGE = '⚠️ Будьте предельно осторожны: не переходите по неизвестным ссылкам и не устанавливайте приложения по просьбе незнакомых людей. Никогда не сообщайте пароли, коды из SMS и данные банковских карт. Если вас просят перевести деньги — это может быть мошенничество.';
+
+    const SPARK_LOGO_URL = 'data:image/svg+xml;utf8,' + encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+        <defs>
+          <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#ec4899"/>
+            <stop offset="1" stop-color="#f43f5e"/>
+          </linearGradient>
+        </defs>
+        <rect width="256" height="256" rx="64" fill="url(#g)"/>
+        <text x="50%" y="54%" text-anchor="middle" dominant-baseline="middle"
+              font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif"
+              font-size="128" font-weight="900" fill="#ffffff">S</text>
+      </svg>
+    `);
+
+    const SYSTEM_PROFILE = {
+      id: SYSTEM_CHAT_ID,
+      name: 'Spark',
+      age: '',
+      gender: 'system',
+      bio: 'Официальный чат приложения: уведомления об обновлениях и акциях, важные предупреждения по безопасности.',
+      city: 'Spark',
+      region: '',
+      photos: [SPARK_LOGO_URL],
+      interests: ['Обновления', 'Безопасность', 'Акции']
+    };
+
+    // Default avatar for the user profile (used when no photo is set)
+    const DEFAULT_MY_AVATAR_URL = 'data:image/svg+xml;utf8,' + encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+        <defs>
+          <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#e2e8f0"/>
+            <stop offset="1" stop-color="#f8fafc"/>
+          </linearGradient>
+        </defs>
+        <rect width="256" height="256" rx="64" fill="url(#g)"/>
+        <circle cx="128" cy="102" r="44" fill="#cbd5e1"/>
+        <path d="M48 220c18-44 52-66 80-66s62 22 80 66" fill="#cbd5e1"/>
+      </svg>
+    `);
+
+    const INITIAL_PROFILES = [
+      {
+        id: 1,
+        name: 'Анна',
+        id: 1,
+        name: 'Анна',
+        age: 22,
+        gender: 'female',
+        bio: 'Люблю путешествия и кофе. Ищу кого-то для походов в горы ⛰️',
+        city: 'Москва',
+        region: 'Московская обл.',
+        photos: [
+          'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=800&h=1000&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=800&h=1000&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1524503033411-f7a2fe8c7e9f?q=80&w=800&h=1000&auto=format&fit=crop'
+        ],
+        interests: ['Путешествия', 'Кофе', 'Спорт']
+      },
+      {
+        id: 2,
+        name: 'Елена',
+        age: 25,
+        gender: 'female',
+        bio: 'Йога, дизайн и разговоры до ночи. Мечтаю о домике у моря. 🌊',
+        city: 'Санкт-Петербург',
+        region: 'Ленинградская обл.',
+        photos: [
+          'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=800&h=1000&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=800&h=1000&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1524502397800-2eeaad7c3fe5?q=80&w=800&h=1000&auto=format&fit=crop'
+        ],
+        interests: ['Йога', 'Искусство', 'Кино']
+      },
+      {
+        id: 3,
+        name: 'Мария',
+        age: 24,
+        gender: 'female',
+        bio: 'В поиске вдохновения и новых знакомств. Обожаю котиков. 🐈',
+        city: 'Казань',
+        region: 'Республика Татарстан',
+        photos: [
+          'https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=800&h=1000&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1524502397800-2eeaad7c3fe5?q=80&w=800&h=1000&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=800&h=1000&auto=format&fit=crop'
+        ],
+        interests: ['Животные', 'Музыка', 'Вино']
+      },
+      {
+        id: 4,
+        name: 'Кристина',
+        age: 23,
+        gender: 'female',
+        bio: 'Фотограф и мечтательница. Давай сделаем крутой кадр? 📸',
+        city: 'Краснодар',
+        region: 'Краснодарский край',
+        photos: [
+          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800&h=1000&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1512310604669-443f26c35f52?q=80&w=800&h=1000&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=800&h=1000&auto=format&fit=crop'
+        ],
+        interests: ['Фото', 'Мода', 'Танцы']
+      },
+      {
+        id: 5,
+        name: 'Игорь',
+        age: 27,
+        gender: 'male',
+        bio: 'Разрабатываю продукты, бегаю по утрам, варю кофе лучше бариста.',
+        city: 'Москва',
+        region: 'Московская обл.',
+        photos: [
+          'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=800&h=1000&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1542178243-bc20204b769f?q=80&w=800&h=1000&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1521119989659-a83eee488004?q=80&w=800&h=1000&auto=format&fit=crop'
+        ],
+        interests: ['Технологии', 'Бег', 'Кофе']
+      },
+      {
+        id: 6,
+        name: 'Даниил',
+        age: 29,
+        gender: 'male',
+        bio: 'Люблю кино, хорошие разговоры и спонтанные поездки. 🎬',
+        city: 'Екатеринбург',
+        region: 'Свердловская обл.',
+        photos: [
+          'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=800&h=1000&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1521119989659-a83eee488004?q=80&w=800&h=1000&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1542178243-bc20204b769f?q=80&w=800&h=1000&auto=format&fit=crop'
+        ],
+        interests: ['Кино', 'Музыка', 'Путешествия']
+      }
+    ];
+
+    const INTERESTS_LIST = [
+      'Спорт','Музыка','Кино','Путешествия','Кофе','Искусство','Гейминг','Фото','Кулинария','Технологии',
+      'Йога','Бег','Танцы','Мода','Животные','Книги','Настолки','Велосипед','Бары','Прогулки'
+    ];
+
+    const FOOD_LIST = [
+      'Пицца', 'Суши', 'Бургеры', 'Паста', 'Стейк', 'Салаты', 'Рамен', 'Шашлык', 'Морепродукты', 'Десерты',
+      'Вегетарианская', 'Азиатская кухня', 'Итальянская кухня', 'Грузинская кухня', 'Русская кухня'
+    ];
+
+    const HOBBIES_LIST = [
+      'Футбол', 'Бассейн', 'Йога', 'Бег', 'Велосипед', 'Плавание', 'Тренажерный зал', 'Бокс', 'Танцы', 'Йога'
+    ];
+
+    const ZODIAC_SIGNS = [
+      'Овен', 'Телец', 'Близнецы', 'Рак', 'Лев', 'Дева', 'Весы', 'Скорпион', 'Стрелец', 'Козерог', 'Водолей', 'Рыбы'
+    ];
+
+    const LIFESTYLE_OPTIONS = [
+      'Активный', 'Домашний', 'Вечеринщик', 'Сбалансированный', 'Творческий'
+    ];
+
+    const GOALS_LIST = [
+      'Дружба', 'Казуальные свидания', 'Серьезные отношения', 'Брак', 'Не знаю'
+    ];
+
+    const SMOKING_OPTIONS = [
+      'Не курю', 'Курю иногда', 'Курю'
+    ];
+
+    const DRINKING_OPTIONS = [
+      'Не пью', 'Пью иногда', 'Пью регулярно'
+    ];
+
+    const STORAGE_KEY = 'spark.demo.v2';
+    const DEFAULT_STATE = {
+      currentView: 'feed',
+      theme: 'light',
+      tutorialCompleted: false,
+      settings: { city: '', region: '', ageMin: 18, ageMax: 35, pref: 'all' },
+      myProfile: { name: '', age: 18, city: '', region: '', gender: '', bio: '', zodiac: '', hobbies: [], lifestyle: '', goals: [], smoking: '', drinking: '', interests: [], foods: [], photos: [] },
+      seen: [], likes: [], passes: [], superLikes: [], blocked: [], matches: [], chats: {}, swipeHistory: [],
+      boost: { active: false, endsAt: 0 }, coins: 0, streak: 0, lastVisit: null, isPremium: false
+    };
+
+    let state = structuredClone(DEFAULT_STATE);
+    let boostTimer = null;
+    let drag = { active: false, pointerId: null, startX: 0, startY: 0, dx: 0, dy: 0, card: null };
+    let detail = { profileId: null, photoIndex: 0 };
+    let lastMatchId = null, lastMatchWasSuper = false;
+
+    function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
+    function formatLocation(p){
+      if (!p) return '';
+      if (p.id === SYSTEM_CHAT_ID || p.gender === 'system') return 'Официальный аккаунт';
+      return `${p.city || ''}, ${p.region || ''}`;
+    }
+    function formatTime(ts){ try{ const d = new Date(ts); return d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute:'2-digit' }); } catch { return ''; } }
+    function uid(){ return Math.random().toString(16).slice(2) + Date.now().toString(16); }
+    function getProfileById(id){ if (id === SYSTEM_CHAT_ID) return SYSTEM_PROFILE; return INITIAL_PROFILES.find(p => p.id === id) || null; }
+    function escapeHtml(str){ return String(str).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;'); }
+    function toast(message){ const el = document.getElementById('toast'); el.textContent = message; el.classList.remove('hidden'); el.classList.add('animate-bounce-in'); clearTimeout(window.__toastT); window.__toastT = setTimeout(() => { el.classList.add('hidden'); el.classList.remove('animate-bounce-in'); }, 2000); }
+    function persist(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { console.warn('persist failed', e); } }
+    function loadState(){ try{ const raw = localStorage.getItem(STORAGE_KEY); if (!raw) return; const parsed = JSON.parse(raw); state = { ...structuredClone(DEFAULT_STATE), ...parsed, settings: { ...DEFAULT_STATE.settings, ...(parsed.settings || {}) }, myProfile: { ...DEFAULT_STATE.myProfile, ...(parsed.myProfile || {}) }, boost: { ...DEFAULT_STATE.boost, ...(parsed.boost || {}) } }; } catch (e) { console.warn('loadState failed', e); } }
+
+    // Telegram Mini App: autofill name/avatar on app open (does not override already set data)
+    function getTelegramWebAppUser(){
+      try { return window.Telegram?.WebApp?.initDataUnsafe?.user || null; } catch { return null; }
+    }
+    function applyTelegramProfileAutofill(){
+      const u = getTelegramWebAppUser();
+      if (!u) return false;
+
+      const fullName = [u.first_name, u.last_name].filter(Boolean).join(' ').trim();
+      let changed = false;
+
+      if (!state.myProfile.name && fullName) {
+        state.myProfile.name = fullName;
+        changed = true;
+      }
+
+      const hasPhoto = Array.isArray(state.myProfile.photos) && state.myProfile.photos.length > 0;
+      if (!hasPhoto && u.photo_url) {
+        state.myProfile.photos = [u.photo_url];
+        changed = true;
+      }
+
+      state.__tg = { id: u.id, username: u.username || '', name: fullName, photo: u.photo_url || '' };
+
+      if (changed) persist();
+      return changed;
+    }
+
+    function clearAllData(){ if (!confirm('Сбросить демо на этом устройстве?')) return; localStorage.removeItem(STORAGE_KEY); state = structuredClone(DEFAULT_STATE); toast('Демо сброшено'); init(); }
+    function updateHeaderStats(){ const coins = state.coins || 0; document.getElementById('header-coins').textContent = coins; const profileCoins = document.getElementById('profile-coins'); if (profileCoins) profileCoins.textContent = coins; const unread = Object.values(state.chats || {}).reduce((sum, c) => sum + (c.unread || 0), 0); const badge = document.getElementById('nav-messages-badge'); if (unread > 0) { badge.textContent = unread > 99 ? '99+' : String(unread); badge.classList.remove('hidden'); } else { badge.classList.add('hidden'); } }
+    function checkDailyReward(){ 
+      const now = new Date(); 
+      const todayStr = now.toDateString(); 
+      if (state.lastVisit === todayStr) return; 
+      
+      const yesterday = new Date(now); 
+      yesterday.setDate(now.getDate() - 1); 
+      const yesterdayStr = yesterday.toDateString(); 
+      
+      if (state.lastVisit === yesterdayStr) { 
+        state.streak = (state.streak || 0) + 1; 
+      } else { 
+        state.streak = 1; 
+      } 
+      
+      const schedule = { 1: 10, 2: 20, 3: 35, 4: 50, 5: 70 }; 
+      const visualStreak = state.streak > 5 ? 5 : state.streak;
+      const reward = schedule[visualStreak] || 70; 
+      
+      state.coins = (state.coins || 0) + reward; 
+      state.lastVisit = todayStr; 
+      persist(); 
+      
+      document.getElementById('reward-streak').textContent = `${state.streak}-й`; 
+      document.getElementById('reward-amount').textContent = reward; 
+      
+      const list = document.getElementById('reward-schedule-list');
+      if(list) {
+        list.innerHTML = '';
+        for(let day=1; day<=5; day++) {
+          const amt = schedule[day];
+          const isCurrent = day === visualStreak;
+          const isPast = day < visualStreak;
+          const isFuture = day > visualStreak;
+          
+          const el = document.createElement('div');
+          let classes = "flex flex-col items-center justify-center p-1.5 rounded-lg border transition text-[10px]";
+          
+          if(isCurrent) {
+            classes += " border-amber-500 bg-amber-50 text-amber-700 font-bold scale-110 shadow-md z-10 relative ring-2 ring-amber-200";
+          } else if(isPast) {
+            classes += " border-gray-100 bg-gray-50 text-gray-400 opacity-60";
+            // Add checkmark for past
+            el.innerHTML = `<i data-lucide="check" class="w-4 h-4 mb-0.5"></i><span class="line-through">${amt}</span>`;
+            el.className = classes;
+            list.appendChild(el);
+            continue;
+          } else {
+            classes += " border-gray-100 bg-white text-gray-500";
+          }
+          
+          el.className = classes;
+          el.innerHTML = `
+            <span class="mb-0.5 font-medium">День ${day}</span>
+            <div class="flex items-center font-black">
+              <span>${amt}</span>
+              <i data-lucide="coins" class="w-3 h-3 ml-0.5 text-amber-500"></i>
+            </div>
+          `;
+          list.appendChild(el);
+        }
+      }
+
+      document.getElementById('reward-modal').classList.remove('hidden'); 
+      lucide.createIcons(); 
+    }
+    function closeRewardModal(){ document.getElementById('reward-modal').classList.add('hidden'); updateHeaderStats(); }
+    function setBoostUi(){ const pill = document.getElementById('boost-pill'); const btn = document.getElementById('btn-boost'); if (!state.boost.active) { pill.classList.add('hidden'); btn.classList.remove('pulse-ring'); return; } const left = Math.max(0, state.boost.endsAt - Date.now()); const sec = Math.ceil(left / 1000); const mm = String(Math.floor(sec / 60)).padStart(2,'0'); const ss = String(sec % 60).padStart(2,'0'); pill.textContent = `Boost ${mm}:${ss}`; pill.classList.remove('hidden'); btn.classList.add('pulse-ring'); if (left <= 0) { state.boost.active = false; state.boost.endsAt = 0; persist(); setBoostUi(); toast('Boost закончился'); } }
+    function passesFilters(profile){ const s = state.settings; if (state.blocked.includes(profile.id)) return false; if (s.city && profile.city !== s.city) return false; if (s.region && profile.region !== s.region) return false; if (profile.age < s.ageMin || profile.age > s.ageMax) return false; if (s.pref !== 'all' && profile.gender !== s.pref) return false; return true; }
+    function getRemainingProfiles(){ const seen = new Set(state.seen); return INITIAL_PROFILES.filter(p => !seen.has(p.id)).filter(passesFilters); }
+    
+    function switchView(view){ 
+      state.currentView = view; 
+      closeChat(); 
+      const views = ['feed', 'messages', 'profile', 'explore']; 
+      for (const v of views) { 
+        const el = document.getElementById(`view-${v}`); 
+        const nav = document.getElementById(`nav-${v}`); 
+        if (v === view) { 
+          el.classList.remove('hidden'); 
+          if (nav) { nav.classList.add('nav-active'); nav.classList.remove('text-gray-300'); } 
+        } else { 
+          el.classList.add('hidden'); 
+          if (nav) { nav.classList.remove('nav-active'); nav.classList.add('text-gray-300'); } 
+        } 
+      } 
+      
+      const btnFilters = document.getElementById('btn-filters');
+      const btnSettings = document.getElementById('btn-settings');
+      if (view === 'profile') {
+        if (btnFilters) btnFilters.classList.add('hidden');
+        if (btnSettings) btnSettings.classList.remove('hidden');
+      } else {
+        if (btnFilters) btnFilters.classList.remove('hidden');
+        if (btnSettings) btnSettings.classList.add('hidden');
+      }
+
+      if (view === 'feed') renderFeed(); 
+      if (view === 'explore') { renderHistory(); } 
+      if (view === 'messages') renderMessages(); 
+      if (view === 'profile') renderMyProfile(); 
+      updateHeaderStats(); 
+      persist(); 
+      lucide.createIcons(); 
+    }
+
+    function renderFeed(){ const container = document.getElementById('card-container'); const empty = document.getElementById('empty-state'); const buttons = document.getElementById('action-buttons'); container.querySelectorAll('.swipe-card').forEach(c => c.remove()); const remaining = getRemainingProfiles(); if (remaining.length === 0) { empty.classList.remove('hidden'); buttons.classList.add('opacity-30', 'pointer-events-none'); return; } empty.classList.add('hidden'); buttons.classList.remove('opacity-30', 'pointer-events-none'); const slice = remaining.slice(0, 3); [...slice].reverse().forEach((profile, idx) => { const isTop = idx === slice.length - 1; const card = createCard(profile, isTop); container.appendChild(card); }); document.getElementById('btn-rewind').classList.toggle('opacity-40', state.swipeHistory.length === 0); lucide.createIcons(); }
+
+    function createCard(profile, isTop){ const card = document.createElement('div'); card.className = `swipe-card shadow-xl ${isTop ? 'z-30' : 'z-10'}`; card.dataset.id = profile.id; if (isTop) card.dataset.top = 'true'; const interests = profile.interests.slice(0,3).map(i => `<span class="px-2 py-1 bg-white/20 backdrop-blur-md rounded-lg text-xs font-semibold">${escapeHtml(i)}</span>`).join(''); card.innerHTML = `<div class="relative h-full w-full group"><img src="${profile.photos[0]}" class="w-full h-full object-cover pointer-events-none" loading="lazy" /><div class="gradient-overlay absolute inset-0 flex flex-col justify-end p-6 text-white pointer-events-none"><div class="flex items-center gap-2"><h3 class="text-2xl font-extrabold">${escapeHtml(profile.name)}, ${profile.age}</h3><div class="w-4 h-4 bg-blue-400 rounded-full flex items-center justify-center"><i data-lucide="check" class="w-3 h-3 text-white"></i></div></div><p class="text-sm opacity-90 flex items-center mt-1"><i data-lucide="map-pin" class="w-3 h-3 mr-1"></i> ${formatLocation(profile)}</p><p class="text-sm mt-3 line-clamp-2">${escapeHtml(profile.bio)}</p><div class="flex space-x-2 mt-3">${interests}</div><button onclick="openProfileDetail(${profile.id})" class="absolute bottom-6 right-6 w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center pointer-events-auto hover:bg-white/30 transition" title="Подробнее"><i data-lucide="info" class="w-5 h-5 text-white"></i></button></div><div class="like-indicator absolute top-10 left-6 border-4 border-emerald-500 text-emerald-500 font-black text-3xl uppercase px-4 py-1 rounded-lg opacity-0 -rotate-12 transition-opacity">LIKE</div><div class="nope-indicator absolute top-10 right-6 border-4 border-rose-500 text-rose-500 font-black text-3xl uppercase px-4 py-1 rounded-lg opacity-0 rotate-12 transition-opacity">NOPE</div><div class="super-indicator absolute top-10 left-1/2 -translate-x-1/2 border-4 border-blue-500 text-blue-400 font-black text-2xl uppercase px-3 py-1 rounded-lg opacity-0 transition-opacity">SUPER</div></div>`; if (isTop) initDraggable(card); return card; }
+
+    function getTopCard(){ return document.querySelector('.swipe-card[data-top="true"]'); }
+    function initDraggable(card){ card.addEventListener('pointerdown', onPointerDown); }
+    function onPointerDown(e){ const card = e.currentTarget; if (drag.active) return; drag.active = true; drag.pointerId = e.pointerId; drag.startX = e.clientX; drag.startY = e.clientY; drag.dx = 0; drag.dy = 0; drag.card = card; card.setPointerCapture(e.pointerId); card.style.transition = 'none'; card.addEventListener('pointermove', onPointerMove); card.addEventListener('pointerup', onPointerUp); card.addEventListener('pointercancel', onPointerUp); }
+    function onPointerMove(e){ if (!drag.active || e.pointerId !== drag.pointerId) return; drag.dx = e.clientX - drag.startX; drag.dy = e.clientY - drag.startY; const card = drag.card; const rotate = clamp(drag.dx / 18, -18, 18); card.style.transform = `translate(${drag.dx}px, ${drag.dy}px) rotate(${rotate}deg)`; const like = card.querySelector('.like-indicator'); const nope = card.querySelector('.nope-indicator'); const sup = card.querySelector('.super-indicator'); const likeO = drag.dx > 40 ? clamp(drag.dx / 160, 0, 1) : 0; const nopeO = drag.dx < -40 ? clamp(Math.abs(drag.dx) / 160, 0, 1) : 0; const supO = (drag.dy < -40 && Math.abs(drag.dx) < 90) ? clamp(Math.abs(drag.dy) / 180, 0, 1) : 0; like.style.opacity = likeO; nope.style.opacity = nopeO; sup.style.opacity = supO; }
+    function onPointerUp(e){ if (!drag.active || e.pointerId !== drag.pointerId) return; const card = drag.card; card.releasePointerCapture(drag.pointerId); card.removeEventListener('pointermove', onPointerMove); card.removeEventListener('pointerup', onPointerUp); card.removeEventListener('pointercancel', onPointerUp); card.style.transition = 'transform .25s ease, opacity .25s ease'; const dx = drag.dx; const dy = drag.dy; drag.active = false; drag.pointerId = null; drag.card = null; let action = null; if (dx > 120) action = 'like'; else if (dx < -120) action = 'pass'; else if (dy < -140 && Math.abs(dx) < 90) action = 'superlike'; if (!action) { card.style.transform = 'translate(0,0) rotate(0deg)'; card.querySelectorAll('.like-indicator, .nope-indicator, .super-indicator').forEach(i => i.style.opacity = 0); return; } performSwipe(action, { card }); }
+    function handleManualAction(action){ const card = getTopCard(); if (!card) return; performSwipe(action, { card, manual: true }); }
+    function performSwipe(action, { card, manual = false } = {}){ const top = card || getTopCard(); if (!top) return; const id = parseInt(top.dataset.id, 10); const profile = getProfileById(id); if (!profile) return; let outX = 0, outY = 0, rot = 0; if (action === 'like') { outX = window.innerWidth; rot = 25; } if (action === 'pass') { outX = -window.innerWidth; rot = -25; } if (action === 'superlike') { outY = -window.innerHeight; rot = 0; } top.style.transform = `translate(${outX}px, ${outY}px) rotate(${rot}deg)`; top.style.opacity = 0; setTimeout(() => { const createdMatch = applyActionToState(profile, action); state.seen.push(profile.id); state.swipeHistory.push({ id: profile.id, action, createdMatch, ts: Date.now() }); if (state.swipeHistory.length > 50) state.swipeHistory.shift(); persist(); renderFeed(); updateHeaderStats(); if (state.currentView === 'explore') renderHistory(); if (state.currentView === 'messages') renderMessages(); }, 220); }
+    function applyActionToState(profile, action){ state.likes = state.likes.filter(x => x !== profile.id); state.passes = state.passes.filter(x => x !== profile.id); state.superLikes = state.superLikes.filter(x => x !== profile.id); if (action === 'like') state.likes.push(profile.id); if (action === 'pass') state.passes.push(profile.id); if (action === 'superlike') state.superLikes.push(profile.id); const boosted = state.boost.active && state.boost.endsAt > Date.now(); let chance = 0.35; if (boosted) chance = 0.55; if (action === 'superlike') chance = boosted ? 0.85 : 0.75; const deterministic = [1, 2].includes(profile.id) && (action !== 'pass'); const matched = deterministic || (action !== 'pass' && Math.random() < chance); if (matched) { if (!state.matches.includes(profile.id)) state.matches.push(profile.id); ensureChat(profile.id); lastMatchId = profile.id; lastMatchWasSuper = action === 'superlike'; showMatchModal(profile, lastMatchWasSuper); return true; } return false; }
+    function undoSwipe(){ if (state.swipeHistory.length === 0) return toast('Нечего отменять'); const last = state.swipeHistory.pop(); state.seen = state.seen.filter(x => x !== last.id); if (last.action === 'like') state.likes = state.likes.filter(x => x !== last.id); if (last.action === 'pass') state.passes = state.passes.filter(x => x !== last.id); if (last.action === 'superlike') state.superLikes = state.superLikes.filter(x => x !== last.id); if (last.createdMatch) { state.matches = state.matches.filter(x => x !== last.id); delete state.chats[last.id]; toast('Отменили и матч тоже откатился'); } else { toast('Отменено'); } persist(); renderFeed(); updateHeaderStats(); if (state.currentView === 'explore') renderHistory(); if (state.currentView === 'messages') renderMessages(); }
+    function resetFeed(){ state.seen = []; state.likes = []; state.passes = []; state.superLikes = []; state.swipeHistory = []; toast('Лента обновлена'); persist(); renderFeed(); if (state.currentView === 'explore') renderHistory(); updateHeaderStats(); }
+
+    function openProfileDetail(id, opts = {}){ const p = getProfileById(id); if (!p) return; detail.profileId = id; detail.photoIndex = 0; fillProfileDetail(p); document.getElementById('profile-detail').classList.remove('hidden'); lucide.createIcons(); }
+    function fillProfileDetail(p){ document.getElementById('detail-name-age').textContent = `${p.name}, ${p.age}`; document.getElementById('detail-meta').textContent = `${formatLocation(p)} • ${p.gender === 'female' ? 'Женщина' : 'Мужчина'}`; document.getElementById('detail-bio').textContent = p.bio; const badges = document.getElementById('detail-badges'); badges.innerHTML = ''; if (state.matches.includes(p.id)) badges.innerHTML += `<span class="px-3 py-1 rounded-full bg-pink-50 text-pink-600 font-extrabold text-xs">Match</span>`; if (state.superLikes.includes(p.id)) badges.innerHTML += `<span class="px-3 py-1 rounded-full bg-blue-50 text-blue-600 font-extrabold text-xs">Superliked</span>`; const interests = document.getElementById('detail-interests'); interests.innerHTML = ''; p.interests.forEach(i => { const span = document.createElement('span'); span.className = 'px-3 py-1 border border-pink-200 text-pink-600 rounded-full text-sm font-semibold'; span.textContent = i; interests.appendChild(span); }); renderDetailPhoto(); renderDetailThumbs(); }
+    function getDetailProfile(){
+      if (detail.profileId === 'me') return window.__previewMyProfile;
+      return getProfileById(detail.profileId);
+    }
+
+    function renderDetailPhoto(){ const p = getDetailProfile(); if (!p) return; detail.photoIndex = clamp(detail.photoIndex, 0, p.photos.length - 1); document.getElementById('detail-img').src = p.photos[detail.photoIndex]; document.getElementById('detail-prev').style.opacity = detail.photoIndex === 0 ? 0.35 : 1; document.getElementById('detail-next').style.opacity = detail.photoIndex === p.photos.length - 1 ? 0.35 : 1; }
+    function renderDetailThumbs(){ const p = getDetailProfile(); const wrap = document.getElementById('detail-photo-thumbs'); wrap.innerHTML = ''; if (!p) return; p.photos.forEach((src, idx) => { const b = document.createElement('button'); b.className = `flex-shrink-0 w-16 h-16 rounded-xl overflow-hidden border ${idx === detail.photoIndex ? 'border-pink-500' : 'border-gray-200'} bg-gray-100`; b.onclick = () => { detail.photoIndex = idx; renderDetailPhoto(); renderDetailThumbs(); }; b.innerHTML = `<img src="${src}" class="w-full h-full object-cover" />`; wrap.appendChild(b); }); }
+    function detailPrevPhoto(){ const p = getDetailProfile(); if (!p) return; if (detail.photoIndex === 0) return; detail.photoIndex -= 1; renderDetailPhoto(); renderDetailThumbs(); }
+    function detailNextPhoto(){ const p = getDetailProfile(); if (!p) return; if (detail.photoIndex >= p.photos.length - 1) return; detail.photoIndex += 1; renderDetailPhoto(); renderDetailThumbs(); }
+    function closeProfileDetail(){ 
+      document.getElementById('profile-detail').classList.add('hidden'); 
+      detail.profileId = null; 
+      detail.photoIndex = 0; 
+      // restore action buttons if they were hidden during preview
+      document.getElementById('detail-actions-bar')?.classList.remove('hidden');
+      window.__previewMyProfile = null;
+    }
+
+    function previewMyProfile(){
+      // Build a profile object compatible with Profile Detail overlay
+      const p = {
+        id: 'me',
+        name: (state.myProfile.name || 'Вы'),
+        age: (state.myProfile.age || ''),
+        gender: state.myProfile.gender || 'female',
+        bio: state.myProfile.bio || 'Добавьте описание в профиле',
+        city: state.myProfile.city || '—',
+        region: state.myProfile.region || '',
+        photos: (state.myProfile.photos && state.myProfile.photos.length) ? state.myProfile.photos : ['https://images.unsplash.com/photo-1520975682031-a65b2f5a0d6a?q=80&w=800&h=1000&auto=format&fit=crop'],
+        interests: state.myProfile.interests || [],
+      };
+
+      // Store preview profile for detail photo navigation
+      window.__previewMyProfile = p;
+      detail.profileId = 'me';
+      detail.photoIndex = 0;
+
+      // Fill overlay
+      fillProfileDetail(p);
+
+      // Hide action bar (like/nope) because it's your own profile
+      document.getElementById('detail-actions-bar')?.classList.add('hidden');
+
+      document.getElementById('profile-detail').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function copyProfileLink(){ if (!detail.profileId) return; const link = `${location.href.split('#')[0]}#profile=${detail.profileId}`; navigator.clipboard?.writeText(link).then(() => toast('Ссылка скопирована')).catch(() => toast('Не удалось скопировать')); }
+    function openDetailMenu(){ toast('Меню профиля: блок/репорт ниже'); }
+    function blockFromDetail(){ if (!detail.profileId) return; const id = detail.profileId; const p = getProfileById(id); if (!p) return; if (!confirm(`Вы действительно хотите добавить ${p.name} в ЧС?`)) return; if (!state.blocked.includes(id)) state.blocked.push(id); state.matches = state.matches.filter(x => x !== id); if (state.chats && state.chats[id]) delete state.chats[id]; toast('Пользователь добавлен в ЧС'); persist(); closeProfileDetail(); if (window.__activeChatId === id) closeChat(); renderFeed(); if (state.currentView === 'explore') renderExplore(); if (state.currentView === 'messages') renderMessages(); updateHeaderStats(); }
+    function reportFromDetail(){ if (!detail.profileId) return; const p = getProfileById(detail.profileId); if (!p) return; toast(`Жалоба на ${p.name} отправлена (демо)`); }
+
+    function showMatchModal(profile, isSuper){ document.getElementById('match-name').textContent = profile.name; document.getElementById('match-their-img').src = profile.photos[0]; document.getElementById('match-my-img').src = state.myProfile.photos[0] || ''; document.getElementById('match-sub').textContent = isSuper ? 'Суперлайк сработал!' : 'Самое время написать первой/первым.'; document.getElementById('match-modal').classList.remove('hidden'); }
+    function closeMatchModal(){ document.getElementById('match-modal').classList.add('hidden'); }
+    function goToMatchChat(){ if (!lastMatchId) return closeMatchModal(); closeMatchModal(); switchView('messages'); openChat(lastMatchId); }
+
+    function ensureSafetyInChat(profileId){
+      if (!state.chats || !state.chats[profileId] || !Array.isArray(state.chats[profileId].messages)) return;
+      const msgs = state.chats[profileId].messages;
+      const hasSafety = msgs.some(m => m && m.type === 'system' && m.code === 'safety');
+      if (!hasSafety) {
+        msgs.unshift({ id: 'sys_safety', type: 'system', code: 'safety', from: 'app', text: SAFETY_MESSAGE, ts: Date.now() });
+      }
+    }
+
+    function ensureSystemChat(){
+      if (!state.chats) state.chats = {};
+      if (!state.chats[SYSTEM_CHAT_ID]) {
+        state.chats[SYSTEM_CHAT_ID] = {
+          messages: [
+            { id: 'spark_welcome', type: 'system', code: 'welcome', from: 'app', text: 'Добро пожаловать в официальный чат Spark. Здесь будут уведомления об обновлениях и акциях.', ts: Date.now() },
+            { id: 'spark_safety', type: 'system', code: 'safety', from: 'app', text: SAFETY_MESSAGE, ts: Date.now() }
+          ],
+          unread: 2
+        };
+      } else {
+        // ensure safety + welcome exist
+        const msgs = state.chats[SYSTEM_CHAT_ID].messages || (state.chats[SYSTEM_CHAT_ID].messages = []);
+        if (!msgs.some(m => m && m.type === 'system' && m.code === 'welcome')) {
+          msgs.unshift({ id: 'spark_welcome', type: 'system', code: 'welcome', from: 'app', text: 'Официальный чат Spark: обновления и акции.', ts: Date.now() });
+        }
+        ensureSafetyInChat(SYSTEM_CHAT_ID);
+      }
+    }
+
+    function ensureChat(profileId){
+      if (!state.chats) state.chats = {};
+      if (!state.chats[profileId]) {
+        const p = getProfileById(profileId);
+        state.chats[profileId] = {
+          messages: [
+            { id: uid(), from: 'them', text: `Привет! Я ${p?.name || '...'}. Рад(а) матчу 🙂`, ts: Date.now() }
+          ],
+          unread: 1
+        };
+      }
+      // Always prepend safety message for every chat
+      ensureSafetyInChat(profileId);
+    }
+    function renderMessages(){ renderMatchesRow(); renderChatsList(); lucide.createIcons(); }
+    function renderMatchesRow(){ const row = document.getElementById('matches-row'); row.innerHTML = ''; const ids = [...state.matches].slice().reverse(); if (ids.length === 0) { row.innerHTML = '<p class="text-gray-400 text-sm italic">Пока нет совпадений</p>'; return; } for (const id of ids) { const p = getProfileById(id); if (!p) continue; const div = document.createElement('div'); div.className = 'flex-shrink-0 flex flex-col items-center space-y-1 cursor-pointer hover:scale-105 transition'; div.onclick = () => openChat(id); div.innerHTML = `<div class="w-16 h-16 rounded-full ring-2 ring-pink-500 p-1"><img src="${p.photos[0]}" class="w-full h-full object-cover rounded-full" /></div><span class="text-xs font-bold text-gray-700 dark:text-gray-300">${escapeHtml(p.name)}</span>`; row.appendChild(div); } }
+    function renderChatsList(){
+      const list = document.getElementById('chats-list');
+      list.innerHTML = '';
+
+      // Always show official Spark chat at top
+      ensureSystemChat();
+      const allRows = [];
+
+      function createChatRow(id, opts = {}){
+        const p = getProfileById(id);
+        if (!p) return null;
+        if (id !== SYSTEM_CHAT_ID) ensureChat(id);
+        const chat = state.chats[id];
+        if (!chat || !chat.messages || chat.messages.length === 0) return null;
+        const last = chat.messages[chat.messages.length - 1];
+
+        // Ensure the latest state uses the current logo/name for the system profile
+        if (id === SYSTEM_CHAT_ID) {
+          // (no-op here, but keeps intent clear)
+        }
+
+        const el = document.createElement('div');
+        const isSystem = id === SYSTEM_CHAT_ID;
+        el.className = isSystem
+          ? 'flex items-center space-x-4 p-2 bg-pink-50 dark:bg-pink-900/10 hover:bg-pink-100/60 dark:hover:bg-pink-900/20 rounded-xl cursor-pointer transition border border-pink-100 dark:border-pink-900/30'
+          : 'flex items-center space-x-4 p-2 hover:bg-gray-50 dark:hover:bg-zinc-800 rounded-xl cursor-pointer transition';
+
+        el.onclick = () => openChat(id);
+
+        const title = isSystem
+          ? `<span class="flex items-center gap-1">${escapeHtml(p.name)} <i data-lucide="badge-check" class="w-4 h-4 text-pink-500"></i></span>`
+          : escapeHtml(p.name);
+
+        el.innerHTML = `
+          <div class="w-16 h-16 rounded-full overflow-hidden ${isSystem ? 'ring-2 ring-pink-300 dark:ring-pink-800' : ''}">
+            <img src="${p.photos[0]}" class="w-full h-full object-cover" />
+          </div>
+          <div class="flex-1 ${isSystem ? '' : 'border-b border-gray-50 dark:border-zinc-800 pb-2'} min-w-0">
+            <div class="flex justify-between items-center mb-1">
+              <h4 class="font-extrabold truncate">${title}</h4>
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-gray-400">${formatTime(last.ts)}</span>
+                ${chat.unread > 0 ? `<span class="min-w-5 h-5 px-1 rounded-full bg-pink-500 text-white text-[10px] flex items-center justify-center font-extrabold animate-pulse">${chat.unread}</span>` : ''}
+              </div>
+            </div>
+            <p class="text-sm ${isSystem ? 'text-gray-700 dark:text-gray-300 font-medium' : 'text-gray-500'} truncate">${escapeHtml(last.text)}</p>
+          </div>
+        `;
+        return el;
+      }
+
+      const sysRow = createChatRow(SYSTEM_CHAT_ID);
+      if (sysRow) allRows.push(sysRow);
+
+      const ids = [...state.matches].slice().reverse();
+      for (const id of ids) {
+        const row = createChatRow(id);
+        if (row) allRows.push(row);
+      }
+
+      if (allRows.length === 0) {
+        list.innerHTML = '<p class="text-gray-400 text-center py-8">Тут будет ваша переписка</p>';
+        updateHeaderStats();
+        return;
+      }
+
+      allRows.forEach(r => list.appendChild(r));
+      updateHeaderStats();
+    }
+    function openChat(profileId){
+      const p = getProfileById(profileId);
+      if (!p) return;
+      window.__activeChatId = profileId;
+
+      if (profileId === SYSTEM_CHAT_ID) {
+        ensureSystemChat();
+      } else {
+        ensureChat(profileId);
+      }
+
+      document.getElementById('messages-list-container').classList.add('hidden');
+      document.getElementById('chat-window').classList.remove('hidden');
+      document.getElementById('chat-user-img').src = p.photos[0];
+      document.getElementById('chat-user-name').textContent = p.name;
+
+      const status = document.getElementById('chat-user-status');
+      if (profileId === SYSTEM_CHAT_ID) {
+        status.textContent = 'Официальный канал';
+        status.className = 'text-xs text-pink-500 font-black';
+      } else {
+        status.textContent = 'В сети';
+        status.className = 'text-xs text-emerald-500 font-medium';
+      }
+
+      state.chats[profileId].unread = 0;
+      persist();
+      updateHeaderStats();
+      renderChatMessages(profileId);
+      lucide.createIcons();
+      setTimeout(() => document.getElementById('chat-input')?.focus(), 80);
+    }
+    function closeChat(){ window.__activeChatId = null; const a = document.getElementById('messages-list-container'); const b = document.getElementById('chat-window'); if (a && b) { a.classList.remove('hidden'); b.classList.add('hidden'); } }
+    const EMOJIS = ['❤️', '😂', '🔥', '👍', '😢', '😮'];
+    function renderChatMessages(profileId){
+      const wrap = document.getElementById('chat-messages');
+      wrap.innerHTML = '';
+      const chat = state.chats[profileId];
+      if (!chat) return;
+
+      chat.messages.forEach((m, idx) => {
+        // System message (from the app)
+        if (m && m.type === 'system') {
+          const sys = document.createElement('div');
+          sys.className = 'flex justify-center my-3';
+          sys.innerHTML = `
+            <div class="max-w-[95%] text-[12px] px-3 py-2 rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-200">
+              <div class="flex items-start gap-2">
+                <i data-lucide="shield-alert" class="w-4 h-4 flex-shrink-0 mt-0.5 text-amber-600"></i>
+                <div>
+                  <div class="font-black text-[11px] uppercase tracking-wider mb-0.5">Безопасность</div>
+                  <div>${escapeHtml(m.text)}</div>
+                </div>
+              </div>
+            </div>
+          `;
+          wrap.appendChild(sys);
+          return;
+        }
+
+        const row = document.createElement('div');
+        const isMe = m.from === 'me';
+        row.className = `flex ${isMe ? 'justify-end' : 'justify-start'} group mb-4`;
+        const reactionsHtml = (m.reactions || []).map(r => `<span class="bg-white dark:bg-zinc-800 shadow-sm rounded-full px-1 text-[10px] -mt-2 border border-gray-100 dark:border-zinc-700">${r}</span>`).join('');
+        const safeChatId = JSON.stringify(profileId);
+        row.innerHTML = `<div class="relative max-w-[80%]"><div onclick="showReactions(${safeChatId}, ${idx})" class="${isMe ? 'bg-pink-500 text-white' : 'bg-white dark:bg-zinc-700 text-gray-800 dark:text-gray-100'} p-3 rounded-2xl ${isMe ? 'rounded-tr-none' : 'rounded-tl-none'} shadow-sm text-sm cursor-pointer active:scale-95 transition"><div>${escapeHtml(m.text)}</div><div class="mt-1 text-[10px] ${isMe ? 'text-white/70' : 'text-gray-400'} text-right">${formatTime(m.ts)}</div></div><div class="absolute -bottom-2 ${isMe ? 'right-0' : 'left-0'} flex gap-0.5 z-10">${reactionsHtml}</div></div>`;
+        wrap.appendChild(row);
+      });
+
+      wrap.scrollTop = wrap.scrollHeight;
+    }
+    function showReactions(profileId, msgIdx){ const emojiStr = EMOJIS.map(e => `<button onclick="addReaction(${profileId}, ${msgIdx}, '${e}')" class="text-xl hover:scale-125 transition p-1">${e}</button>`).join(''); const picker = document.createElement('div'); picker.id = 'emoji-picker-overlay'; picker.className = 'fixed inset-0 z-[100] flex items-center justify-center bg-black/20 backdrop-blur-sm'; picker.onclick = (e) => { if(e.target === picker) picker.remove(); }; picker.innerHTML = `<div class="bg-white dark:bg-zinc-800 p-4 rounded-3xl shadow-2xl flex gap-3 animate-bounce-in">${emojiStr}</div>`; document.body.appendChild(picker); }
+    function addReaction(profileId, msgIdx, emoji){ const chat = state.chats[profileId]; if (!chat) return; if (!chat.messages[msgIdx].reactions) chat.messages[msgIdx].reactions = []; const existingIdx = chat.messages[msgIdx].reactions.indexOf(emoji); if (existingIdx > -1) { chat.messages[msgIdx].reactions.splice(existingIdx, 1); } else { chat.messages[msgIdx].reactions.push(emoji); } document.getElementById('emoji-picker-overlay')?.remove(); persist(); renderChatMessages(profileId); }
+    function sendChatMessage(){ const id = window.__activeChatId; if (!id) return; const input = document.getElementById('chat-input'); const text = (input.value || '').trim(); if (!text) return; ensureChat(id); state.chats[id].messages.push({ id: uid(), from: 'me', text, ts: Date.now() }); input.value = ''; persist(); renderChatMessages(id); renderChatsList(); simulateReply(id); }
+    function simulateReply(profileId){ const typing = document.getElementById('typing-indicator'); typing.classList.remove('hidden'); const replies = ['Класс! Расскажи подробнее 🙂', 'Ого, звучит интересно. Когда свободен/свободна?', 'Хаха, мне нравится твой вайб 😄', 'Давай обменяемся плейлистами?', 'Какой у тебя идеальный вечер?']; const delay = 900 + Math.random() * 900; setTimeout(() => { typing.classList.add('hidden'); const reply = replies[Math.floor(Math.random() * replies.length)]; ensureChat(profileId); state.chats[profileId].messages.push({ id: uid(), from: 'them', text: reply, ts: Date.now() }); if (window.__activeChatId === profileId) { state.chats[profileId].unread = 0; renderChatMessages(profileId); } else { state.chats[profileId].unread = (state.chats[profileId].unread || 0) + 1; } persist(); renderChatsList(); updateHeaderStats(); }, delay); }
+    function markAllRead(){ Object.keys(state.chats || {}).forEach(k => state.chats[k].unread = 0); persist(); renderMessages(); toast('Все прочитано'); }
+    function openChatMenu(){ const id = window.__activeChatId; if (!id) return; const p = getProfileById(id); if (!p) return; const action = prompt(`Меню чата с ${p.name}:\n1 — Очистить чат\n2 — Удалить матч\n(Введите 1 или 2)`); if (!action) return; if (action === '1') { state.chats[id].messages = []; state.chats[id].unread = 0; persist(); renderChatMessages(id); renderChatsList(); toast('Чат очищен'); } if (action === '2') { if (!confirm('Удалить матч и чат?')) return; state.matches = state.matches.filter(x => x !== id); delete state.chats[id]; persist(); closeChat(); renderMessages(); updateHeaderStats(); toast('Матч удален'); } }
+
+    function renderMyProfile(){
+      document.getElementById('my-name').value = state.myProfile.name || '';
+      document.getElementById('my-age').value = state.myProfile.age || 24;
+      document.getElementById('my-bio').value = state.myProfile.bio || '';
+      updateBioCounter();
+      const panel = document.getElementById('about-info-panel');
+      const chev = document.getElementById('about-info-chevron');
+      if (panel && chev){
+        panel.classList.add('hidden');
+        chev.style.transform = 'rotate(0deg)';
+      }
+      // NOTE: edit-mode logic may be adjusted elsewhere; keep current behavior
+      state.__editProfile = true;
+      updateProfileEditModeUI();
+      const sReg = document.getElementById('my-region');
+      const sCity = document.getElementById('my-city');
+      if (sReg.options.length === 0) { RUSSIA_REGIONS.forEach(r => sReg.add(new Option(r, r))); }
+      if (sCity.options.length === 0) { RUSSIA_CITIES.forEach(c => sCity.add(new Option(c, c))); }
+      sReg.value = state.myProfile.region || 'Московская обл.';
+      sCity.value = state.myProfile.city || 'Москва';
+      const avatar = state.myProfile.photos?.[0] || DEFAULT_MY_AVATAR_URL;
+      document.getElementById('my-profile-pic').src = avatar;
+      document.getElementById('match-my-img').src = avatar;
+      const pBadge = document.getElementById('premium-badge');
+      if (state.isPremium) pBadge.classList.remove('hidden'); else pBadge.classList.add('hidden');
+      const zodiacSelect = document.getElementById('my-zodiac');
+      if (zodiacSelect && zodiacSelect.options.length <= 1) { ZODIAC_SIGNS.forEach(z => zodiacSelect.add(new Option(z, z))); }
+      if (zodiacSelect) zodiacSelect.value = state.myProfile.zodiac || '';
+      const smokingSelect = document.getElementById('my-smoking');
+      if (smokingSelect && smokingSelect.options.length === 0) { smokingSelect.add(new Option('Выберите', '')); SMOKING_OPTIONS.forEach(s => smokingSelect.add(new Option(s, s))); }
+      if (smokingSelect) smokingSelect.value = state.myProfile.smoking || '';
+      const drinkingSelect = document.getElementById('my-drinking');
+      if (drinkingSelect && drinkingSelect.options.length === 0) { drinkingSelect.add(new Option('Выберите', '')); DRINKING_OPTIONS.forEach(d => drinkingSelect.add(new Option(d, d))); }
+      if (drinkingSelect) drinkingSelect.value = state.myProfile.drinking || '';
+      renderInterests();
+      renderFoods();
+      renderLifestyle();
+      renderHobbies();
+      renderGoals();
+      renderMyPhotosGrid();
+      updateProfileEditModeUI();
+      lucide.createIcons();
+    }
+
+    function toggleEditProfile(){
+      state.__editProfile = !state.__editProfile;
+      updateProfileEditModeUI();
+    }
+
+    function updateProfileEditModeUI(){
+      const isEdit = !!state.__editProfile;
+      // переключаем отображение контейнеров выбора/просмотра
+      const sections = [
+        'interests','foods','lifestyle','hobbies','goals'
+      ];
+      sections.forEach(key => {
+        const view = document.getElementById(`${key}-view`);
+        const edit = document.getElementById(`${key}-edit`);
+        if (view) view.classList.toggle('hidden', isEdit);
+        if (edit) edit.classList.toggle('hidden', !isEdit);
+      });
+    }
+    function updateBioCounter(){ const v = document.getElementById('my-bio').value || ''; document.getElementById('bio-counter').textContent = `${v.length}/240`; }
+    function toggleAboutInfo(){
+      const panel = document.getElementById('about-info-panel');
+      const chev = document.getElementById('about-info-chevron');
+      if (!panel || !chev) return;
+      const isHidden = panel.classList.contains('hidden');
+      panel.classList.toggle('hidden', !isHidden ? true : false);
+      chev.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+    }
+    function toggleTheme(){ state.theme = state.theme === 'dark' ? 'light' : 'dark'; applyTheme(); persist(); }
+    function applyTheme(){ 
+      const isDark = state.theme === 'dark'; 
+      document.body.classList.toggle('dark', isDark); 
+      const moon = document.getElementById('theme-icon-moon'); 
+      const sun = document.getElementById('theme-icon-sun'); 
+      if (moon && sun) { moon.classList.toggle('hidden', isDark); sun.classList.toggle('hidden', !isDark); } 
+      updateThemeButtons();
+    }
+
+    function toggleAppSettings(forceOpen = null){ 
+      const panel = document.getElementById('app-settings-panel'); 
+      const isOpen = panel.style.right === '0px'; 
+      const shouldOpen = forceOpen === null ? !isOpen : !!forceOpen; 
+      panel.style.right = shouldOpen ? '0px' : '-100%'; 
+      if(shouldOpen) updateThemeButtons();
+    }
+
+    function setTheme(mode){ 
+      state.theme = mode; 
+      applyTheme(); 
+      persist(); 
+    }
+    
+    function updateThemeButtons(){
+       const lightBtn = document.getElementById('theme-btn-light');
+       const darkBtn = document.getElementById('theme-btn-dark');
+       if(!lightBtn || !darkBtn) return;
+       
+       if(state.theme === 'dark'){
+          lightBtn.classList.remove('bg-white', 'text-black', 'shadow-sm');
+          lightBtn.classList.add('text-gray-500');
+          darkBtn.classList.add('bg-zinc-600', 'text-white', 'shadow-sm');
+          darkBtn.classList.remove('text-gray-500');
+       } else {
+          lightBtn.classList.add('bg-white', 'text-black', 'shadow-sm');
+          lightBtn.classList.remove('text-gray-500');
+          darkBtn.classList.remove('bg-zinc-600', 'text-white', 'shadow-sm');
+          darkBtn.classList.add('text-gray-500');
+       }
+    }
+
+    function changeLanguage(){ const val = document.getElementById('app-lang').value; toast('Язык изменен на ' + (val==='ru'?'Русский':'English') + ' (Демо)'); }
+
+    function openInfoModal(type){
+      const modal = document.getElementById('info-modal');
+      const title = document.getElementById('info-modal-title');
+      const body = document.getElementById('info-modal-body');
+      
+      modal.classList.remove('hidden');
+      if(type === 'tos'){
+        title.textContent = 'Пользовательское соглашение';
+        body.innerHTML = '<p><strong>1. Общие положения</strong><br>Используя приложение Spark, вы соглашаетесь с условиями. Это демо-версия, поэтому реальные юридические обязательства отсутствуют.</p><p class="mt-2"><strong>2. Конфиденциальность</strong><br>Ваши данные (фото, чаты) хранятся только в локальном хранилище вашего браузера (LocalStorage). Мы не передаем их на сервера.</p><p class="mt-2"><strong>3. Правила поведения</strong><br>Будьте вежливы. Запрещен спам и оскорбления.</p>';
+      } else {
+        title.textContent = 'FAQ / Помощь';
+        body.innerHTML = '<p><strong>Как изменить фото?</strong><br>Зайдите в профиль и нажмите на иконку камеры на аватаре, или используйте кнопку "+" в секции "Мои фото".</p><p class="mt-2"><strong>Как удалить аккаунт?</strong><br>В самом низу профиля есть кнопка "Удалить аккаунт".</p><p class="mt-2"><strong>Что такое монеты?</strong><br>Валюта приложения. Можно получать за ежедневный вход и тратить на Boost.</p>';
+      }
+    }
+    
+    function closeInfoModal(){ document.getElementById('info-modal').classList.add('hidden'); }
+    function renderInterests(){
+      const edit = document.getElementById('interests-edit');
+      const view = document.getElementById('interests-view');
+      if (!edit || !view) return;
+      // view
+      view.innerHTML = '';
+      (state.myProfile.interests || []).forEach(i => {
+        const span = document.createElement('span');
+        span.className = 'px-3 py-1 rounded-full bg-pink-50 text-pink-600 text-xs font-semibold';
+        span.textContent = i;
+        view.appendChild(span);
+      });
+      if (state.myProfile.interests.length === 0){
+        view.innerHTML = '<span class="text-xs text-gray-400">Не выбрано</span>';
+      }
+      // edit
+      edit.innerHTML = '';
+      for (const interest of INTERESTS_LIST) {
+        const isActive = state.myProfile.interests.includes(interest);
+        const btn = document.createElement('button');
+        btn.textContent = interest;
+        btn.className = `px-4 py-2 rounded-full text-sm font-bold transition ${isActive ? 'bg-pink-500 text-white' : 'bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-zinc-700'}`;
+        btn.onclick = () => {
+          if (state.myProfile.interests.includes(interest)) {
+            state.myProfile.interests = state.myProfile.interests.filter(i => i !== interest);
+          } else {
+            if (state.myProfile.interests.length >= 3) return toast('Можно выбрать только 3 интереса');
+            state.myProfile.interests.push(interest);
+          }
+          persist();
+          renderInterests();
+        };
+        edit.appendChild(btn);
+      }
+    }
+    function renderFoods(){
+      const edit = document.getElementById('foods-edit');
+      const view = document.getElementById('foods-view');
+      if (!edit || !view) return;
+      if (!state.myProfile.foods) state.myProfile.foods = [];
+      // view
+      view.innerHTML = '';
+      (state.myProfile.foods || []).forEach(f => {
+        const span = document.createElement('span');
+        span.className = 'px-3 py-1 rounded-full bg-orange-50 text-orange-600 text-xs font-semibold';
+        span.textContent = f;
+        view.appendChild(span);
+      });
+      if (state.myProfile.foods.length === 0){
+        view.innerHTML = '<span class="text-xs text-gray-400">Не выбрано</span>';
+      }
+      // edit
+      edit.innerHTML = '';
+      for (const food of FOOD_LIST) {
+        const isActive = state.myProfile.foods.includes(food);
+        const btn = document.createElement('button');
+        btn.textContent = food;
+        btn.className = `px-4 py-2 rounded-full text-sm font-bold transition ${isActive ? 'bg-orange-500 text-white' : 'bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-zinc-700'}`;
+        btn.onclick = () => {
+          if (state.myProfile.foods.includes(food)) {
+            state.myProfile.foods = state.myProfile.foods.filter(f => f !== food);
+          } else {
+            if (state.myProfile.foods.length >= 3) return toast('Можно выбрать только 3 блюда');
+            state.myProfile.foods.push(food);
+          }
+          persist();
+          renderFoods();
+        };
+        edit.appendChild(btn);
+      }
+    }
+    function renderLifestyle(){
+      const edit = document.getElementById('lifestyle-edit');
+      const view = document.getElementById('lifestyle-view');
+      if (!edit || !view) return;
+      // view
+      view.innerHTML = '';
+      if (state.myProfile.lifestyle){
+        const span = document.createElement('span');
+        span.className = 'px-3 py-1 rounded-full bg-purple-50 text-purple-600 text-xs font-semibold';
+        span.textContent = state.myProfile.lifestyle;
+        view.appendChild(span);
+      } else {
+        view.innerHTML = '<span class="text-xs text-gray-400">Не выбрано</span>';
+      }
+      // edit
+      edit.innerHTML = '';
+      for (const style of LIFESTYLE_OPTIONS) {
+        const isActive = state.myProfile.lifestyle === style;
+        const btn = document.createElement('button');
+        btn.textContent = style;
+        btn.className = `px-4 py-2 rounded-full text-sm font-bold transition ${isActive ? 'bg-purple-500 text-white' : 'bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-zinc-700'}`;
+        btn.onclick = () => {
+          state.myProfile.lifestyle = isActive ? '' : style;
+          persist();
+          renderLifestyle();
+        };
+        edit.appendChild(btn);
+      }
+    }
+    function renderHobbies(){
+      const edit = document.getElementById('hobbies-edit');
+      const view = document.getElementById('hobbies-view');
+      if (!edit || !view) return;
+      if (!state.myProfile.hobbies) state.myProfile.hobbies = [];
+      // view
+      view.innerHTML = '';
+      (state.myProfile.hobbies || []).forEach(h => {
+        const span = document.createElement('span');
+        span.className = 'px-3 py-1 rounded-full bg-teal-50 text-teal-600 text-xs font-semibold';
+        span.textContent = h;
+        view.appendChild(span);
+      });
+      if (state.myProfile.hobbies.length === 0){
+        view.innerHTML = '<span class="text-xs text-gray-400">Не выбрано</span>';
+      }
+      // edit
+      edit.innerHTML = '';
+      for (const hobby of HOBBIES_LIST) {
+        const isActive = state.myProfile.hobbies.includes(hobby);
+        const btn = document.createElement('button');
+        btn.textContent = hobby;
+        btn.className = `px-4 py-2 rounded-full text-sm font-bold transition ${isActive ? 'bg-teal-500 text-white' : 'bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-zinc-700'}`;
+        btn.onclick = () => {
+          if (state.myProfile.hobbies.includes(hobby)) {
+            state.myProfile.hobbies = state.myProfile.hobbies.filter(h => h !== hobby);
+          } else {
+            if (state.myProfile.hobbies.length >= 3) return toast('Можно выбрать только 3 хобби');
+            state.myProfile.hobbies.push(hobby);
+          }
+          persist();
+          renderHobbies();
+        };
+        edit.appendChild(btn);
+      }
+    }
+    function randomizeHobbies(){ const shuffled = [...HOBBIES_LIST].sort(() => Math.random() - 0.5); state.myProfile.hobbies = shuffled.slice(0, 3); persist(); renderHobbies(); toast('Хобби обновлены'); }
+    function renderGoals(){
+      const edit = document.getElementById('goals-edit');
+      const view = document.getElementById('goals-view');
+      if (!edit || !view) return;
+      if (!state.myProfile.goals) state.myProfile.goals = [];
+      // view
+      view.innerHTML = '';
+      (state.myProfile.goals || []).forEach(g => {
+        const span = document.createElement('span');
+        span.className = 'px-3 py-1 rounded-full bg-rose-50 text-rose-600 text-xs font-semibold';
+        span.textContent = g;
+        view.appendChild(span);
+      });
+      if (state.myProfile.goals.length === 0){
+        view.innerHTML = '<span class="text-xs text-gray-400">Не выбрано</span>';
+      }
+      // edit
+      edit.innerHTML = '';
+      for (const goal of GOALS_LIST) {
+        const isActive = state.myProfile.goals.includes(goal);
+        const btn = document.createElement('button');
+        btn.textContent = goal;
+        btn.className = `px-4 py-2 rounded-full text-sm font-bold transition ${isActive ? 'bg-rose-500 text-white' : 'bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-zinc-700'}`;
+        btn.onclick = () => {
+          if (state.myProfile.goals.includes(goal)) {
+            state.myProfile.goals = state.myProfile.goals.filter(g => g !== goal);
+          } else {
+            if (state.myProfile.goals.length >= 2) return toast('Можно выбрать только 2 цели');
+            state.myProfile.goals.push(goal);
+          }
+          persist();
+          renderGoals();
+        };
+        edit.appendChild(btn);
+      }
+    }
+    function renderMyPhotosGrid(){ const grid = document.getElementById('my-photos-grid'); grid.innerHTML = ''; const photos = state.myProfile.photos || []; photos.forEach((src, idx) => { const cell = document.createElement('div'); cell.className = 'relative aspect-square rounded-lg overflow-hidden bg-gray-100 dark:bg-zinc-800'; cell.innerHTML = `<img src="${src}" class="w-full h-full object-cover" /><button class="absolute top-1 right-1 w-7 h-7 rounded-full bg-black/40 text-white flex items-center justify-center hover:bg-black/60 transition" title="Удалить" onclick="removeMyPhoto(${idx})"><i data-lucide="x" class="w-4 h-4"></i></button><button class="absolute bottom-1 left-1 text-[10px] px-2 py-1 rounded-full ${idx===0 ? 'bg-pink-500 text-white' : 'bg-white/80 text-gray-700'} font-extrabold hover:scale-105 transition" onclick="setMainMyPhoto(${idx})">${idx===0 ? 'Главное' : 'Сделать главным'}</button>`; grid.appendChild(cell); }); const add = document.createElement('button'); add.className = 'aspect-square bg-gray-100 dark:bg-zinc-800 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300 dark:border-zinc-700 hover:bg-gray-50 dark:hover:bg-zinc-700 transition'; add.onclick = () => document.getElementById('my-photos-input').click(); add.innerHTML = '<i data-lucide="plus" class="text-gray-400"></i>'; grid.appendChild(add); lucide.createIcons(); }
+    function removeMyPhoto(index){ if ((state.myProfile.photos || []).length <= 1) return toast('Нужно хотя бы одно фото'); state.myProfile.photos.splice(index, 1); persist(); renderMyProfile(); toast('Фото удалено'); }
+    function setMainMyPhoto(index){ const photos = state.myProfile.photos || []; if (!photos[index]) return; const [picked] = photos.splice(index, 1); photos.unshift(picked); state.myProfile.photos = photos; persist(); renderMyProfile(); toast('Главное фото обновлено'); }
+    function saveProfile(){ const name = (document.getElementById('my-name').value || '').trim(); const age = parseInt(document.getElementById('my-age').value || '24', 10); const bio = (document.getElementById('my-bio').value || '').trim(); const city = document.getElementById('my-city').value; const region = document.getElementById('my-region').value; state.myProfile.zodiac = document.getElementById('my-zodiac')?.value || state.myProfile.zodiac; state.myProfile.smoking = document.getElementById('my-smoking')?.value || state.myProfile.smoking; state.myProfile.drinking = document.getElementById('my-drinking')?.value || state.myProfile.drinking; if (!name) return toast('Введите имя'); if (!age || age < 18 || age > 99) return toast('Некорректный возраст'); state.myProfile.name = name; state.myProfile.age = age; state.myProfile.bio = bio; state.myProfile.city = city; state.myProfile.region = region; persist(); toast('Профиль сохранен'); renderMyProfile(); }
+    function resetMyProfile(){ if (!confirm('Сбросить профиль до значений по умолчанию?')) return; state.myProfile = structuredClone(DEFAULT_STATE.myProfile); persist(); renderMyProfile(); toast('Профиль сброшен'); }
+    function logoutDemo(){ toast('В демо режиме вход/выход отключен'); }
+    function fileToDataUrl(file){ return new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.onerror = reject; reader.readAsDataURL(file); }); }
+
+    function toggleSettings(forceOpen = null){ const panel = document.getElementById('settings-panel'); const isOpen = panel.style.right === '0px'; const shouldOpen = forceOpen === null ? !isOpen : !!forceOpen; panel.style.right = shouldOpen ? '0px' : '-100%'; }
+    function syncSettingsUI(){ const sReg = document.getElementById('setting-region'); const sCity = document.getElementById('setting-city'); if (sReg.options.length <= 1) { RUSSIA_REGIONS.forEach(r => { const opt = new Option(r, r); sReg.add(opt); }); } if (sCity.options.length <= 1) { RUSSIA_CITIES.forEach(c => { const opt = new Option(c, c); sCity.add(opt); }); } sReg.value = state.settings.region || ''; sCity.value = state.settings.city || ''; document.getElementById('setting-age-min').value = state.settings.ageMin; document.getElementById('setting-age-max').value = state.settings.ageMax; document.getElementById('setting-age-label').textContent = `${state.settings.ageMin} — ${state.settings.ageMax}`; const radios = document.querySelectorAll('input[name="pref"]'); radios.forEach(r => r.checked = (r.value === state.settings.pref)); }
+    function applySettingsFromUI(){ let minA = parseInt(document.getElementById('setting-age-min').value || '18', 10); let maxA = parseInt(document.getElementById('setting-age-max').value || '35', 10); if (minA > maxA) [minA, maxA] = [maxA, minA]; const pref = document.querySelector('input[name="pref"]:checked')?.value || 'all'; state.settings.region = document.getElementById('setting-region').value; state.settings.city = document.getElementById('setting-city').value; state.settings.ageMin = clamp(minA, 18, 99); state.settings.ageMax = clamp(maxA, 18, 99); state.settings.pref = ['female','male','all'].includes(pref) ? pref : 'all'; syncSettingsUI(); persist(); if (state.currentView === 'feed') renderFeed(); if (state.currentView === 'explore') renderExplore(); updateHeaderStats(); }
+
+    function toggleBoost(){ const now = Date.now(); if (state.boost.active && state.boost.endsAt > now) { state.boost.active = false; state.boost.endsAt = 0; persist(); setBoostUi(); toast('Boost выключен'); return; } state.boost.active = true; state.boost.endsAt = now + 30_000; persist(); setBoostUi(); toast('Boost активирован на 30 сек'); if (boostTimer) clearInterval(boostTimer); boostTimer = setInterval(() => { if (!state.boost.active) return; setBoostUi(); }, 250); }
+
+    function toggleShop(){ const modal = document.getElementById('shop-modal'); modal.classList.toggle('hidden'); if (!modal.classList.contains('hidden')) { updateShopPrice(); lucide.createIcons(); } }
+    function updateShopPrice(){ const input = document.getElementById('shop-coin-input'); const val = parseInt(input.value || '0', 10); const display = document.getElementById('shop-total-price'); display.textContent = `${val * 5}₽`; }
+    function buyCoins(){ const input = document.getElementById('shop-coin-input'); const amount = parseInt(input.value || '0', 10); if (amount < 50) return toast('Минимальное пополнение — 50 монет'); if (amount > 10000) return toast('Максимальное пополнение — 10 000 монет'); const price = amount * 5; if (confirm(`Подтвердите покупку ${amount} монет за ${price}₽`)) { state.coins = (state.coins || 0) + amount; persist(); updateHeaderStats(); toast(`На баланс зачислено ${amount} монет!`); toggleShop(); } }
+    function buyPremium(){ if (state.isPremium) return toast('У вас уже есть Spark Plus!'); if (confirm('Подтвердите покупку Spark Plus за 500₽ в месяц')) { state.isPremium = true; persist(); updateHeaderStats(); renderMyProfile(); toast('Поздравляем! Теперь у вас Spark Plus ✨'); toggleShop(); } }
+    
+    function openSupportModal(){ document.getElementById('support-modal').classList.remove('hidden'); }
+    function closeSupportModal(){ document.getElementById('support-modal').classList.add('hidden'); }
+    function contactSupport(){ 
+      // В реальном приложении здесь был бы переход в телеграм бот
+      // window.open('https://t.me/SparkSupportBot', '_blank');
+      closeSupportModal();
+      toast('Переход в бот поддержки...');
+    }
+
+    function renderHistory(){
+      // Matches
+      const matchesList = document.getElementById('history-matches-list');
+      const matchesCount = document.getElementById('history-matches-count');
+      matchesList.innerHTML = '';
+      const matchIds = [...state.matches].reverse();
+      matchesCount.textContent = `${matchIds.length} совпадений`;
+      
+      if (matchIds.length === 0) {
+        matchesList.innerHTML = '<p class="text-gray-400 text-sm italic py-4">Пока нет совпадений</p>';
+      } else {
+        for (const id of matchIds) {
+          const p = getProfileById(id);
+          if (!p) continue;
+          const item = createHistoryItem(p, 'match');
+          matchesList.appendChild(item);
+        }
+      }
+
+      // Likes (excluding matches)
+      const likesList = document.getElementById('history-likes-list');
+      const likesCount = document.getElementById('history-likes-count');
+      likesList.innerHTML = '';
+      const likeIds = [...state.likes, ...state.superLikes].filter(id => !state.matches.includes(id));
+      const uniqueLikes = [...new Set(likeIds)].reverse();
+      likesCount.textContent = `${uniqueLikes.length} лайков`;
+      
+      if (uniqueLikes.length === 0) {
+        likesList.innerHTML = '<p class="text-gray-400 text-sm italic py-4">Вы пока никого не лайкнули</p>';
+      } else {
+        for (const id of uniqueLikes) {
+          const p = getProfileById(id);
+          if (!p) continue;
+          const isSuperLike = state.superLikes.includes(id);
+          const item = createHistoryItem(p, isSuperLike ? 'superlike' : 'like');
+          likesList.appendChild(item);
+        }
+      }
+      
+      lucide.createIcons();
+    }
+
+    function createHistoryItem(profile, type){
+      const item = document.createElement('div');
+      item.className = 'flex items-center p-3 bg-gray-50 dark:bg-zinc-800 rounded-xl cursor-pointer hover:bg-gray-100 dark:hover:bg-zinc-700 transition';
+      item.onclick = () => openProfileDetail(profile.id, { from: 'history' });
+      
+      let badge = '';
+      if (type === 'match') {
+        badge = '<span class="px-2 py-1 rounded-full bg-pink-100 text-pink-600 text-[10px] font-extrabold">MATCH</span>';
+      } else if (type === 'superlike') {
+        badge = '<span class="px-2 py-1 rounded-full bg-blue-100 text-blue-600 text-[10px] font-extrabold">SUPER</span>';
+      } else {
+        badge = '<span class="px-2 py-1 rounded-full bg-emerald-100 text-emerald-600 text-[10px] font-extrabold">LIKE</span>';
+      }
+      
+      item.innerHTML = `
+        <img src="${profile.photos[0]}" class="w-12 h-12 rounded-full object-cover mr-3" />
+        <div class="flex-1 min-w-0">
+          <h4 class="font-bold text-sm truncate dark:text-gray-200">${escapeHtml(profile.name)}, ${profile.age}</h4>
+          <p class="text-xs text-gray-500 truncate">${escapeHtml(profile.city)}</p>
+        </div>
+        <div class="flex items-center gap-2">
+          ${badge}
+          <i data-lucide="chevron-right" class="w-4 h-4 text-gray-400"></i>
+        </div>
+      `;
+      return item;
+    }
+
+    // Delete Account
+    function openDeleteModal(){
+      const panel = document.getElementById('settings-panel');
+      if (panel.style.right === '0px') toggleSettings();
+      document.getElementById('delete-modal').classList.remove('hidden');
+      // Reset form
+      document.querySelectorAll('input[name="delete-reason"]').forEach(r => r.checked = false);
+      document.getElementById('delete-other-reason').classList.add('hidden');
+      document.getElementById('delete-other-reason').value = '';
+      lucide.createIcons();
+    }
+
+    function closeDeleteModal(){
+      document.getElementById('delete-modal').classList.add('hidden');
+    }
+
+    function toggleOtherReason(){
+      const otherRadio = document.querySelector('input[name="delete-reason"][value="other"]');
+      const textarea = document.getElementById('delete-other-reason');
+      if (otherRadio && otherRadio.checked) {
+        textarea.classList.remove('hidden');
+        textarea.focus();
+      } else {
+        textarea.classList.add('hidden');
+      }
+    }
+
+    function confirmDeleteAccount(){
+      const selected = document.querySelector('input[name="delete-reason"]:checked');
+      if (!selected) {
+        return toast('Пожалуйста, выберите причину удаления');
+      }
+      
+      let reason = '';
+      switch(selected.value) {
+        case 'found': reason = 'Вторая половинка найдена'; break;
+        case 'not-interested': reason = 'Не интересует поиск'; break;
+        case 'problems': reason = 'Проблемы с приложением'; break;
+        case 'other': 
+          reason = document.getElementById('delete-other-reason').value.trim();
+          if (!reason) {
+            return toast('Пожалуйста, укажите вашу причину');
+          }
+          break;
+      }
+      
+      if (!confirm('Вы уверены? Это действие НЕЛЬЗЯ отменить. Все данные будут удалены навсегда.')) {
+        return;
+      }
+      
+      // Log reason (in real app would be sent to server)
+      console.log('Account deleted. Reason:', reason);
+      
+      // Clear all data
+      localStorage.removeItem(STORAGE_KEY);
+      state = structuredClone(DEFAULT_STATE);
+      
+      closeDeleteModal();
+      toast('Аккаунт успешно удален');
+      
+      // Reinitialize
+      setTimeout(() => {
+        init();
+      }, 500);
+    }
+
+    function nextTutorial(step){
+      for(let i=1; i<=3; i++){
+        document.getElementById(`tut-step-${i}`).classList.add('hidden');
+        document.getElementById(`tut-dot-${i}`).classList.replace('bg-pink-500', 'bg-gray-200');
+      }
+      document.getElementById(`tut-step-${step}`).classList.remove('hidden');
+      document.getElementById(`tut-dot-${step}`).classList.replace('bg-gray-200', 'bg-pink-500');
+      lucide.createIcons();
+    }
+
+    function finishTutorial(){
+      state.tutorialCompleted = true;
+      persist();
+      document.getElementById('tutorial-modal').classList.add('hidden');
+      toast('Добро пожаловать в Spark!');
+      renderFeed();
+      renderMyProfile();
+    }
+
+    function init(){ 
+      loadState();
+
+      // Telegram Mini App setup + autofill (safe: does not override user-edited data)
+      try {
+        if (window.Telegram?.WebApp) {
+          window.Telegram.WebApp.ready();
+          window.Telegram.WebApp.expand();
+        }
+      } catch {}
+      applyTelegramProfileAutofill();
+
+      // Ensure official system chat and safety messages exist
+      ensureSystemChat();
+      // Ensure safety message exists in any already saved chats
+      Object.keys(state.chats || {}).forEach((k) => {
+        if (k === SYSTEM_CHAT_ID) return;
+        ensureSafetyInChat(k);
+      });
+      persist();
+
+      // Show tutorial only on first visit (no registration required)
+      if (!state.tutorialCompleted) {
+        document.getElementById('tutorial-modal').classList.remove('hidden');
+      }
+
+      document.querySelectorAll('input[name="delete-reason"]').forEach(r => r.addEventListener('change', toggleOtherReason)); document.getElementById('my-bio').addEventListener('input', () => { updateBioCounter(); state.myProfile.bio = document.getElementById('my-bio').value; persist(); }); document.getElementById('setting-region').addEventListener('change', applySettingsFromUI); document.getElementById('setting-city').addEventListener('change', applySettingsFromUI); document.getElementById('setting-age-min').addEventListener('change', applySettingsFromUI); document.getElementById('setting-age-max').addEventListener('change', applySettingsFromUI); document.querySelectorAll('input[name="pref"]').forEach(r => r.addEventListener('change', applySettingsFromUI)); document.getElementById('my-avatar-input').addEventListener('change', async (e) => { const file = e.target.files?.[0]; if (!file) return; const url = await fileToDataUrl(file); const photos = state.myProfile.photos || []; photos.unshift(url); state.myProfile.photos = photos.slice(0, 9); state.myProfile.photos = [...new Set(state.myProfile.photos)]; persist(); renderMyProfile(); toast('Фото профиля обновлено'); }); document.getElementById('my-photos-input').addEventListener('change', async (e) => { const file = e.target.files?.[0]; if (!file) return; const url = await fileToDataUrl(file); state.myProfile.photos = (state.myProfile.photos || []).concat([url]).slice(0, 9); persist(); renderMyProfile(); toast('Фото добавлено'); }); window.addEventListener('keydown', (e) => { const tag = (document.activeElement?.tagName || '').toLowerCase(); const inInput = ['input','textarea'].includes(tag); if (inInput) { if (e.key === 'Enter' && document.activeElement?.id === 'chat-input' && !e.shiftKey) { e.preventDefault(); sendChatMessage(); } return; } if (e.key === 'ArrowRight') handleManualAction('like'); if (e.key === 'ArrowLeft') handleManualAction('pass'); if (e.key === 'ArrowUp') handleManualAction('superlike'); if (e.key.toLowerCase() === 'r') undoSwipe(); if (e.key.toLowerCase() === 'z') toggleBoost(); if (e.key.toLowerCase() === 's') toggleSettings(true); if (e.key === 'Escape') { closeMatchModal(); closeProfileDetail(); closeRewardModal(); } }); if (state.boost.active && state.boost.endsAt > Date.now()) { if (boostTimer) clearInterval(boostTimer); boostTimer = setInterval(setBoostUi, 250); } else { state.boost.active = false; state.boost.endsAt = 0; } syncSettingsUI(); setBoostUi(); updateHeaderStats(); checkDailyReward(); applyTheme(); switchView(state.currentView || 'feed'); try { const hash = location.hash; if (hash.startsWith('#profile=')) { const id = parseInt(hash.split('=')[1] || '', 10); if (id) openProfileDetail(id); history.replaceState(null, '', location.href.split('#')[0]); } } catch {} lucide.createIcons(); }
+
+    window.onload = init;
+  </script>
+</body>
+</html>
