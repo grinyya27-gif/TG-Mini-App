@@ -317,8 +317,10 @@
         <!-- VIEW: CHARACTER -->
         <section id="view-character" class="space-y-6 hidden">
             <div class="flex flex-col items-center justify-center py-6">
-                <div class="w-24 h-24 rounded-full border-2 border-[#c8aa6e] overflow-hidden shadow-[0_0_15px_rgba(200,170,110,0.3)] mb-4 relative bg-[#222]">
-                    <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1887" alt="Герой" class="w-full h-full object-cover filter contrast-125 sepia-[0.3]">
+                <div class="w-24 h-24 rounded-full border-2 border-[#c8aa6e] overflow-hidden shadow-[0_0_15px_rgba(200,170,110,0.3)] mb-4 relative bg-[#222]" style="box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 0 15px rgba(200,170,110,0.3);">
+                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=medievalWarrior&backgroundColor=1a1a1d&skinColor=f2d3b1&hair=short01&hairColor=796a45&eyes=variant01&eyebrows=variant10&mouth=variant01" alt="Герой" class="w-full h-full object-cover scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#c8aa6e]/30 pointer-events-none"></div>
+                    <div class="absolute inset-0 border-4 border-[#c8aa6e]/30 rounded-full pointer-events-none"></div>
                 </div>
                 <h2 class="text-2xl medieval-font text-[#e0e0e0]">Странник</h2>
                 <p class="text-sm text-[#a0a0a0] mb-2">Начинающий искатель приключений</p>
@@ -797,15 +799,14 @@
 
         <!-- VIEW: TOWN SQUARE -->
         <section id="view-town-square" class="hidden space-y-4">
-            <div class="h-28 w-full bg-[url('https://images.unsplash.com/photo-1517457373958-b7bdd4587205?q=80&w=2070')] bg-cover bg-center relative rounded-lg mb-4 shadow-lg overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-t from-[#141417] to-transparent opacity-90"></div>
+            <div class="h-16 w-full bg-[#1a1a1d] border-b border-[#333] relative rounded-t-lg mb-4 overflow-hidden">
                 <div class="absolute top-4 left-4">
                     <button onclick="router.navigate('map')" class="w-8 h-8 rounded border border-[#333] bg-black/50 flex items-center justify-center text-[#a0a0a0]">
                         <i class="fas fa-arrow-left"></i>
                     </button>
                 </div>
-                <div class="absolute bottom-3 left-4">
-                     <h2 class="medieval-font text-2xl text-[#c8aa6e] drop-shadow-md">Городская площадь</h2>
+                <div class="absolute top-4 left-16">
+                     <h2 class="medieval-font text-xl text-[#c8aa6e]">Городская площадь</h2>
                 </div>
             </div>
 
@@ -843,15 +844,14 @@
 
         <!-- VIEW: TREASURY -->
         <section id="view-treasury" class="hidden space-y-4">
-            <div class="h-28 w-full bg-[url('https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?q=80&w=2070')] bg-cover bg-center relative rounded-lg mb-4 shadow-lg overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-t from-[#141417] to-transparent opacity-90"></div>
+            <div class="h-16 w-full bg-[#1a1a1d] border-b border-[#333] relative rounded-t-lg mb-4 overflow-hidden">
                 <div class="absolute top-4 left-4">
                     <button onclick="router.navigate('map')" class="w-8 h-8 rounded border border-[#333] bg-black/50 flex items-center justify-center text-[#a0a0a0]">
                         <i class="fas fa-arrow-left"></i>
                     </button>
                 </div>
-                <div class="absolute bottom-3 left-4">
-                     <h2 class="medieval-font text-2xl text-[#c8aa6e] drop-shadow-md">Казна</h2>
+                <div class="absolute top-4 left-16">
+                     <h2 class="medieval-font text-xl text-[#c8aa6e]">Казна</h2>
                 </div>
             </div>
 
@@ -921,15 +921,14 @@
 
         <!-- VIEW: TAVERN -->
         <section id="view-tavern" class="hidden space-y-4">
-            <div class="h-28 w-full bg-[url('https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=2070')] bg-cover bg-center relative rounded-lg mb-4 shadow-lg overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-t from-[#141417] to-transparent opacity-90"></div>
+            <div class="h-16 w-full bg-[#1a1a1d] border-b border-[#333] relative rounded-t-lg mb-4 overflow-hidden">
                 <div class="absolute top-4 left-4">
                     <button onclick="router.navigate('map')" class="w-8 h-8 rounded border border-[#333] bg-black/50 flex items-center justify-center text-[#a0a0a0]">
                         <i class="fas fa-arrow-left"></i>
                     </button>
                 </div>
-                <div class="absolute bottom-3 left-4">
-                     <h2 class="medieval-font text-2xl text-[#c8aa6e] drop-shadow-md">Таверна</h2>
+                <div class="absolute top-4 left-16">
+                     <h2 class="medieval-font text-xl text-[#c8aa6e]">Таверна</h2>
                 </div>
             </div>
 
