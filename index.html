@@ -1,0 +1,2973 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Средневековая RPG</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Telegram Web App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <!-- Google Fonts: Cinzel -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-dark: #0f0f10;
+            --bg-panel: #1a1a1d;
+            --accent-gold: #c8aa6e;
+            --text-muted: #a0a0a0;
+            --text-light: #e0e0e0;
+            --border-color: #3e3e42;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-family: 'Lato', sans-serif;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        h1, h2, h3, .medieval-font {
+            font-family: 'Cinzel', serif;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-gold);
+            border-radius: 2px;
+        }
+        
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* UI Panel Style */
+        .panel {
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Button Styles */
+        .btn-medieval {
+            background: linear-gradient(to bottom, #2c2c30, #1a1a1d);
+            border: 1px solid var(--accent-gold);
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            font-family: 'Cinzel', serif;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-medieval:active {
+            transform: scale(0.98);
+            background: #c8aa6e;
+            color: #000;
+        }
+        
+        .btn-medieval:disabled {
+            border-color: #555;
+            color: #555;
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        /* Tab Styles */
+        .sub-tab {
+            white-space: nowrap;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            color: #777;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+        .sub-tab.active {
+            color: var(--accent-gold);
+            border-color: var(--accent-gold);
+            background-color: rgba(200, 170, 110, 0.1);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            background-color: #000;
+            border: 1px solid #333;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #8b733d, #c8aa6e);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Bottom Nav Active State */
+        .nav-item.active {
+            color: var(--accent-gold);
+            border-top: 2px solid var(--accent-gold);
+        }
+
+        /* Animations */
+        @keyframes floatText {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-30px); opacity: 0; }
+        }
+        .floating-text {
+            position: absolute;
+            animation: floatText 1s ease-out forwards;
+            pointer-events: none;
+            font-weight: bold;
+            color: var(--accent-gold);
+            text-shadow: 1px 1px 0 #000;
+            z-index: 50;
+        }
+        
+        /* Grid background pattern */
+        .bg-pattern {
+            background-image: radial-gradient(#2a2a2e 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.1;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-content {
+            background: var(--bg-panel);
+            border: 1px solid var(--accent-gold);
+            width: 90%;
+            max-width: 320px;
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 0 20px rgba(200, 170, 110, 0.2);
+        }
+        .modal-overlay.open .modal-content {
+            transform: scale(1);
+        }
+
+        /* Wheel Animation */
+        .wheel-container {
+            transition: transform 3s cubic-bezier(0.1, 0.7, 0.1, 1);
+        }
+        .spin-anim {
+            animation: spin 0.5s linear infinite;
+        }
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="h-screen flex flex-col relative" style="overflow: hidden; -webkit-tap-highlight-color: transparent;">
+
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 bg-pattern pointer-events-none"></div>
+
+    <!-- Intro Modal (Arthur) -->
+    <div id="modal-intro" class="modal-overlay">
+        <div class="modal-content rounded-lg p-6 relative overflow-hidden text-left">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#c8aa6e] to-transparent"></div>
+
+            <div class="flex items-center gap-4 mb-4">
+                <div class="w-14 h-14 rounded-full border-2 border-[#c8aa6e] bg-[#222] flex items-center justify-center overflow-hidden">
+                    <i class="fas fa-user-tie text-2xl text-gray-300"></i>
+                </div>
+                <div>
+                    <h2 class="medieval-font text-xl text-[#c8aa6e] leading-tight">Артур</h2>
+                    <p class="text-[10px] text-[#777]">Травник</p>
+                </div>
+            </div>
+
+            <div class="space-y-3 text-sm text-[#e0e0e0] leading-relaxed">
+                <p>Очнулся наконец? Я нашёл тебя без сознания под мостом.</p>
+                <p>Привёл в дом, обмыл, перевязал… и вылечил. Повезло тебе.</p>
+                <p class="text-[#a0a0a0]">Совет на первое время: сходи на <span class="text-[#c8aa6e] font-bold">Городскую площадь</span> и попроси милостыню. Накопишь — купи <span class="text-[#c8aa6e] font-bold">удочку</span> на рынке. С неё и начнёшь вставать на ноги.</p>
+            </div>
+
+            <div class="mt-6 grid grid-cols-2 gap-2">
+                <button onclick="game.closeIntro(false)" class="btn-medieval w-full py-2 rounded font-bold text-xs">
+                    Понял
+                </button>
+                <button onclick="game.closeIntro(true)" class="btn-medieval w-full py-2 rounded font-bold text-xs">
+                    На площадь
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Daily Reward Modal -->
+    <div id="modal-daily" class="modal-overlay">
+        <div class="modal-content rounded-lg p-6 text-center relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#c8aa6e] to-transparent"></div>
+            <h2 class="medieval-font text-2xl text-[#c8aa6e] mb-2">Ежедневная Награда</h2>
+            <p class="text-sm text-[#a0a0a0] mb-4">С возвращением, путник!</p>
+            
+            <div class="flex justify-center gap-2 mb-6">
+                <div id="daily-days-container" class="flex gap-1"></div>
+            </div>
+
+            <div class="mb-6">
+                <i class="far fa-gem text-4xl text-emerald-400 mb-2 drop-shadow-[0_0_10px_rgba(52,211,153,0.5)]"></i>
+                <div class="text-xl font-bold text-white">+<span id="daily-amount">0</span> Изумрудов</div>
+            </div>
+
+            <button onclick="game.claimDaily()" class="btn-medieval w-full py-2 rounded font-bold">
+                Забрать
+            </button>
+        </div>
+    </div>
+
+    <!-- Dialogue Modal -->
+    <div id="modal-dialogue" class="modal-overlay">
+        <div class="modal-content rounded-lg p-0 relative overflow-hidden text-left flex flex-col max-h-[80vh]">
+            <!-- NPC Header -->
+            <div class="bg-[#111] p-4 flex items-center gap-4 border-b border-[#333]">
+                <div class="w-12 h-12 rounded-full border border-[#c8aa6e] bg-[#222] flex items-center justify-center overflow-hidden shrink-0">
+                    <i id="npc-icon" class="fas fa-user text-xl text-gray-300"></i>
+                </div>
+                <div>
+                    <h2 id="npc-name" class="medieval-font text-lg text-[#c8aa6e] leading-tight">Имя</h2>
+                    <p id="npc-role" class="text-[10px] text-[#777]">Роль</p>
+                </div>
+                <button onclick="dialogue.close()" class="ml-auto text-gray-500 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Chat Body -->
+            <div class="p-4 overflow-y-auto bg-[#1a1a1d] min-h-[150px]">
+                <p id="npc-text" class="text-sm text-[#e0e0e0] leading-relaxed">...</p>
+            </div>
+
+            <!-- Options -->
+            <div id="npc-options" class="p-2 bg-[#111] border-t border-[#333] flex flex-col gap-2">
+                <!-- Options populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Header / Currency Bar -->
+    <header class="h-14 flex items-center justify-between px-4 bg-opacity-90 bg-[#141417] border-b border-[#333] z-20 backdrop-blur-md shrink-0">
+        <div class="flex items-center gap-3">
+            <div class="flex items-center gap-1">
+                <i class="fas fa-coins text-yellow-500 text-sm"></i>
+                <span id="gold-display" class="font-bold tracking-wide text-sm">0</span>
+            </div>
+            <div class="flex items-center gap-1">
+                <i class="far fa-gem text-emerald-400 text-sm"></i>
+                <span id="emerald-display" class="font-bold tracking-wide text-sm">0</span>
+            </div>
+        </div>
+        
+        <!-- Header Level & XP -->
+        <div class="flex flex-col items-end justify-center w-32">
+             <div class="flex items-center justify-between w-full mb-0.5">
+                <span class="text-[10px] text-[#a0a0a0] flex items-center gap-1"><i class="fas fa-heart text-red-500"></i> <span id="header-hp-text">100</span></span>
+                <span class="text-xs text-[#c8aa6e] font-serif font-bold" id="level-display-header">Ур 1</span>
+             </div>
+             <div class="w-full h-1.5 bg-[#000] rounded-full overflow-hidden border border-[#333] mb-0.5">
+                 <div id="header-xp-bar" class="h-full bg-gradient-to-r from-[#8b733d] to-[#c8aa6e] w-0 transition-all duration-300"></div>
+             </div>
+             <div class="text-[8px] text-[#777] font-mono tracking-tighter" id="header-xp-text">0/100</div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main id="app-container" class="flex-1 overflow-y-auto p-4 pb-20 relative">
+        
+        <!-- VIEW: CHARACTER -->
+        <section id="view-character" class="space-y-6 hidden">
+            <div class="flex flex-col items-center justify-center py-6">
+                <div class="w-24 h-24 rounded-full border-2 border-[#c8aa6e] overflow-hidden shadow-[0_0_15px_rgba(200,170,110,0.3)] mb-4 relative bg-[#222]">
+                    <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1887" alt="Герой" class="w-full h-full object-cover filter contrast-125 sepia-[0.3]">
+                </div>
+                <h2 class="text-2xl medieval-font text-[#e0e0e0]">Странник</h2>
+                <p class="text-sm text-[#a0a0a0] mb-2">Начинающий искатель приключений</p>
+                
+                <!-- Level Progress -->
+                <div class="w-full max-w-xs space-y-1">
+                    <div class="flex justify-between text-xs text-[#a0a0a0]">
+                        <span>Уровень <span id="char-level">1</span></span>
+                    </div>
+                    <div class="progress-container">
+                        <div id="xp-bar" class="progress-fill"></div>
+                    </div>
+                    <div class="flex justify-between items-center mt-1">
+                        <div class="text-[10px] text-[#777]">
+                             <span id="xp-text">0 / 100 XP</span>
+                        </div>
+                        <div class="text-[10px] text-[#777]">
+                            Осталось <span id="xp-remaining" class="text-[#c8aa6e]">100</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HP Status -->
+                <div class="w-full max-w-xs mt-2">
+                    <div class="flex justify-between text-xs text-[#a0a0a0] mb-1">
+                        <span>Здоровье</span>
+                        <span id="hp-text" class="text-red-400">100 / 100</span>
+                    </div>
+                    <div class="h-2 bg-[#000] border border-[#333] rounded-full overflow-hidden relative">
+                        <div id="hp-bar" class="h-full bg-red-600 w-full transition-all duration-300"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-2 gap-3">
+                <div class="panel p-3 rounded text-center">
+                    <div class="text-xs text-[#a0a0a0] uppercase tracking-widest">Сила</div>
+                    <div class="text-lg font-bold text-[#c8aa6e]">5</div>
+                </div>
+                <div class="panel p-3 rounded text-center">
+                    <div class="text-xs text-[#a0a0a0] uppercase tracking-widest">Ловкость</div>
+                    <div class="text-lg font-bold text-[#c8aa6e]">3</div>
+                </div>
+            </div>
+
+             <!-- Integrated Inventory & Crafting & Skills -->
+             <div class="panel rounded p-4">
+                <div class="flex gap-2 mb-4">
+                    <button onclick="ui.switchCharTab('inventory')" id="btn-tab-inv" class="flex-1 bg-[#2c2c30] border border-[#c8aa6e] text-[#c8aa6e] py-1 rounded text-xs uppercase font-serif transition-colors">Инвентарь</button>
+                    <button onclick="ui.switchCharTab('skills')" id="btn-tab-skills" class="flex-1 bg-[#1a1a1d] border border-[#333] text-[#777] py-1 rounded text-xs uppercase font-serif transition-colors">Навыки</button>
+                </div>
+                
+                <!-- Inventory UI -->
+                <div id="ui-inventory">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="medieval-font text-sm text-[#c8aa6e]">Рюкзак</h3>
+                        <button onclick="crafting.toggleMode()" class="text-[10px] text-[#777] underline">
+                            <i class="fas fa-hammer mr-1"></i> <span id="craft-btn-text">Перейти к крафту</span>
+                        </button>
+                    </div>
+                    <!-- Inventory Tabs -->
+                    <div class="flex items-center gap-2 overflow-x-auto pb-2 mb-2 no-scrollbar">
+                        <button onclick="inventory.switchCategory('tools')" id="tab-inv-tools" class="sub-tab active">Инструменты</button>
+                        <button onclick="inventory.switchCategory('weapons')" id="tab-inv-weapons" class="sub-tab">Меч</button>
+                        <button onclick="inventory.switchCategory('armor')" id="tab-inv-armor" class="sub-tab">Броня</button>
+                        <button onclick="inventory.switchCategory('potions')" id="tab-inv-potions" class="sub-tab">Зелья</button>
+                        <button onclick="inventory.switchCategory('other')" id="tab-inv-other" class="sub-tab">Другое</button>
+                    </div>
+
+                    <div id="inventory-grid" class="grid grid-cols-4 gap-2">
+                        <!-- Slots populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Crafting UI -->
+                <div id="ui-crafting" class="hidden">
+                     <!-- Crafting Tabs -->
+                     <div class="flex items-center gap-2 overflow-x-auto pb-2 mb-2 no-scrollbar">
+                        <button onclick="crafting.switchCategory('potions')" id="tab-craft-potions" class="sub-tab active">Зелья</button>
+                        <button onclick="crafting.switchCategory('charms')" id="tab-craft-charms" class="sub-tab">Обереги</button>
+                        <button onclick="crafting.switchCategory('tools')" id="tab-craft-tools" class="sub-tab">Материалы</button>
+                        <button onclick="crafting.switchCategory('food')" id="tab-craft-food" class="sub-tab">Еда</button>
+                    </div>
+
+                    <div id="crafting-list" class="space-y-3">
+                        <!-- Recipes populated by JS -->
+                        <div class="text-center text-xs text-gray-500 py-4">Нет рецептов</div>
+                    </div>
+                </div>
+
+                <!-- Skills UI -->
+                <div id="ui-skills" class="hidden space-y-3">
+                    <div class="flex justify-between items-center p-2 bg-black/20 rounded border border-[#333]">
+                        <span class="text-sm text-[#a0a0a0]"><i class="fas fa-star text-yellow-500 mr-1"></i> Жетоны навыков</span>
+                        <span class="text-xl font-bold text-[#c8aa6e]" id="skill-points-display">0</span>
+                    </div>
+
+                    <!-- Max HP -->
+                    <div class="panel p-3 rounded flex justify-between items-center bg-[#151518]">
+                        <div>
+                            <div class="text-[#e0e0e0] font-bold text-xs"><i class="fas fa-heart text-red-500 mr-1"></i> Живучесть</div>
+                            <div class="text-[10px] text-[#777]">+20 Макс. здоровья</div>
+                        </div>
+                        <button onclick="skills.upgrade('hp')" class="bg-[#222] border border-[#c8aa6e] text-[#c8aa6e] px-3 py-1 text-[10px] rounded hover:bg-[#c8aa6e] hover:text-black transition-colors uppercase">
+                            1 Жетон
+                        </button>
+                    </div>
+                    
+                    <!-- Luck -->
+                    <div class="panel p-3 rounded flex justify-between items-center bg-[#151518]">
+                        <div>
+                            <div class="text-[#e0e0e0] font-bold text-xs"><i class="fas fa-clover text-green-500 mr-1"></i> Удача (Ур <span id="luck-display">0</span>)</div>
+                            <div class="text-[10px] text-[#777]">Больше шансов на добычу</div>
+                        </div>
+                        <button onclick="skills.upgrade('luck')" class="bg-[#222] border border-[#c8aa6e] text-[#c8aa6e] px-3 py-1 text-[10px] rounded hover:bg-[#c8aa6e] hover:text-black transition-colors uppercase">
+                            1 Жетон
+                        </button>
+                    </div>
+
+                     <!-- Crafting -->
+                    <div class="panel p-3 rounded flex justify-between items-center bg-[#151518]">
+                        <div>
+                            <div class="text-[#e0e0e0] font-bold text-xs"><i class="fas fa-scroll text-blue-400 mr-1"></i> Мастерство (Ур <span id="craft-level-display">0</span>)</div>
+                            <div class="text-[10px] text-[#777]">Открывает новые рецепты</div>
+                        </div>
+                        <button onclick="skills.upgrade('crafting')" class="bg-[#222] border border-[#c8aa6e] text-[#c8aa6e] px-3 py-1 text-[10px] rounded hover:bg-[#c8aa6e] hover:text-black transition-colors uppercase">
+                            1 Жетон
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: MAP -->
+        <section id="view-map" class="space-y-4">
+            <h2 class="medieval-font text-2xl text-center mb-6 text-[#c8aa6e]">Карта Мира</h2>
+            
+            <div class="grid grid-cols-1 gap-4">
+                <!-- Jobs -->
+                <button onclick="router.navigate('jobs')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-colors relative h-28">
+                    <div class="absolute inset-0 bg-[#222] group-hover:bg-[#2a2a2e] transition-colors"></div>
+                    <div class="absolute inset-0 flex items-center justify-between px-6">
+                        <div class="flex items-center gap-4 z-10">
+                            <div class="w-12 h-12 rounded-full bg-[#111] flex items-center justify-center border border-[#c8aa6e] shadow-lg">
+                                <i class="fas fa-hammer text-[#c8aa6e] text-lg"></i>
+                            </div>
+                            <div class="text-left">
+                                <h3 class="medieval-font text-xl text-white">Работы</h3>
+                                <p class="text-xs text-gray-400">Порт, Поле, Шахта, Охота</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400 z-10"></i>
+                    </div>
+                </button>
+
+                <!-- Town Square -->
+                <button onclick="router.navigate('town-square')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-colors relative h-28">
+                    <div class="absolute inset-0 bg-[#222] group-hover:bg-[#2a2a2e] transition-colors"></div>
+                    <div class="absolute inset-0 flex items-center justify-between px-6">
+                        <div class="flex items-center gap-4 z-10">
+                            <div class="w-12 h-12 rounded-full bg-[#111] flex items-center justify-center border border-cyan-500 shadow-lg">
+                                <i class="fas fa-landmark text-cyan-400 text-lg"></i>
+                            </div>
+                            <div class="text-left">
+                                <h3 class="medieval-font text-xl text-[#e0e0e0]">Городская площадь</h3>
+                                <p class="text-xs text-gray-400">Милостыня и слухи</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400 z-10"></i>
+                    </div>
+                </button>
+
+                <!-- Tavern -->
+                <button onclick="router.navigate('tavern')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-colors relative h-28">
+                    <div class="absolute inset-0 bg-[#222] group-hover:bg-[#2a2a2e] transition-colors"></div>
+                    <div class="absolute inset-0 flex items-center justify-between px-6">
+                        <div class="flex items-center gap-4 z-10">
+                            <div class="w-12 h-12 rounded-full bg-[#111] flex items-center justify-center border border-orange-500 shadow-lg">
+                                <i class="fas fa-beer text-orange-400 text-lg"></i>
+                            </div>
+                            <div class="text-left">
+                                <h3 class="medieval-font text-xl text-[#e0e0e0]">Таверна</h3>
+                                <p class="text-xs text-gray-400">Отдых и азартные игры</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400 z-10"></i>
+                    </div>
+                </button>
+
+                <!-- Treasury -->
+                <button onclick="router.navigate('treasury')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-colors relative h-28">
+                    <div class="absolute inset-0 bg-[#222] group-hover:bg-[#2a2a2e] transition-colors"></div>
+                    <div class="absolute inset-0 flex items-center justify-between px-6">
+                        <div class="flex items-center gap-4 z-10">
+                            <div class="w-12 h-12 rounded-full bg-[#111] flex items-center justify-center border border-yellow-500 shadow-lg">
+                                <i class="fas fa-dungeon text-yellow-400 text-lg"></i>
+                            </div>
+                            <div class="text-left">
+                                <h3 class="medieval-font text-xl text-[#e0e0e0]">Казна</h3>
+                                <p class="text-xs text-gray-400">Обмен и хранилище</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400 z-10"></i>
+                    </div>
+                </button>
+
+                <!-- Dark Forest -->
+                <button id="btn-loc-forest" onclick="router.navigate('dark-forest')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-colors relative h-28">
+                    <div class="absolute inset-0 bg-[#222] group-hover:bg-[#2a2a2e] transition-colors"></div>
+                    <div class="absolute inset-0 flex items-center justify-between px-6">
+                        <div class="flex items-center gap-4 z-10">
+                            <div class="w-12 h-12 rounded-full bg-[#111] flex items-center justify-center border border-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.4)]">
+                                <i class="fas fa-tree text-purple-400 text-lg"></i>
+                            </div>
+                            <div class="text-left">
+                                <h3 class="medieval-font text-xl text-[#e0e0e0]">Темный Лес</h3>
+                                <p id="forest-desc" class="text-xs text-gray-400">Опасность и редкие травы</p>
+                            </div>
+                        </div>
+                        <i id="forest-lock-icon" class="fas fa-chevron-right text-gray-400 z-10"></i>
+                    </div>
+                </button>
+
+                <!-- Training Camp -->
+                <button id="btn-loc-camp" onclick="router.navigate('training-camp')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-colors relative h-28">
+                    <div class="absolute inset-0 bg-[#222] group-hover:bg-[#2a2a2e] transition-colors"></div>
+                    <div class="absolute inset-0 flex items-center justify-between px-6">
+                        <div class="flex items-center gap-4 z-10">
+                            <div class="w-12 h-12 rounded-full bg-[#111] flex items-center justify-center border border-red-500 shadow-lg">
+                                <i class="fas fa-shield-halved text-red-500 text-lg"></i>
+                            </div>
+                            <div class="text-left">
+                                <h3 class="medieval-font text-xl text-[#e0e0e0]">Учебный Лагерь</h3>
+                                <p id="camp-desc" class="text-xs text-gray-400">Путь воина</p>
+                            </div>
+                        </div>
+                        <i id="camp-lock-icon" class="fas fa-chevron-right text-gray-400 z-10"></i>
+                    </div>
+                </button>
+
+                <!-- Refugee Camp -->
+                <div class="panel p-0 rounded-lg overflow-hidden relative h-28 opacity-60">
+                    <div class="absolute inset-0 bg-[#222]"></div>
+                    <div class="absolute inset-0 flex items-center justify-between px-6">
+                        <div class="flex items-center gap-4 z-10">
+                            <div class="w-12 h-12 rounded-full bg-[#111] flex items-center justify-center border border-[#333]">
+                                <i class="fas fa-campground text-gray-600 text-lg"></i>
+                            </div>
+                            <div class="text-left">
+                                <h3 class="medieval-font text-xl text-gray-400">Лагерь беженцев</h3>
+                                <p class="text-xs text-gray-500">Закрыто</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-lock text-gray-600 z-10"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SUB-VIEW: JOBS -->
+        <section id="view-jobs" class="hidden space-y-4">
+            <!-- Header Image -->
+            <div class="h-28 w-full bg-[url('https://images.unsplash.com/photo-1542332213-31f87348057f?q=80&w=2070')] bg-cover bg-center relative rounded-lg mb-4 shadow-lg overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-t from-[#141417] to-transparent opacity-90"></div>
+                <div class="absolute top-4 left-4">
+                    <button onclick="router.navigate('map')" class="w-8 h-8 rounded border border-[#333] bg-black/50 flex items-center justify-center text-[#a0a0a0]">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                </div>
+                <div class="absolute bottom-3 left-4">
+                     <h2 class="medieval-font text-2xl text-[#c8aa6e] drop-shadow-md">Доступная работа</h2>
+                </div>
+            </div>
+
+            <!-- The Port -->
+            <div id="job-port" class="panel rounded-lg p-0 relative overflow-hidden h-40 group">
+                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1549140600-78c9b8275ee3?q=80&w=2070')] bg-cover bg-center opacity-30 group-hover:opacity-40 transition-opacity"></div>
+                <div class="absolute inset-0 p-4 flex flex-col justify-between">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="medieval-font text-lg text-white drop-shadow-md">Порт</h3>
+                            <p class="text-xs text-gray-300 drop-shadow-md">Ловля рыбы для рынка.</p>
+                            <p class="text-xs text-[#c8aa6e] mt-1 drop-shadow-md" id="job-info-port">Требуется: Удочка</p>
+                        </div>
+                        <span class="text-xs bg-green-900/80 text-green-200 px-2 py-0.5 rounded border border-green-800 backdrop-blur-sm">Ур 1</span>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-4 mb-3">
+                            <div class="text-sm text-[#e0e0e0] flex items-center gap-1 drop-shadow-md">
+                                <i class="fas fa-fish"></i> <span id="reward-port" class="font-bold">1-2 Рыбы</span>
+                            </div>
+                            <div class="text-sm text-blue-400 flex items-center gap-1 drop-shadow-md">
+                                <i class="fas fa-star"></i> +1 XP
+                            </div>
+                        </div>
+                        <button id="btn-work-port" onclick="game.work('port', event)" class="btn-medieval w-full py-2 rounded font-bold shadow-lg">
+                            <i class="fas fa-fish mr-2"></i> Рыбачить
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- The Field -->
+            <div id="job-field" class="panel rounded-lg p-0 relative overflow-hidden h-40 opacity-50 group">
+                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=2070')] bg-cover bg-center opacity-30 group-hover:opacity-40 transition-opacity"></div>
+                 <div class="absolute inset-0 p-4 flex flex-col justify-between">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="medieval-font text-lg text-white drop-shadow-md">Пшеничное поле</h3>
+                            <p class="text-xs text-gray-300 drop-shadow-md">Сбор урожая под солнцем.</p>
+                            <p class="text-xs text-[#c8aa6e] mt-1 drop-shadow-md" id="job-info-field">Требуется: Серп</p>
+                        </div>
+                        <span class="text-xs bg-gray-800/80 text-gray-400 px-2 py-0.5 rounded border border-gray-700 backdrop-blur-sm">Ур 5</span>
+                    </div>
+                    
+                    <div>
+                        <div class="flex items-center gap-4 mb-3">
+                            <div class="text-sm text-[#e0e0e0] flex items-center gap-1 drop-shadow-md">
+                                <i class="fas fa-wheat-awn"></i> <span id="reward-field" class="font-bold">1-2 Пшеницы</span>
+                            </div>
+                            <div class="text-sm text-blue-400 flex items-center gap-1 drop-shadow-md">
+                                <i class="fas fa-star"></i> +3 XP
+                            </div>
+                        </div>
+                        <button id="btn-work-field" disabled onclick="game.work('field', event)" class="btn-medieval w-full py-2 rounded font-bold flex items-center justify-center gap-2 shadow-lg">
+                            <i class="fas fa-lock text-xs"></i> Закрыто
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- The Mine -->
+            <div id="job-mine" class="panel rounded-lg p-0 relative overflow-hidden h-40 opacity-50 group">
+                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1516937963518-0096035d50ac?q=80&w=2070')] bg-cover bg-center opacity-30 group-hover:opacity-40 transition-opacity"></div>
+                 <div class="absolute inset-0 p-4 flex flex-col justify-between">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="medieval-font text-lg text-white drop-shadow-md">Железный рудник</h3>
+                            <p class="text-xs text-gray-300 drop-shadow-md">Опасная работа в темноте.</p>
+                            <p class="text-xs text-[#c8aa6e] mt-1 drop-shadow-md" id="job-info-mine">Требуется: Кирка</p>
+                        </div>
+                        <span class="text-xs bg-gray-800/80 text-gray-400 px-2 py-0.5 rounded border border-gray-700 backdrop-blur-sm">Ур 15</span>
+                    </div>
+                    
+                    <div>
+                        <div class="flex items-center gap-4 mb-3">
+                            <div class="text-sm text-[#e0e0e0] flex items-center gap-1 drop-shadow-md">
+                                <i class="fas fa-cube"></i> <span id="reward-mine" class="font-bold">1-2 Руды</span>
+                            </div>
+                            <div class="text-sm text-blue-400 flex items-center gap-1 drop-shadow-md">
+                                <i class="fas fa-star"></i> +8 XP
+                            </div>
+                        </div>
+                        <button id="btn-work-mine" disabled onclick="game.work('mine', event)" class="btn-medieval w-full py-2 rounded font-bold flex items-center justify-center gap-2 shadow-lg">
+                            <i class="fas fa-lock text-xs"></i> Закрыто
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- The Hunter -->
+            <div id="job-hunter" class="panel rounded-lg p-0 relative overflow-hidden h-40 opacity-50 group">
+                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1599409385627-c37025816b3f?q=80&w=2070')] bg-cover bg-center opacity-40 group-hover:opacity-50 transition-opacity"></div>
+                 <div class="absolute inset-0 p-4 flex flex-col justify-between">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="medieval-font text-lg text-white drop-shadow-md">Охота</h3>
+                            <p class="text-xs text-gray-300 drop-shadow-md">Добыча шкур в лесу.</p>
+                            <p class="text-xs text-[#c8aa6e] mt-1 drop-shadow-md" id="job-info-hunter">Требуется: Арбалет</p>
+                        </div>
+                        <span class="text-xs bg-red-900/80 text-red-200 px-2 py-0.5 rounded border border-red-800 backdrop-blur-sm">Ур 30</span>
+                    </div>
+                    
+                    <div>
+                        <div class="flex items-center gap-4 mb-3">
+                            <div class="text-sm text-[#e0e0e0] flex items-center gap-1 drop-shadow-md">
+                                <i class="fas fa-scroll"></i> <span id="reward-hunter" class="font-bold">1 Кожа</span>
+                            </div>
+                            <div class="text-sm text-blue-400 flex items-center gap-1 drop-shadow-md">
+                                <i class="fas fa-star"></i> +15 XP
+                            </div>
+                        </div>
+                        <button id="btn-work-hunter" disabled onclick="game.work('hunter', event)" class="btn-medieval w-full py-2 rounded font-bold flex items-center justify-center gap-2 shadow-lg">
+                            <i class="fas fa-lock text-xs"></i> Закрыто
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: DARK FOREST -->
+        <section id="view-dark-forest" class="hidden space-y-4">
+            <div class="h-28 w-full bg-[url('https://images.unsplash.com/photo-1518182170546-0766ce6fec56?q=80&w=2070')] bg-cover bg-center relative rounded-lg mb-4 shadow-lg overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-t from-[#141417] to-transparent opacity-90"></div>
+                <div class="absolute top-4 left-4">
+                    <button onclick="router.navigate('map')" class="w-8 h-8 rounded border border-[#333] bg-black/50 flex items-center justify-center text-[#a0a0a0]">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                </div>
+                <div class="absolute bottom-3 left-4">
+                     <h2 class="medieval-font text-2xl text-purple-400 drop-shadow-md">Темный Лес</h2>
+                </div>
+            </div>
+
+            <div class="panel rounded-lg p-4 space-y-4 bg-gradient-to-b from-[#1a1a1d] to-[#100b14] border-purple-900/30">
+                <div class="text-center">
+                    <p class="text-sm text-[#e0e0e0]">Мрачные деревья скрывают опасности...</p>
+                    <p class="text-xs text-purple-400">И редкие ингредиенты.</p>
+                </div>
+
+                <!-- Forest NPC -->
+                <div class="panel p-3 rounded flex items-center justify-between border-purple-900/30 bg-purple-900/10">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full border border-purple-500 bg-[#222] flex items-center justify-center">
+                            <i class="fas fa-hood-cloak text-purple-400"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm text-[#e0e0e0] font-bold">Элара</div>
+                            <div class="text-[10px] text-[#a0a0a0]">Следопыт</div>
+                        </div>
+                    </div>
+                    <button onclick="dialogue.start('elara')" class="btn-medieval px-4 py-1.5 rounded text-xs">
+                        Говорить
+                    </button>
+                </div>
+
+                <!-- Gather Resources -->
+                <div class="p-3 border border-[#333] rounded bg-black/20 flex flex-col gap-2">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded bg-[#222] flex items-center justify-center text-emerald-500">
+                                <i class="fas fa-leaf"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm text-gray-200">Собирательство</h4>
+                                <p class="text-[10px] text-gray-500">Палки, камни, травы и грибы.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="locations.forestGather(event)" class="btn-medieval w-full py-2 rounded text-xs border-emerald-900 text-emerald-500 hover:bg-emerald-900/20">
+                        Искать (-5 HP)
+                    </button>
+                    <div class="flex justify-between text-[10px] text-gray-500 px-1">
+                        <span>Награда: Ресурсы</span>
+                        <span>+3 XP</span>
+                    </div>
+                </div>
+
+                <!-- Hunt Monsters -->
+                <div class="p-3 border border-purple-900/50 rounded bg-purple-900/10 flex flex-col gap-2 relative overflow-hidden">
+                    <div class="absolute -right-2 -top-2 text-6xl text-purple-900 opacity-20 pointer-events-none">
+                        <i class="fas fa-dragon"></i>
+                    </div>
+                    <div class="flex justify-between items-center z-10">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded bg-[#222] flex items-center justify-center text-red-500 border border-purple-900">
+                                <i class="fas fa-skull"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm text-gray-200">Охота на чудовищ</h4>
+                                <p class="text-[10px] text-gray-500">Углубиться в чащу леса.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="locations.forestHunt(event)" class="btn-medieval w-full py-2 rounded text-xs border-red-900 text-red-500 hover:bg-red-900/20 z-10">
+                        Сразиться (-20 HP)
+                    </button>
+                    <div class="flex justify-between text-[10px] text-gray-500 px-1 z-10">
+                        <span>Награда: Золото/Предметы</span>
+                        <span>+20 XP</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: TOWN SQUARE -->
+        <section id="view-town-square" class="hidden space-y-4">
+            <div class="h-28 w-full bg-[url('https://images.unsplash.com/photo-1517457373958-b7bdd4587205?q=80&w=2070')] bg-cover bg-center relative rounded-lg mb-4 shadow-lg overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-t from-[#141417] to-transparent opacity-90"></div>
+                <div class="absolute top-4 left-4">
+                    <button onclick="router.navigate('map')" class="w-8 h-8 rounded border border-[#333] bg-black/50 flex items-center justify-center text-[#a0a0a0]">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                </div>
+                <div class="absolute bottom-3 left-4">
+                     <h2 class="medieval-font text-2xl text-[#c8aa6e] drop-shadow-md">Городская площадь</h2>
+                </div>
+            </div>
+
+            <div class="panel rounded-lg p-6 text-center space-y-4">
+                <i class="fas fa-hands text-4xl text-gray-500"></i>
+                <div>
+                    <p class="text-sm text-[#e0e0e0]">Вы стоите посреди людной площади.</p>
+                    <p class="text-xs text-[#a0a0a0]">Иногда прохожие кидают монеты бродягам.</p>
+                </div>
+                <button onclick="locations.beg(event)" class="btn-medieval w-full py-3 rounded font-bold">
+                    <i class="fas fa-hand-holding-medical mr-2"></i> Попрошайничать
+                </button>
+                <p class="text-[10px] text-gray-600 mb-4">+2 Золота за клик</p>
+
+                <div class="grid grid-cols-2 gap-3 border-t border-[#333] pt-4 mt-2">
+                    <div class="flex flex-col items-center">
+                        <div class="w-10 h-10 rounded-full border border-[#c8aa6e] bg-[#222] flex items-center justify-center mb-1">
+                            <i class="fas fa-user-tie text-[#c8aa6e]"></i>
+                        </div>
+                        <p class="text-xs text-[#e0e0e0] mb-1">Артур</p>
+                        <button onclick="dialogue.start('arthur')" class="btn-medieval w-full py-1.5 rounded text-[10px]">
+                            Говорить
+                        </button>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <i class="fas fa-user-md text-2xl text-red-400 mb-2"></i>
+                        <p class="text-xs text-[#e0e0e0] mb-1">Лекарь</p>
+                        <button onclick="game.heal(50, 50)" class="btn-medieval w-full py-1.5 rounded text-[10px]">
+                            Лечение (50<i class="fas fa-coins text-[8px] ml-0.5"></i>)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: TREASURY -->
+        <section id="view-treasury" class="hidden space-y-4">
+            <div class="h-28 w-full bg-[url('https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?q=80&w=2070')] bg-cover bg-center relative rounded-lg mb-4 shadow-lg overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-t from-[#141417] to-transparent opacity-90"></div>
+                <div class="absolute top-4 left-4">
+                    <button onclick="router.navigate('map')" class="w-8 h-8 rounded border border-[#333] bg-black/50 flex items-center justify-center text-[#a0a0a0]">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                </div>
+                <div class="absolute bottom-3 left-4">
+                     <h2 class="medieval-font text-2xl text-[#c8aa6e] drop-shadow-md">Казна</h2>
+                </div>
+            </div>
+
+            <!-- Bank Info -->
+            <div class="panel rounded-lg p-4 flex items-center justify-between bg-[#101012]">
+                <div>
+                    <div class="text-xs text-[#a0a0a0] uppercase">В сейфе</div>
+                    <div class="text-xl font-bold text-[#c8aa6e]">
+                        <i class="fas fa-lock text-xs mr-1"></i> <span id="bank-display">0</span>
+                    </div>
+                </div>
+                <i class="fas fa-shield-alt text-2xl text-[#333]"></i>
+            </div>
+
+            <!-- Deposit/Withdraw -->
+            <div class="panel rounded-lg p-4 space-y-3">
+                <h3 class="text-sm font-bold text-[#e0e0e0] border-b border-[#333] pb-2">Хранилище</h3>
+
+
+                <div class="mt-2 space-y-2">
+                    <div class="flex items-center justify-between text-[10px] text-[#777]">
+                        <div>На руках: <span id="wallet-display" class="text-[#c8aa6e] font-bold">0</span></div>
+                        <div>В сейфе: <span class="text-[#c8aa6e] font-bold" id="bank-display-mini">0</span></div>
+                    </div>
+
+                    <div class="flex gap-2">
+                        <input id="bank-amount-input" type="number" min="1" step="1" placeholder="Сумма" class="w-full bg-[#111] border border-[#333] text-center text-xs text-white rounded p-2 outline-none focus:border-[#c8aa6e]">
+                        <button onclick="locations.treasurySetMax('deposit', event)" class="px-3 bg-[#222] border border-[#444] rounded text-xs text-gray-400 hover:text-white">Max</button>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="locations.treasuryDepositAmount(event)" class="btn-medieval py-2 text-xs rounded">
+                            Положить
+                        </button>
+                        <button onclick="locations.treasuryWithdrawAmount(event)" class="btn-medieval py-2 text-xs rounded">
+                            Снять
+                        </button>
+                    </div>
+
+                    <div class="flex justify-end">
+                        <button onclick="locations.treasurySetMax('withdraw', event)" class="text-[10px] text-gray-500 underline underline-offset-2 hover:text-[#c8aa6e]">Max для снятия</button>
+                    </div>
+                </div>
+
+                <p class="text-[10px] text-center text-[#777]">Деньги в сейфе защищены от краж.</p>
+            </div>
+
+            <!-- Exchange -->
+            <div class="panel rounded-lg p-4 space-y-3">
+                <h3 class="text-sm font-bold text-[#e0e0e0] border-b border-[#333] pb-2">Обмен Валюты</h3>
+                <div class="flex justify-between items-center bg-[#000] p-2 rounded border border-[#333]">
+                    <div class="flex items-center gap-2">
+                        <i class="far fa-gem text-emerald-400"></i>
+                        <span class="font-bold">1</span>
+                    </div>
+                    <i class="fas fa-arrow-right text-gray-600"></i>
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-coins text-yellow-500"></i>
+                        <span class="font-bold">1000</span>
+                    </div>
+                </div>
+                <button onclick="locations.treasuryExchange(event)" class="btn-medieval w-full py-2 rounded text-sm">
+                    Обменять
+                </button>
+            </div>
+        </section>
+
+        <!-- VIEW: TAVERN -->
+        <section id="view-tavern" class="hidden space-y-4">
+            <div class="h-28 w-full bg-[url('https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=2070')] bg-cover bg-center relative rounded-lg mb-4 shadow-lg overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-t from-[#141417] to-transparent opacity-90"></div>
+                <div class="absolute top-4 left-4">
+                    <button onclick="router.navigate('map')" class="w-8 h-8 rounded border border-[#333] bg-black/50 flex items-center justify-center text-[#a0a0a0]">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                </div>
+                <div class="absolute bottom-3 left-4">
+                     <h2 class="medieval-font text-2xl text-[#c8aa6e] drop-shadow-md">Таверна</h2>
+                </div>
+            </div>
+
+            <!-- Tavern NPC -->
+            <div class="panel p-3 mb-4 rounded flex items-center justify-between border-orange-900/30 bg-orange-900/10">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full border border-orange-500 bg-[#222] flex items-center justify-center">
+                        <i class="fas fa-wine-glass text-orange-400"></i>
+                    </div>
+                    <div>
+                        <div class="text-sm text-[#e0e0e0] font-bold">Старый Бен</div>
+                        <div class="text-[10px] text-[#a0a0a0]">Трактирщик</div>
+                    </div>
+                </div>
+                <button onclick="dialogue.start('ben')" class="btn-medieval px-4 py-1.5 rounded text-xs">
+                    Слухи
+                </button>
+            </div>
+
+            <!-- Rent Room -->
+            <div class="panel rounded-lg p-4 relative overflow-hidden">
+                <div class="absolute right-0 top-0 p-4 opacity-20">
+                    <i class="fas fa-bed text-6xl"></i>
+                </div>
+                <h3 class="medieval-font text-lg text-[#e0e0e0]">Ночлег</h3>
+                <p class="text-xs text-[#a0a0a0] mb-3 w-3/4">Восстанавливает 100% здоровья.</p>
+                <div class="flex items-center gap-2 mb-3 text-sm">
+                    <span class="text-[#c8aa6e]">Цена: 20</span> <i class="far fa-gem text-emerald-400"></i> / сутки
+                </div>
+                <button id="btn-rent-room" onclick="locations.tavernRent()" class="btn-medieval w-full py-2 rounded text-sm">
+                    Снять комнату
+                </button>
+                <p id="rent-status" class="text-xs text-green-500 mt-2 hidden">
+                    <i class="fas fa-check-circle"></i> Комната оплачена
+                </p>
+            </div>
+
+            <!-- Wheel of Fortune -->
+            <div class="panel rounded-lg p-4 text-center space-y-4 overflow-hidden relative">
+                <h3 class="medieval-font text-lg text-[#c8aa6e]">Колесо Удачи</h3>
+                
+                <div class="relative w-48 h-48 mx-auto my-4">
+                    <div id="wheel" class="w-full h-full rounded-full border-4 border-[#c8aa6e] relative bg-[#222] shadow-[0_0_20px_rgba(0,0,0,0.5)] flex items-center justify-center overflow-hidden wheel-container">
+                        <div class="absolute inset-0 opacity-20 bg-[conic-gradient(#444_0deg_36deg,#222_36deg_72deg,#444_72deg_108deg,#222_108deg_144deg,#444_144deg_180deg,#222_180deg_216deg,#444_216deg_252deg,#222_252deg_288deg,#444_288deg_324deg,#222_324deg_360deg)]"></div>
+                        <i class="fas fa-dice text-4xl text-[#555]"></i>
+                    </div>
+                    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-2 text-[#c8aa6e] z-10 text-2xl">
+                        <i class="fas fa-caret-down"></i>
+                    </div>
+                </div>
+
+                <div class="text-sm text-[#a0a0a0]">
+                    Цена: <span class="text-emerald-400 font-bold">1 <i class="far fa-gem"></i></span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 text-[10px] text-gray-500 text-left px-2">
+                    <div>10 <i class="far fa-gem text-emerald-400"></i> (10%)</div>
+                    <div>100 <i class="far fa-gem text-emerald-400"></i> (1%)</div>
+                    <div>10к <i class="fas fa-coins text-yellow-500"></i> (15%)</div>
+                    <div>5к <i class="fas fa-coins text-yellow-500"></i> (25%)</div>
+                    <div class="col-span-2 text-center">1к <i class="fas fa-coins text-yellow-500"></i> (49%)</div>
+                </div>
+
+                <button id="btn-spin" onclick="locations.tavernSpin()" class="btn-medieval w-full py-2 rounded font-bold">
+                    Крутить!
+                </button>
+            </div>
+        </section>
+
+        <!-- VIEW: MARKET -->
+        <section id="view-market" class="hidden space-y-4">
+            <h2 class="medieval-font text-2xl text-center mb-4 text-[#c8aa6e]">Торговые ряды</h2>
+            
+            <!-- Sell Resources Grid -->
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <!-- Fish Sell -->
+                <div class="panel p-2 rounded flex flex-col items-center text-center border-blue-900/30 bg-blue-900/10">
+                    <i class="fas fa-fish text-[#c8aa6e] mb-1"></i>
+                    <div class="text-xs text-[#e0e0e0]">Рыба</div>
+                    <div class="text-[10px] text-[#a0a0a0] mb-1">5 <i class="fas fa-coins"></i></div>
+                    <div class="text-[10px] text-blue-300 mb-1">У вас: <span id="market-count-fish">0</span></div>
+                    
+                    <div class="flex gap-1 w-full mb-1">
+                        <input id="sell-input-fish" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#333] text-center text-[10px] text-white rounded p-0 outline-none focus:border-[#c8aa6e]">
+                        <button onclick="market.setMax('fish')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
+                    </div>
+                    <button onclick="market.sellFromInput('fish')" class="w-full bg-[#2c2c30] border border-[#c8aa6e] rounded text-[10px] py-1 text-[#c8aa6e] hover:bg-[#c8aa6e] hover:text-black transition-colors uppercase">
+                        Продать
+                    </button>
+                </div>
+                 <!-- Wheat Sell -->
+                 <div class="panel p-2 rounded flex flex-col items-center text-center border-yellow-900/30 bg-yellow-900/10">
+                    <i class="fas fa-wheat-awn text-[#c8aa6e] mb-1"></i>
+                    <div class="text-xs text-[#e0e0e0]">Пшеница</div>
+                    <div class="text-[10px] text-[#a0a0a0] mb-1">15 <i class="fas fa-coins"></i></div>
+                    <div class="text-[10px] text-blue-300 mb-1">У вас: <span id="market-count-wheat">0</span></div>
+                    
+                    <div class="flex gap-1 w-full mb-1">
+                        <input id="sell-input-wheat" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#333] text-center text-[10px] text-white rounded p-0 outline-none focus:border-[#c8aa6e]">
+                        <button onclick="market.setMax('wheat')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
+                    </div>
+                    <button onclick="market.sellFromInput('wheat')" class="w-full bg-[#2c2c30] border border-[#c8aa6e] rounded text-[10px] py-1 text-[#c8aa6e] hover:bg-[#c8aa6e] hover:text-black transition-colors uppercase">
+                        Продать
+                    </button>
+                </div>
+                 <!-- Ore Sell -->
+                 <div class="panel p-2 rounded flex flex-col items-center text-center border-gray-700/30 bg-gray-700/10">
+                    <i class="fas fa-cube text-[#c8aa6e] mb-1"></i>
+                    <div class="text-xs text-[#e0e0e0]">Руда</div>
+                    <div class="text-[10px] text-[#a0a0a0] mb-1">40 <i class="fas fa-coins"></i></div>
+                    <div class="text-[10px] text-blue-300 mb-1">У вас: <span id="market-count-ore">0</span></div>
+                    
+                    <div class="flex gap-1 w-full mb-1">
+                        <input id="sell-input-ore" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#333] text-center text-[10px] text-white rounded p-0 outline-none focus:border-[#c8aa6e]">
+                        <button onclick="market.setMax('ore')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
+                    </div>
+                    <button onclick="market.sellFromInput('ore')" class="w-full bg-[#2c2c30] border border-[#c8aa6e] rounded text-[10px] py-1 text-[#c8aa6e] hover:bg-[#c8aa6e] hover:text-black transition-colors uppercase">
+                        Продать
+                    </button>
+                </div>
+                 <!-- Leather Sell -->
+                 <div class="panel p-2 rounded flex flex-col items-center text-center border-red-900/30 bg-red-900/10">
+                    <i class="fas fa-scroll text-[#c8aa6e] mb-1"></i>
+                    <div class="text-xs text-[#e0e0e0]">Кожа</div>
+                    <div class="text-[10px] text-[#a0a0a0] mb-1">100 <i class="fas fa-coins"></i></div>
+                    <div class="text-[10px] text-blue-300 mb-1">У вас: <span id="market-count-leather">0</span></div>
+                    
+                    <div class="flex gap-1 w-full mb-1">
+                        <input id="sell-input-leather" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#333] text-center text-[10px] text-white rounded p-0 outline-none focus:border-[#c8aa6e]">
+                        <button onclick="market.setMax('leather')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
+                    </div>
+                    <button onclick="market.sellFromInput('leather')" class="w-full bg-[#2c2c30] border border-[#c8aa6e] rounded text-[10px] py-1 text-[#c8aa6e] hover:bg-[#c8aa6e] hover:text-black transition-colors uppercase">
+                        Продать
+                    </button>
+                </div>
+                 <!-- Wood Sell -->
+                 <div class="panel p-2 rounded flex flex-col items-center text-center border-amber-900/30 bg-amber-900/10">
+                    <i class="fas fa-tree text-[#c8aa6e] mb-1"></i>
+                    <div class="text-xs text-[#e0e0e0]">Палки</div>
+                    <div class="text-[10px] text-[#a0a0a0] mb-1">5 <i class="fas fa-coins"></i></div>
+                    <div class="text-[10px] text-blue-300 mb-1">У вас: <span id="market-count-wood">0</span></div>
+                    
+                    <div class="flex gap-1 w-full mb-1">
+                        <input id="sell-input-wood" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#333] text-center text-[10px] text-white rounded p-0 outline-none focus:border-[#c8aa6e]">
+                        <button onclick="market.setMax('wood')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
+                    </div>
+                    <button onclick="market.sellFromInput('wood')" class="w-full bg-[#2c2c30] border border-[#c8aa6e] rounded text-[10px] py-1 text-[#c8aa6e] hover:bg-[#c8aa6e] hover:text-black transition-colors uppercase">
+                        Продать
+                    </button>
+                </div>
+                 <!-- Stone Sell -->
+                 <div class="panel p-2 rounded flex flex-col items-center text-center border-gray-600/30 bg-gray-600/10">
+                    <i class="fas fa-shapes text-gray-400 mb-1"></i>
+                    <div class="text-xs text-[#e0e0e0]">Камни</div>
+                    <div class="text-[10px] text-[#a0a0a0] mb-1">5 <i class="fas fa-coins"></i></div>
+                    <div class="text-[10px] text-blue-300 mb-1">У вас: <span id="market-count-stone">0</span></div>
+                    
+                    <div class="flex gap-1 w-full mb-1">
+                        <input id="sell-input-stone" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#333] text-center text-[10px] text-white rounded p-0 outline-none focus:border-[#c8aa6e]">
+                        <button onclick="market.setMax('stone')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
+                    </div>
+                    <button onclick="market.sellFromInput('stone')" class="w-full bg-[#2c2c30] border border-[#c8aa6e] rounded text-[10px] py-1 text-[#c8aa6e] hover:bg-[#c8aa6e] hover:text-black transition-colors uppercase">
+                        Продать
+                    </button>
+                </div>
+                 <!-- Herbs Sell -->
+                 <div class="panel p-2 rounded flex flex-col items-center text-center border-green-900/30 bg-green-900/10">
+                    <i class="fas fa-leaf text-green-400 mb-1"></i>
+                    <div class="text-xs text-[#e0e0e0]">Травы</div>
+                    <div class="text-[10px] text-[#a0a0a0] mb-1">10 <i class="fas fa-coins"></i></div>
+                    <div class="text-[10px] text-blue-300 mb-1">У вас: <span id="market-count-herbs">0</span></div>
+                    
+                    <div class="flex gap-1 w-full mb-1">
+                        <input id="sell-input-herbs" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#333] text-center text-[10px] text-white rounded p-0 outline-none focus:border-[#c8aa6e]">
+                        <button onclick="market.setMax('herbs')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
+                    </div>
+                    <button onclick="market.sellFromInput('herbs')" class="w-full bg-[#2c2c30] border border-[#c8aa6e] rounded text-[10px] py-1 text-[#c8aa6e] hover:bg-[#c8aa6e] hover:text-black transition-colors uppercase">
+                        Продать
+                    </button>
+                </div>
+                 <!-- Mushrooms Sell -->
+                 <div class="panel p-2 rounded flex flex-col items-center text-center border-purple-900/30 bg-purple-900/10">
+                    <i class="fas fa-spider text-purple-400 mb-1"></i>
+                    <div class="text-xs text-[#e0e0e0]">Грибы</div>
+                    <div class="text-[10px] text-[#a0a0a0] mb-1">25 <i class="fas fa-coins"></i></div>
+                    <div class="text-[10px] text-blue-300 mb-1">У вас: <span id="market-count-mushrooms">0</span></div>
+                    
+                    <div class="flex gap-1 w-full mb-1">
+                        <input id="sell-input-mushrooms" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#333] text-center text-[10px] text-white rounded p-0 outline-none focus:border-[#c8aa6e]">
+                        <button onclick="market.setMax('mushrooms')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
+                    </div>
+                    <button onclick="market.sellFromInput('mushrooms')" class="w-full bg-[#2c2c30] border border-[#c8aa6e] rounded text-[10px] py-1 text-[#c8aa6e] hover:bg-[#c8aa6e] hover:text-black transition-colors uppercase">
+                        Продать
+                    </button>
+                </div>
+            </div>
+
+            <!-- Market NPC -->
+            <div class="panel p-3 mb-4 rounded flex items-center justify-between border-blue-900/30 bg-blue-900/10">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full border border-gray-500 bg-[#222] flex items-center justify-center">
+                        <i class="fas fa-hammer text-gray-400"></i>
+                    </div>
+                    <div>
+                        <div class="text-sm text-[#e0e0e0] font-bold">Горн</div>
+                        <div class="text-[10px] text-[#a0a0a0]">Кузнец</div>
+                    </div>
+                </div>
+                <button onclick="dialogue.start('gorn')" class="btn-medieval px-4 py-1.5 rounded text-xs">
+                    Говорить
+                </button>
+            </div>
+
+            <!-- Market Tabs -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-2 mb-2 no-scrollbar">
+                <button onclick="market.switchCategory('tools')" id="tab-market-tools" class="sub-tab active">Инструменты</button>
+                <button onclick="market.switchCategory('armor')" id="tab-market-armor" class="sub-tab">Бронник</button>
+                <button onclick="market.switchCategory('weapons')" id="tab-market-weapons" class="sub-tab">Мечник</button>
+                <button onclick="market.switchCategory('horses')" id="tab-market-horses" class="sub-tab">Конюшня</button>
+            </div>
+
+            <!-- Content: Tools -->
+            <div id="market-tools" class="space-y-3">
+                <!-- Rod -->
+                <div class="panel p-3 rounded flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-[#222] border border-[#333] rounded flex items-center justify-center text-[#c8aa6e]">
+                            <i class="fas fa-fish"></i>
+                        </div>
+                        <div>
+                            <div class="text-[#e0e0e0] font-serif">Удочка</div>
+                            <div class="text-xs text-[#a0a0a0]">Позволяет ловить рыбу</div>
+                            <div class="text-xs text-blue-400" id="market-lvl-rod">Ур: 0</div>
+                        </div>
+                    </div>
+                    <button id="btn-buy-rod" onclick="market.buyOrUpgradeTool('rod')" class="bg-[#111] border border-[#333] px-3 py-1.5 text-xs text-[#c8aa6e] rounded hover:border-[#c8aa6e]">
+                        <span id="price-rod">50</span> <i class="fas fa-coins text-[10px]"></i>
+                    </button>
+                </div>
+                <!-- Sickle -->
+                <div class="panel p-3 rounded flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-[#222] border border-[#333] rounded flex items-center justify-center text-[#c8aa6e]">
+                            <i class="fas fa-seedling"></i>
+                        </div>
+                        <div>
+                            <div class="text-[#e0e0e0] font-serif">Серп</div>
+                            <div class="text-xs text-[#a0a0a0]">Позволяет собирать пшеницу</div>
+                            <div class="text-xs text-blue-400" id="market-lvl-sickle">Ур: 0</div>
+                        </div>
+                    </div>
+                    <button id="btn-buy-sickle" onclick="market.buyOrUpgradeTool('sickle')" class="bg-[#111] border border-[#333] px-3 py-1.5 text-xs text-[#c8aa6e] rounded hover:border-[#c8aa6e]">
+                        <span id="price-sickle">500</span> <i class="fas fa-coins text-[10px]"></i>
+                    </button>
+                </div>
+                <!-- Pickaxe -->
+                <div class="panel p-3 rounded flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-[#222] border border-[#333] rounded flex items-center justify-center text-[#c8aa6e]">
+                            <i class="fas fa-hammer"></i>
+                        </div>
+                        <div>
+                            <div class="text-[#e0e0e0] font-serif">Кирка</div>
+                            <div class="text-xs text-[#a0a0a0]">Позволяет добывать руду</div>
+                            <div class="text-xs text-blue-400" id="market-lvl-pickaxe">Ур: 0</div>
+                        </div>
+                    </div>
+                    <button id="btn-buy-pickaxe" onclick="market.buyOrUpgradeTool('pickaxe')" class="bg-[#111] border border-[#333] px-3 py-1.5 text-xs text-[#c8aa6e] rounded hover:border-[#c8aa6e]">
+                        <span id="price-pickaxe">2000</span> <i class="fas fa-coins text-[10px]"></i>
+                    </button>
+                </div>
+                 <!-- Crossbow -->
+                 <div class="panel p-3 rounded flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-[#222] border border-[#333] rounded flex items-center justify-center text-[#c8aa6e]">
+                            <i class="fas fa-crosshairs"></i>
+                        </div>
+                        <div>
+                            <div class="text-[#e0e0e0] font-serif">Арбалет</div>
+                            <div class="text-xs text-[#a0a0a0]">Позволяет добывать шкуры</div>
+                            <div class="text-xs text-blue-400" id="market-lvl-crossbow">Ур: 0</div>
+                        </div>
+                    </div>
+                    <button id="btn-buy-crossbow" onclick="market.buyOrUpgradeTool('crossbow')" class="bg-[#111] border border-[#333] px-3 py-1.5 text-xs text-[#c8aa6e] rounded hover:border-[#c8aa6e]">
+                        <span id="price-crossbow">5000</span> <i class="fas fa-coins text-[10px]"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Content: Placeholders -->
+            <div id="market-placeholder" class="hidden flex flex-col items-center justify-center py-10 opacity-50">
+                <i class="fas fa-dungeon text-4xl mb-3 text-gray-600"></i>
+                <p class="text-sm text-gray-500">Этот торговец еще не прибыл в город.</p>
+            </div>
+
+        </section>
+
+        <!-- VIEW: TRAINING CAMP -->
+        <section id="view-training-camp" class="hidden space-y-4">
+            <div class="h-28 w-full bg-[url('https://images.unsplash.com/photo-1599554378873-500b5220c326?q=80&w=2070')] bg-cover bg-center relative rounded-lg mb-4 shadow-lg overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-t from-[#141417] to-transparent opacity-90"></div>
+                <div class="absolute top-4 left-4">
+                    <button onclick="router.navigate('map')" class="w-8 h-8 rounded border border-[#333] bg-black/50 flex items-center justify-center text-[#a0a0a0]">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                </div>
+                <div class="absolute bottom-3 left-4">
+                     <h2 class="medieval-font text-2xl text-red-500 drop-shadow-md">Учебный Лагерь</h2>
+                </div>
+            </div>
+
+            <div class="panel rounded-lg p-4 space-y-4 text-center">
+                 <p class="text-sm text-[#e0e0e0]">Здесь тренируются лучшие воины королевства.</p>
+
+                 <!-- John NPC -->
+                <div class="panel p-3 rounded flex items-center justify-between border-red-900/30 bg-red-900/10 text-left">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full border border-red-500 bg-[#222] flex items-center justify-center">
+                            <i class="fas fa-user-shield text-red-400"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm text-[#e0e0e0] font-bold">Рыцарь Джон</div>
+                            <div class="text-[10px] text-[#a0a0a0]">Наставник</div>
+                        </div>
+                    </div>
+                    <button onclick="dialogue.start('john')" class="btn-medieval px-4 py-1.5 rounded text-xs">
+                        Говорить
+                    </button>
+                </div>
+                
+                <div class="p-4 border border-[#333] rounded bg-black/20">
+                    <i class="fas fa-dumbbell text-3xl text-gray-600 mb-2"></i>
+                    <p class="text-xs text-gray-500">Тренировки временно недоступны.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: QUESTS -->
+        <section id="view-quests" class="hidden space-y-4">
+             <h2 class="medieval-font text-2xl text-center mb-4 text-[#c8aa6e]">Задания</h2>
+             
+             <!-- Quest Tabs -->
+             <div class="flex items-center justify-center gap-2 overflow-x-auto pb-2 mb-4 no-scrollbar">
+                <button onclick="quests.switchTab('daily')" id="tab-quests-daily" class="sub-tab active">Ежедневные</button>
+                <button onclick="quests.switchTab('character')" id="tab-quests-character" class="sub-tab">Персонажи</button>
+            </div>
+
+            <div id="quests-list" class="space-y-3 pb-20">
+                <!-- Quests populated by JS -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="h-16 bg-[#141417] border-t border-[#333] flex justify-around items-center z-30 shrink-0 shadow-[0_-5px_15px_rgba(0,0,0,0.5)]">
+        <button onclick="router.switchTab('map')" class="nav-item flex-1 flex flex-col items-center justify-center h-full text-[#777] hover:text-[#c8aa6e] transition-colors" id="nav-map">
+            <i class="fas fa-map-marked-alt mb-1 text-lg"></i>
+            <span class="text-[10px] uppercase tracking-wider font-serif">Карта</span>
+        </button>
+        <button onclick="router.switchTab('market')" class="nav-item flex-1 flex flex-col items-center justify-center h-full text-[#777] hover:text-[#c8aa6e] transition-colors" id="nav-market">
+            <i class="fas fa-shopping-bag mb-1 text-lg"></i>
+            <span class="text-[10px] uppercase tracking-wider font-serif">Рынок</span>
+        </button>
+        <button onclick="router.switchTab('quests')" class="nav-item flex-1 flex flex-col items-center justify-center h-full text-[#777] hover:text-[#c8aa6e] transition-colors" id="nav-quests">
+            <i class="fas fa-scroll mb-1 text-lg"></i>
+            <span class="text-[10px] uppercase tracking-wider font-serif">Задания</span>
+        </button>
+        <button onclick="router.switchTab('character')" class="nav-item active flex-1 flex flex-col items-center justify-center h-full text-[#777] hover:text-[#c8aa6e] transition-colors" id="nav-character">
+            <i class="fas fa-user-shield mb-1 text-lg"></i>
+            <span class="text-[10px] uppercase tracking-wider font-serif">Герой</span>
+        </button>
+    </nav>
+
+    <script>
+        // --- CONSTANTS ---
+        const TOOLS_DB = {
+            rod: { id: 'rod', name: 'Удочка', baseCost: 50, icon: 'fa-fish', job: 'port' },
+            sickle: { id: 'sickle', name: 'Серп', baseCost: 500, icon: 'fa-seedling', job: 'field' },
+            pickaxe: { id: 'pickaxe', name: 'Кирка', baseCost: 2000, icon: 'fa-hammer', job: 'mine' },
+            crossbow: { id: 'crossbow', name: 'Арбалет', baseCost: 5000, icon: 'fa-crosshairs', job: 'hunter' }
+        };
+
+        const JOBS_DB = {
+            port: { name: 'Порт', resource: 'fish', price: 5, xp: 1, tool: 'rod' },
+            field: { name: 'Поле', resource: 'wheat', price: 15, xp: 3, tool: 'sickle', levelReq: 5 },
+            mine: { name: 'Рудник', resource: 'ore', price: 40, xp: 8, tool: 'pickaxe', levelReq: 15 },
+            hunter: { name: 'Охота', resource: 'leather', price: 100, xp: 15, tool: 'crossbow', levelReq: 30 }
+        };
+        
+        const RESOURCE_NAMES = {
+            fish: { name: 'Рыба', icon: 'fa-fish' },
+            wheat: { name: 'Пшеница', icon: 'fa-wheat-awn' },
+            ore: { name: 'Руда', icon: 'fa-cube' },
+            leather: { name: 'Кожа', icon: 'fa-scroll' },
+            mushrooms: { name: 'Грибы', icon: 'fa-spider' },
+            wood: { name: 'Палка', icon: 'fa-tree' },
+            stone: { name: 'Камень', icon: 'fa-shapes' },
+            herbs: { name: 'Травы', icon: 'fa-leaf' }
+        };
+
+        // --- GAME STATE ---
+        const gameState = {
+            gold: 0,
+            emeralds: 0,
+            xp: 0,
+            level: 1,
+            hp: 100,
+            maxHp: 100,
+            skillPoints: 0,
+            luck: 0,
+            craftingLevel: 0,
+            xpToNextLevel: 100,
+            
+            // Resources
+            fish: 0,
+            wheat: 0,
+            ore: 0,
+            leather: 0,
+            mushrooms: 0,
+            wood: 0,
+            stone: 0,
+            herbs: 0,
+            
+            inventory: [],
+            // Tools State: owns boolean, current level
+            tools: {
+                rod: { owned: false, level: 0 },
+                sickle: { owned: false, level: 0 },
+                pickaxe: { owned: false, level: 0 },
+                crossbow: { owned: false, level: 0 }
+            },
+            
+            // Quests
+            activeQuests: [], 
+            lastQuestGenTime: 0,
+            storyQuests: [], // [{ id, title, desc, goals: {type, target, count}, reward: {gold, xp}, state: 'active'|'claimed' }]
+            
+            // NPC Memory
+            npcStates: {}, // { npcId: { met: bool, stage: int } }
+
+            // Features
+            bankedGold: 0,
+            lastLoginDate: null,
+            installDate: null, // Track when user first played
+            dailyStreak: 0,
+            rentExpiry: 0,
+            introShown: false
+        };
+
+        // --- NPC DATABASE ---
+        const NPC_DB = {
+            arthur: {
+                name: "Артур",
+                role: "Травник",
+                icon: "fa-user-tie",
+                dialogue: {
+                    root: {
+                        text: "Здравствуй, путник. Рад видеть, что ты на ногах. Чем могу помочь?",
+                        options: [
+                            { text: "Как заработать золота?", next: "earn" },
+                            { text: "Что это за место?", next: "lore" },
+                            { text: "Есть для меня работа?", next: "quest_check" },
+                            { text: "Пока", next: "exit" }
+                        ]
+                    },
+                    earn: {
+                        text: "Самый простой способ — работать в Порту или на Поле. Но сначала тебе понадобится инструмент. Попроси мелочь на площади, чтобы купить удочку.",
+                        options: [{ text: "Понял, спасибо", next: "root" }]
+                    },
+                    lore: {
+                        text: "Это вольный город на границе королевства. Здесь каждый сам за себя, но если трудиться — можно разбогатеть. Остерегайся Темного леса, пока не окрепнешь.",
+                        options: [{ text: "Ясно", next: "root" }]
+                    },
+                    quest_check: function() {
+                        if (!hasStoryQuest('q_arthur_1') && !isQuestCompleted('q_arthur_1')) {
+                            return "quest_offer";
+                        }
+                        return "no_quest";
+                    },
+                    quest_offer: {
+                        text: "Мне нужно 3 рыбы для лекарства. Принесешь — заплачу.",
+                        options: [
+                            { text: "Берусь!", action: "start_q_arthur_1", next: "quest_accepted" },
+                            { text: "Не сейчас", next: "root" }
+                        ]
+                    },
+                    quest_accepted: {
+                        text: "Отлично. Жду рыбу.",
+                        options: [{ text: "Ухожу", next: "exit" }]
+                    },
+                    no_quest: {
+                        text: "Пока ничего нет. Заходи позже.",
+                        options: [{ text: "Ладно", next: "root" }]
+                    }
+                }
+            },
+            gorn: {
+                name: "Горн",
+                role: "Кузнец",
+                icon: "fa-hammer",
+                dialogue: {
+                    root: {
+                        text: "Нужна крепкая сталь? Или ищешь работу?",
+                        options: [
+                            { text: "Хочу купить оружие", next: "shop_hint" },
+                            { text: "Есть дело?", next: "quest_check" },
+                            { text: "Бывай", next: "exit" }
+                        ]
+                    },
+                    shop_hint: {
+                        text: "Смотри вкладку 'Мечник' или 'Бронник' в торговых рядах. Там всё мое добро.",
+                        options: [{ text: "Ага", next: "root" }]
+                    },
+                    quest_check: function() {
+                         if (!hasStoryQuest('q_gorn_1') && !isQuestCompleted('q_gorn_1') && gameState.level >= 3) {
+                            return "quest_offer";
+                        }
+                        return "no_quest";
+                    },
+                    quest_offer: {
+                        text: "Мне не хватает руды для заказа. Принеси 5 кусков руды из шахты.",
+                        options: [
+                            { text: "Сделаю", action: "start_q_gorn_1", next: "quest_accepted" },
+                            { text: "Нет кирки", next: "root" }
+                        ]
+                    },
+                    quest_accepted: {
+                        text: "Не подведи. Руда нужна чистая.",
+                        options: [{ text: "Понял", next: "exit" }]
+                    },
+                    no_quest: {
+                        text: "Работы нет. Приходи, когда станешь опытнее (Ур 3+).",
+                        options: [{ text: "Ясно", next: "root" }]
+                    }
+                }
+            },
+            ben: {
+                name: "Старый Бен",
+                role: "Трактирщик",
+                icon: "fa-wine-glass",
+                dialogue: {
+                    root: {
+                        text: "Чего желаешь? Эля или комнату?",
+                        options: [
+                            { text: "Какие слухи?", next: "rumors" },
+                            { text: "Комната свободна?", next: "room_hint" },
+                            { text: "Ухожу", next: "exit" }
+                        ]
+                    },
+                    rumors: {
+                        text: "Говорят, в Темном Лесу видели странные тени. И еще... кто-то разбогател на Колесе Удачи. Но чаще там проигрывают штаны, хе-хе.",
+                        options: [{ text: "Интересно", next: "root" }]
+                    },
+                    room_hint: {
+                        text: "Всегда найдется койка за 20 изумрудов. Лечит любые раны.",
+                        options: [{ text: "Понял", next: "root" }]
+                    }
+                }
+            },
+            elara: {
+                name: "Элара",
+                role: "Следопыт",
+                icon: "fa-hood-cloak",
+                dialogue: {
+                    root: {
+                        text: "Тише. Лес не любит шумных гостей.",
+                        options: [
+                            { text: "Что ты тут делаешь?", next: "about" },
+                            { text: "Нужна помощь?", next: "quest_check" },
+                            { text: "Ухожу", next: "exit" }
+                        ]
+                    },
+                    about: {
+                        text: "Слежу за балансом. Если убивать слишком много волков, придут чудовища похуже.",
+                        options: [{ text: "...", next: "root" }]
+                    },
+                    quest_check: function() {
+                        if (!hasStoryQuest('q_elara_1') && !isQuestCompleted('q_elara_1')) {
+                            return "quest_offer";
+                        }
+                        return "no_quest";
+                    },
+                    quest_offer: {
+                        text: "Мне нужны целебные травы. Собери 5 трав в лесу.",
+                        options: [
+                            { text: "Поищу", action: "start_q_elara_1", next: "quest_accepted" },
+                            { text: "Слишком опасно", next: "root" }
+                        ]
+                    },
+                    quest_accepted: {
+                        text: "Будь осторожен. Смотри под ноги.",
+                        options: [{ text: "Ладно", next: "exit" }]
+                    },
+                    no_quest: {
+                        text: "Лес спокоен. Пока что.",
+                        options: [{ text: "Хорошо", next: "root" }]
+                    }
+                }
+            },
+            john_intro: {
+                name: "Рыцарь Джон",
+                role: "Воин",
+                icon: "fa-user-shield",
+                dialogue: {
+                    root: {
+                        text: "Держи монету, парень. Хм... А в тебе что-то есть. Крепкие руки, ясный взгляд.",
+                        options: [
+                            { text: "Спасибо, милорд", next: "offer" },
+                            { text: "Кто вы?", next: "identity" }
+                        ]
+                    },
+                    identity: {
+                        text: "Я Джон, инструктор королевской гвардии. Я ищу таланты даже в сточных канавах.",
+                        options: [{ text: "Я не из канавы!", next: "offer" }]
+                    },
+                    offer: {
+                        text: "Слушай. Если хочешь стать настоящим воином, а не побираться тут — приходи в Учебный лагерь. Но сперва окрепни. Получи 15 уровень, и я жду тебя.",
+                        options: [
+                            { text: "Я приду!", action: "start_q_john_1", next: "accepted" },
+                            { text: "Мне и тут неплохо", next: "exit" }
+                        ]
+                    },
+                    accepted: {
+                        text: "Слово мужчины. До встречи.",
+                        options: [{ text: "До встречи", next: "exit" }]
+                    }
+                }
+            },
+            john: {
+                name: "Рыцарь Джон",
+                role: "Наставник",
+                icon: "fa-user-shield",
+                dialogue: {
+                    root: {
+                        text: "Добро пожаловать в лагерь. Готов к тренировкам?",
+                        options: [
+                            { text: "Я пришел по твоему вызову", next: "check_quest" },
+                            { text: "Просто смотрю", next: "exit" }
+                        ]
+                    },
+                    check_quest: function() {
+                        if (hasStoryQuest('q_john_1') && !isQuestCompleted('q_john_1')) {
+                            // Completing the quest
+                            game.completeQuest('q_john_1');
+                            return "welcome";
+                        }
+                        return "training";
+                    },
+                    welcome: {
+                        text: "Молодец. Ты сдержал слово. Вот тебе награда на первое снаряжение. Скоро начнем муштру.",
+                        options: [{ text: "Спасибо", next: "exit" }]
+                    },
+                    training: {
+                        text: "Пока что отдыхай. Скоро прибудут новобранцы.",
+                        options: [{ text: "Хорошо", next: "exit" }]
+                    }
+                }
+            }
+        };
+
+        // Helpers for Dialogue
+        function hasStoryQuest(id) {
+            return (gameState.storyQuests || []).some(q => q.id === id);
+        }
+        function isQuestCompleted(id) {
+            // Check completed history if we added it, for now just check if not active and reward claimed logic
+            // Simplified: we'll check a flag in npcStates or just assumed claimed quests are removed or marked
+            return (gameState.storyQuests || []).some(q => q.id === id && q.state === 'claimed');
+        }
+
+        const dialogue = {
+            currentNPC: null,
+            
+            start: function(npcId) {
+                const npc = NPC_DB[npcId];
+                if (!npc) return;
+                
+                this.currentNPC = npcId;
+                document.getElementById('npc-name').innerText = npc.name;
+                document.getElementById('npc-role').innerText = npc.role;
+                
+                const iconContainer = document.getElementById('npc-icon').parentNode;
+                // Simple color logic
+                let colorClass = "border-gray-500";
+                if(npcId === 'arthur') colorClass = "border-[#c8aa6e]";
+                else if(npcId === 'ben') colorClass = "border-orange-500";
+                else if(npcId === 'elara') colorClass = "border-purple-500";
+                
+                iconContainer.className = `w-12 h-12 rounded-full border ${colorClass} bg-[#222] flex items-center justify-center overflow-hidden shrink-0`;
+                document.getElementById('npc-icon').className = `fas ${npc.icon} text-xl text-gray-300`;
+
+                this.renderNode('root');
+                document.getElementById('modal-dialogue').classList.add('open');
+            },
+            
+            close: function() {
+                document.getElementById('modal-dialogue').classList.remove('open');
+                this.currentNPC = null;
+            },
+            
+            renderNode: function(nodeKey) {
+                const npc = NPC_DB[this.currentNPC];
+                let node = npc.dialogue[nodeKey];
+                
+                // If node is a function, execute it to get the real node key
+                if (typeof node === 'function') {
+                    const nextKey = node();
+                    node = npc.dialogue[nextKey];
+                }
+
+                document.getElementById('npc-text').innerText = node.text;
+                
+                const optsContainer = document.getElementById('npc-options');
+                optsContainer.innerHTML = '';
+                
+                node.options.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = "w-full text-left p-2 rounded bg-[#222] hover:bg-[#333] border border-[#333] text-xs text-[#c8aa6e] transition-colors";
+                    btn.innerText = `> ${opt.text}`;
+                    btn.onclick = () => {
+                        if (opt.action) this.handleAction(opt.action);
+                        
+                        if (opt.next === 'exit') this.close();
+                        else this.renderNode(opt.next);
+                    };
+                    optsContainer.appendChild(btn);
+                });
+            },
+            
+            handleAction: function(action) {
+                if (action === 'start_q_arthur_1') {
+                    this.addQuest('q_arthur_1', 'Просьба Артура', 'Принести 3 рыбы Артуру.', {type: 'gather', target: 'fish', count: 3}, {gold: 50, xp: 10});
+                }
+                if (action === 'start_q_gorn_1') {
+                    this.addQuest('q_gorn_1', 'Руда для Кузнеца', 'Добыть 5 руды для Горна.', {type: 'gather', target: 'ore', count: 5}, {gold: 250, xp: 50});
+                }
+                if (action === 'start_q_elara_1') {
+                    this.addQuest('q_elara_1', 'Лесные травы', 'Собрать 5 трав для Элары.', {type: 'gather', target: 'herbs', count: 5}, {gold: 100, xp: 30});
+                }
+                if (action === 'start_q_john_1') {
+                    this.addQuest('q_john_1', 'Путь Воина', 'Достичь 15 уровня и прийти в Учебный лагерь.', {type: 'visit', target: 'camp', count: 1}, {gold: 500, xp: 100});
+                }
+            },
+            
+            addQuest: function(id, title, desc, goals, reward) {
+                if (!gameState.storyQuests) gameState.storyQuests = [];
+                gameState.storyQuests.push({
+                    id: id,
+                    title: title,
+                    desc: desc,
+                    goals: goals, // Using 'sell' type logic for gathering just for tracking simplicity or create new type
+                    current: 0,
+                    reward: reward,
+                    state: 'active'
+                });
+                game.save();
+                ui.showFloatText(document.body, "Новое задание!", "#fbbf24");
+            },
+            
+            // Helper to complete quest manually (dialogue driven)
+            completeQuest: function(id) {
+                // We rely on quests.claimStory logic but triggered manually without button
+                quests.claimStory(id, true);
+            }
+        };
+
+        // --- QUESTS CONTROLLER ---
+        const quests = {
+            currentTab: 'daily',
+            timerInterval: null,
+
+            init: function() {
+                this.checkDailyQuests();
+                this.startTimer();
+            },
+
+            switchTab: function(tab) {
+                this.currentTab = tab;
+                document.querySelectorAll('#view-quests .sub-tab').forEach(el => el.classList.remove('active'));
+                document.getElementById(`tab-quests-${tab}`).classList.add('active');
+                this.render();
+            },
+
+            getMskDayKey: function(ts) {
+                return Math.floor((ts + 3 * 60 * 60 * 1000) / 86400000);
+            },
+
+            getNextResetTs: function(nowTs = Date.now()) {
+                const next = new Date(nowTs);
+                next.setUTCHours(21, 0, 0, 0);
+                if (nowTs >= next.getTime()) {
+                    next.setUTCDate(next.getUTCDate() + 1);
+                }
+                return next.getTime();
+            },
+
+            checkDailyQuests: function() {
+                const nowTs = Date.now();
+                const lastTs = gameState.lastQuestGenTime || 0;
+
+                const needRefresh =
+                    !gameState.activeQuests ||
+                    gameState.activeQuests.length === 0 ||
+                    this.getMskDayKey(nowTs) !== this.getMskDayKey(lastTs);
+
+                if (needRefresh) {
+                    this.generateDailyQuests();
+                    return true;
+                }
+                return false;
+            },
+
+            generateDailyQuests: function() {
+                const newQuests = [];
+                for (let i = 0; i < 3; i++) {
+                    newQuests.push(this.createRandomQuest(i));
+                }
+                gameState.activeQuests = newQuests;
+                gameState.lastQuestGenTime = Date.now();
+                game.save();
+            },
+
+            createRandomQuest: function(index) {
+                const types = [
+                    { type: 'sell', target: 'fish', text: 'Продать рыбу', baseGoal: 20, reward: 2 },
+                    { type: 'sell', target: 'wheat', text: 'Продать пшеницу', baseGoal: 30, reward: 3 },
+                    { type: 'sell', target: 'ore', text: 'Продать руду', baseGoal: 50, reward: 5 },
+                    { type: 'sell', target: 'leather', text: 'Продать кожу', baseGoal: 5, reward: 8 },
+                    { type: 'upgrade', target: 'rod', text: 'Улучшить удочку', baseGoal: 1, reward: 10 },
+                    { type: 'upgrade', target: 'sickle', text: 'Улучшить серп', baseGoal: 1, reward: 8 },
+                    { type: 'upgrade', target: 'pickaxe', text: 'Улучшить кирку', baseGoal: 1, reward: 9 },
+                    { type: 'work', target: 'port', text: 'Работать в порту', baseGoal: 20, reward: 2 },
+                    { type: 'work', target: 'mine', text: 'Работать в шахте', baseGoal: 10, reward: 4 }
+                ];
+
+                const template = types[Math.floor(Math.random() * types.length)];
+
+                const goal = Math.max(1, Math.floor(template.baseGoal * (1 + Math.random())));
+                const reward = Math.max(2, Math.floor(template.reward * (1 + Math.random())));
+
+                return {
+                    id: Date.now() + index,
+                    text: `${template.text}`,
+                    type: template.type,
+                    target: template.target,
+                    goal: goal,
+                    current: 0,
+                    reward: reward,
+                    claimed: false
+                };
+            },
+
+            onEvent: function(eventType, target, amount) {
+                let updated = false;
+                // Daily Quests
+                (gameState.activeQuests || []).forEach(q => {
+                    if (!q.claimed && q.type === eventType && q.target === target) {
+                        q.current += amount;
+                        if (q.current > q.goal) q.current = q.goal;
+                        updated = true;
+                    }
+                });
+                // Story Quests
+                // Mapping actions to quest types.
+                // Gathering/Selling logic in this game acts as 'acquire' for quest purposes usually
+                // For this implementation, we map 'sell' events (which happen when you have resources)
+                // OR 'work' events (getting resources) to quest progress.
+                // Let's assume gathering/working adds to the counter.
+                
+                // For simplicity in this codebase structure: 
+                // We'll update quests when you GAIN resources (via work/gather) or SELL resources.
+                // The prompt implies 'Bring 3 fish' -> usually implies having them or collecting them.
+                // Let's count "Gathered/Acquired" resources.
+                
+                if (eventType === 'work' || eventType === 'gather' || eventType === 'sell') {
+                     (gameState.storyQuests || []).forEach(q => {
+                        if (q.state === 'active' && q.goals.target === target) {
+                            q.current += amount;
+                            // Cap at goal for UI niceness, but keep logic open
+                            if (q.current > q.goals.count) q.current = q.goals.count;
+                            updated = true;
+                        }
+                    });
+                }
+
+                if (updated) {
+                    game.save();
+                    if (router.currentTab === 'quests') this.render();
+                }
+            },
+
+            claim: function(id) {
+                const q = (gameState.activeQuests || []).find(q => q.id === id);
+                if (q && !q.claimed && q.current >= q.goal) {
+                    q.claimed = true;
+                    gameState.emeralds += q.reward;
+                    game.save();
+                    ui.updateStats();
+                    ui.showFloatText(event.target, `+${q.reward} Изумрудов`, "#34d399");
+                    this.render();
+                }
+            },
+
+            claimStory: function(id, force = false) {
+                const q = (gameState.storyQuests || []).find(q => q.id === id);
+                if (q && q.state === 'active' && (force || q.current >= q.goals.count)) {
+                    q.state = 'claimed';
+                    // Force complete implies progress met just now
+                    if (force) q.current = q.goals.count; 
+                    
+                    gameState.gold += q.reward.gold;
+                    game.addXp(q.reward.xp);
+                    game.save();
+                    ui.updateStats();
+                    // If triggered from dialogue, event.target might not be valid or needed
+                    const target = event && event.target ? event.target : document.body;
+                    ui.showFloatText(target, `+${q.reward.gold} Gold +${q.reward.xp} XP`, "#fbbf24");
+                    this.render();
+                }
+            },
+
+            startTimer: function() {
+                if (this.timerInterval) return;
+
+                this.timerInterval = setInterval(() => {
+                    const refreshed = this.checkDailyQuests();
+
+                    if (router.currentTab === 'quests' && this.currentTab === 'daily') {
+                        if (refreshed) this.render();
+                        else this.updateTimerDisplay();
+                    }
+                }, 1000);
+            },
+
+            updateTimerDisplay: function() {
+                const el = document.getElementById('quest-timer');
+                if (!el) return;
+
+                const nowTs = Date.now();
+                const nextTs = this.getNextResetTs(nowTs);
+                let diff = Math.max(0, nextTs - nowTs);
+
+                const h = Math.floor(diff / 3600000);
+                diff %= 3600000;
+                const m = Math.floor(diff / 60000);
+                diff %= 60000;
+                const s = Math.floor(diff / 1000);
+
+                el.innerText = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+            },
+
+            render: function() {
+                const list = document.getElementById('quests-list');
+                list.innerHTML = '';
+
+                if (this.currentTab === 'daily') {
+                    if (!gameState.activeQuests || gameState.activeQuests.length === 0) {
+                        list.innerHTML = '<div class="text-center text-[#a0a0a0] py-4">Нет активных заданий</div>';
+                        return;
+                    }
+
+                    gameState.activeQuests.forEach(q => {
+                        const progress = Math.min(100, (q.current / q.goal) * 100);
+                        const isDone = q.current >= q.goal;
+
+                        const el = document.createElement('div');
+                        el.className = `panel p-3 rounded flex flex-col gap-2 ${q.claimed ? 'opacity-50' : ''}`;
+                        el.innerHTML = `
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <div class="text-sm text-[#e0e0e0] font-bold">${q.text}</div>
+                                    <div class="text-xs text-[#a0a0a0]">${q.current} / ${q.goal}</div>
+                                </div>
+                                <div class="text-xs text-emerald-400 font-bold border border-emerald-900 bg-emerald-900/20 px-2 py-1 rounded">
+                                    +${q.reward} <i class="far fa-gem"></i>
+                                </div>
+                            </div>
+                            <div class="w-full h-1.5 bg-[#000] rounded-full overflow-hidden border border-[#333]">
+                                <div class="h-full bg-[#c8aa6e] transition-all duration-300" style="width: ${progress}%"></div>
+                            </div>
+                            ${isDone && !q.claimed ?
+                                `<button onclick="quests.claim(${q.id})" class="btn-medieval w-full py-1 text-xs rounded mt-1">Забрать награду</button>` :
+                                ''}
+                            ${q.claimed ? '<div class="text-center text-[10px] text-green-500 uppercase">Выполнено</div>' : ''}
+                        `;
+                        list.appendChild(el);
+                    });
+
+                    // Countdown to next reset (00:00 MSK)
+                    const timerWrap = document.createElement('div');
+                    timerWrap.className = "text-center text-[11px] text-[#777] mt-2";
+                    timerWrap.innerHTML = `До обновления (00:00 МСК): <span id="quest-timer" class="text-[#c8aa6e] font-mono">--:--:--</span>`;
+                    list.appendChild(timerWrap);
+                    this.updateTimerDisplay();
+
+                } else {
+                    if (!gameState.storyQuests || gameState.storyQuests.length === 0) {
+                        list.innerHTML = `
+                            <div class="panel p-4 rounded text-center opacity-70">
+                                <i class="fas fa-user-secret text-4xl text-[#555] mb-2"></i>
+                                <p class="text-sm text-[#a0a0a0]">Персонажи молчат...</p>
+                                <p class="text-xs text-[#555]">Поговорите с жителями (Артур, Горн, Бен), чтобы получить задания.</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    gameState.storyQuests.forEach(q => {
+                        if (q.state === 'claimed') return; // Hide completed/claimed logic for now or move to separate list
+
+                        const progress = Math.min(100, (q.current / q.goals.count) * 100);
+                        const isDone = q.current >= q.goals.count;
+
+                        const el = document.createElement('div');
+                        el.className = "panel p-3 rounded flex flex-col gap-2 border-l-2 border-[#c8aa6e]";
+                        el.innerHTML = `
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <div class="text-sm text-[#c8aa6e] font-bold">${q.title}</div>
+                                    <div class="text-[10px] text-[#a0a0a0] mb-1">${q.desc}</div>
+                                    <div class="text-xs text-[#e0e0e0]">${q.current} / ${q.goals.count}</div>
+                                </div>
+                                <div class="text-right">
+                                     <div class="text-[10px] text-yellow-500 font-bold">+${q.reward.gold} <i class="fas fa-coins"></i></div>
+                                     <div class="text-[10px] text-blue-400 font-bold">+${q.reward.xp} XP</div>
+                                </div>
+                            </div>
+                            <div class="w-full h-1.5 bg-[#000] rounded-full overflow-hidden border border-[#333]">
+                                <div class="h-full bg-[#c8aa6e] transition-all duration-300" style="width: ${progress}%"></div>
+                            </div>
+                            ${isDone ?
+                                `<button onclick="quests.claimStory('${q.id}')" class="btn-medieval w-full py-1 text-xs rounded mt-1">Завершить</button>` :
+                                ''}
+                        `;
+                        list.appendChild(el);
+                    });
+                }
+            }
+        };
+
+        // --- GAME LOGIC ---
+        const game = {
+            init: function() {
+                this.load();
+                this.calculateNextLevel();
+                
+                // Initialize resources if undefined
+                ['fish', 'wheat', 'ore', 'leather', 'mushrooms', 'wood', 'stone', 'herbs'].forEach(r => {
+                    if (gameState[r] === undefined) gameState[r] = 0;
+                });
+                if (gameState.hp === undefined) gameState.hp = 100;
+                if (gameState.maxHp === undefined) gameState.maxHp = 100;
+                if (gameState.skillPoints === undefined) gameState.skillPoints = 0;
+                if (gameState.luck === undefined) gameState.luck = 0;
+                if (gameState.craftingLevel === undefined) gameState.craftingLevel = 0;
+                
+                quests.init();
+                this.checkDailyReward();
+                ui.updateAll();
+                
+                // Show Intro if not shown
+                if (!gameState.introShown) {
+                    setTimeout(() => document.getElementById('modal-intro').classList.add('open'), 500);
+                }
+
+                // Telegram Init
+                if (window.Telegram && window.Telegram.WebApp) {
+                    const tg = window.Telegram.WebApp;
+                    tg.ready();
+                    tg.expand();
+                    tg.setHeaderColor('#141417');
+                    tg.setBackgroundColor('#0f0f10');
+                }
+            },
+
+            save: function() {
+                localStorage.setItem('medieval_rpg_save_v5', JSON.stringify(gameState));
+            },
+
+            load: function() {
+                const save = localStorage.getItem('medieval_rpg_save_v5');
+                if (save) {
+                    const parsed = JSON.parse(save);
+                    Object.assign(gameState, parsed);
+                    if(!gameState.activeQuests) gameState.activeQuests = [];
+                }
+            },
+            
+            closeIntro: function(goToMap) {
+                document.getElementById('modal-intro').classList.remove('open');
+                gameState.introShown = true;
+                this.save();
+                if (goToMap) {
+                    router.navigate('town-square');
+                }
+            },
+            
+            getJobReward: function(jobType) {
+                const job = JOBS_DB[jobType];
+                const toolState = gameState.tools[job.tool];
+                let amount = 1;
+                if (toolState.owned && toolState.level > 1) {
+                    amount += (toolState.level - 1);
+                }
+                // Return as 'gold' property to match UI usage, though it represents resource amount
+                return { gold: amount }; 
+            },
+
+            calculateNextLevel: function() {
+                gameState.xpToNextLevel = gameState.level * 100;
+            },
+
+            addXp: function(amount) {
+                gameState.xp += amount;
+                if (gameState.xp >= gameState.xpToNextLevel) {
+                    this.levelUp();
+                }
+                this.save();
+                ui.updateStats();
+            },
+
+            levelUp: function() {
+                gameState.xp -= gameState.xpToNextLevel;
+                gameState.level++;
+                gameState.gold += 50;
+                gameState.skillPoints = (gameState.skillPoints || 0) + 1;
+                this.calculateNextLevel();
+                
+                ui.showFloatText(document.getElementById('char-level'), "НОВЫЙ УРОВЕНЬ! +1 Жетон", "#fff");
+                ui.updateJobs(); 
+                ui.updateStats();
+            },
+            
+            heal: function(amount, cost) {
+                if(gameState.gold >= cost) {
+                    if (gameState.hp >= gameState.maxHp) {
+                        ui.showFloatText(event.target, "Здоровье полно", "#c8aa6e");
+                        return;
+                    }
+                    gameState.gold -= cost;
+                    gameState.hp = Math.min(gameState.maxHp, gameState.hp + amount);
+                    ui.showFloatText(event.target, `+${amount} HP`, "#ef4444");
+                    ui.updateStats();
+                    this.save();
+                } else {
+                    ui.showFloatText(event.target, "Не хватает золота", "#ff5555");
+                }
+            },
+
+            checkDailyReward: function() {
+                const today = new Date().toDateString();
+                
+                // First launch check
+                if (!gameState.installDate) {
+                    gameState.installDate = today;
+                    gameState.lastLoginDate = today;
+                    gameState.dailyStreak = 1;
+                    this.save();
+                    return; // Skip reward on first day
+                }
+
+                const last = gameState.lastLoginDate;
+                
+                if (last !== today) {
+                    const yesterday = new Date();
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    
+                    if (last === yesterday.toDateString()) {
+                        gameState.dailyStreak++;
+                    } else {
+                        // Reset streak if missed a day, but keep 1
+                        gameState.dailyStreak = 1;
+                    }
+                    setTimeout(() => {
+                        ui.showDailyModal();
+                    }, 1000);
+                }
+            },
+
+            claimDaily: function() {
+                const streak = gameState.dailyStreak;
+                let reward = 30;
+                if (streak === 1) reward = 5;
+                else if (streak === 2) reward = 10;
+                else if (streak === 3) reward = 15;
+                else if (streak === 4) reward = 20;
+                
+                gameState.emeralds += reward;
+                gameState.lastLoginDate = new Date().toDateString();
+                this.save();
+                
+                document.getElementById('modal-daily').classList.remove('open');
+                ui.updateAll();
+                ui.showFloatText(document.body, `+${reward} Изумрудов`, "#34d399");
+            },
+
+            work: function(jobType, event) {
+                if (gameState.hp <= 5) {
+                    ui.showFloatText(event.target, "Вы слишком слабы...", "#ff5555");
+                    return;
+                }
+
+                const job = JOBS_DB[jobType];
+                const toolState = gameState.tools[job.tool];
+                const toolDef = TOOLS_DB[job.tool];
+
+                if (job.levelReq && gameState.level < job.levelReq) {
+                    ui.showFloatText(event.target, `Нужен Уровень ${job.levelReq}`, "#ff5555");
+                    return;
+                }
+
+                if (!toolState.owned) {
+                    ui.showFloatText(event.target, `Нужна ${toolDef.name}`, "#ff5555");
+                    return;
+                }
+                
+                // Injury Chance 10%
+                if (Math.random() < 0.1) {
+                    const dmg = Math.floor(Math.random() * 10) + 5;
+                    gameState.hp = Math.max(0, gameState.hp - dmg);
+                    ui.showFloatText(event.target, `-${dmg} HP (Травма!)`, "#ef4444");
+                    ui.updateStats();
+                    this.save();
+                    return; 
+                }
+
+                let amount = 1;
+                if (toolState.level > 1) {
+                    amount += (toolState.level - 1);
+                }
+
+                // Chance for Emerald
+                const luckyDrop = Math.random() < 0.01;
+                if (luckyDrop) {
+                    gameState.emeralds += 1;
+                    setTimeout(() => {
+                        ui.showFloatText(event.target, `+1 ИЗУМРУД!`, "#34d399");
+                    }, 200);
+                }
+
+                this.addXp(job.xp);
+
+                // Add Resource
+                if (gameState[job.resource] === undefined) gameState[job.resource] = 0;
+                gameState[job.resource] += amount;
+                
+                const rName = RESOURCE_NAMES[job.resource].name;
+                ui.showFloatText(event.target, `+${amount} ${rName}`, "#e0e0e0");
+                
+                // Quest Progress
+                quests.onEvent('work', jobType, 1);
+                // Also trigger gather event for story quests
+                quests.onEvent('gather', job.resource, amount);
+
+                if (window.navigator && window.navigator.vibrate) {
+                    window.navigator.vibrate(10);
+                }
+                
+                this.save();
+                ui.updateStats(); 
+                ui.updateJobs();
+            }
+        };
+
+        // --- LOCATIONS CONTROLLER ---
+        const locations = {
+            beg: function(event) {
+                // Check for Knight John encounter (random chance or first time after some progress)
+                // Let's make it trigger if player has > 10 gold total earned or simply not met yet
+                if (!gameState.npcStates) gameState.npcStates = {};
+                
+                if (!gameState.npcStates.john_met && Math.random() < 0.2) {
+                     gameState.npcStates.john_met = true;
+                     gameState.gold += 10; // The coin he throws
+                     ui.showFloatText(event.target, "+10 Золота (Рыцарь!)", "#fbbf24");
+                     ui.updateStats();
+                     game.save();
+                     
+                     setTimeout(() => {
+                         dialogue.start('john_intro');
+                     }, 500);
+                     return;
+                }
+
+                gameState.gold += 2;
+                ui.showFloatText(event.target, "+2 Золота", "#c8aa6e");
+                ui.updateStats();
+                game.save();
+            },
+
+            treasuryDepositAll: function(event) {
+                // Not used in HTML but kept for logic safety
+                const anchor = (event && event.target) ? event.target : document.body;
+                if (gameState.gold > 0) {
+                    const amount = gameState.gold;
+                    gameState.gold = 0;
+                    gameState.bankedGold += amount;
+                    game.save();
+                    ui.updateStats();
+                    ui.showFloatText(anchor, `Депозит ${amount}`, "#c8aa6e");
+                } else {
+                    ui.showFloatText(anchor, "Нет золота", "#ff5555");
+                }
+            },
+
+            treasuryWithdrawAll: function(event) {
+                 // Not used in HTML but kept for logic safety
+                const anchor = (event && event.target) ? event.target : document.body;
+                if (gameState.bankedGold > 0) {
+                    const amount = gameState.bankedGold;
+                    gameState.bankedGold = 0;
+                    gameState.gold += amount;
+                    game.save();
+                    ui.updateStats();
+                    ui.showFloatText(anchor, `Снято ${amount}`, "#c8aa6e");
+                } else {
+                    ui.showFloatText(anchor, "Сейф пуст", "#ff5555");
+                }
+            },
+            
+            treasurySetMax: function(type, event) {
+                const input = document.getElementById('bank-amount-input');
+                if (type === 'deposit') {
+                    input.value = gameState.gold;
+                } else {
+                    input.value = gameState.bankedGold;
+                }
+            },
+            
+            treasuryDepositAmount: function(event) {
+                const input = document.getElementById('bank-amount-input');
+                const val = parseInt(input.value);
+                if (!val || val <= 0) return;
+                if (gameState.gold >= val) {
+                    gameState.gold -= val;
+                    gameState.bankedGold += val;
+                    game.save();
+                    ui.updateStats();
+                    ui.showFloatText(event.target, `Депозит ${val}`, "#c8aa6e");
+                    input.value = '';
+                } else {
+                    ui.showFloatText(event.target, "Не хватает", "#ff5555");
+                }
+            },
+            
+            treasuryWithdrawAmount: function(event) {
+                const input = document.getElementById('bank-amount-input');
+                const val = parseInt(input.value);
+                if (!val || val <= 0) return;
+                if (gameState.bankedGold >= val) {
+                    gameState.bankedGold -= val;
+                    gameState.gold += val;
+                    game.save();
+                    ui.updateStats();
+                    ui.showFloatText(event.target, `Снято ${val}`, "#c8aa6e");
+                    input.value = '';
+                } else {
+                    ui.showFloatText(event.target, "Не хватает", "#ff5555");
+                }
+            },
+
+            treasuryExchange: function(event) {
+                const anchor = (event && event.target) ? event.target : document.body;
+                if (gameState.emeralds >= 1) {
+                    gameState.emeralds -= 1;
+                    gameState.gold += 1000;
+                    game.save();
+                    ui.updateStats();
+                    ui.showFloatText(anchor, "+1000 Золота", "#c8aa6e");
+                } else {
+                    ui.showFloatText(anchor, "Нет изумрудов", "#ff5555");
+                }
+            },
+
+            tavernRent: function() {
+                if (gameState.emeralds >= 20) {
+                    gameState.emeralds -= 20;
+                    gameState.hp = gameState.maxHp; 
+                    ui.updateStats();
+                    ui.showFloatText(event.target, "Отдых... HP восстановлено!", "#34d399");
+                    game.save();
+                } else {
+                    ui.showFloatText(event.target, "Не хватает изумрудов", "#ff5555");
+                }
+            },
+
+            tavernSpin: function() {
+                const btn = document.getElementById('btn-spin');
+                if (gameState.emeralds < 1) {
+                    ui.showFloatText(btn, "Нужен 1 Изумруд", "#ff5555");
+                    return;
+                }
+
+                gameState.emeralds -= 1;
+                ui.updateStats();
+                
+                btn.disabled = true;
+                const wheel = document.getElementById('wheel');
+                wheel.classList.add('spin-anim');
+                
+                // Determine Reward
+                const rand = Math.random() * 100;
+                let reward = { type: 'gold', val: 1000, text: '1000 Золота' };
+                
+                if (rand < 1) reward = { type: 'gem', val: 100, text: '100 ИЗУМРУДОВ!' };
+                else if (rand < 11) reward = { type: 'gem', val: 10, text: '10 Изумрудов' };
+                else if (rand < 26) reward = { type: 'gold', val: 10000, text: '10,000 Золота' };
+                else if (rand < 51) reward = { type: 'gold', val: 5000, text: '5,000 Золота' };
+                
+                setTimeout(() => {
+                    wheel.classList.remove('spin-anim');
+                    btn.disabled = false;
+                    
+                    if (reward.type === 'gold') gameState.gold += reward.val;
+                    else gameState.emeralds += reward.val;
+                    
+                    game.save();
+                    ui.updateStats();
+                    
+                    const color = reward.type === 'gem' ? '#34d399' : '#c8aa6e';
+                    ui.showFloatText(btn, `+${reward.text}`, color);
+                }, 1000);
+            },
+
+            forestGather: function(event) {
+                if (gameState.hp < 5) {
+                    ui.showFloatText(event.target, "Мало здоровья", "#ff5555");
+                    return;
+                }
+                gameState.hp -= 5;
+                game.addXp(3);
+                
+                const luckBonus = (gameState.luck || 0) * 0.05; // 5% chance increase per luck level
+                const loot = [];
+                const baseCount = Math.floor(Math.random() * 3) + 1;
+                const extraCount = Math.random() < luckBonus ? 1 : 0;
+                const count = baseCount + extraCount;
+                
+                for(let i=0; i<count; i++) {
+                    const r = Math.random();
+                    if(r < 0.4) loot.push('wood');       
+                    else if(r < 0.7) loot.push('stone'); 
+                    else if(r < 0.9) loot.push('herbs'); 
+                    else loot.push('mushrooms');         
+                }
+                
+                const gained = {};
+                loot.forEach(item => {
+                    gameState[item] = (gameState[item] || 0) + 1;
+                    gained[item] = (gained[item] || 0) + 1;
+                });
+                
+                let text = "";
+                const names = {wood:'Палка', stone:'Камень', herbs:'Трава', mushrooms:'Гриб'};
+                
+                Object.keys(gained).forEach(k => {
+                    text += `+${gained[k]} ${names[k]} `;
+                });
+                
+                ui.showFloatText(event.target, text || "Пусто...", "#a855f7");
+
+                // Quest Progress for gathered items
+                Object.keys(gained).forEach(k => {
+                    quests.onEvent('gather', k, gained[k]);
+                });
+                
+                // Rare find with luck
+                if (Math.random() < (0.05 + luckBonus/2)) {
+                    gameState.emeralds++;
+                    setTimeout(() => ui.showFloatText(event.target, "+1 Изумруд!", "#34d399"), 500);
+                }
+                
+                game.save();
+                ui.updateStats();
+            },
+
+            forestHunt: function(event) {
+                if (gameState.hp < 20) {
+                    ui.showFloatText(event.target, "Слишком опасно...", "#ff5555");
+                    return;
+                }
+                gameState.hp -= 20;
+                game.addXp(20);
+                
+                const roll = Math.random();
+                if (roll < 0.2) {
+                    // Nothing / Escaped
+                    ui.showFloatText(event.target, "Монстр сбежал...", "#777");
+                } else if (roll < 0.7) {
+                    // Win standard
+                    const gold = Math.floor(Math.random() * 50) + 20;
+                    gameState.gold += gold;
+                    ui.showFloatText(event.target, `Победа! +${gold} Золота`, "#c8aa6e");
+                } else if (roll < 0.9) {
+                    // Win loot
+                    const mushrooms = Math.floor(Math.random() * 5) + 2;
+                    gameState.mushrooms += mushrooms;
+                    ui.showFloatText(event.target, `Трофеи: +${mushrooms} Грибов`, "#a855f7");
+                } else {
+                    // Critical win / Chest
+                    const gold = 100 + Math.floor(Math.random() * 100);
+                    const gems = Math.random() < 0.5 ? 1 : 0;
+                    gameState.gold += gold;
+                    gameState.emeralds += gems;
+                    ui.showFloatText(event.target, `ЛЕГЕНДАРНО! +${gold} Золота ${gems ? '+1 Гем' : ''}`, "#fbbf24");
+                }
+                
+                game.save();
+                ui.updateStats();
+            }
+        };
+
+        // --- MARKET CONTROLLER ---
+        const market = {
+            currentCategory: 'tools',
+
+            switchCategory: function(cat) {
+                this.currentCategory = cat;
+                document.querySelectorAll('#view-market .sub-tab').forEach(el => el.classList.remove('active'));
+                const btn = document.getElementById(`tab-market-${cat}`);
+                if(btn) btn.classList.add('active');
+
+                document.getElementById('market-tools').classList.add('hidden');
+                document.getElementById('market-placeholder').classList.add('hidden');
+
+                if (cat === 'tools') {
+                    document.getElementById('market-tools').classList.remove('hidden');
+                    this.renderTools();
+                } else {
+                    document.getElementById('market-placeholder').classList.remove('hidden');
+                }
+            },
+
+            getToolPrice: function(toolKey) {
+                const toolState = gameState.tools[toolKey];
+                const base = TOOLS_DB[toolKey].baseCost;
+                if (!toolState.owned) return base;
+                return Math.floor(base * (toolState.level + 1) * 1.5);
+            },
+
+            renderTools: function() {
+                ['rod', 'sickle', 'pickaxe', 'crossbow'].forEach(key => {
+                    const state = gameState.tools[key];
+                    const price = this.getToolPrice(key);
+                    const btn = document.getElementById(`btn-buy-${key}`);
+                    const lvlSpan = document.getElementById(`market-lvl-${key}`);
+                    const priceSpan = document.getElementById(`price-${key}`);
+                    
+                    if(lvlSpan) lvlSpan.innerText = state.owned ? `Ур: ${state.level}` : `Не куплено`;
+                    
+                    if(btn && priceSpan) {
+                         priceSpan.innerText = price;
+                         if (!state.owned) {
+                            btn.innerHTML = `<span id="price-${key}">${price}</span> <i class="fas fa-coins text-[10px]"></i>`;
+                        } else {
+                            btn.innerHTML = `Улучшить <span id="price-${key}">${price}</span> <i class="fas fa-coins text-[10px]"></i>`;
+                        }
+                        if (gameState.gold < price) btn.style.opacity = '0.5';
+                        else btn.style.opacity = '1';
+                    }
+                });
+            },
+
+            buyOrUpgradeTool: function(key) {
+                const price = this.getToolPrice(key);
+                if (gameState.gold >= price) {
+                    gameState.gold -= price;
+                    if (!gameState.tools[key].owned) {
+                        gameState.tools[key].owned = true;
+                        gameState.tools[key].level = 1;
+                        ui.showFloatText(event.target, "Куплено!", "#34d399");
+                    } else {
+                        gameState.tools[key].level++;
+                        ui.showFloatText(event.target, "Улучшено!", "#34d399");
+                    }
+                    // Quest Progress
+                    quests.onEvent('upgrade', key, 1);
+                    
+                    game.save();
+                    ui.updateAll();
+                } else {
+                    ui.showFloatText(event.target, "Не хватает золота", "#ff5555");
+                }
+            },
+
+            setMax: function(resType) {
+                const count = gameState[resType] || 0;
+                const input = document.getElementById(`sell-input-${resType}`);
+                if(input) input.value = count > 0 ? count : 1;
+            },
+
+            sellFromInput: function(resType) {
+                const input = document.getElementById(`sell-input-${resType}`);
+                let amount = parseInt(input.value);
+                if (isNaN(amount) || amount <= 0) return;
+                this.sellResource(resType, amount);
+            },
+
+            sellResource: function(resType, amount) {
+                let price = 0;
+                // Check jobs
+                for (const jobKey in JOBS_DB) {
+                    if (JOBS_DB[jobKey].resource === resType) {
+                        price = JOBS_DB[jobKey].price;
+                        break;
+                    }
+                }
+                // Check standalone resources
+                if (resType === 'mushrooms') price = 25;
+                if (resType === 'wood') price = 5;
+                if (resType === 'stone') price = 5;
+                if (resType === 'herbs') price = 10;
+
+                if (price === 0) return;
+
+                const current = gameState[resType] || 0;
+                if (amount === -1) amount = current;
+
+                if (amount <= 0) {
+                     ui.showFloatText(event.target, "Нечего продавать", "#ff5555");
+                     return;
+                }
+
+                if (current >= amount) {
+                    gameState[resType] -= amount;
+                    const totalGain = amount * price;
+                    gameState.gold += totalGain;
+                    
+                    // Quest Progress
+                    quests.onEvent('sell', resType, amount);
+
+                    game.save();
+                    ui.updateStats();
+                    ui.showFloatText(event.target, `+${totalGain} Золота`, "#c8aa6e");
+                } else {
+                    ui.showFloatText(event.target, "Не хватает ресурсов", "#ff5555");
+                }
+            }
+        };
+
+        // --- SKILLS CONTROLLER ---
+        const skills = {
+            upgrade: function(type) {
+                if (gameState.skillPoints < 1) {
+                    ui.showFloatText(event.target, "Нет жетонов", "#ff5555");
+                    return;
+                }
+                
+                if (type === 'hp') {
+                    gameState.skillPoints--;
+                    gameState.maxHp += 20;
+                    gameState.hp += 20;
+                    ui.showFloatText(event.target, "+20 Max HP", "#ef4444");
+                } else if (type === 'luck') {
+                    gameState.skillPoints--;
+                    gameState.luck = (gameState.luck || 0) + 1;
+                    ui.showFloatText(event.target, "+1 Удача", "#34d399");
+                } else if (type === 'crafting') {
+                    gameState.skillPoints--;
+                    gameState.craftingLevel = (gameState.craftingLevel || 0) + 1;
+                    ui.showFloatText(event.target, "Крафт улучшен!", "#3b82f6");
+                }
+                
+                game.save();
+                ui.updateStats();
+            }
+        };
+
+        // --- CRAFTING & INVENTORY ---
+        const crafting = {
+            mode: 'inventory', 
+            toggleMode: function() {
+                const invUI = document.getElementById('ui-inventory');
+                const craftUI = document.getElementById('ui-crafting');
+                const btnText = document.getElementById('craft-btn-text');
+
+                if (this.mode === 'inventory') {
+                    this.mode = 'crafting';
+                    invUI.classList.add('hidden');
+                    craftUI.classList.remove('hidden');
+                    btnText.innerText = 'Вернуться в рюкзак';
+                } else {
+                    this.mode = 'inventory';
+                    invUI.classList.remove('hidden');
+                    craftUI.classList.add('hidden');
+                    btnText.innerText = 'Перейти к крафту';
+                    inventory.render();
+                }
+            },
+            switchCategory: function(cat) {
+                document.querySelectorAll('#ui-crafting .sub-tab').forEach(el => el.classList.remove('active'));
+                document.getElementById(`tab-craft-${cat}`).classList.add('active');
+            }
+        };
+
+        const inventory = {
+            currentCategory: 'tools',
+            switchCategory: function(cat) {
+                this.currentCategory = cat;
+                document.querySelectorAll('#ui-inventory .sub-tab').forEach(el => el.classList.remove('active'));
+                document.getElementById(`tab-inv-${cat}`).classList.add('active');
+                this.render();
+            },
+            render: function() {
+                const grid = document.getElementById('inventory-grid');
+                grid.innerHTML = ''; 
+                if (this.currentCategory === 'tools') {
+                    Object.keys(TOOLS_DB).forEach(key => {
+                        const state = gameState.tools[key];
+                        if (state.owned) {
+                            const db = TOOLS_DB[key];
+                            const el = document.createElement('div');
+                            el.className = 'aspect-square bg-[#1a1a1d] border border-[#c8aa6e] rounded flex flex-col items-center justify-center relative p-1';
+                            el.innerHTML = `
+                                <i class="fas ${db.icon} text-[#c8aa6e] text-xl mb-1"></i>
+                                <span class="text-[8px] uppercase text-center leading-tight text-gray-400">${db.name}</span>
+                                <span class="absolute top-0 right-1 text-[8px] text-white font-bold">${state.level}</span>
+                            `;
+                            grid.appendChild(el);
+                        }
+                    });
+                } else if (this.currentCategory === 'other') {
+                     const resList = ['fish', 'wheat', 'ore', 'leather', 'mushrooms', 'wood', 'stone', 'herbs'];
+                     resList.forEach(r => {
+                         if (gameState[r] > 0) {
+                            const def = RESOURCE_NAMES[r];
+                            const el = document.createElement('div');
+                            el.className = 'aspect-square bg-[#1a1a1d] border border-[#c8aa6e] rounded flex flex-col items-center justify-center relative p-1';
+                            el.innerHTML = `
+                                <i class="fas ${def.icon} text-[#c8aa6e] text-xl mb-1"></i>
+                                <span class="text-[8px] uppercase text-center leading-tight text-gray-400">${def.name}</span>
+                                <span class="absolute top-0 right-1 text-[8px] text-white font-bold">${gameState[r]}</span>
+                            `;
+                            grid.appendChild(el);
+                         }
+                     });
+                }
+                const children = grid.children.length;
+                for(let i=0; i < (12 - children); i++) {
+                    grid.appendChild(this.createEmptySlot());
+                }
+            },
+            createEmptySlot: function() {
+                const el = document.createElement('div');
+                el.className = 'aspect-square bg-[#111] border border-[#333] rounded';
+                return el;
+            }
+        };
+
+        // --- UI HANDLER ---
+        const ui = {
+            updateAll: function() {
+                this.updateStats();
+                this.updateJobs();
+                this.updateLocations();
+                market.renderTools();
+                ['fish', 'wheat', 'ore', 'leather', 'mushrooms', 'wood', 'stone', 'herbs'].forEach(r => {
+                    const el = document.getElementById(`market-count-${r}`);
+                    if(el) el.innerText = gameState[r] || 0;
+                });
+                if (crafting.mode === 'inventory' && !document.getElementById('view-character').classList.contains('hidden') && document.getElementById('ui-skills').classList.contains('hidden')) {
+                    inventory.render();
+                }
+                if(router.currentTab === 'quests') quests.render();
+            },
+
+            updateStats: function() {
+                document.getElementById('gold-display').innerText = gameState.gold;
+                document.getElementById('emerald-display').innerText = gameState.emeralds;
+                document.getElementById('char-level').innerText = gameState.level;
+                
+                const bankDisplay = document.getElementById('bank-display');
+                if(bankDisplay) bankDisplay.innerText = gameState.bankedGold;
+                const bankMini = document.getElementById('bank-display-mini');
+                if(bankMini) bankMini.innerText = gameState.bankedGold;
+                const walletMini = document.getElementById('wallet-display');
+                if(walletMini) walletMini.innerText = gameState.gold;
+                
+                document.getElementById('level-display-header').innerText = `Ур ${gameState.level}`;
+                const percent = Math.min(100, (gameState.xp / gameState.xpToNextLevel) * 100);
+                const charBar = document.getElementById('xp-bar');
+                if (charBar) charBar.style.width = `${percent}%`;
+                const headerBar = document.getElementById('header-xp-bar');
+                if (headerBar) headerBar.style.width = `${percent}%`;
+                const xpText = document.getElementById('xp-text');
+                if (xpText) xpText.innerText = `${gameState.xp} / ${gameState.xpToNextLevel} XP`;
+                const headerXpText = document.getElementById('header-xp-text');
+                if (headerXpText) headerXpText.innerText = `${gameState.xp}/${gameState.xpToNextLevel}`;
+                const remaining = Math.max(0, gameState.xpToNextLevel - gameState.xp);
+                const xpRemElement = document.getElementById('xp-remaining');
+                if(xpRemElement) xpRemElement.innerText = remaining;
+                document.getElementById('header-hp-text').innerText = gameState.hp;
+                const hpPercent = (gameState.hp / gameState.maxHp) * 100;
+                document.getElementById('hp-bar').style.width = `${hpPercent}%`;
+                document.getElementById('hp-text').innerText = `${gameState.hp} / ${gameState.maxHp}`;
+                ['fish', 'wheat', 'ore', 'leather', 'mushrooms', 'wood', 'stone', 'herbs'].forEach(r => {
+                    const el = document.getElementById(`market-count-${r}`);
+                    if(el) el.innerText = gameState[r] || 0;
+                });
+            },
+
+            updateJobs: function() {
+                const portReward = game.getJobReward('port');
+                this.updateJobButton('port', 'rod', 0);
+                document.getElementById('reward-port').innerText = `${portReward.gold} Рыбы`; 
+                const fieldReward = game.getJobReward('field');
+                this.updateJobButton('field', 'sickle', 5);
+                document.getElementById('reward-field').innerText = `${fieldReward.gold} Пшеницы`;
+                const mineReward = game.getJobReward('mine');
+                this.updateJobButton('mine', 'pickaxe', 15);
+                document.getElementById('reward-mine').innerText = `${mineReward.gold} Руды`;
+                this.updateJobButton('hunter', 'crossbow', 30);
+
+                // Update Skills UI
+                const spEl = document.getElementById('skill-points-display');
+                if(spEl) spEl.innerText = gameState.skillPoints || 0;
+                const luckEl = document.getElementById('luck-display');
+                if(luckEl) luckEl.innerText = gameState.luck || 0;
+                const craftEl = document.getElementById('craft-level-display');
+                if(craftEl) craftEl.innerText = gameState.craftingLevel || 0;
+            },
+
+            switchCharTab: function(tab) {
+                document.getElementById('btn-tab-inv').className = "flex-1 bg-[#1a1a1d] border border-[#333] text-[#777] py-1 rounded text-xs uppercase font-serif transition-colors";
+                document.getElementById('btn-tab-skills').className = "flex-1 bg-[#1a1a1d] border border-[#333] text-[#777] py-1 rounded text-xs uppercase font-serif transition-colors";
+                
+                document.getElementById(`btn-tab-${tab === 'inventory' ? 'inv' : 'skills'}`).className = "flex-1 bg-[#2c2c30] border border-[#c8aa6e] text-[#c8aa6e] py-1 rounded text-xs uppercase font-serif transition-colors";
+                
+                document.getElementById('ui-inventory').classList.add('hidden');
+                document.getElementById('ui-crafting').classList.add('hidden');
+                document.getElementById('ui-skills').classList.add('hidden');
+                
+                if (tab === 'inventory') {
+                    // Reset crafting mode when switching tabs
+                    crafting.mode = 'inventory';
+                    document.getElementById('ui-inventory').classList.remove('hidden');
+                    document.getElementById('craft-btn-text').innerText = 'Перейти к крафту';
+                    inventory.render();
+                } else {
+                    document.getElementById('ui-skills').classList.remove('hidden');
+                }
+            },
+
+            updateJobButton: function(jobId, toolId, lvlReq) {
+                const btn = document.getElementById(`btn-work-${jobId}`);
+                const info = document.getElementById(`job-info-${jobId}`);
+                const container = document.getElementById(`job-${jobId}`);
+                const toolOwned = gameState.tools[toolId].owned;
+                const levelMet = gameState.level >= lvlReq;
+                if (container) {
+                     if (levelMet) container.classList.remove('opacity-50');
+                     else container.classList.add('opacity-50');
+                }
+                if (!levelMet) {
+                    btn.disabled = true;
+                    btn.innerHTML = `<i class="fas fa-lock text-xs"></i> Требуется Уровень ${lvlReq}`;
+                } else if (!toolOwned) {
+                    btn.disabled = false;
+                    btn.innerHTML = `<i class="fas fa-shopping-cart text-xs"></i> Требуется ${TOOLS_DB[toolId].name}`;
+                } else {
+                    btn.disabled = false;
+                    let actionName = 'Работать';
+                    let icon = 'fa-hammer';
+                    if(jobId === 'port') { actionName = 'Рыбачить'; icon = 'fa-fish'; }
+                    else if(jobId === 'field') { actionName = 'Собрать'; icon = 'fa-seedling'; }
+                    else if(jobId === 'mine') { actionName = 'Добывать'; icon = 'fa-hammer'; }
+                    else if(jobId === 'hunter') { actionName = 'Охотиться'; icon = 'fa-crosshairs'; }
+                    btn.innerHTML = `<i class="fas ${icon} mr-2"></i> ${actionName}`;
+                }
+                if(info) {
+                    if(toolOwned) info.innerHTML = `<span class="text-green-500"><i class="fas fa-check"></i> ${TOOLS_DB[toolId].name} (Ур ${gameState.tools[toolId].level})</span>`;
+                    else info.innerHTML = `Требуется: ${TOOLS_DB[toolId].name}`;
+                }
+            },
+            
+            showFloatText: function(element, text, color) {
+                const rect = element.getBoundingClientRect();
+                const floatEl = document.createElement('div');
+                floatEl.className = 'floating-text';
+                floatEl.innerText = text;
+                floatEl.style.color = color;
+                floatEl.style.left = (rect.left + rect.width / 2) + 'px';
+                floatEl.style.top = (rect.top) + 'px';
+                document.body.appendChild(floatEl);
+                setTimeout(() => { floatEl.remove(); }, 1000);
+            },
+
+            updateLocations: function() {
+                // Rent Logic
+                const statusEl = document.getElementById('rent-status');
+                const btn = document.getElementById('btn-rent-room');
+                if (gameState.rentExpiry > new Date().getTime()) {
+                    // Logic here if needed
+                }
+
+                // Dark Forest Lock Logic
+                const forestBtn = document.getElementById('btn-loc-forest');
+                const forestDesc = document.getElementById('forest-desc');
+                const forestIcon = document.getElementById('forest-lock-icon');
+                
+                if (forestBtn && forestDesc && forestIcon) {
+                    if (gameState.level < 5) {
+                        forestBtn.onclick = function() { ui.showFloatText(forestBtn, "Требуется Уровень 5", "#ff5555"); };
+                        forestBtn.classList.add('opacity-50', 'grayscale');
+                        forestBtn.classList.remove('hover:border-[#c8aa6e]');
+                        forestDesc.innerText = "Требуется Уровень 5";
+                        forestDesc.className = "text-xs text-red-400";
+                        forestIcon.className = "fas fa-lock text-red-500 z-10";
+                    } else {
+                        forestBtn.onclick = function() { router.navigate('dark-forest'); };
+                        forestBtn.classList.remove('opacity-50', 'grayscale');
+                        forestBtn.classList.add('hover:border-[#c8aa6e]');
+                        forestDesc.innerText = "Опасность и редкие травы";
+                        forestDesc.className = "text-xs text-gray-300";
+                        forestIcon.className = "fas fa-chevron-right text-gray-400 z-10";
+                    }
+                }
+
+                // Training Camp Lock Logic
+                const campBtn = document.getElementById('btn-loc-camp');
+                const campDesc = document.getElementById('camp-desc');
+                const campIcon = document.getElementById('camp-lock-icon');
+
+                if (campBtn && campDesc && campIcon) {
+                    if (gameState.level < 15) {
+                         campBtn.onclick = function() { ui.showFloatText(campBtn, "Требуется Уровень 15", "#ff5555"); };
+                         campBtn.classList.add('opacity-50', 'grayscale');
+                         campBtn.classList.remove('hover:border-[#c8aa6e]');
+                         campDesc.innerText = "Требуется Уровень 15";
+                         campDesc.className = "text-xs text-red-400";
+                         campIcon.className = "fas fa-lock text-red-500 z-10";
+                    } else {
+                         campBtn.onclick = function() { router.navigate('training-camp'); };
+                         campBtn.classList.remove('opacity-50', 'grayscale');
+                         campBtn.classList.add('hover:border-[#c8aa6e]');
+                         campDesc.innerText = "Путь воина";
+                         campDesc.className = "text-xs text-red-300";
+                         campIcon.className = "fas fa-chevron-right text-gray-400 z-10";
+                    }
+                }
+            },
+
+            showDailyModal: function() {
+                const daysContainer = document.getElementById('daily-days-container');
+                daysContainer.innerHTML = '';
+                const streak = gameState.dailyStreak;
+                const rewards = [5, 10, 15, 20, 30];
+                rewards.forEach((amt, idx) => {
+                    const dayNum = idx + 1;
+                    const isCurrent = (streak > 5 && idx === 4) || (streak === dayNum);
+                    const isPassed = streak > dayNum;
+                    let bgClass = 'bg-[#111] border-gray-700 text-gray-500';
+                    if (isPassed) bgClass = 'bg-emerald-900 border-emerald-700 text-emerald-400';
+                    if (isCurrent) bgClass = 'bg-[#c8aa6e] border-yellow-500 text-black font-bold scale-110 shadow-lg';
+                    const el = document.createElement('div');
+                    el.className = `w-10 h-12 rounded border flex flex-col items-center justify-center text-[10px] ${bgClass}`;
+                    el.innerHTML = `<span>Д${dayNum}</span><span class="${isCurrent ? 'text-black' : (isPassed ? 'text-emerald-400' : 'text-emerald-700')}">${amt}</span>`;
+                    daysContainer.appendChild(el);
+                });
+                let todayReward = 30;
+                if (streak <= 4) todayReward = rewards[streak-1];
+                document.getElementById('daily-amount').innerText = todayReward;
+                document.getElementById('modal-daily').classList.add('open');
+            }
+        };
+
+        // --- ROUTER ---
+        const router = {
+            currentTab: 'map',
+            switchTab: function(tabId) {
+                this.currentTab = tabId;
+                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+                const activeNav = document.getElementById(`nav-${tabId}`);
+                if(activeNav) activeNav.classList.add('active');
+                document.querySelectorAll('section').forEach(el => el.classList.add('hidden'));
+                const view = document.getElementById(`view-${tabId}`);
+                if(view) view.classList.remove('hidden');
+                if (tabId === 'map') {
+                    document.getElementById('view-jobs').classList.add('hidden');
+                    document.getElementById('view-town-square').classList.add('hidden');
+                    document.getElementById('view-tavern').classList.add('hidden');
+                    document.getElementById('view-treasury').classList.add('hidden');
+                    document.getElementById('view-dark-forest').classList.add('hidden');
+                    document.getElementById('view-map').classList.remove('hidden');
+                }
+                if (tabId === 'market') {
+                    market.switchCategory('tools');
+                    ui.updateAll();
+                }
+                if (tabId === 'character') {
+                    if (crafting.mode === 'inventory') inventory.render();
+                }
+                if (tabId === 'quests') {
+                    quests.render();
+                }
+            },
+            navigate: function(screenId) {
+                document.getElementById('view-map').classList.add('hidden');
+                document.getElementById('view-jobs').classList.add('hidden');
+                document.getElementById('view-town-square').classList.add('hidden');
+                document.getElementById('view-tavern').classList.add('hidden');
+                document.getElementById('view-treasury').classList.add('hidden');
+                document.getElementById('view-dark-forest').classList.add('hidden');
+                const trainingCamp = document.getElementById('view-training-camp');
+                if (trainingCamp) trainingCamp.classList.add('hidden');
+                
+                const target = document.getElementById(`view-${screenId}`);
+                if (target) target.classList.remove('hidden');
+                if(screenId === 'jobs') ui.updateJobs();
+                if(screenId === 'market' || screenId === 'treasury') ui.updateAll();
+            }
+        };
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+
+
+            // Enhance router.switchTab to call updateLocations
+            const originalSwitchTab = router.switchTab;
+            router.switchTab = function(tabId) {
+                originalSwitchTab.call(router, tabId);
+                if (tabId === 'map') {
+                    ui.updateLocations();
+                }
+            };
+
+            // Enhance game.levelUp to call updateLocations
+            const originalLevelUp = game.levelUp;
+            game.levelUp = function() {
+                originalLevelUp.call(game);
+                ui.updateLocations();
+            };
+
+            game.init();
+            router.switchTab('map');
+        });
+
+    </script>
+</body>
+</html>
