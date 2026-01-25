@@ -1,0 +1,212 @@
+:root {
+    --bg-dark: #0f0f10;
+    --bg-panel: #1a1a1d;
+    --accent-gold: #c8aa6e;
+    --text-muted: #a0a0a0;
+    --text-light: #e0e0e0;
+    --border-color: #3e3e42;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    font-family: 'Lato', sans-serif;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+}
+
+h1, h2, h3, .medieval-font {
+    font-family: 'Cinzel', serif;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-dark);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--accent-gold);
+    border-radius: 2px;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* UI Panel Style */
+.panel {
+    background-color: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Button Styles */
+.btn-medieval {
+    background: linear-gradient(to bottom, #2c2c30, #1a1a1d);
+    border: 1px solid var(--accent-gold);
+    color: var(--accent-gold);
+    text-transform: uppercase;
+    font-family: 'Cinzel', serif;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-medieval:active {
+    transform: scale(0.98);
+    background: #c8aa6e;
+    color: #000;
+}
+
+.btn-medieval:disabled {
+    border-color: #555;
+    color: #555;
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+/* Tab Styles */
+.sub-tab {
+    white-space: nowrap;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.75rem;
+    color: #777;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+}
+.sub-tab.active {
+    color: var(--accent-gold);
+    border-color: var(--accent-gold);
+    background-color: rgba(200, 170, 110, 0.1);
+}
+
+/* Progress Bar */
+.progress-container {
+    background-color: #000;
+    border: 1px solid #333;
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #8b733d, #c8aa6e);
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+/* Bottom Nav Active State */
+.nav-item.active {
+    color: var(--accent-gold);
+    border-top: 2px solid var(--accent-gold);
+}
+
+/* Animations */
+@keyframes floatText {
+    0% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(-30px); opacity: 0; }
+}
+.floating-text {
+    position: absolute;
+    animation: floatText 1s ease-out forwards;
+    pointer-events: none;
+    font-weight: bold;
+    color: var(--accent-gold);
+    text-shadow: 1px 1px 0 #000;
+    z-index: 50;
+}
+
+/* Grid background pattern */
+.bg-pattern {
+    background-image: radial-gradient(#2a2a2e 1px, transparent 1px);
+    background-size: 20px 20px;
+    opacity: 0.1;
+}
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+.modal-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+.modal-content {
+    background: var(--bg-panel);
+    border: 1px solid var(--accent-gold);
+    width: 90%;
+    max-width: 320px;
+    transform: scale(0.9);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 0 20px rgba(200, 170, 110, 0.2);
+}
+.modal-overlay.open .modal-content {
+    transform: scale(1);
+}
+
+/* Level Up Modal Animations */
+.levelup-card {
+    border: 1px solid rgba(200, 170, 110, 0.6);
+    background: radial-gradient(circle at top, rgba(200, 170, 110, 0.15), transparent 60%), #1a1a1d;
+    box-shadow: 0 0 30px rgba(200, 170, 110, 0.2), inset 0 0 20px rgba(0,0,0,0.6);
+    animation: levelPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.levelup-glow {
+    animation: levelGlow 2.5s ease-in-out infinite;
+}
+@keyframes levelPop {
+    0% { transform: scale(0.7); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+@keyframes levelGlow {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.7; }
+}
+
+/* Wheel Animation */
+.wheel-container {
+    transition: transform 3s cubic-bezier(0.1, 0.7, 0.1, 1);
+}
+.spin-anim {
+    animation: spin 0.5s linear infinite;
+}
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
+
+/* Witcher-style image filter */
+.witcher-img {
+    filter: contrast(1.1) saturate(0.85) sepia(0.15) brightness(0.9);
+}
+.location-bg {
+    background-size: cover;
+    background-position: center;
+    filter: contrast(1.15) saturate(0.7) sepia(0.2) brightness(0.6);
+}
+
+/* Unconscious State */
+body.unconscious header,
+body.unconscious #app-container,
+body.unconscious nav {
+    pointer-events: none;
+    filter: grayscale(0.7) brightness(0.6);
+}
