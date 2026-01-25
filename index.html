@@ -185,6 +185,25 @@
             transform: scale(1);
         }
 
+        /* Level Up Modal Animations */
+        .levelup-card {
+            border: 1px solid rgba(200, 170, 110, 0.6);
+            background: radial-gradient(circle at top, rgba(200, 170, 110, 0.15), transparent 60%), #1a1a1d;
+            box-shadow: 0 0 30px rgba(200, 170, 110, 0.2), inset 0 0 20px rgba(0,0,0,0.6);
+            animation: levelPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        }
+        .levelup-glow {
+            animation: levelGlow 2.5s ease-in-out infinite;
+        }
+        @keyframes levelPop {
+            0% { transform: scale(0.7); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes levelGlow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+
         /* Wheel Animation */
         .wheel-container {
             transition: transform 3s cubic-bezier(0.1, 0.7, 0.1, 1);
@@ -194,6 +213,16 @@
         }
         @keyframes spin {
             100% { transform: rotate(360deg); }
+        }
+        
+        /* Witcher-style image filter */
+        .witcher-img {
+            filter: contrast(1.1) saturate(0.85) sepia(0.15) brightness(0.9);
+        }
+        .location-bg {
+            background-size: cover;
+            background-position: center;
+            filter: contrast(1.15) saturate(0.7) sepia(0.2) brightness(0.6);
         }
     </style>
 </head>
@@ -231,6 +260,44 @@
                     На площадь
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- Level Up Modal -->
+    <div id="modal-levelup" class="modal-overlay">
+        <div class="modal-content levelup-card rounded-lg p-6 text-center relative overflow-hidden">
+            <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(200,170,110,0.15),transparent_55%)]"></div>
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#c8aa6e] to-transparent"></div>
+            <div class="absolute inset-0 opacity-20 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/black-scales.png')]"></div>
+
+            <div class="relative mb-4">
+                <div class="levelup-glow absolute -inset-6 rounded-full bg-[#c8aa6e]/30 blur-3xl"></div>
+                <i class="fas fa-crown text-5xl text-[#c8aa6e] drop-shadow-[0_0_15px_rgba(200,170,110,0.8)]"></i>
+            </div>
+
+            <h2 class="medieval-font text-2xl text-[#c8aa6e] mb-1 tracking-widest">УРОВЕНЬ ПОВЫШЕН</h2>
+            <div id="levelup-new-level" class="text-5xl font-bold text-white mb-5 medieval-font drop-shadow-md">2</div>
+
+            <div class="space-y-3 mb-6">
+                <div class="bg-[#111]/80 border border-[#333] rounded p-3 flex items-center justify-between backdrop-blur-sm">
+                    <span class="text-xs text-[#a0a0a0] uppercase tracking-wider">Награда</span>
+                    <div class="flex items-center gap-2 text-[#ffd700] font-bold text-lg">
+                        +<span id="levelup-gold">100</span> <i class="fas fa-coins"></i>
+                    </div>
+                </div>
+                <div class="bg-[#111]/80 border border-[#333] rounded p-3 flex items-center justify-between backdrop-blur-sm">
+                    <span class="text-xs text-[#a0a0a0] uppercase tracking-wider">Навыки</span>
+                    <div class="text-[#34d399] font-bold text-lg">+1 Жетон</div>
+                </div>
+                <div class="text-left bg-[#222]/80 border-l-2 border-[#c8aa6e] rounded-r p-3 backdrop-blur-sm">
+                    <div class="text-[10px] text-[#c8aa6e] font-bold mb-1 uppercase tracking-widest flex items-center gap-2">
+                        <i class="fas fa-scroll"></i> Новые возможности
+                    </div>
+                    <p id="levelup-message" class="text-xs text-[#e0e0e0] leading-relaxed">...</p>
+                </div>
+            </div>
+
+            <button onclick="game.closeLevelUp()" class="btn-medieval w-full py-3 rounded font-bold text-sm tracking-wider">ПРИНЯТЬ ДАРЫ</button>
         </div>
     </div>
 
@@ -356,14 +423,36 @@
             </div>
 
             <!-- Stats Grid -->
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-3 gap-3">
                 <div class="panel p-3 rounded text-center">
-                    <div class="text-xs text-[#a0a0a0] uppercase tracking-widest">Сила</div>
-                    <div class="text-lg font-bold text-[#c8aa6e]">5</div>
+                    <div class="text-[10px] text-[#a0a0a0] uppercase tracking-widest">Урон</div>
+                    <div id="stat-damage" class="text-lg font-bold text-[#c8aa6e]">0</div>
                 </div>
                 <div class="panel p-3 rounded text-center">
-                    <div class="text-xs text-[#a0a0a0] uppercase tracking-widest">Ловкость</div>
-                    <div class="text-lg font-bold text-[#c8aa6e]">3</div>
+                    <div class="text-[10px] text-[#a0a0a0] uppercase tracking-widest">Ловкость</div>
+                    <div id="stat-agility" class="text-lg font-bold text-[#c8aa6e]">0</div>
+                </div>
+                <div class="panel p-3 rounded text-center">
+                    <div class="text-[10px] text-[#a0a0a0] uppercase tracking-widest">Удача</div>
+                    <div id="stat-luck" class="text-lg font-bold text-[#c8aa6e]">0</div>
+                </div>
+            </div>
+            
+            <!-- Active Effects Display -->
+            <div id="active-effects-container" class="grid grid-cols-2 gap-2 hidden">
+                <div id="effect-immortality" class="panel p-2 rounded flex items-center gap-2 border-red-500/50 hidden">
+                    <i class="fas fa-heart text-red-500 animate-pulse"></i>
+                    <div>
+                        <div class="text-[10px] text-red-400 font-bold uppercase">Бессмертие</div>
+                        <div class="text-[10px] text-gray-400" id="timer-immortality">00:00</div>
+                    </div>
+                </div>
+                <div id="effect-luck" class="panel p-2 rounded flex items-center gap-2 border-green-500/50 hidden">
+                    <i class="fas fa-clover text-green-500 animate-pulse"></i>
+                    <div>
+                        <div class="text-[10px] text-green-400 font-bold uppercase">Удача x2</div>
+                        <div class="text-[10px] text-gray-400" id="timer-luck">00:00</div>
+                    </div>
                 </div>
             </div>
 
@@ -441,13 +530,13 @@
                         </button>
                     </div>
 
-                     <!-- Crafting -->
+                     <!-- Agility -->
                     <div class="panel p-3 rounded flex justify-between items-center bg-[#151518]">
                         <div>
-                            <div class="text-[#e0e0e0] font-bold text-xs"><i class="fas fa-scroll text-blue-400 mr-1"></i> Мастерство (Ур <span id="craft-level-display">0</span>)</div>
-                            <div class="text-[10px] text-[#777]">Открывает новые рецепты</div>
+                            <div class="text-[#e0e0e0] font-bold text-xs"><i class="fas fa-person-running text-blue-400 mr-1"></i> Ловкость (Ур <span id="agility-display">0</span>)</div>
+                            <div class="text-[10px] text-[#777]">Меньше шанс травмы</div>
                         </div>
-                        <button onclick="skills.upgrade('crafting')" class="bg-[#222] border border-[#c8aa6e] text-[#c8aa6e] px-3 py-1 text-[10px] rounded hover:bg-[#c8aa6e] hover:text-black transition-colors uppercase">
+                        <button onclick="skills.upgrade('agility')" class="bg-[#222] border border-[#c8aa6e] text-[#c8aa6e] px-3 py-1 text-[10px] rounded hover:bg-[#c8aa6e] hover:text-black transition-colors uppercase">
                             1 Жетон
                         </button>
                     </div>
@@ -465,8 +554,8 @@
                     <div class="absolute inset-0 bg-[#222] group-hover:bg-[#2a2a2e] transition-colors"></div>
                     <div class="absolute inset-0 flex items-center justify-between px-6">
                         <div class="flex items-center gap-4 z-10">
-                            <div class="w-12 h-12 rounded-full bg-[#111] flex items-center justify-center border border-[#c8aa6e] shadow-lg">
-                                <i class="fas fa-hammer text-[#c8aa6e] text-lg"></i>
+                            <div class="w-12 h-12 rounded-full bg-[#111] flex items-center justify-center border border-amber-600 shadow-lg">
+                                <i class="fas fa-hammer text-amber-500 text-lg"></i>
                             </div>
                             <div class="text-left">
                                 <h3 class="medieval-font text-xl text-white">Работы</h3>
@@ -486,7 +575,7 @@
                                 <i class="fas fa-landmark text-cyan-400 text-lg"></i>
                             </div>
                             <div class="text-left">
-                                <h3 class="medieval-font text-xl text-[#e0e0e0]">Городская площадь</h3>
+                                <h3 class="medieval-font text-xl text-white">Городская площадь</h3>
                                 <p class="text-xs text-gray-400">Милостыня и слухи</p>
                             </div>
                         </div>
@@ -503,7 +592,7 @@
                                 <i class="fas fa-beer text-orange-400 text-lg"></i>
                             </div>
                             <div class="text-left">
-                                <h3 class="medieval-font text-xl text-[#e0e0e0]">Таверна</h3>
+                                <h3 class="medieval-font text-xl text-white">Таверна</h3>
                                 <p class="text-xs text-gray-400">Отдых и азартные игры</p>
                             </div>
                         </div>
@@ -520,8 +609,42 @@
                                 <i class="fas fa-dungeon text-yellow-400 text-lg"></i>
                             </div>
                             <div class="text-left">
-                                <h3 class="medieval-font text-xl text-[#e0e0e0]">Казна</h3>
+                                <h3 class="medieval-font text-xl text-white">Казна</h3>
                                 <p class="text-xs text-gray-400">Обмен и хранилище</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400 z-10"></i>
+                    </div>
+                </button>
+
+                <!-- Village -->
+                <button id="btn-loc-village" onclick="router.navigate('village')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-colors relative h-28">
+                    <div class="absolute inset-0 bg-[#222] group-hover:bg-[#2a2a2e] transition-colors"></div>
+                    <div class="absolute inset-0 flex items-center justify-between px-6">
+                        <div class="flex items-center gap-4 z-10">
+                            <div class="w-12 h-12 rounded-full bg-[#111] flex items-center justify-center border border-amber-600 shadow-lg">
+                                <i class="fas fa-house-chimney text-amber-500 text-lg"></i>
+                            </div>
+                            <div class="text-left">
+                                <h3 class="medieval-font text-xl text-amber-200">Деревня на окраине</h3>
+                                <p id="village-desc" class="text-xs text-amber-300">Дом, мудрец, хозяйство</p>
+                            </div>
+                        </div>
+                        <i id="village-lock-icon" class="fas fa-chevron-right text-gray-400 z-10"></i>
+                    </div>
+                </button>
+
+                <!-- Healer's Hut -->
+                <button onclick="router.navigate('healer')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-colors relative h-28">
+                    <div class="absolute inset-0 bg-[#222] group-hover:bg-[#2a2a2e] transition-colors"></div>
+                    <div class="absolute inset-0 flex items-center justify-between px-6">
+                        <div class="flex items-center gap-4 z-10">
+                            <div class="w-12 h-12 rounded-full bg-[#111] flex items-center justify-center border border-red-500 shadow-lg">
+                                <i class="fas fa-user-md text-red-400 text-lg"></i>
+                            </div>
+                            <div class="text-left">
+                                <h3 class="medieval-font text-xl text-red-200">Хижина Лекаря</h3>
+                                <p class="text-xs text-red-300">Лечение и зелья</p>
                             </div>
                         </div>
                         <i class="fas fa-chevron-right text-gray-400 z-10"></i>
@@ -537,8 +660,8 @@
                                 <i class="fas fa-tree text-purple-400 text-lg"></i>
                             </div>
                             <div class="text-left">
-                                <h3 class="medieval-font text-xl text-[#e0e0e0]">Темный Лес</h3>
-                                <p id="forest-desc" class="text-xs text-gray-400">Опасность и редкие травы</p>
+                                <h3 class="medieval-font text-xl text-purple-200">Темный Лес</h3>
+                                <p id="forest-desc" class="text-xs text-purple-300">Опасность и редкие травы</p>
                             </div>
                         </div>
                         <i id="forest-lock-icon" class="fas fa-chevron-right text-gray-400 z-10"></i>
@@ -554,11 +677,62 @@
                                 <i class="fas fa-shield-halved text-red-500 text-lg"></i>
                             </div>
                             <div class="text-left">
-                                <h3 class="medieval-font text-xl text-[#e0e0e0]">Учебный Лагерь</h3>
-                                <p id="camp-desc" class="text-xs text-gray-400">Путь воина</p>
+                                <h3 class="medieval-font text-xl text-red-200">Учебный Лагерь</h3>
+                                <p id="camp-desc" class="text-xs text-red-300">Путь воина</p>
                             </div>
                         </div>
                         <i id="camp-lock-icon" class="fas fa-chevron-right text-gray-400 z-10"></i>
+                    </div>
+                </button>
+
+                <!-- Royal Castle -->
+                <button onclick="router.navigate('royal-castle')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-colors relative h-28">
+                    <div class="absolute inset-0 bg-[#222] group-hover:bg-[#2a2a2e] transition-colors"></div>
+                    <div class="absolute inset-0 flex items-center justify-between px-6">
+                        <div class="flex items-center gap-4 z-10">
+                            <div class="w-12 h-12 rounded-full bg-[#111] flex items-center justify-center border border-purple-500 shadow-lg">
+                                <i class="fas fa-chess-rook text-purple-400 text-lg"></i>
+                            </div>
+                            <div class="text-left">
+                                <h3 class="medieval-font text-xl text-purple-200">Королевский замок</h3>
+                                <p class="text-xs text-purple-300">Вход для знати</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400 z-10"></i>
+                    </div>
+                </button>
+
+                <!-- Poor District -->
+                <button onclick="router.navigate('poor-district')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-colors relative h-28">
+                    <div class="absolute inset-0 bg-[#222] group-hover:bg-[#2a2a2e] transition-colors"></div>
+                    <div class="absolute inset-0 flex items-center justify-between px-6">
+                        <div class="flex items-center gap-4 z-10">
+                            <div class="w-12 h-12 rounded-full bg-[#111] flex items-center justify-center border border-gray-500 shadow-lg">
+                                <i class="fas fa-house-crack text-gray-400 text-lg"></i>
+                            </div>
+                            <div class="text-left">
+                                <h3 class="medieval-font text-xl text-gray-200">Район для бедняков</h3>
+                                <p class="text-xs text-gray-400">Грязные улицы и отчаянные души</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400 z-10"></i>
+                    </div>
+                </button>
+
+                <!-- Noble Quarter -->
+                <button onclick="router.navigate('noble-quarter')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-colors relative h-28">
+                    <div class="absolute inset-0 bg-[#222] group-hover:bg-[#2a2a2e] transition-colors"></div>
+                    <div class="absolute inset-0 flex items-center justify-between px-6">
+                        <div class="flex items-center gap-4 z-10">
+                            <div class="w-12 h-12 rounded-full bg-[#111] flex items-center justify-center border border-yellow-500 shadow-lg">
+                                <i class="fas fa-crown text-yellow-400 text-lg"></i>
+                            </div>
+                            <div class="text-left">
+                                <h3 class="medieval-font text-xl text-yellow-200">Дворянский квартал</h3>
+                                <p class="text-xs text-yellow-300">Особняки, интриги и роскошь</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400 z-10"></i>
                     </div>
                 </button>
 
@@ -619,6 +793,37 @@
                         </div>
                         <button id="btn-work-port" onclick="game.work('port', event)" class="btn-medieval w-full py-2 rounded font-bold shadow-lg">
                             <i class="fas fa-fish mr-2"></i> Рыбачить
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- The Loader (Unlocked by Alex) -->
+            <div id="job-loader" class="panel rounded-lg p-0 relative overflow-hidden h-40 group hidden">
+                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1578575437130-527eed3abbec?q=80&w=2070')] bg-cover bg-center opacity-30 group-hover:opacity-40 transition-opacity"></div>
+                <div class="absolute inset-0 p-4 flex flex-col justify-between">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="medieval-font text-lg text-white drop-shadow-md">Грузчик в порту</h3>
+                            <p class="text-xs text-gray-300 drop-shadow-md">Разгрузка мешков с зерном.</p>
+                            <p class="text-xs text-[#c8aa6e] mt-1 drop-shadow-md" id="job-info-loader"><span class="text-green-500"><i class="fas fa-check"></i> Работа от Алекса</span></p>
+                        </div>
+                        <span class="text-xs bg-blue-900/80 text-blue-200 px-2 py-0.5 rounded border border-blue-800 backdrop-blur-sm">Ур 3</span>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-4 mb-3">
+                            <div class="text-sm text-[#e0e0e0] flex items-center gap-1 drop-shadow-md">
+                                <i class="fas fa-coins"></i> <span id="reward-loader" class="font-bold">6 Золота</span>
+                            </div>
+                            <div class="text-sm text-blue-400 flex items-center gap-1 drop-shadow-md">
+                                <i class="fas fa-star"></i> +2 XP
+                            </div>
+                            <div class="text-sm text-green-400 flex items-center gap-1 drop-shadow-md">
+                                <i class="fas fa-shield-alt"></i> 1% травма
+                            </div>
+                        </div>
+                        <button id="btn-work-loader" onclick="game.work('loader', event)" class="btn-medieval w-full py-2 rounded font-bold shadow-lg">
+                            <i class="fas fa-box mr-2"></i> Разгружать
                         </button>
                     </div>
                 </div>
@@ -799,14 +1004,16 @@
 
         <!-- VIEW: TOWN SQUARE -->
         <section id="view-town-square" class="hidden space-y-4">
-            <div class="h-16 w-full bg-[#1a1a1d] border-b border-[#333] relative rounded-t-lg mb-4 overflow-hidden">
+            <div class="h-32 w-full relative rounded-lg mb-4 overflow-hidden">
+                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1519677100203-a0e668c92439?w=800')] location-bg"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-[#141417] via-transparent to-transparent"></div>
                 <div class="absolute top-4 left-4">
-                    <button onclick="router.navigate('map')" class="w-8 h-8 rounded border border-[#333] bg-black/50 flex items-center justify-center text-[#a0a0a0]">
+                    <button onclick="router.navigate('map')" class="w-8 h-8 rounded border border-[#333] bg-black/50 flex items-center justify-center text-[#a0a0a0] backdrop-blur-sm">
                         <i class="fas fa-arrow-left"></i>
                     </button>
                 </div>
-                <div class="absolute top-4 left-16">
-                     <h2 class="medieval-font text-xl text-[#c8aa6e]">Городская площадь</h2>
+                <div class="absolute bottom-3 left-4">
+                     <h2 class="medieval-font text-2xl text-cyan-400 drop-shadow-lg">Городская площадь</h2>
                 </div>
             </div>
 
@@ -832,26 +1039,449 @@
                         </button>
                     </div>
                     <div class="flex flex-col items-center">
-                        <i class="fas fa-user-md text-2xl text-red-400 mb-2"></i>
-                        <p class="text-xs text-[#e0e0e0] mb-1">Лекарь</p>
-                        <button onclick="game.heal(50, 50)" class="btn-medieval w-full py-1.5 rounded text-[10px]">
-                            Лечение (50<i class="fas fa-coins text-[8px] ml-0.5"></i>)
+                        <div class="w-10 h-10 rounded-full border border-amber-500 bg-[#222] flex items-center justify-center mb-1">
+                            <i class="fas fa-clipboard-list text-amber-400"></i>
+                        </div>
+                        <p class="text-xs text-[#e0e0e0] mb-1">Доска</p>
+                        <button onclick="router.navigate('bulletin')" class="btn-medieval w-full py-1.5 rounded text-[10px]">
+                            Смотреть
                         </button>
                     </div>
+                </div>
+                
+                <!-- Book House Button -->
+                <div class="mt-4">
+                     <button onclick="router.navigate('bookhouse')" class="panel w-full p-3 rounded flex items-center justify-between group hover:border-blue-500 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-[#111] border border-blue-500 flex items-center justify-center">
+                                <i class="fas fa-book text-blue-400"></i>
+                            </div>
+                            <div class="text-left">
+                                <div class="text-sm font-bold text-[#e0e0e0]">Книжный Дом</div>
+                                <div class="text-[10px] text-[#777]">Рецепты и знания</div>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-500 group-hover:text-blue-500"></i>
+                    </button>
+                </div>
+
+                <!-- Tailor Button -->
+                <div class="mt-3">
+                    <button onclick="router.navigate('tailor')" class="panel w-full p-3 rounded flex items-center justify-between group hover:border-pink-500 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-[#111] border border-pink-500 flex items-center justify-center">
+                                <i class="fas fa-shirt text-pink-400"></i>
+                            </div>
+                            <div class="text-left">
+                                <div class="text-sm font-bold text-[#e0e0e0]">Мастерская Портного</div>
+                                <div class="text-[10px] text-[#777]">Одежда на заказ</div>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-500 group-hover:text-pink-500"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: BULLETIN BOARD -->
+        <section id="view-bulletin" class="hidden space-y-4">
+            <div class="h-16 w-full relative rounded-lg mb-4 overflow-hidden bg-[#1a1a1d]">
+                <div class="absolute inset-0 bg-gradient-to-r from-amber-900/20 to-transparent"></div>
+                <div class="absolute top-4 left-4 flex items-center gap-3">
+                    <button onclick="router.navigate('town-square')" class="w-8 h-8 rounded border border-[#333] bg-black/50 flex items-center justify-center text-[#a0a0a0] backdrop-blur-sm">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <h2 class="medieval-font text-xl text-amber-400 drop-shadow-lg">Доска Объявлений</h2>
+                </div>
+            </div>
+
+            <div class="panel rounded p-4 space-y-4">
+                <div class="text-center mb-4">
+                    <i class="fas fa-scroll text-3xl text-amber-500 mb-2"></i>
+                    <p class="text-sm text-[#a0a0a0]">Здесь вывешивают объявления о работе и просьбы о помощи.</p>
+                </div>
+
+                <!-- Active Bounties/Jobs -->
+                <div class="space-y-3">
+                    <h3 class="text-xs text-[#777] uppercase border-b border-[#333] pb-1">Срочные заказы</h3>
+                    
+                    <!-- Bounty 1: Fish -->
+                    <div class="border border-[#333] rounded p-3 bg-black/20">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="flex gap-3">
+                                <i class="fas fa-fish text-blue-400 text-lg mt-1"></i>
+                                <div>
+                                    <div class="text-sm font-bold text-[#e0e0e0]">Рыба для таверны</div>
+                                    <div class="text-[10px] text-[#777]">Старый Бен ищет свежую рыбу.</div>
+                                    <div class="text-[10px] text-gray-500 mt-1">Нужно: 10 Рыб</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xs text-yellow-500 font-bold">100 <i class="fas fa-coins"></i></div>
+                                <div class="text-[10px] text-blue-400">+15 XP</div>
+                            </div>
+                        </div>
+                        <button onclick="bulletin.acceptQuest('fish_delivery')" class="btn-medieval w-full py-1.5 rounded text-[10px]">
+                            Взять заказ
+                        </button>
+                    </div>
+
+                    <!-- Bounty 2: Herbs -->
+                    <div class="border border-[#333] rounded p-3 bg-black/20">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="flex gap-3">
+                                <i class="fas fa-leaf text-green-400 text-lg mt-1"></i>
+                                <div>
+                                    <div class="text-sm font-bold text-[#e0e0e0]">Травы для лекаря</div>
+                                    <div class="text-[10px] text-[#777]">Мариусу нужны свежие травы.</div>
+                                    <div class="text-[10px] text-gray-500 mt-1">Нужно: 8 Трав</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xs text-yellow-500 font-bold">80 <i class="fas fa-coins"></i></div>
+                                <div class="text-[10px] text-blue-400">+10 XP</div>
+                            </div>
+                        </div>
+                        <button onclick="bulletin.acceptQuest('herbs_delivery')" class="btn-medieval w-full py-1.5 rounded text-[10px]">
+                            Взять заказ
+                        </button>
+                    </div>
+
+                    <!-- Bounty 3: Ore -->
+                    <div class="border border-[#333] rounded p-3 bg-black/20">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="flex gap-3">
+                                <i class="fas fa-cube text-gray-400 text-lg mt-1"></i>
+                                <div>
+                                    <div class="text-sm font-bold text-[#e0e0e0]">Руда для кузнеца</div>
+                                    <div class="text-[10px] text-[#777]">Горну нужна железная руда.</div>
+                                    <div class="text-[10px] text-gray-500 mt-1">Нужно: 5 Руды</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xs text-yellow-500 font-bold">200 <i class="fas fa-coins"></i></div>
+                                <div class="text-[10px] text-blue-400">+25 XP</div>
+                            </div>
+                        </div>
+                        <button onclick="bulletin.acceptQuest('ore_delivery')" class="btn-medieval w-full py-1.5 rounded text-[10px]">
+                            Взять заказ
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Community Notices -->
+                <div class="space-y-2 mt-4">
+                    <h3 class="text-xs text-[#777] uppercase border-b border-[#333] pb-1">Объявления</h3>
+                    
+                    <div class="border border-[#333] rounded p-2 bg-black/10 text-[10px] text-gray-400">
+                        <i class="fas fa-thumbtack text-red-400 mr-1"></i> "Осторожно! В лесу видели волков." — Стража
+                    </div>
+                    <div class="border border-[#333] rounded p-2 bg-black/10 text-[10px] text-gray-400">
+                        <i class="fas fa-thumbtack text-yellow-400 mr-1"></i> "Куплю кожу. Хорошо плачу." — Бронник
+                    </div>
+                    <div class="border border-[#333] rounded p-2 bg-black/10 text-[10px] text-gray-400">
+                        <i class="fas fa-thumbtack text-blue-400 mr-1"></i> "Ищу помощника на ферму. Обращаться в деревню." — Фермер
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: TAILOR -->
+        <section id="view-tailor" class="hidden space-y-4">
+            <div class="h-16 w-full relative rounded-lg mb-4 overflow-hidden bg-[#1a1a1d]">
+                <div class="absolute inset-0 bg-gradient-to-r from-pink-900/20 to-transparent"></div>
+                <div class="absolute top-4 left-4 flex items-center gap-3">
+                    <button onclick="router.navigate('town-square')" class="w-8 h-8 rounded border border-[#333] bg-black/50 flex items-center justify-center text-[#a0a0a0] backdrop-blur-sm">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <h2 class="medieval-font text-xl text-pink-400 drop-shadow-lg">Мастерская Портного</h2>
+                </div>
+            </div>
+
+            <!-- Tailor NPC -->
+            <div class="panel p-3 mb-4 rounded flex items-center justify-between border-pink-900/30 bg-pink-900/10">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-full border border-pink-500 bg-[#222] flex items-center justify-center">
+                        <i class="fas fa-scissors text-pink-400"></i>
+                    </div>
+                    <div>
+                        <div class="text-sm text-[#e0e0e0] font-bold">Портной Питер</div>
+                        <div class="text-[10px] text-[#a0a0a0]">Портной</div>
+                    </div>
+                </div>
+                <button onclick="dialogue.start('peter')" class="btn-medieval px-4 py-1.5 rounded text-xs">
+                    Говорить
+                </button>
+            </div>
+
+            <div class="panel rounded p-4 space-y-3">
+                <h3 class="medieval-font text-sm text-[#c8aa6e]">Одежда на заказ</h3>
+                <div class="border border-[#333] rounded p-3 bg-black/20">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="flex gap-3">
+                            <i class="fas fa-shirt text-[#c8aa6e] text-xl mt-1"></i>
+                            <div>
+                                <div class="text-sm font-bold text-[#e0e0e0]">Одежда крестьянина</div>
+                                <div class="text-[10px] text-[#777]">Набор простой чистой одежды.</div>
+                            </div>
+                        </div>
+                        <div class="text-sm text-yellow-400 font-bold">5,000 <i class="fas fa-coins"></i></div>
+                    </div>
+                    <button onclick="game.buyClothes('peasant', 5000)" class="btn-medieval w-full py-1.5 rounded text-[10px]">
+                        Купить
+                    </button>
+                </div>
+
+                <div class="border border-[#333] rounded p-3 bg-black/20">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="flex gap-3">
+                            <i class="fas fa-shirt text-[#c8aa6e] text-xl mt-1"></i>
+                            <div>
+                                <div class="text-sm font-bold text-[#e0e0e0]">Одежда состоятельного</div>
+                                <div class="text-[10px] text-[#777]">Для тех, кто любит выглядеть солидно.</div>
+                            </div>
+                        </div>
+                        <div class="text-sm text-yellow-400 font-bold">50,000 <i class="fas fa-coins"></i></div>
+                    </div>
+                    <button onclick="game.buyClothes('rich', 50000)" class="btn-medieval w-full py-1.5 rounded text-[10px]">
+                        Купить
+                    </button>
+                </div>
+
+                <div class="border border-[#333] rounded p-3 bg-black/20">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="flex gap-3">
+                            <i class="fas fa-crown text-[#c8aa6e] text-xl mt-1"></i>
+                            <div>
+                                <div class="text-sm font-bold text-[#e0e0e0]">Одежда знати</div>
+                                <div class="text-[10px] text-[#777]">Высшее качество для истинной элиты.</div>
+                            </div>
+                        </div>
+                        <div class="text-sm text-emerald-400 font-bold">500 <i class="far fa-gem"></i></div>
+                    </div>
+                    <button onclick="game.buyClothes('noble', 500)" class="btn-medieval w-full py-1.5 rounded text-[10px]">
+                        Купить
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: BOOK HOUSE -->
+        <section id="view-bookhouse" class="hidden space-y-4">
+            <div class="h-16 w-full relative rounded-lg mb-4 overflow-hidden bg-[#1a1a1d]">
+                <div class="absolute inset-0 bg-gradient-to-r from-blue-900/20 to-transparent"></div>
+                <div class="absolute top-4 left-4 flex items-center gap-3">
+                    <button onclick="router.navigate('town-square')" class="w-8 h-8 rounded border border-[#333] bg-black/50 flex items-center justify-center text-[#a0a0a0] backdrop-blur-sm">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <h2 class="medieval-font text-xl text-blue-400 drop-shadow-lg">Книжный Дом</h2>
+                </div>
+            </div>
+
+            <!-- Book House NPC -->
+            <div class="panel p-3 mb-4 rounded flex items-center justify-between border-blue-900/30 bg-blue-900/10">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-full border border-pink-500 bg-[#222] flex items-center justify-center">
+                        <i class="fas fa-feather text-pink-400"></i>
+                    </div>
+                    <div>
+                        <div class="text-sm text-[#e0e0e0] font-bold">Лили</div>
+                        <div class="text-[10px] text-[#a0a0a0]">Хранительница знаний</div>
+                    </div>
+                </div>
+                <button onclick="dialogue.start('lili')" class="btn-medieval px-4 py-1.5 rounded text-xs">
+                    Говорить
+                </button>
+            </div>
+
+            <div class="panel rounded p-4 space-y-4">
+                <h3 class="medieval-font text-sm text-[#c8aa6e] border-b border-[#333] pb-2">Рецепты в продаже</h3>
+                
+                <!-- Food Recipe -->
+                <div class="border border-[#333] rounded p-3 bg-black/20">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="flex gap-3">
+                            <i class="fas fa-drumstick-bite text-amber-400 text-xl mt-1"></i>
+                            <div>
+                                <div class="text-sm font-bold text-[#e0e0e0]">Рецепт: Жаркое</div>
+                                <div class="text-[10px] text-[#777]">Готовьте еду из мяса. +30 HP</div>
+                                <div class="text-[10px] text-gray-500 mt-1">Требуется: 2 Мяса</div>
+                            </div>
+                        </div>
+                        <div class="text-sm text-emerald-400 font-bold">50 <i class="far fa-gem"></i></div>
+                    </div>
+                    <button id="btn-buy-recipe-food" onclick="game.buyRecipe('food', 50)" class="btn-medieval w-full py-1.5 rounded text-[10px]">
+                        Купить Рецепт
+                    </button>
+                </div>
+
+                <!-- Sword Recipe -->
+                <div class="border border-[#333] rounded p-3 bg-black/20">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="flex gap-3">
+                            <i class="fas fa-gavel text-gray-400 text-xl mt-1"></i>
+                            <div>
+                                <div class="text-sm font-bold text-[#e0e0e0]">Рецепт: Самодельный Меч</div>
+                                <div class="text-[10px] text-[#777]">Создайте простое оружие. +5 Урона</div>
+                                <div class="text-[10px] text-gray-500 mt-1">Требуется: 3 Руды, 2 Палки</div>
+                            </div>
+                        </div>
+                        <div class="text-sm text-emerald-400 font-bold">100 <i class="far fa-gem"></i></div>
+                    </div>
+                    <button id="btn-buy-recipe-sword" onclick="game.buyRecipe('sword', 100)" class="btn-medieval w-full py-1.5 rounded text-[10px]">
+                        Купить Рецепт
+                    </button>
+                </div>
+
+                <!-- Leather Armor Recipe -->
+                <div class="border border-[#333] rounded p-3 bg-black/20">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="flex gap-3">
+                            <i class="fas fa-vest text-amber-600 text-xl mt-1"></i>
+                            <div>
+                                <div class="text-sm font-bold text-[#e0e0e0]">Рецепт: Кожаная Броня</div>
+                                <div class="text-[10px] text-[#777]">Защитная броня из кожи. +10 Защиты</div>
+                                <div class="text-[10px] text-gray-500 mt-1">Требуется: 5 Кожи</div>
+                            </div>
+                        </div>
+                        <div class="text-sm text-emerald-400 font-bold">150 <i class="far fa-gem"></i></div>
+                    </div>
+                    <button id="btn-buy-recipe-armor" onclick="game.buyRecipe('armor', 150)" class="btn-medieval w-full py-1.5 rounded text-[10px]">
+                        Купить Рецепт
+                    </button>
+                </div>
+
+                <!-- Upgraded Bag Recipe -->
+                <div class="border border-[#333] rounded p-3 bg-black/20">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="flex gap-3">
+                            <i class="fas fa-suitcase text-yellow-500 text-xl mt-1"></i>
+                            <div>
+                                <div class="text-sm font-bold text-[#e0e0e0]">Рецепт: Улучшенная Сумка</div>
+                                <div class="text-[10px] text-[#777]">Больше места в инвентаре. +8 слотов</div>
+                                <div class="text-[10px] text-gray-500 mt-1">Требуется: 3 Кожи, 2 Палки</div>
+                            </div>
+                        </div>
+                        <div class="text-sm text-emerald-400 font-bold">200 <i class="far fa-gem"></i></div>
+                    </div>
+                    <button id="btn-buy-recipe-bag" onclick="game.buyRecipe('bag', 200)" class="btn-medieval w-full py-1.5 rounded text-[10px]">
+                        Купить Рецепт
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: HEALER -->
+        <section id="view-healer" class="hidden space-y-4">
+            <div class="h-16 w-full relative rounded-lg mb-4 overflow-hidden bg-[#1a1a1d]">
+                <div class="absolute inset-0 bg-gradient-to-r from-red-900/20 to-transparent"></div>
+                <div class="absolute top-4 left-4 flex items-center gap-3">
+                    <button onclick="router.navigate('map')" class="w-8 h-8 rounded border border-[#333] bg-black/50 flex items-center justify-center text-[#a0a0a0] backdrop-blur-sm">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <h2 class="medieval-font text-xl text-red-400 drop-shadow-lg">Хижина Лекаря</h2>
+                </div>
+            </div>
+
+            <!-- NPC Marius -->
+            <div class="panel p-3 mb-4 rounded flex items-center justify-between border-red-900/30 bg-red-900/10">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-full border border-red-500 bg-[#222] overflow-hidden">
+                         <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Marius&backgroundColor=1a1a1d&skinColor=ecad80&hair=long02&hairColor=3e3e42" alt="Мариус" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <div class="text-sm text-[#e0e0e0] font-bold">Мариус</div>
+                        <div class="text-[10px] text-[#a0a0a0]">Алхимик</div>
+                    </div>
+                </div>
+                <button onclick="dialogue.start('marius')" class="btn-medieval px-4 py-1.5 rounded text-xs">
+                    Говорить
+                </button>
+            </div>
+
+            <!-- Healing Service -->
+            <div class="panel rounded p-4 space-y-3">
+                <h3 class="medieval-font text-sm text-[#c8aa6e]">Лечение</h3>
+                <div class="flex items-center justify-between">
+                    <div class="text-xs text-[#a0a0a0]">Восстановить здоровье</div>
+                    <div class="text-xs text-yellow-500">50 <i class="fas fa-coins"></i></div>
+                </div>
+                <button onclick="game.heal(50, 50)" class="btn-medieval w-full py-2 rounded text-xs text-red-400 border-red-900 hover:bg-red-900/20">
+                    <i class="fas fa-heart mr-2"></i> +50 HP
+                </button>
+            </div>
+
+            <!-- Recipes Shop -->
+            <div class="panel rounded p-4 space-y-4">
+                <h3 class="medieval-font text-sm text-[#c8aa6e]">Тайные Знания (Рецепты)</h3>
+                
+                <!-- Immortality Recipe -->
+                <div class="border border-[#333] rounded p-2 bg-black/20">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="flex gap-2">
+                            <i class="fas fa-scroll text-purple-400 mt-1"></i>
+                            <div>
+                                <div class="text-xs font-bold text-[#e0e0e0]">Зелье Бессмертия</div>
+                                <div class="text-[10px] text-[#777]">Неуязвимость на 2 минуты.</div>
+                            </div>
+                        </div>
+                        <div class="text-xs text-emerald-400 font-bold">100 <i class="far fa-gem"></i></div>
+                    </div>
+                    <button id="btn-buy-recipe-immortality" onclick="game.buyRecipe('immortality', 100)" class="btn-medieval w-full py-1.5 rounded text-[10px]">
+                        Купить Рецепт
+                    </button>
+                </div>
+
+                <!-- Luck Recipe -->
+                <div class="border border-[#333] rounded p-2 bg-black/20">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="flex gap-2">
+                            <i class="fas fa-scroll text-green-400 mt-1"></i>
+                            <div>
+                                <div class="text-xs font-bold text-[#e0e0e0]">Зелье Удачи</div>
+                                <div class="text-[10px] text-[#777]">x2 Добыча на 2 минуты.</div>
+                            </div>
+                        </div>
+                        <div class="text-xs text-emerald-400 font-bold">50 <i class="far fa-gem"></i></div>
+                    </div>
+                    <button id="btn-buy-recipe-luck" onclick="game.buyRecipe('luck', 50)" class="btn-medieval w-full py-1.5 rounded text-[10px]">
+                        Купить Рецепт
+                    </button>
+                </div>
+            </div>
+
+            <!-- Crafting Station (Visible if recipes unlocked) -->
+            <div id="healer-crafting-station" class="hidden panel rounded p-4 space-y-3 border-t-2 border-[#c8aa6e]">
+                <h3 class="medieval-font text-sm text-[#c8aa6e]">Алхимический Стол</h3>
+                
+                <div id="craft-action-immortality" class="hidden flex justify-between items-center bg-[#111] p-2 rounded">
+                    <div class="text-xs text-purple-400">Зелье Бессмертия</div>
+                    <button onclick="game.activateEffect('immortality')" class="bg-[#222] border border-purple-500 text-purple-500 px-3 py-1 rounded text-[10px] hover:bg-purple-900/30">
+                        Использовать (10 трав)
+                    </button>
+                </div>
+
+                <div id="craft-action-luck" class="hidden flex justify-between items-center bg-[#111] p-2 rounded">
+                    <div class="text-xs text-green-400">Зелье Удачи</div>
+                    <button onclick="game.activateEffect('luck')" class="bg-[#222] border border-green-500 text-green-500 px-3 py-1 rounded text-[10px] hover:bg-green-900/30">
+                        Использовать (5 грибов)
+                    </button>
                 </div>
             </div>
         </section>
 
         <!-- VIEW: TREASURY -->
         <section id="view-treasury" class="hidden space-y-4">
-            <div class="h-16 w-full bg-[#1a1a1d] border-b border-[#333] relative rounded-t-lg mb-4 overflow-hidden">
+            <div class="h-32 w-full relative rounded-lg mb-4 overflow-hidden">
+                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1610375461246-83df859d849d?w=800')] location-bg"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-[#141417] via-transparent to-transparent"></div>
                 <div class="absolute top-4 left-4">
-                    <button onclick="router.navigate('map')" class="w-8 h-8 rounded border border-[#333] bg-black/50 flex items-center justify-center text-[#a0a0a0]">
+                    <button onclick="router.navigate('map')" class="w-8 h-8 rounded border border-[#333] bg-black/50 flex items-center justify-center text-[#a0a0a0] backdrop-blur-sm">
                         <i class="fas fa-arrow-left"></i>
                     </button>
                 </div>
-                <div class="absolute top-4 left-16">
-                     <h2 class="medieval-font text-xl text-[#c8aa6e]">Казна</h2>
+                <div class="absolute bottom-3 left-4">
+                     <h2 class="medieval-font text-2xl text-yellow-400 drop-shadow-lg">Казна</h2>
                 </div>
             </div>
 
@@ -921,14 +1551,16 @@
 
         <!-- VIEW: TAVERN -->
         <section id="view-tavern" class="hidden space-y-4">
-            <div class="h-16 w-full bg-[#1a1a1d] border-b border-[#333] relative rounded-t-lg mb-4 overflow-hidden">
+            <div class="h-32 w-full relative rounded-lg mb-4 overflow-hidden">
+                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=800')] location-bg"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-[#141417] via-transparent to-transparent"></div>
                 <div class="absolute top-4 left-4">
-                    <button onclick="router.navigate('map')" class="w-8 h-8 rounded border border-[#333] bg-black/50 flex items-center justify-center text-[#a0a0a0]">
+                    <button onclick="router.navigate('map')" class="w-8 h-8 rounded border border-[#333] bg-black/50 flex items-center justify-center text-[#a0a0a0] backdrop-blur-sm">
                         <i class="fas fa-arrow-left"></i>
                     </button>
                 </div>
-                <div class="absolute top-4 left-16">
-                     <h2 class="medieval-font text-xl text-[#c8aa6e]">Таверна</h2>
+                <div class="absolute bottom-3 left-4">
+                     <h2 class="medieval-font text-2xl text-orange-400 drop-shadow-lg">Таверна</h2>
                 </div>
             </div>
 
@@ -1226,6 +1858,164 @@
 
         </section>
 
+        <!-- VIEW: VILLAGE -->
+        <section id="view-village" class="hidden space-y-4">
+            <div class="h-32 w-full relative rounded-lg mb-4 overflow-hidden">
+                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1518709766631-a6a7f45921c3?w=800')] location-bg"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-[#141417] via-transparent to-transparent"></div>
+                <div class="absolute top-4 left-4">
+                    <button onclick="router.navigate('map')" class="w-8 h-8 rounded border border-[#333] bg-black/50 flex items-center justify-center text-[#a0a0a0] backdrop-blur-sm">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                </div>
+                <div class="absolute bottom-3 left-4">
+                     <h2 class="medieval-font text-2xl text-amber-400 drop-shadow-lg">Деревня на окраине</h2>
+                </div>
+            </div>
+
+            <!-- Disease Warning -->
+            <div id="measles-warning" class="hidden panel p-3 rounded border-red-500 bg-red-900/20 flex items-center gap-3">
+                <i class="fas fa-virus text-red-500 text-xl animate-pulse"></i>
+                <div>
+                    <div class="text-sm text-red-400 font-bold">Корь!</div>
+                    <div class="text-[10px] text-gray-400">-1 HP каждые 20 сек. Посетите мудреца.</div>
+                </div>
+            </div>
+
+            <!-- Your House -->
+            <div class="panel rounded-lg p-4 space-y-3">
+                <div class="flex items-center justify-between">
+                    <h3 class="medieval-font text-lg text-[#c8aa6e]"><i class="fas fa-home mr-2"></i>Ваш Дом</h3>
+                    <span id="house-status" class="text-[10px] text-red-400">Не куплен</span>
+                </div>
+                
+                <div id="house-not-owned" class="text-center py-4">
+                    <i class="fas fa-house-circle-xmark text-4xl text-gray-600 mb-2"></i>
+                    <p class="text-xs text-gray-400 mb-3">Купите дом, чтобы хранить вещи и заниматься хозяйством.</p>
+                    <button onclick="village.buyHouse()" class="btn-medieval w-full py-2 rounded text-sm">
+                        Купить дом <span class="text-emerald-400">1000 <i class="far fa-gem"></i></span>
+                    </button>
+                </div>
+
+                <div id="house-owned" class="hidden space-y-3">
+                    <!-- Storage -->
+                    <div class="border border-[#333] rounded p-2 bg-black/20">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i class="fas fa-box text-amber-500"></i>
+                            <span class="text-xs text-[#e0e0e0]">Хранилище</span>
+                        </div>
+                        <p class="text-[10px] text-gray-500">Здесь можно хранить ненужные вещи (в разработке)</p>
+                    </div>
+
+                    <!-- Workbench -->
+                    <div class="border border-[#333] rounded p-2 bg-black/20">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i class="fas fa-gavel text-blue-400"></i>
+                            <span class="text-xs text-[#e0e0e0]">Верстак</span>
+                        </div>
+                        <p class="text-[10px] text-gray-500">Создавайте новые предметы (в разработке)</p>
+                    </div>
+
+                    <!-- Pig Pen -->
+                    <div class="border border-[#333] rounded p-2 bg-black/20">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-piggy-bank text-pink-400"></i>
+                                <span class="text-xs text-[#e0e0e0]">Свинарник (Ур <span id="pig-pen-level">0</span>)</span>
+                            </div>
+                            <span class="text-[10px] text-gray-400">Мясо: <span id="meat-count">0</span></span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="village.upgradePigPen()" class="flex-1 bg-[#222] border border-pink-500 text-pink-400 py-1 rounded text-[10px] hover:bg-pink-900/30">
+                                Улучшить (100 <i class="fas fa-coins"></i>)
+                            </button>
+                            <button onclick="village.collectMeat()" class="flex-1 bg-[#222] border border-[#c8aa6e] text-[#c8aa6e] py-1 rounded text-[10px] hover:bg-[#c8aa6e]/20">
+                                Собрать мясо
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Stable -->
+                    <div class="border border-[#333] rounded p-2 bg-black/20">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i class="fas fa-horse text-amber-600"></i>
+                            <span class="text-xs text-[#e0e0e0]">Конюшня</span>
+                        </div>
+                        <p class="text-[10px] text-gray-500" id="stable-status">Пусто. Купите коня на рынке.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sage's House -->
+            <div class="panel rounded-lg p-4 space-y-3">
+                <h3 class="medieval-font text-lg text-indigo-400"><i class="fas fa-hat-wizard mr-2"></i>Дом Мудреца</h3>
+                
+                <!-- Sage NPC -->
+                <div class="flex items-center justify-between p-2 bg-indigo-900/20 rounded border border-indigo-900/30">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full border border-indigo-500 bg-[#222] flex items-center justify-center">
+                            <i class="fas fa-hat-wizard text-indigo-400"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm text-[#e0e0e0] font-bold">Мудрец Эльдар</div>
+                            <div class="text-[10px] text-[#a0a0a0]">Хранитель знаний</div>
+                        </div>
+                    </div>
+                    <button onclick="dialogue.start('sage')" class="btn-medieval px-4 py-1.5 rounded text-xs">
+                        Говорить
+                    </button>
+                </div>
+
+                <!-- Cure Measles -->
+                <div id="cure-measles-section" class="hidden border border-red-900/50 rounded p-3 bg-red-900/10">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i class="fas fa-flask text-red-400"></i>
+                        <span class="text-sm text-red-400 font-bold">Лечение от Кори</span>
+                    </div>
+                    <p class="text-[10px] text-gray-400 mb-2">Мудрец может исцелить вас от страшной болезни.</p>
+                    <div class="flex items-center gap-2 text-[10px] text-gray-500 mb-2">
+                        <span>Требуется:</span>
+                        <span class="text-green-400">15 <i class="fas fa-leaf"></i> Трав</span>
+                        <span class="text-purple-400">10 <i class="fas fa-spider"></i> Грибов</span>
+                    </div>
+                    <button onclick="village.cureMeasles()" class="btn-medieval w-full py-2 rounded text-xs border-red-500 text-red-400">
+                        Исцелиться
+                    </button>
+                </div>
+
+                <!-- Sage's Recipes -->
+                <div class="space-y-2">
+                    <div class="text-xs text-gray-400 border-b border-[#333] pb-1">Рецепты от Мудреца</div>
+                    
+                    <div class="border border-[#333] rounded p-2 bg-black/20 flex justify-between items-center">
+                        <div class="flex gap-2">
+                            <i class="fas fa-scroll text-yellow-400"></i>
+                            <div>
+                                <div class="text-xs text-[#e0e0e0]">Рецепт: Зелье Силы</div>
+                                <div class="text-[10px] text-gray-500">+10 к урону на 5 мин</div>
+                            </div>
+                        </div>
+                        <button class="bg-[#222] border border-[#c8aa6e] text-[#c8aa6e] px-2 py-1 rounded text-[10px]">
+                            200 <i class="far fa-gem"></i>
+                        </button>
+                    </div>
+
+                    <div class="border border-[#333] rounded p-2 bg-black/20 flex justify-between items-center">
+                        <div class="flex gap-2">
+                            <i class="fas fa-scroll text-cyan-400"></i>
+                            <div>
+                                <div class="text-xs text-[#e0e0e0]">Рецепт: Зелье Скорости</div>
+                                <div class="text-[10px] text-gray-500">+50% скорость работы</div>
+                            </div>
+                        </div>
+                        <button class="bg-[#222] border border-[#c8aa6e] text-[#c8aa6e] px-2 py-1 rounded text-[10px]">
+                            150 <i class="far fa-gem"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- VIEW: TRAINING CAMP -->
         <section id="view-training-camp" class="hidden space-y-4">
             <div class="h-28 w-full bg-[url('https://images.unsplash.com/photo-1599554378873-500b5220c326?q=80&w=2070')] bg-cover bg-center relative rounded-lg mb-4 shadow-lg overflow-hidden">
@@ -1262,6 +2052,170 @@
                 <div class="p-4 border border-[#333] rounded bg-black/20">
                     <i class="fas fa-dumbbell text-3xl text-gray-600 mb-2"></i>
                     <p class="text-xs text-gray-500">Тренировки временно недоступны.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: ROYAL CASTLE -->
+        <section id="view-royal-castle" class="hidden space-y-4">
+            <div class="h-16 w-full relative rounded-lg mb-4 overflow-hidden bg-[#1a1a1d]">
+                <div class="absolute inset-0 bg-gradient-to-r from-purple-900/20 to-transparent"></div>
+                <div class="absolute top-4 left-4 flex items-center gap-3">
+                    <button onclick="router.navigate('map')" class="w-8 h-8 rounded border border-[#333] bg-black/50 flex items-center justify-center text-[#a0a0a0] backdrop-blur-sm">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <h2 class="medieval-font text-xl text-purple-400 drop-shadow-lg">Королевский замок</h2>
+                </div>
+            </div>
+
+            <div class="panel rounded-lg p-4 space-y-4">
+                <div class="flex items-center justify-between p-3 bg-purple-900/10 rounded border border-purple-900/30">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full border border-purple-500 bg-[#222] flex items-center justify-center">
+                            <i class="fas fa-shield text-purple-400"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm text-[#e0e0e0] font-bold">Стражник</div>
+                            <div class="text-[10px] text-[#a0a0a0]">Королевская стража</div>
+                        </div>
+                    </div>
+                    <button onclick="dialogue.start('castle_guard')" class="btn-medieval px-4 py-1.5 rounded text-xs">
+                        Говорить
+                    </button>
+                </div>
+
+                <div class="text-center text-xs text-[#777] bg-black/20 border border-[#333] rounded p-3">
+                    Вход в замок закрыт для простолюдинов.
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: POOR DISTRICT -->
+        <section id="view-poor-district" class="hidden space-y-4">
+            <div class="h-16 w-full relative rounded-lg mb-4 overflow-hidden bg-[#1a1a1d]">
+                <div class="absolute inset-0 bg-gradient-to-r from-gray-900/20 to-transparent"></div>
+                <div class="absolute top-4 left-4 flex items-center gap-3">
+                    <button onclick="router.navigate('map')" class="w-8 h-8 rounded border border-[#333] bg-black/50 flex items-center justify-center text-[#a0a0a0] backdrop-blur-sm">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <h2 class="medieval-font text-xl text-gray-300 drop-shadow-lg">Район для бедняков</h2>
+                </div>
+            </div>
+
+            <div class="panel rounded-lg p-4 space-y-4">
+                <div class="text-center text-xs text-[#777] bg-black/20 border border-[#333] rounded p-3">
+                    Узкие грязные улочки, старые лачуги и отчаянные люди. Здесь выживают, а не живут.
+                </div>
+
+                <div class="panel p-3 rounded flex items-center justify-between border-gray-700/30 bg-gray-900/20">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full border border-gray-500 bg-[#222] flex items-center justify-center">
+                            <i class="fas fa-hand-holding-medical text-gray-400"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm text-[#e0e0e0] font-bold">Старый нищий</div>
+                            <div class="text-[10px] text-[#a0a0a0]">Проситель</div>
+                        </div>
+                    </div>
+                    <button class="btn-medieval px-4 py-1.5 rounded text-xs" onclick="ui.showFloatText(this, 'Скоро...', '#777')">Говорить</button>
+                </div>
+
+                <!-- Poor House Section -->
+                <div class="panel rounded p-3 space-y-3 border-t border-[#333] bg-black/10">
+                    <h3 class="medieval-font text-sm text-gray-400"><i class="fas fa-home mr-2"></i>Старый Дом</h3>
+                    
+                    <div id="poor-house-buy" class="text-center py-2">
+                        <p class="text-xs text-gray-500 mb-2">Ветхая лачуга, но крыша не течёт. Есть хранилище, верстак и печь.</p>
+                        <button onclick="housing.buyPoorHouse()" class="btn-medieval w-full py-2 rounded text-sm text-gray-300 border-gray-600">
+                            Купить (500 <i class="far fa-gem text-emerald-400"></i>)
+                        </button>
+                    </div>
+
+                    <div id="poor-house-owned" class="hidden grid grid-cols-3 gap-2">
+                        <div class="panel p-2 rounded flex flex-col items-center text-center bg-black/20">
+                            <i class="fas fa-box text-amber-700 mb-1"></i>
+                            <div class="text-[10px] text-gray-400">Склад</div>
+                        </div>
+                        <div class="panel p-2 rounded flex flex-col items-center text-center bg-black/20">
+                            <i class="fas fa-hammer text-gray-500 mb-1"></i>
+                            <div class="text-[10px] text-gray-400">Верстак</div>
+                        </div>
+                        <div class="panel p-2 rounded flex flex-col items-center text-center bg-black/20">
+                            <i class="fas fa-fire text-orange-600 mb-1"></i>
+                            <div class="text-[10px] text-gray-400">Печь</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: NOBLE QUARTER -->
+        <section id="view-noble-quarter" class="hidden space-y-4">
+            <div class="h-16 w-full relative rounded-lg mb-4 overflow-hidden bg-[#1a1a1d]">
+                <div class="absolute inset-0 bg-gradient-to-r from-yellow-900/20 to-transparent"></div>
+                <div class="absolute top-4 left-4 flex items-center gap-3">
+                    <button onclick="router.navigate('map')" class="w-8 h-8 rounded border border-[#333] bg-black/50 flex items-center justify-center text-[#a0a0a0] backdrop-blur-sm">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <h2 class="medieval-font text-xl text-yellow-300 drop-shadow-lg">Дворянский квартал</h2>
+                </div>
+            </div>
+
+            <div class="panel rounded-lg p-4 space-y-4">
+                <div class="text-center text-xs text-[#777] bg-black/20 border border-[#333] rounded p-3">
+                    Мраморные особняки, золотые ворота и надменные взгляды. Здесь правит власть и честь.
+                </div>
+                <div class="panel p-3 rounded flex items-center justify-between border-yellow-900/30 bg-yellow-900/10">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full border border-yellow-500 bg-[#222] flex items-center justify-center">
+                            <i class="fas fa-user-tie text-yellow-400"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm text-[#e0e0e0] font-bold">Советник</div>
+                            <div class="text-[10px] text-[#a0a0a0]">Дворянин</div>
+                        </div>
+                    </div>
+                    <button class="btn-medieval px-4 py-1.5 rounded text-xs" onclick="ui.showFloatText(this, 'Скоро...', '#c8aa6e')">Говорить</button>
+                </div>
+
+                <!-- Noble House Section -->
+                <div class="panel rounded p-3 space-y-3 border-t border-yellow-600/30">
+                    <h3 class="medieval-font text-sm text-yellow-500"><i class="fas fa-landmark mr-2"></i>Роскошный Особняк</h3>
+                    
+                    <div id="noble-house-buy" class="text-center py-2">
+                        <p class="text-xs text-yellow-700/70 mb-2">Дом для истинной знати. Галерея, конюшня, оружейная.</p>
+                        <button onclick="housing.buyNobleHouse()" class="btn-medieval w-full py-2 rounded text-sm text-yellow-200 border-yellow-600 bg-yellow-900/20">
+                            Купить (10,000 <i class="far fa-gem text-emerald-400"></i>)
+                        </button>
+                    </div>
+
+                    <div id="noble-house-owned" class="hidden space-y-2">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="panel p-2 rounded flex items-center gap-2 bg-black/30 border border-yellow-900/30">
+                                <i class="fas fa-palette text-pink-400"></i>
+                                <div class="text-[10px] text-gray-300">Галерея Искусств</div>
+                            </div>
+                            <div class="panel p-2 rounded flex items-center gap-2 bg-black/30 border border-yellow-900/30">
+                                <i class="fas fa-shield-halved text-gray-300"></i>
+                                <div class="text-[10px] text-gray-300">Оружейная</div>
+                            </div>
+                            <div class="panel p-2 rounded flex items-center gap-2 bg-black/30 border border-yellow-900/30">
+                                <i class="fas fa-horse-head text-amber-600"></i>
+                                <div class="text-[10px] text-gray-300">Конюшня (2 места)</div>
+                            </div>
+                            <div class="panel p-2 rounded flex items-center gap-2 bg-black/30 border border-yellow-900/30">
+                                <i class="fas fa-wine-glass text-purple-500"></i>
+                                <div class="text-[10px] text-gray-300">Виноградник</div>
+                            </div>
+                        </div>
+                        <div class="panel p-2 rounded flex items-center justify-between bg-black/30 border border-yellow-900/30">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-cow text-white"></i>
+                                <div class="text-[10px] text-gray-300">Хозяйство</div>
+                            </div>
+                            <span class="text-[10px] text-yellow-600">Ур. 1</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -1306,14 +2260,15 @@
     <script>
         // --- CONSTANTS ---
         const TOOLS_DB = {
-            rod: { id: 'rod', name: 'Удочка', baseCost: 50, icon: 'fa-fish', job: 'port' },
-            sickle: { id: 'sickle', name: 'Серп', baseCost: 500, icon: 'fa-seedling', job: 'field' },
+            rod: { id: 'rod', name: 'Удочка', baseCost: 50, icon: 'fa-wand-magic', job: 'port' },
+            sickle: { id: 'sickle', name: 'Серп', baseCost: 500, icon: 'fa-sickle', job: 'field' },
             pickaxe: { id: 'pickaxe', name: 'Кирка', baseCost: 2000, icon: 'fa-hammer', job: 'mine' },
             crossbow: { id: 'crossbow', name: 'Арбалет', baseCost: 5000, icon: 'fa-crosshairs', job: 'hunter' }
         };
 
         const JOBS_DB = {
-            port: { name: 'Порт', resource: 'fish', price: 5, xp: 1, tool: 'rod' },
+            port: { name: 'Порт', resource: 'fish', price: 5, xp: 1, tool: 'rod', injuryChance: 0.01 },
+            loader: { name: 'Грузчик', resource: 'gold', price: 6, xp: 2, tool: null, levelReq: 3, injuryChance: 0.01, requiresAlex: true },
             field: { name: 'Поле', resource: 'wheat', price: 15, xp: 3, tool: 'sickle', levelReq: 5 },
             mine: { name: 'Рудник', resource: 'ore', price: 40, xp: 8, tool: 'pickaxe', levelReq: 15 },
             hunter: { name: 'Охота', resource: 'leather', price: 100, xp: 15, tool: 'crossbow', levelReq: 30 }
@@ -1324,7 +2279,7 @@
             wheat: { name: 'Пшеница', icon: 'fa-wheat-awn' },
             ore: { name: 'Руда', icon: 'fa-cube' },
             leather: { name: 'Кожа', icon: 'fa-scroll' },
-            mushrooms: { name: 'Грибы', icon: 'fa-spider' },
+            mushrooms: { name: 'Грибы', icon: 'fa-umbrella' },
             wood: { name: 'Палка', icon: 'fa-tree' },
             stone: { name: 'Камень', icon: 'fa-shapes' },
             herbs: { name: 'Травы', icon: 'fa-leaf' }
@@ -1340,7 +2295,9 @@
             maxHp: 100,
             skillPoints: 0,
             luck: 0,
+            agility: 0,
             craftingLevel: 0,
+            clothes: {},
             xpToNextLevel: 100,
             
             // Resources
@@ -1369,6 +2326,22 @@
             
             // NPC Memory
             npcStates: {}, // { npcId: { met: bool, stage: int } }
+            
+            // Port Event Tracking
+            portWorkCount: 0,
+            oldManEventTriggered: false,
+            oldManEventThreshold: 0, // Set randomly 50-100 on first load
+
+            // Village & House
+            hasHouse: false,
+            pigPenLevel: 0,
+            meat: 0,
+            lastMeatCollect: 0,
+            hasHorse: false,
+            
+            // Disease
+            hasMeasles: false,
+            lastMeaslesTick: 0,
 
             // Features
             bankedGold: 0,
@@ -1423,6 +2396,85 @@
                     no_quest: {
                         text: "Пока ничего нет. Заходи позже.",
                         options: [{ text: "Ладно", next: "root" }]
+                    }
+                }
+            },
+            lili: {
+                name: "Лили",
+                role: "Хозяйка Книжного Дома",
+                icon: "fa-feather",
+                dialogue: {
+                    root: function() {
+                        if (!gameState.npcStates) gameState.npcStates = {};
+                        if (gameState.npcStates.lili_gifted) {
+                            return "later"
+                        }
+                        if (gameState.npcStates.lili_waiting) {
+                            return "gift";
+                        }
+                        return "intro";
+                    },
+                    intro: {
+                        text: "О, привет! Ты явно не местный. Мне нравится твой взгляд — такой уверенный, но чуть потерянный. Я Лили. Этот Дом — моя маленькая крепость знаний. А ты кто?",
+                        options: [
+                            { text: "Я странник, ищу путь", next: "about_you" },
+                            { text: "Просто хочу посмотреть рецепты", next: "recipes" }
+                        ]
+                    },
+                    about_you: {
+                        text: "Странник? Звучит романтично. Я люблю истории о таких, как ты. Здесь, в городе, всё крутится вокруг ремесла и торговли. Кто хочет выжить — учится. Кто хочет процветать — учится у меня.",
+                        options: [
+                            { text: "Расскажи о городе", next: "city" },
+                            { text: "А ты сама?", next: "about_me" }
+                        ]
+                    },
+                    city: {
+                        text: "Город живёт деньгами и слухами. Порт кормит бедняков, казна хранит золото, таверна — тайны. А я... я даю тем, кто достоин, знание. И иногда — чуточку внимания.",
+                        options: [
+                            { text: "Мне нужны рецепты", next: "recipes" },
+                            { text: "Ты заигрываешь?", next: "flirt" }
+                        ]
+                    },
+                    flirt: {
+                        text: "Может быть. Разве это плохо? Город здесь серый, а с тобой немного ярче. Но не обольщайся — знания дороже поцелуев.",
+                        options: [
+                            { text: "Где твои рецепты?", next: "recipes" },
+                            { text: "Вернусь позже", next: "wait" }
+                        ]
+                    },
+                    about_me: {
+                        text: "Я родилась здесь и всегда мечтала о большом мире. Но осталась, чтобы хранить книги. Скучно, если честно... Поэтому мне нравится разговаривать с путниками. Вроде тебя.",
+                        options: [
+                            { text: "Я зайду позже", next: "wait" },
+                            { text: "Покажи, что продаешь", next: "recipes" }
+                        ]
+                    },
+                    recipes: {
+                        text: "У меня есть рецепты, которые могут сделать тебя сильнее или богаче. Еда, оружие, броня, даже сумка побольше. Все за изумруды — знания бесценны.",
+                        options: [
+                            { text: "Спасибо, Лили", next: "wait" },
+                            { text: "Вернусь позже", next: "wait" }
+                        ]
+                    },
+                    wait: {
+                        text: "Загляни чуть позже, хорошо? Мне приятно, когда ты рядом. И, может, у меня появится кое-что интересное для тебя.",
+                        options: [
+                            { text: "Договорились", action: "lili_wait", next: "exit" }
+                        ]
+                    },
+                    gift: {
+                        text: "Ты пришёл! Я скучала... Вот, держи. Это редкий рецепт — кожаное седло для лошади. Если соберёшь коня, пригодится. А теперь... не исчезай снова.",
+                        options: [
+                            { text: "Спасибо, Лили", action: "lili_gift", next: "exit" },
+                            { text: "Я зайду позже", action: "lili_gift", next: "exit" }
+                        ]
+                    },
+                    later: {
+                        text: "Ты снова здесь. Я рада. Поболтай со мной ещё, когда устанешь от приключений... Этот дом становится слишком тихим без тебя.",
+                        options: [
+                            { text: "Я зайду позже", next: "exit" },
+                            { text: "До встречи", next: "exit" }
+                        ]
                     }
                 }
             },
@@ -1529,6 +2581,51 @@
                     }
                 }
             },
+            marius: {
+                name: "Мариус",
+                role: "Алхимик",
+                icon: "fa-user-md",
+                dialogue: {
+                    root: {
+                        text: "Хвори и раны - моя забота. Или ты ищешь знания?",
+                        options: [
+                            { text: "Мне нужно лечение", next: "heal_hint" },
+                            { text: "Что за знания?", next: "recipes_hint" },
+                            { text: "Есть поручения?", next: "quest_check" },
+                            { text: "Прощай", next: "exit" }
+                        ]
+                    },
+                    heal_hint: {
+                        text: "Я могу затянуть твои раны за скромную плату. Кнопка в меню хижины.",
+                        options: [{ text: "Понял", next: "root" }]
+                    },
+                    recipes_hint: {
+                        text: "Я продаю древние рецепты зелий. Они даруют силу, недоступную смертным. Если у тебя есть изумруды, конечно.",
+                        options: [{ text: "Посмотрю", next: "root" }]
+                    },
+                    quest_check: function() {
+                         if (!hasStoryQuest('q_marius_1') && !isQuestCompleted('q_marius_1')) {
+                            return "quest_offer";
+                        }
+                        return "no_quest";
+                    },
+                    quest_offer: {
+                        text: "Мои запасы трав истощились. Принеси мне 5 пучков редких трав из леса, и я дам тебе скидку... может быть.",
+                        options: [
+                            { text: "Соберу", action: "start_q_marius_1", next: "quest_accepted" },
+                            { text: "Нет времени", next: "root" }
+                        ]
+                    },
+                    quest_accepted: {
+                        text: "Травы должны быть свежими. Поторопись.",
+                        options: [{ text: "Иду", next: "exit" }]
+                    },
+                    no_quest: {
+                        text: "Пока мне ничего не нужно. Изучай рецепты.",
+                        options: [{ text: "Ладно", next: "root" }]
+                    }
+                }
+            },
             john_intro: {
                 name: "Рыцарь Джон",
                 role: "Воин",
@@ -1585,6 +2682,221 @@
                     training: {
                         text: "Пока что отдыхай. Скоро прибудут новобранцы.",
                         options: [{ text: "Хорошо", next: "exit" }]
+                    }
+                }
+            },
+            oldman_port: {
+                name: "Старик",
+                role: "Бродяга",
+                icon: "fa-person-cane",
+                dialogue: {
+                    root: {
+                        text: "Эй, парень... Вижу, ты тут целый день вкалываешь. Устал, небось? У меня есть местечко неподалёку — тихо, тепло. Можешь переночевать, набраться сил. Бесплатно, по доброте душевной.",
+                        options: [
+                            { text: "Спасибо, дедушка! Пойдём.", action: "accept_oldman", next: "robbery" },
+                            { text: "Нет, спасибо. Я сам справлюсь.", next: "refuse" }
+                        ]
+                    },
+                    robbery: {
+                        text: "Хе-хе... Наивный дурачок.",
+                        options: [{ text: "...", next: "exit" }]
+                    },
+                    refuse: {
+                        text: "Ну, как знаешь... Береги себя, парень.",
+                        options: [{ text: "Прощай", next: "exit" }]
+                    }
+                }
+            },
+            alex: {
+                name: "Алекс",
+                role: "Помощник капитана",
+                icon: "fa-anchor",
+                dialogue: {
+                    root: {
+                        text: "Эй, ты! Да, ты, рыбак. Вижу, как ты тут каждый день горбатишься. Неплохо справляешься.",
+                        options: [
+                            { text: "Спасибо. А ты кто?", next: "intro" },
+                            { text: "Чего надо?", next: "intro" }
+                        ]
+                    },
+                    intro: {
+                        text: "Меня зовут Алекс. Я помощник капитана на торговом судне. Нам нужны крепкие руки — разгружать мешки с зерном. Платим 6 золотых за подход, работа почти безопасная.",
+                        options: [
+                            { text: "Звучит неплохо! Я в деле.", action: "accept_alex_job", next: "accepted" },
+                            { text: "Нет, я лучше рыбачить буду.", next: "refuse" }
+                        ]
+                    },
+                    accepted: {
+                        text: "Отлично! Теперь ты можешь работать грузчиком в порту. Найдёшь эту работу в списке. Удачи, парень!",
+                        options: [{ text: "Спасибо!", next: "exit" }]
+                    },
+                    refuse: {
+                        text: "Как знаешь. Если передумаешь — я буду здесь.",
+                        options: [{ text: "Ладно", next: "exit" }]
+                    }
+                }
+            },
+            peter: {
+                name: "Питер",
+                role: "Портной",
+                icon: "fa-scissors",
+                dialogue: {
+                    root: {
+                        text: "Ох, дружище, ты выглядишь как помятый мешок. В этом городе, чтобы тебя уважали, нужно выглядеть опрятно.",
+                        options: [
+                            { text: "Что ты предлагаешь?", next: "offer" },
+                            { text: "Почему это так важно?", next: "why" },
+                            { text: "Ладно, ухожу", next: "exit" }
+                        ]
+                    },
+                    why: {
+                        text: "Здесь все смотрят на внешний вид. Чистая одежда — первое, что отличает путника от нищего. И новые заказчики любят порядок.",
+                        options: [ { text: "Покажи варианты", next: "offer" } ]
+                    },
+                    offer: {
+                        text: "Я могу сшить три комплекта: крестьянин за 5000 золотых, состоятельный за 50000, и одежда знати за 500 изумрудов. Что выберешь?",
+                        options: [
+                            { text: "Крестьянин (5000 золота)", action: "buy_peasant", next: "root" },
+                            { text: "Состоятельный (50000 золота)", action: "buy_rich", next: "root" },
+                            { text: "Знать (500 изумрудов)", action: "buy_noble", next: "root" },
+                            { text: "Подумаю", next: "exit" }
+                        ]
+                    }
+                }
+            },
+            librarian: {
+                name: "Библиотекарь Генрих",
+                role: "Хранитель рецептов",
+                icon: "fa-glasses",
+                dialogue: {
+                    root: {
+                        text: "Добро пожаловать в Книжный Дом. Здесь собраны знания со всего королевства.",
+                        options: [
+                            { text: "Что ты продаёшь?", next: "about_recipes" },
+                            { text: "Расскажи о себе", next: "about_self" },
+                            { text: "Прощай", next: "exit" }
+                        ]
+                    },
+                    about_recipes: {
+                        text: "Я продаю рецепты для крафта. Еда восстановит здоровье, оружие усилит удары, броня защитит, а улучшенная сумка даст больше места для вещей. Всё стоит изумрудов — редкие знания не бесплатны.",
+                        options: [{ text: "Понятно", next: "root" }]
+                    },
+                    about_self: {
+                        text: "Я посвятил жизнь сбору знаний. Путешествовал по землям, записывал секреты мастеров. Теперь делюсь ими... за небольшую плату.",
+                        options: [{ text: "Интересно", next: "root" }]
+                    }
+                }
+            },
+            bandits_village: {
+                name: "Бандиты",
+                role: "Шайка у трактира",
+                icon: "fa-mask",
+                dialogue: {
+                    root: {
+                        text: "Стой, путник. Проход через нашу деревню стоит 200 золотых. Плати — и уйдешь целым.",
+                        options: [
+                            { text: "Ладно, держите золото", action: "bandits_pay", next: "paid" },
+                            { text: "Попытаюсь убежать", action: "bandits_run", next: "robbed" },
+                            { text: "Я один из ваших. Золтан меня знает", action: "bandits_bluff", next: "bluff" }
+                        ]
+                    },
+                    paid: {
+                        text: "Умно. Проходи. И не возвращайся без пошлины.",
+                        options: [{ text: "Ухожу", next: "exit" }]
+                    },
+                    robbed: {
+                        text: "Ха! Бежать вздумал? Слабак.",
+                        options: [{ text: "...", next: "exit" }]
+                    },
+                    bluff: {
+                        text: "Золтан? Ах да… прости, брат. Проходи. И не держи зла.",
+                        options: [{ text: "Ладно", next: "exit" }]
+                    }
+                }
+            },
+            sage: {
+                name: "Мудрец Эльдар",
+                role: "Хранитель знаний",
+                icon: "fa-hat-wizard",
+                dialogue: {
+                    root: {
+                        text: "Приветствую тебя, странник. Я Эльдар, хранитель древних знаний. Чем могу помочь?",
+                        options: [
+                            { text: "Расскажи о деревне", next: "about_village" },
+                            { text: "У тебя есть рецепты?", next: "recipes" },
+                            { text: "Мне нужна помощь с болезнью", next: "disease_check" },
+                            { text: "Есть задание?", next: "quest_check" },
+                            { text: "Прощай", next: "exit" }
+                        ]
+                    },
+                    about_village: {
+                        text: "Эта деревня — тихое место вдали от городской суеты. Здесь можно купить дом, завести хозяйство, выращивать свиней. Мясо и кожа — ценные ресурсы.",
+                        options: [{ text: "Интересно", next: "root" }]
+                    },
+                    recipes: {
+                        text: "Я продаю редкие рецепты зелий. Зелье Силы усилит твои удары, Зелье Скорости ускорит работу. Но они стоят изумрудов.",
+                        options: [{ text: "Посмотрю", next: "root" }]
+                    },
+                    disease_check: function() {
+                        if (gameState.hasMeasles) {
+                            return "disease_cure";
+                        }
+                        return "no_disease";
+                    },
+                    disease_cure: {
+                        text: "Вижу, ты заразился Корью в лесу. Опасная болезнь — она медленно убивает. Принеси мне 15 трав и 10 грибов, и я приготовлю лекарство.",
+                        options: [
+                            { text: "У меня есть ингредиенты", action: "try_cure", next: "root" },
+                            { text: "Пойду соберу", next: "exit" }
+                        ]
+                    },
+                    no_disease: {
+                        text: "Ты здоров, странник. Но будь осторожен в Темном Лесу — там можно подхватить Корь.",
+                        options: [{ text: "Буду осторожен", next: "root" }]
+                    },
+                    quest_check: function() {
+                        if (!hasStoryQuest('q_sage_1') && !isQuestCompleted('q_sage_1')) {
+                            return "quest_offer";
+                        }
+                        return "no_quest";
+                    },
+                    quest_offer: {
+                        text: "Мне нужны редкие грибы из глубин леса. Принеси 20 грибов, и я щедро награжу тебя.",
+                        options: [
+                            { text: "Соберу!", action: "start_q_sage_1", next: "quest_accepted" },
+                            { text: "Слишком много", next: "root" }
+                        ]
+                    },
+                    quest_accepted: {
+                        text: "Будь осторожен в лесу. Грибы растут в самых темных местах.",
+                        options: [{ text: "Понял", next: "exit" }]
+                    },
+                    no_quest: {
+                        text: "Пока мне ничего не нужно. Изучай мои рецепты.",
+                        options: [{ text: "Хорошо", next: "root" }]
+                    }
+                }
+            },
+            castle_guard: {
+                name: "Стражник",
+                role: "Королевская стража",
+                icon: "fa-shield",
+                dialogue: {
+                    root: {
+                        text: "Эй, стой! Тебе здесь не место. Вход только для рыцарей и знати.",
+                        options: [
+                            { text: "Я просто посмотреть...", next: "dismiss" },
+                            { text: "А если я рыцарь?", next: "deny" },
+                            { text: "Ухожу", next: "exit" }
+                        ]
+                    },
+                    dismiss: {
+                        text: "Сказал же — проваливай. Ты не похож ни на одного из них.",
+                        options: [{ text: "Ладно", next: "exit" }]
+                    },
+                    deny: {
+                        text: "Рыцарь? Ха. Смотри в свои лохмотья. Тут таким не место.",
+                        options: [{ text: "Понял", next: "exit" }]
                     }
                 }
             }
@@ -1671,6 +2983,82 @@
                 }
                 if (action === 'start_q_john_1') {
                     this.addQuest('q_john_1', 'Путь Воина', 'Достичь 15 уровня и прийти в Учебный лагерь.', {type: 'visit', target: 'camp', count: 1}, {gold: 500, xp: 100});
+                }
+                if (action === 'start_q_marius_1') {
+                    this.addQuest('q_marius_1', 'Травы для Мариуса', 'Собрать 5 трав.', {type: 'gather', target: 'herbs', count: 5}, {gold: 75, xp: 25});
+                }
+                if (action === 'accept_oldman') {
+                    const stolenGold = gameState.gold;
+                    gameState.gold = 0;
+                    const damage = Math.floor(Math.random() * 20) + 30;
+                    gameState.hp = Math.max(1, gameState.hp - damage);
+                    game.save();
+                    ui.updateStats();
+                    setTimeout(() => {
+                        ui.showFloatText(document.body, `Ограбление! -${stolenGold} золота`, "#ff5555");
+                        setTimeout(() => {
+                            ui.showFloatText(document.body, `-${damage} HP (Удар камнем!)`, "#ef4444");
+                        }, 500);
+                    }, 300);
+                }
+                if (action === 'accept_alex_job') {
+                    if (!gameState.npcStates) gameState.npcStates = {};
+                    gameState.npcStates.alex_job_unlocked = true;
+                    game.save();
+                    ui.showFloatText(document.body, "Новая работа: Грузчик!", "#fbbf24");
+                    ui.updateJobs();
+                }
+                if (action === 'buy_peasant') {
+                    game.buyClothes('peasant', 5000);
+                }
+                if (action === 'buy_rich') {
+                    game.buyClothes('rich', 50000);
+                }
+                if (action === 'buy_noble') {
+                    game.buyClothes('noble', 500);
+                }
+                if (action === 'start_q_sage_1') {
+                    this.addQuest('q_sage_1', 'Грибы для Мудреца', 'Собрать 20 грибов для Эльдара.', {type: 'gather', target: 'mushrooms', count: 20}, {gold: 300, xp: 80});
+                }
+                if (action === 'try_cure') {
+                    village.cureMeasles();
+                }
+                if (action === 'bandits_pay') {
+                    gameState.gold = Math.max(0, gameState.gold - 200);
+                    gameState.npcStates.villageBanditsDone = true;
+                    game.save();
+                    ui.updateStats();
+                    ui.showFloatText(document.body, "-200 Золота", "#ff5555");
+                }
+                if (action === 'bandits_run') {
+                    gameState.gold = Math.max(0, gameState.gold - 200);
+                    gameState.hp = Math.max(1, gameState.hp - 30);
+                    gameState.npcStates.villageBanditsDone = true;
+                    game.save();
+                    ui.updateStats();
+                    ui.showFloatText(document.body, "-200 Золота", "#ff5555");
+                    setTimeout(() => ui.showFloatText(document.body, "-30 HP", "#ef4444"), 400);
+                }
+                if (action === 'bandits_bluff') {
+                    gameState.npcStates.villageBanditsDone = true;
+                    game.save();
+                    ui.updateStats();
+                    ui.showFloatText(document.body, "Отпущен без платы", "#34d399");
+                }
+                if (action === 'lili_wait') {
+                    if (!gameState.npcStates) gameState.npcStates = {};
+                    gameState.npcStates.lili_waiting = true;
+                    gameState.npcStates.lili_wait_time = Date.now();
+                    game.save();
+                }
+                if (action === 'lili_gift') {
+                    if (!gameState.npcStates) gameState.npcStates = {};
+                    gameState.npcStates.lili_gifted = true;
+                    gameState.npcStates.lili_waiting = false;
+                    if (!gameState.recipes) gameState.recipes = {};
+                    gameState.recipes.saddle = true;
+                    game.save();
+                    ui.showFloatText(document.body, "Рецепт: Кожаное седло", "#34d399");
                 }
             },
             
@@ -1994,6 +3382,22 @@
                 if (!gameState.introShown) {
                     setTimeout(() => document.getElementById('modal-intro').classList.add('open'), 500);
                 }
+                
+                // Initialize new state fields if missing
+                if(!gameState.recipes) gameState.recipes = { immortality: false, luck: false, saddle: false };
+                if(!gameState.effects) gameState.effects = { immortality: 0, luck: 0 };
+                if (!gameState.npcStates) gameState.npcStates = {};
+                if (gameState.hasPoorHouse === undefined) gameState.hasPoorHouse = false;
+                if (gameState.hasNobleHouse === undefined) gameState.hasNobleHouse = false;
+                
+                if (gameState.npcStates.lili_waiting && gameState.npcStates.lili_wait_time) {
+                    const elapsed = Date.now() - gameState.npcStates.lili_wait_time;
+                    if (elapsed > 1000 * 60 * 3) {
+                        gameState.npcStates.lili_waiting = true;
+                    }
+                }
+                
+                this.updateEffectsLoop();
 
                 // Telegram Init
                 if (window.Telegram && window.Telegram.WebApp) {
@@ -2054,13 +3458,52 @@
             levelUp: function() {
                 gameState.xp -= gameState.xpToNextLevel;
                 gameState.level++;
-                gameState.gold += 50;
+
+                const goldReward = (gameState.level - 1) * 100;
+                gameState.gold += goldReward;
                 gameState.skillPoints = (gameState.skillPoints || 0) + 1;
+
                 this.calculateNextLevel();
-                
-                ui.showFloatText(document.getElementById('char-level'), "НОВЫЙ УРОВЕНЬ! +1 Жетон", "#fff");
-                ui.updateJobs(); 
+                ui.updateJobs();
                 ui.updateStats();
+
+                this.showLevelUpModal(goldReward);
+                this.save();
+            },
+
+            showLevelUpModal: function(goldReward) {
+                const modal = document.getElementById('modal-levelup');
+                if (!modal) return;
+
+                document.getElementById('levelup-new-level').innerText = gameState.level;
+                document.getElementById('levelup-gold').innerText = goldReward;
+
+                let msg = "Ваш путь продолжается. Откройте вкладку Герой и улучшайте навыки.";
+                if (gameState.level === 2) {
+                    msg = "Открылся Книжный Дом на площади. Покупайте рецепты и развивайте героя.";
+                } else if (gameState.level === 3) {
+                    msg = "Появилась работа Грузчика в порту. Порыбачьте, чтобы встретить Алекса.";
+                } else if (gameState.level === 5) {
+                    msg = "Открыты Пшеничное поле и Темный лес. Нужны серп и осторожность.";
+                } else if (gameState.level === 10) {
+                    msg = "Пора накопить на дом в деревне и начать хозяйство.";
+                } else if (gameState.level === 15) {
+                    msg = "Открыт Рудник и Учебный лагерь. Навестите Рыцаря Джона.";
+                } else if (gameState.level === 30) {
+                    msg = "Открыта охота. Самая опасная, но прибыльная работа.";
+                }
+
+                document.getElementById('levelup-message').innerText = msg;
+                modal.classList.add('open');
+
+                if (window.navigator && window.navigator.vibrate) {
+                    window.navigator.vibrate([120, 60, 120]);
+                }
+            },
+
+            closeLevelUp: function() {
+                const modal = document.getElementById('modal-levelup');
+                if (modal) modal.classList.remove('open');
             },
             
             heal: function(amount, cost) {
@@ -2133,21 +3576,64 @@
                 }
 
                 const job = JOBS_DB[jobType];
-                const toolState = gameState.tools[job.tool];
-                const toolDef = TOOLS_DB[job.tool];
-
+                
+                // Check level requirement
                 if (job.levelReq && gameState.level < job.levelReq) {
                     ui.showFloatText(event.target, `Нужен Уровень ${job.levelReq}`, "#ff5555");
                     return;
                 }
+                
+                // Check if job requires Alex unlock
+                if (job.requiresAlex && (!gameState.npcStates || !gameState.npcStates.alex_job_unlocked)) {
+                    ui.showFloatText(event.target, "Работа недоступна", "#ff5555");
+                    return;
+                }
+                
+                // Check tool requirement (skip for loader job)
+                const toolState = job.tool ? gameState.tools[job.tool] : null;
+                const toolDef = job.tool ? TOOLS_DB[job.tool] : null;
 
-                if (!toolState.owned) {
+                if (toolDef && !toolState.owned) {
                     ui.showFloatText(event.target, `Нужна ${toolDef.name}`, "#ff5555");
                     return;
                 }
                 
-                // Injury Chance 10%
-                if (Math.random() < 0.1) {
+                // Track port work for old man event
+                if (jobType === 'port') {
+                    // Initialize threshold if not set
+                    if (!gameState.oldManEventThreshold) {
+                        gameState.oldManEventThreshold = Math.floor(Math.random() * 51) + 50; // 50-100
+                    }
+                    
+                    gameState.portWorkCount = (gameState.portWorkCount || 0) + 1;
+                    
+                    // Trigger Alex meeting at level 3
+                    if (!gameState.npcStates) gameState.npcStates = {};
+                    if (!gameState.npcStates.alex_met && gameState.level >= 3) {
+                        gameState.npcStates.alex_met = true;
+                        this.save();
+                        
+                        setTimeout(() => {
+                            dialogue.start('alex');
+                        }, 500);
+                        return; // Don't process the work this time
+                    }
+                    
+                    // Trigger old man event
+                    if (!gameState.oldManEventTriggered && gameState.portWorkCount >= gameState.oldManEventThreshold && gameState.gold > 0) {
+                        gameState.oldManEventTriggered = true;
+                        this.save();
+                        
+                        setTimeout(() => {
+                            dialogue.start('oldman_port');
+                        }, 500);
+                        return; // Don't process the work this time
+                    }
+                }
+                
+                // Injury Chance (custom for loader job - 1%, others - 10%)
+                const injuryChance = job.injuryChance !== undefined ? job.injuryChance : 0.1;
+                if (Math.random() < injuryChance) {
                     const dmg = Math.floor(Math.random() * 10) + 5;
                     gameState.hp = Math.max(0, gameState.hp - dmg);
                     ui.showFloatText(event.target, `-${dmg} HP (Травма!)`, "#ef4444");
@@ -2157,7 +3643,7 @@
                 }
 
                 let amount = 1;
-                if (toolState.level > 1) {
+                if (toolState && toolState.level > 1) {
                     amount += (toolState.level - 1);
                 }
 
@@ -2172,12 +3658,19 @@
 
                 this.addXp(job.xp);
 
-                // Add Resource
-                if (gameState[job.resource] === undefined) gameState[job.resource] = 0;
-                gameState[job.resource] += amount;
-                
-                const rName = RESOURCE_NAMES[job.resource].name;
-                ui.showFloatText(event.target, `+${amount} ${rName}`, "#e0e0e0");
+                // Handle loader job (gives gold directly)
+                if (jobType === 'loader') {
+                    const goldReward = job.price; // 6 gold
+                    gameState.gold += goldReward;
+                    ui.showFloatText(event.target, `+${goldReward} Золота`, "#c8aa6e");
+                } else {
+                    // Add Resource
+                    if (gameState[job.resource] === undefined) gameState[job.resource] = 0;
+                    gameState[job.resource] += amount;
+                    
+                    const rName = RESOURCE_NAMES[job.resource].name;
+                    ui.showFloatText(event.target, `+${amount} ${rName}`, "#e0e0e0");
+                }
                 
                 // Quest Progress
                 quests.onEvent('work', jobType, 1);
@@ -2355,19 +3848,23 @@
             },
 
             forestGather: function(event) {
-                if (gameState.hp < 5) {
+                const isImmortal = gameState.effects && gameState.effects.immortality > Date.now();
+                if (!isImmortal && gameState.hp < 5) {
                     ui.showFloatText(event.target, "Мало здоровья", "#ff5555");
                     return;
                 }
-                gameState.hp -= 5;
+                if (!isImmortal) gameState.hp -= 5;
+                
                 game.addXp(3);
                 
-                const luckBonus = (gameState.luck || 0) * 0.05; // 5% chance increase per luck level
-                const loot = [];
-                const baseCount = Math.floor(Math.random() * 3) + 1;
-                const extraCount = Math.random() < luckBonus ? 1 : 0;
-                const count = baseCount + extraCount;
+                const isLuckyEffect = gameState.effects && gameState.effects.luck > Date.now();
+                const luckBonus = (gameState.luck || 0) * 0.05;
                 
+                let count = Math.floor(Math.random() * 3) + 1;
+                if (Math.random() < luckBonus) count++;
+                if (isLuckyEffect) count *= 2;
+                
+                const loot = [];
                 for(let i=0; i<count; i++) {
                     const r = Math.random();
                     if(r < 0.4) loot.push('wood');       
@@ -2391,16 +3888,17 @@
                 
                 ui.showFloatText(event.target, text || "Пусто...", "#a855f7");
 
-                // Quest Progress for gathered items
                 Object.keys(gained).forEach(k => {
                     quests.onEvent('gather', k, gained[k]);
                 });
                 
-                // Rare find with luck
                 if (Math.random() < (0.05 + luckBonus/2)) {
                     gameState.emeralds++;
                     setTimeout(() => ui.showFloatText(event.target, "+1 Изумруд!", "#34d399"), 500);
                 }
+                
+                // Chance to get measles
+                disease.tryInfect();
                 
                 game.save();
                 ui.updateStats();
@@ -2515,6 +4013,29 @@
                 }
             },
 
+            buyClothes: function(type, cost) {
+                if (type === 'noble' && gameState.emeralds < cost) {
+                    ui.showFloatText(event.target, "Не хватает изумрудов", "#ff5555");
+                    return;
+                }
+                if (type !== 'noble' && gameState.gold < cost) {
+                    ui.showFloatText(event.target, "Не хватает золота", "#ff5555");
+                    return;
+                }
+                
+                if (type === 'noble') {
+                    gameState.emeralds -= cost;
+                } else {
+                    gameState.gold -= cost;
+                }
+                
+                gameState.clothes = gameState.clothes || {};
+                gameState.clothes[type] = true;
+                game.save();
+                ui.updateStats();
+                ui.showFloatText(event.target, "Одежда куплена!", "#34d399");
+            },
+
             setMax: function(resType) {
                 const count = gameState[resType] || 0;
                 const input = document.getElementById(`sell-input-${resType}`);
@@ -2570,6 +4091,237 @@
             }
         };
 
+        // --- HOUSING CONTROLLER ---
+        const housing = {
+            buyPoorHouse: function() {
+                if (gameState.emeralds >= 500) {
+                    gameState.emeralds -= 500;
+                    gameState.hasPoorHouse = true;
+                    game.save();
+                    ui.updateStats();
+                    this.updateUI();
+                    ui.showFloatText(event.target, "Дом куплен!", "#fbbf24");
+                } else {
+                    ui.showFloatText(event.target, "Нужно 500 изумрудов", "#ff5555");
+                }
+            },
+            
+            buyNobleHouse: function() {
+                if (gameState.emeralds >= 10000) {
+                    gameState.emeralds -= 10000;
+                    gameState.hasNobleHouse = true;
+                    game.save();
+                    ui.updateStats();
+                    this.updateUI();
+                    ui.showFloatText(event.target, "Особняк куплен!", "#fbbf24");
+                } else {
+                    ui.showFloatText(event.target, "Нужно 10,000 изумрудов", "#ff5555");
+                }
+            },
+            
+            updateUI: function() {
+                // Poor House
+                const poorBuy = document.getElementById('poor-house-buy');
+                const poorOwned = document.getElementById('poor-house-owned');
+                if (poorBuy && poorOwned) {
+                    if (gameState.hasPoorHouse) {
+                        poorBuy.classList.add('hidden');
+                        poorOwned.classList.remove('hidden');
+                    } else {
+                        poorBuy.classList.remove('hidden');
+                        poorOwned.classList.add('hidden');
+                    }
+                }
+                
+                // Noble House
+                const nobleBuy = document.getElementById('noble-house-buy');
+                const nobleOwned = document.getElementById('noble-house-owned');
+                if (nobleBuy && nobleOwned) {
+                    if (gameState.hasNobleHouse) {
+                        nobleBuy.classList.add('hidden');
+                        nobleOwned.classList.remove('hidden');
+                    } else {
+                        nobleBuy.classList.remove('hidden');
+                        nobleOwned.classList.add('hidden');
+                    }
+                }
+            }
+        };
+
+        // --- VILLAGE CONTROLLER ---
+        const village = {
+            buyHouse: function() {
+                if (gameState.emeralds >= 1000) {
+                    gameState.emeralds -= 1000;
+                    gameState.hasHouse = true;
+                    game.save();
+                    ui.updateStats();
+                    this.updateUI();
+                    ui.showFloatText(event.target, "Дом куплен!", "#fbbf24");
+                } else {
+                    ui.showFloatText(event.target, "Нужно 1000 изумрудов", "#ff5555");
+                }
+            },
+            
+            upgradePigPen: function() {
+                const cost = (gameState.pigPenLevel + 1) * 100;
+                if (gameState.gold >= cost) {
+                    gameState.gold -= cost;
+                    gameState.pigPenLevel++;
+                    game.save();
+                    ui.updateStats();
+                    this.updateUI();
+                    ui.showFloatText(event.target, "Свинарник улучшен!", "#ec4899");
+                } else {
+                    ui.showFloatText(event.target, "Не хватает золота", "#ff5555");
+                }
+            },
+            
+            collectMeat: function() {
+                if (gameState.pigPenLevel < 1) {
+                    ui.showFloatText(event.target, "Сначала постройте свинарник", "#ff5555");
+                    return;
+                }
+                
+                const now = Date.now();
+                const timePassed = now - (gameState.lastMeatCollect || 0);
+                const hoursPass = timePassed / 3600000;
+                const meatGain = Math.floor(hoursPass * gameState.pigPenLevel);
+                
+                if (meatGain > 0) {
+                    gameState.meat = (gameState.meat || 0) + meatGain;
+                    gameState.lastMeatCollect = now;
+                    game.save();
+                    this.updateUI();
+                    ui.showFloatText(event.target, `+${meatGain} Мяса`, "#ec4899");
+                } else {
+                    ui.showFloatText(event.target, "Подождите ещё", "#777");
+                }
+            },
+            
+            cureMeasles: function() {
+                if (!gameState.hasMeasles) {
+                    ui.showFloatText(event.target, "Вы здоровы", "#34d399");
+                    return;
+                }
+                
+                if (gameState.herbs >= 15 && gameState.mushrooms >= 10) {
+                    gameState.herbs -= 15;
+                    gameState.mushrooms -= 10;
+                    gameState.hasMeasles = false;
+                    game.save();
+                    ui.updateStats();
+                    this.updateUI();
+                    ui.showFloatText(event.target, "Вы исцелены!", "#34d399");
+                } else {
+                    ui.showFloatText(event.target, "Нужно 15 трав и 10 грибов", "#ff5555");
+                }
+            },
+            
+            updateUI: function() {
+                const houseOwned = document.getElementById('house-owned');
+                const houseNotOwned = document.getElementById('house-not-owned');
+                const houseStatus = document.getElementById('house-status');
+                const pigLevel = document.getElementById('pig-pen-level');
+                const meatCount = document.getElementById('meat-count');
+                const measlesWarning = document.getElementById('measles-warning');
+                const cureSection = document.getElementById('cure-measles-section');
+                
+                if (gameState.hasHouse) {
+                    if(houseOwned) houseOwned.classList.remove('hidden');
+                    if(houseNotOwned) houseNotOwned.classList.add('hidden');
+                    if(houseStatus) houseStatus.innerText = "Ваш";
+                    if(houseStatus) houseStatus.className = "text-[10px] text-green-400";
+                } else {
+                    if(houseOwned) houseOwned.classList.add('hidden');
+                    if(houseNotOwned) houseNotOwned.classList.remove('hidden');
+                    if(houseStatus) houseStatus.innerText = "Не куплен";
+                    if(houseStatus) houseStatus.className = "text-[10px] text-red-400";
+                }
+                
+                if(pigLevel) pigLevel.innerText = gameState.pigPenLevel || 0;
+                if(meatCount) meatCount.innerText = gameState.meat || 0;
+                
+                if (gameState.hasMeasles) {
+                    if(measlesWarning) measlesWarning.classList.remove('hidden');
+                    if(cureSection) cureSection.classList.remove('hidden');
+                } else {
+                    if(measlesWarning) measlesWarning.classList.add('hidden');
+                    if(cureSection) cureSection.classList.add('hidden');
+                }
+            }
+        };
+
+        // --- BULLETIN BOARD CONTROLLER ---
+        const bulletin = {
+            quests: {
+                fish_delivery: { id: 'fish_delivery', title: 'Рыба для таверны', target: 'fish', count: 10, reward: { gold: 100, xp: 15 } },
+                herbs_delivery: { id: 'herbs_delivery', title: 'Травы для лекаря', target: 'herbs', count: 8, reward: { gold: 80, xp: 10 } },
+                ore_delivery: { id: 'ore_delivery', title: 'Руда для кузнеца', target: 'ore', count: 5, reward: { gold: 200, xp: 25 } }
+            },
+            
+            acceptQuest: function(questId) {
+                const quest = this.quests[questId];
+                if (!quest) return;
+                
+                // Check if already have this quest
+                if (hasStoryQuest('bulletin_' + questId)) {
+                    ui.showFloatText(event.target, "Уже взято", "#ff5555");
+                    return;
+                }
+                
+                // Check if player has enough resources to complete immediately
+                const hasResources = gameState[quest.target] >= quest.count;
+                
+                if (hasResources) {
+                    // Complete immediately
+                    gameState[quest.target] -= quest.count;
+                    gameState.gold += quest.reward.gold;
+                    game.addXp(quest.reward.xp);
+                    game.save();
+                    ui.updateStats();
+                    ui.showFloatText(event.target, `+${quest.reward.gold} Золота +${quest.reward.xp} XP`, "#fbbf24");
+                } else {
+                    // Add as story quest
+                    dialogue.addQuest(
+                        'bulletin_' + questId,
+                        quest.title,
+                        `Принести ${quest.count} ${RESOURCE_NAMES[quest.target].name}`,
+                        { type: 'gather', target: quest.target, count: quest.count },
+                        quest.reward
+                    );
+                }
+            }
+        };
+
+        // --- DISEASE SYSTEM ---
+        const disease = {
+            startTick: function() {
+                setInterval(() => {
+                    if (gameState.hasMeasles && gameState.hp > 1) {
+                        const now = Date.now();
+                        if (now - (gameState.lastMeaslesTick || 0) >= 20000) {
+                            gameState.hp = Math.max(1, gameState.hp - 1);
+                            gameState.lastMeaslesTick = now;
+                            game.save();
+                            ui.updateStats();
+                        }
+                    }
+                }, 1000);
+            },
+            
+            tryInfect: function() {
+                // 5% chance to get measles in the forest
+                if (!gameState.hasMeasles && Math.random() < 0.05) {
+                    gameState.hasMeasles = true;
+                    gameState.lastMeaslesTick = Date.now();
+                    game.save();
+                    ui.showFloatText(document.body, "Вы заразились Корью!", "#ef4444");
+                    village.updateUI();
+                }
+            }
+        };
+
         // --- SKILLS CONTROLLER ---
         const skills = {
             upgrade: function(type) {
@@ -2587,10 +4339,10 @@
                     gameState.skillPoints--;
                     gameState.luck = (gameState.luck || 0) + 1;
                     ui.showFloatText(event.target, "+1 Удача", "#34d399");
-                } else if (type === 'crafting') {
+                } else if (type === 'agility') {
                     gameState.skillPoints--;
-                    gameState.craftingLevel = (gameState.craftingLevel || 0) + 1;
-                    ui.showFloatText(event.target, "Крафт улучшен!", "#3b82f6");
+                    gameState.agility = (gameState.agility || 0) + 1;
+                    ui.showFloatText(event.target, "+1 Ловкость", "#3b82f6");
                 }
                 
                 game.save();
@@ -2735,6 +4487,17 @@
                 const portReward = game.getJobReward('port');
                 this.updateJobButton('port', 'rod', 0);
                 document.getElementById('reward-port').innerText = `${portReward.gold} Рыбы`; 
+                
+                // Loader job visibility (unlocked by Alex)
+                const loaderJob = document.getElementById('job-loader');
+                if (loaderJob) {
+                    if (gameState.npcStates && gameState.npcStates.alex_job_unlocked) {
+                        loaderJob.classList.remove('hidden');
+                    } else {
+                        loaderJob.classList.add('hidden');
+                    }
+                }
+                
                 const fieldReward = game.getJobReward('field');
                 this.updateJobButton('field', 'sickle', 5);
                 document.getElementById('reward-field').innerText = `${fieldReward.gold} Пшеницы`;
@@ -2748,8 +4511,8 @@
                 if(spEl) spEl.innerText = gameState.skillPoints || 0;
                 const luckEl = document.getElementById('luck-display');
                 if(luckEl) luckEl.innerText = gameState.luck || 0;
-                const craftEl = document.getElementById('craft-level-display');
-                if(craftEl) craftEl.innerText = gameState.craftingLevel || 0;
+                const agilityEl = document.getElementById('agility-display');
+                if(agilityEl) agilityEl.innerText = gameState.agility || 0;
             },
 
             switchCharTab: function(tab) {
@@ -2935,11 +4698,36 @@
                 document.getElementById('view-dark-forest').classList.add('hidden');
                 const trainingCamp = document.getElementById('view-training-camp');
                 if (trainingCamp) trainingCamp.classList.add('hidden');
+                const villageView = document.getElementById('view-village');
+                if (villageView) villageView.classList.add('hidden');
+                const healerView = document.getElementById('view-healer');
+                if (healerView) healerView.classList.add('hidden');
+                const bookHouseView = document.getElementById('view-bookhouse');
+                if (bookHouseView) bookHouseView.classList.add('hidden');
+                const bulletinView = document.getElementById('view-bulletin');
+                if (bulletinView) bulletinView.classList.add('hidden');
+                const castleView = document.getElementById('view-royal-castle');
+                if (castleView) castleView.classList.add('hidden');
+                const poorView = document.getElementById('view-poor-district');
+                if (poorView) poorView.classList.add('hidden');
+                const nobleView = document.getElementById('view-noble-quarter');
+                if (nobleView) nobleView.classList.add('hidden');
                 
                 const target = document.getElementById(`view-${screenId}`);
                 if (target) target.classList.remove('hidden');
                 if(screenId === 'jobs') ui.updateJobs();
-                if(screenId === 'market' || screenId === 'treasury') ui.updateAll();
+                if(screenId === 'market' || screenId === 'treasury' || screenId === 'healer' || screenId === 'bookhouse') ui.updateAll();
+                if(screenId === 'poor-district' || screenId === 'noble-quarter') housing.updateUI();
+                if(screenId === 'village') {
+                    village.updateUI();
+                    if (!gameState.npcStates) gameState.npcStates = {};
+                    if (!gameState.npcStates.villageBanditsDone && Math.random() < 0.35) {
+                        gameState.npcStates.villageBanditsTriggered = true;
+                        setTimeout(() => {
+                            dialogue.start('bandits_village');
+                        }, 400);
+                    }
+                }
             }
         };
         
@@ -2965,6 +4753,9 @@
 
             game.init();
             router.switchTab('map');
+            
+            // Start disease tick
+            disease.startTick();
         });
 
     </script>
