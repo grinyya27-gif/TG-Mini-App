@@ -225,6 +225,40 @@
             filter: contrast(1.15) saturate(0.7) sepia(0.2) brightness(0.6);
         }
 
+        /* Location hero image (inside location headers) */
+        .loc-hero {
+            position: relative;
+            isolation: isolate;
+        }
+        .loc-hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: var(--hero-img);
+            background-size: cover;
+            background-position: center;
+            opacity: 0.35;
+            filter: contrast(1.1) saturate(0.85) sepia(0.15) brightness(0.9);
+            z-index: 0;
+            pointer-events: none;
+        }
+        .loc-hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.15), rgba(0,0,0,0.45), rgba(0,0,0,0.75));
+            z-index: 0;
+            pointer-events: none;
+        }
+        /* Keep header content above the pseudo background */
+        .loc-hero > * {
+            z-index: 1;
+        }
+        /* Don't break Tailwind's .absolute positioning */
+        .loc-hero > *:not(.absolute) {
+            position: relative;
+        }
+
         /* Unconscious State */
         body.unconscious header,
         body.unconscious #app-container,
@@ -232,12 +266,120 @@
             pointer-events: none;
             filter: grayscale(0.7) brightness(0.6);
         }
+
+        /* Small square icon buttons */
+        .icon-tile {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            border: 1px solid #333;
+            background: rgba(0,0,0,0.35);
+            color: #a0a0a0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .icon-tile:hover {
+            border-color: var(--accent-gold);
+            color: var(--accent-gold);
+            background: rgba(200,170,110,0.12);
+        }
+
+        /* Inventory item tiles */
+        .inv-item {
+            cursor: pointer;
+            transition: transform 0.15s ease, border-color 0.15s ease;
+        }
+        .inv-item:hover {
+            border-color: rgba(200,170,110,0.9);
+            transform: translateY(-1px);
+        }
+
+        /* SVG Icon styling */
+        .icon-svg {
+            width: 1em;
+            height: 1em;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            display: inline-block;
+            vertical-align: middle;
+        }
     </style>
 </head>
 <body class="h-screen flex flex-col relative" style="overflow: hidden; -webkit-tap-highlight-color: transparent;">
 
     <!-- Background Pattern -->
     <div class="absolute inset-0 bg-pattern pointer-events-none"></div>
+
+    <!-- Inline SVG Icon Sprite (Solid Style) -->
+    <svg aria-hidden="true" style="position:absolute; width:0; height:0; overflow:hidden">
+        <!-- Fishing rod (Solid) -->
+        <symbol id="icon-rod" viewBox="0 0 512.01 512.01">
+            <path fill="currentColor" d="M501.338,0c-2.954,0-5.624,1.201-7.555,3.138l-306.21,306.201l-7.537-7.536c-4.167-4.167-10.917-4.167-15.084,0
+                L9.365,457.385c-12.48,12.479-12.48,32.771,0,45.25c6.042,6.042,14.084,9.375,22.626,9.375c8.563,0,16.605-3.333,22.647-9.375
+                l94.929-94.939c1.275,34.177,29.28,61.637,63.764,61.637c35.293,0,64.002-28.708,64.002-64c0-2.568-0.253-52.451-18.031-100.676
+                c7.673,2.77,15.442,4.499,23.281,4.499c19.938,0,40.126-8.948,59.127-26.802c20.521-19.302,31.834-42.813,31.834-66.198
+                c0-9.033-1.938-17.672-5.259-25.875c29.661-1.863,65.583-22.423,87.262-44.073c13.625-13.615,25.688-31.437,35.126-50.917V480
+                c0,5.885-4.792,10.667-10.667,10.667c-5.875,0-10.667-4.781-10.667-10.667v-42.667c0-4.313-2.604-8.208-6.583-9.854
+                c-3.938-1.667-8.584-0.75-11.625,2.313l-10.667,10.667c-4.167,4.167-4.167,10.917,0,15.083c2.083,2.083,4.813,3.125,7.542,3.125
+                V480c0,17.646,14.355,32,32.001,32s32.001-14.354,32.001-32V10.667C512.005,4.771,507.234,0,501.338,0z M232.033,295.056
+                c9.19,19.033,14.909,39.885,18.392,58.316c-10.486-7.508-23.234-12.039-37.086-12.039c-0.124,0-0.238,0.035-0.362,0.036
+                c0.595-3.319-0.197-6.835-2.763-9.401l-7.547-7.547L232.033,295.056z M39.568,487.552c-4.042,4.021-11.062,4.021-15.104,0
+                c-4.167-4.156-4.167-10.927,0-15.083l148.042-148.042l15.083,15.083L39.568,487.552z M256.005,405.335
+                c0,23.531-19.146,42.665-42.667,42.665c-23.521,0-42.667-19.135-42.667-42.667s19.146-42.667,42.667-42.667
+                c23.521,0,42.667,19.134,42.667,42.665V405.335z M327.089,266.813c-25.967,24.419-51.576,27.504-76.273,9.461l90.527-90.527
+                c7.138,9.128,10.871,19.294,10.871,30.41C352.214,233.344,343.047,251.802,327.089,266.813z M440.464,131.125
+                c-22.458,22.448-56.5,39.438-77.563,38.198c-1.651-0.082-2.87-0.555-4.279-0.857L487.415,39.673
+                C480.514,73.357,462.926,108.663,440.464,131.125z"/>
+        </symbol>
+        <!-- Sickle (Solid) -->
+        <symbol id="icon-sickle" viewBox="0 0 512.001 512.001">
+            <path fill="currentColor" d="M493.88,172.132c-11.966-27.852-29.753-54.467-53.123-77.837c-20.514-20.513-43.529-36.701-67.679-48.422
+                c-24.152-11.72-49.443-18.984-74.56-21.615c-8.168-0.855-15.781,4.398-17.879,12.34c-2.098,7.941,1.925,16.268,9.45,19.561
+                c20.029,8.765,39.283,21.197,56.228,38.138c17.17,17.168,30.153,36.558,38.812,56.47c8.665,19.911,12.982,40.328,12.977,59.482
+                c0,14.302-2.392,27.887-7.089,40.181c-4.706,12.302-11.68,23.327-21.09,32.746c-9.419,9.41-20.444,16.384-32.745,21.09
+                c-12.294,4.697-25.879,7.089-40.181,7.089c-19.154,0.006-39.571-4.313-59.482-12.977c-19.912-8.659-39.304-21.642-56.47-38.812
+                c-6.52-6.52-17.09-6.52-23.61,0l-0.001,0.001l-16.982,16.982c-0.028,0.029-0.057,0.056-0.085,0.085L14.665,402.336
+                c-5.003,4.998-8.718,10.862-11.122,17.011c-2.411,6.156-3.542,12.59-3.543,18.938c-0.003,12.884,5.23,25.454,14.665,34.881
+                c4.856,4.858,10.537,8.554,16.577,11.001c6.043,2.45,12.444,3.668,18.838,3.668c6.394,0,12.795-1.219,18.838-3.668
+                c6.04-2.446,11.721-6.141,16.577-11.001L193.241,365.42c20.266,17.818,42.526,31.774,65.645,41.707
+                c27.853,11.961,56.96,18.117,85.367,18.122c22.37,0,44.319-3.831,64.749-11.721c20.423-7.882,39.315-19.856,55.365-35.914
+                c16.058-16.051,28.032-34.943,35.914-55.366c7.89-20.43,11.721-42.379,11.721-64.749C511.998,229.092,505.842,199.987,493.88,172.132z"/>
+        </symbol>
+        <!-- Pickaxe (Solid) -->
+        <symbol id="icon-pickaxe" viewBox="0 0 512 512">
+            <path fill="currentColor" d="m510.367 288.035c-3.353-30.175-11.837-60.012-25.217-88.684-10.683-22.893-24.535-45.057-41.34-66.254l15.519-15.519c17.595-17.594 17.595-46.222.003-63.813l-1.105-1.105c-17.594-17.595-46.223-17.595-63.816 0l-15.519 15.519c-21.198-16.805-43.362-30.657-66.253-41.34-28.672-13.38-58.51-21.864-88.685-25.217-51.852-5.761-86.883 5.653-88.349 6.141-6.979 2.327-11.241 9.372-10.063 16.633 1.179 7.262 7.45 12.597 14.807 12.597.188 0 19.737.413 54.188 15.177 27.799 11.914 69.458 35.183 120.292 80.073l-301.624 301.62c-17.592 17.594-17.592 46.222.003 63.818l1.104 1.103c8.523 8.521 19.854 13.214 31.906 13.214 12.054 0 23.385-4.694 31.907-13.217l301.62-301.62c43.911 49.732 67.034 90.578 79.032 117.892 15.284 34.792 16.178 55.393 16.218 56.65-.091 7.375 5.199 13.604 12.477 14.846.832.142 1.661.21 2.481.21 6.376 0 12.199-4.154 14.273-10.376.488-1.465 11.902-36.5 6.141-88.348zm-140.883-145.531c-58.841-58.841-109.467-92.14-148.058-110.978.253.029.507.059.761.088 61.215 7.206 118.34 36.947 169.79 88.396 51.449 51.45 81.19 108.575 88.396 169.79.03.254.06.508.089.761-18.838-38.59-52.136-89.216-110.978-148.057zm46.139-68.632c2.949-2.949 6.823-4.423 10.696-4.423 3.872 0 7.745 1.474 10.691 4.421l1.105 1.105c5.897 5.897 5.897 15.493 0 21.39l-13.895 13.895c-3.575-3.858-7.25-7.681-11.031-11.462s-7.604-7.456-11.462-11.031zm-358.712 403.697c-2.855 2.856-6.653 4.429-10.693 4.429s-7.839-1.573-10.695-4.43c-.001-.001-.001-.002-.002-.002l-1.101-1.1c-5.897-5.897-5.897-15.494-.001-21.391l302.489-302.489c3.748 3.599 7.533 7.299 11.364 11.13 3.83 3.83 7.532 7.616 11.13 11.363z"/>
+        </symbol>
+        <!-- Crossbow (Solid) -->
+        <symbol id="icon-crossbow" viewBox="0 0 512.001 512.001">
+            <path fill="currentColor" d="M477.227,238.166h-0.256c-40.395-70.524-112.067-117.492-192.853-126.379l16.043-16.043 c5.137-5.156,6.439-13.003,3.243-19.541L270.806,8.534c-3.076-5.328-8.781-8.588-14.933-8.533 c-6.389-0.013-12.25,3.543-15.189,9.216l-32.427,66.987c-3.175,6.556-1.838,14.405,3.328,19.541l16.043,16.043 c-80.786,8.887-152.458,55.854-192.853,126.379c-18.851-0.212-34.305,14.898-34.517,33.749 c-0.212,18.851,14.898,34.305,33.749,34.517h8.533c2.335-0.006,4.66-0.322,6.912-0.939v0.768l146.688,33.365v44.373 c-0.13,0.763-0.13,1.542,0,2.304l17.067,60.928c1.988,7.682,9.148,12.872,17.067,12.373v35.328 c0,9.426,7.641,17.067,17.067,17.067h17.067c9.426,0,17.067-7.641,17.067-17.067v-35.328c7.605,0.09,14.293-5.014,16.213-12.373 l17.067-60.928c0.421-0.71,0.711-1.491,0.853-2.304v-44.373l146.944-33.365v-0.768c2.253,0.617,4.577,0.932,6.912,0.939h8.533 c18.851-0.212,33.961-15.666,33.749-34.517S496.078,237.954,477.227,238.166z M230.272,442.539l-17.067-59.733V281.601h17.067 V442.539z M230.272,264.534h-17.067c-9.426,0-17.067,7.641-17.067,17.067v40.533L65.323,292.353c0-0.597,0.597-1.109,0.853-1.707 c27.477-69.151,90.299-117.958,164.096-127.488V264.534z M298.539,382.806l-17.067,59.733V281.601h17.067V382.806z M315.606,322.134v-40.533c0-9.426-7.641-17.067-17.067-17.067h-17.067V163.158c73.761,9.617,136.544,58.394,164.096,127.488 c0,0.597,0.597,1.195,0.853,1.707L315.606,322.134z"/>
+        </symbol>
+        <!-- Leather (Solid) -->
+        <symbol id="icon-leather" viewBox="0 0 467.473 467.473">
+            <path fill="currentColor" d="m424.392,374.451c-26.765-30.588-42.326-69.803-43.816-110.419-1.49-40.617 11.154-80.866 35.605-113.334l5.488-7.288c2.328-3.091 2.663-7.249 0.861-10.673l-31.849-60.513c-1.729-3.286-5.136-5.343-8.849-5.343h-18.875c-28.06,0-53.333-16.665-64.386-42.456l-7.871-18.365c-1.575-3.676-5.19-6.06-9.19-6.06h-95.546c-4,0-7.616,2.384-9.191,6.061l-7.871,18.365c-11.053,25.791-36.327,42.456-64.386,42.456h-18.875c-3.713,0-7.12,2.057-8.849,5.343l-31.849,60.513c-1.802,3.424-1.467,7.582 0.861,10.673l5.488,7.288c24.451,32.468 37.096,72.717 35.605,113.334-1.49,40.617-17.051,79.831-43.816,110.419-2.784,3.182-3.266,7.772-1.204,11.463l30.256,54.143c2.148,3.844 6.56,5.829 10.861,4.892l12.05-2.629c46.118-10.062 93.472-1.681 133.336,23.599 1.635,1.037 3.495,1.555 5.355,1.555s3.721-0.519 5.355-1.555c39.864-25.28 87.216-33.66 133.336-23.599l12.05,2.629c4.303,0.939 8.713-1.047 10.861-4.892l30.256-54.143c2.065-3.692 1.583-8.282-1.201-11.464zm-42.894,49.377l-4.806-1.048c-49.248-10.746-99.763-2.582-142.955,22.967-30.778-18.206-65.269-27.583-100.374-27.583-14.161,0-28.427,1.527-42.582,4.615l-4.806,1.048-23.265-41.633c26.974-33.183 42.602-74.604 44.174-117.429 1.658-45.192-12.411-89.975-39.616-126.099l-1.675-2.224 26.085-49.561h12.837c36.071,0 68.56-21.423 82.769-54.577l5.274-12.304h82.358l5.273,12.305c14.209,33.154 46.698,54.577 82.769,54.577h12.837l26.085,49.561-1.675,2.224c-27.205,36.124-41.273,80.906-39.615,126.098 1.571,42.825 17.199,84.247 44.173,117.429l-23.265,41.634z"/>
+            <path fill="currentColor" d="m382.256,140.073c2.035-3.048 2.239-6.965 0.532-10.209l-12.537-23.819c-1.707-3.243-5.05-5.292-8.714-5.341-40.083-0.541-76.666-24.483-93.199-60.998-1.62-3.577-5.183-5.875-9.11-5.875h-50.981c-3.927,0-7.49,2.298-9.11,5.875-16.534,36.514-53.117,60.457-93.2,60.998-3.664,0.049-7.008,2.099-8.714,5.342l-12.536,23.819c-1.707,3.243-1.503,7.16 0.532,10.208 24.5,36.709 37.104,81.173 35.489,125.199-1.489,40.571-14.573,79.688-37.837,113.122-2.185,3.14-2.387,7.25-0.521,10.59l7.273,13.015c2.044,3.657 6.153,5.653 10.291,4.999 10.926-1.727 22.06-2.603 33.092-2.603 33.308,0 66.57,7.982 96.191,23.083 1.427,0.727 2.984,1.091 4.542,1.091s3.115-0.364 4.542-1.091c29.619-15.101 62.882-23.083 96.191-23.083 11.032,0 22.166,0.875 33.092,2.603 4.136,0.651 8.246-1.342 10.291-5l7.272-13.015c1.866-3.339 1.664-7.45-0.521-10.589-23.264-33.434-36.347-72.551-37.836-113.122-1.618-44.026 10.985-88.489 35.486-125.199zm-18.516,246.18c-9.71-1.234-19.526-1.858-29.271-1.858-34.759,0-69.475,7.944-100.733,23.012-31.26-15.068-65.975-23.012-100.733-23.012-9.745,0-19.561,0.624-29.271,1.858l-.922-1.65c23.255-35.414 36.329-76.28 37.881-118.598 1.695-46.201-10.91-92.834-35.581-132.009l7.117-13.521c21.453-1.327 42.136-8.178 60.157-19.975 17.871-11.7 32.331-27.747 42.123-46.669h38.458c9.792,18.922 24.252,34.969 42.123,46.669 18.021,11.797 38.704,18.648 60.156,19.975l7.117,13.522c-24.671,39.175-37.276,85.809-35.581,132.008 1.553,42.318 14.626,83.185 37.881,118.598l-.921,1.65z"/>
+            <path fill="currentColor" d="m233.74,84.185c2.63,0 5.21-1.07 7.07-2.93s2.93-4.44 2.93-7.07c0-2.63-1.07-5.21-2.93-7.07-1.86-1.87-4.44-2.93-7.07-2.93-2.64,0-5.21,1.06-7.07,2.93-1.87,1.86-2.93,4.44-2.93,7.07 0,2.63 1.06,5.21 2.93,7.07 1.86,1.86 4.43,2.93 7.07,2.93z"/>
+            <path fill="currentColor" d="m287.734,196.177h-107.995c-5.523,0-10,4.477-10,10s4.477,10 10,10h107.995c5.523,0 10-4.477 10-10s-4.477-10-10-10z"/>
+            <path fill="currentColor" d="m287.734,230.675h-107.995c-5.523,0-10,4.477-10,10s4.477,10 10,10h107.995c5.523,0 10-4.477 10-10s-4.477-10-10-10z"/>
+            <path fill="currentColor" d="m287.734,265.174h-107.995c-5.523,0-10,4.477-10,10s4.477,10 10,10h107.995c5.523,0 10-4.477 10-10s-4.477-10-10-10z"/>
+        </symbol>
+        <!-- Cloth (Solid) - new -->
+        <symbol id="icon-cloth" viewBox="0 0 512.001 512.001">
+            <path fill="currentColor" d="M482.166,0H165.704c-16.445,0-29.825,14.191-29.825,31.635v48.212H96.837c-16.434,0-29.803,14.18-29.803,31.61v60.574H29.814c-16.434,0-29.804,13.29-29.804,29.627v280.714c0,16.337,13.37,29.629,29.804,29.629h316.112c16.434,0,29.803-13.291,29.803-29.629v-30.173h37.219c16.434,0,29.803-14.18,29.803-31.61V372.74h39.413c16.446,0,29.826-14.191,29.826-31.635V31.635C511.992,14.191,498.613,0,482.166,0z M355.654,482.372c0,5.266-4.364,9.552-9.726,9.552H29.814c-5.364,0-9.727-4.284-9.727-9.552V201.658c0-5.265,4.364-9.55,9.727-9.55h37.219v228.48c0,17.43,13.369,31.61,29.803,31.61h258.817V482.372z M422.676,420.589c0,6.359-4.364,11.533-9.726,11.533H96.837c-5.363,0-9.726-5.174-9.726-11.533V111.458c0-6.359,4.364-11.533,9.726-11.533h39.043v241.18c0,17.444,13.379,31.635,29.825,31.635h256.972V420.589z M491.915,341.105c0,6.373-4.373,11.558-9.748,11.558H165.704c-5.375,0-9.747-5.185-9.747-11.558V31.635c0-6.373,4.373-11.558,9.747-11.558h316.462c5.375,0,9.748,5.185,9.748,11.558V341.105z"/>
+            <path fill="currentColor" d="M392.074,61.312H191.302c-5.541,0-10.039,4.497-10.039,10.039c0,5.532,4.497,10.039,10.039,10.039h200.771c5.531,0,10.028-4.506,10.029-10.039C402.101,65.81,397.605,61.312,392.074,61.312z"/>
+            <path fill="currentColor" d="M433.592,100.102c-5.541,0-10.039,4.496-10.039,10.029V292.1c0,5.531,4.497,10.039,10.039,10.039c5.531,0,10.039-4.508,10.039-10.039V110.141C443.63,104.599,439.124,100.102,433.592,100.102z"/>
+            <path fill="currentColor" d="M432.227,81.39c5.531,0,10.027-4.506,10.027-10.039c0-5.541-4.496-10.039-10.027-10.039c-5.542,0-10.039,4.497-10.039,10.039C422.188,76.883,426.684,81.39,432.227,81.39z"/>
+        </symbol>
+        <!-- Mushrooms (Solid) -->
+        <symbol id="icon-mushroom" viewBox="0 0 330.18 330.18">
+            <path fill="currentColor" d="M165.09,0C88.446,0,26.316,57.804,26.316,129.108c0,4.096,0.214,34.958,0.615,38.957c0,0,4.17,17.875,138.159,17.875c135.583,0,138.158-17.875,138.158-17.875c0.4-4,0.615-34.861,0.615-38.957C303.863,57.804,241.732,0,165.09,0z M121.426,41.466c-11.932,2.803-23.274,8.827-33.276,17.01c-23.177,18.962-32.125,46.485-29.974,75.899c0.542,7.416-10.981,7.363-11.52,0c-2.307-31.545,7.718-63.076,32.705-83.519c11.18-9.146,24.783-17.158,39.002-20.498C125.59,28.661,128.656,39.768,121.426,41.466z"/>
+            <path fill="currentColor" d="M206.987,194.845c-13.836,0.513-25.226,0.775-41.898,0.775c-14.889,0-26.655-0.226-41.896-0.817L109.045,316.47c-0.494,7.54,5.284,13.71,12.841,13.71h86.407c7.557,0,13.336-6.17,12.84-13.71L206.987,194.845z"/>
+        </symbol>
+    </svg>
 
     <!-- Intro Modal (Arthur) -->
     <div id="modal-intro" class="modal-overlay">
@@ -442,6 +584,31 @@
         </div>
     </div>
 
+    <!-- Item Info Modal -->
+    <div id="modal-item" class="modal-overlay" onclick="itemModal.close()">
+        <div class="modal-content rounded-lg p-6 text-center relative overflow-hidden" onclick="event.stopPropagation()">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#c8aa6e] to-transparent"></div>
+
+            <div class="w-16 h-16 rounded-full border border-[#c8aa6e]/70 bg-[#111] flex items-center justify-center mx-auto mb-3">
+                <i id="item-modal-icon" class="fas fa-question text-3xl text-[#c8aa6e]"></i>
+            </div>
+
+            <h2 id="item-modal-name" class="medieval-font text-xl text-[#c8aa6e] mb-1">Предмет</h2>
+            <div id="item-modal-count" class="text-[10px] text-[#777] mb-3"></div>
+
+            <div class="panel p-3 rounded bg-black/30 border border-[#333] text-left">
+                <div class="text-[10px] text-[#c8aa6e] uppercase tracking-widest mb-1">Описание</div>
+                <p id="item-modal-desc" class="text-xs text-[#e0e0e0] leading-relaxed">—</p>
+                <div class="mt-3 flex items-center justify-between text-[10px] text-[#a0a0a0]">
+                    <span>Вес</span>
+                    <span id="item-modal-weight" class="text-[#c8aa6e] font-bold">0 кг</span>
+                </div>
+            </div>
+
+            <button onclick="itemModal.close()" class="btn-medieval w-full py-2 rounded font-bold mt-4">Закрыть</button>
+        </div>
+    </div>
+
     <!-- Dialogue Modal -->
     <div id="modal-dialogue" class="modal-overlay">
         <div class="modal-content rounded-lg p-0 relative overflow-hidden text-left flex flex-col max-h-[80vh]">
@@ -502,14 +669,28 @@
         
         <!-- VIEW: CHARACTER -->
         <section id="view-character" class="space-y-6 hidden">
-            <div class="flex flex-col items-center justify-center py-6">
-                <div class="w-24 h-24 rounded-full border-2 border-[#c8aa6e] overflow-hidden shadow-[0_0_15px_rgba(200,170,110,0.3)] mb-4 relative bg-[#222]" style="box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 0 15px rgba(200,170,110,0.3);">
-                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=medievalWarrior&backgroundColor=1a1a1d&skinColor=f2d3b1&hair=short01&hairColor=796a45&eyes=variant01&eyebrows=variant10&mouth=variant01" alt="Герой" class="w-full h-full object-cover scale-110">
+            <div class="flex flex-col items-center justify-center py-6 relative">
+                <!-- Hero quick actions -->
+                <div class="absolute top-0 right-0 flex gap-2">
+                    <button onclick="ui.openSettings()" class="icon-tile" aria-label="Настройки">
+                        <i class="fas fa-gear"></i>
+                    </button>
+                </div>
+
+                <div class="w-32 h-32 rounded-full border-2 border-[#c8aa6e] overflow-hidden shadow-[0_0_15px_rgba(200,170,110,0.3)] mb-4 relative bg-[#222]" style="box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 0 15px rgba(200,170,110,0.3);">
+                    <img src="https://i.postimg.cc/L5B41FgX/IMG-4572.jpg" alt="Герой" class="w-full h-full object-cover scale-110" onerror="this.onerror=null; this.src='https://api.dicebear.com/7.x/adventurer/svg?seed=medievalWarrior&backgroundColor=1a1a1d&skinColor=f2d3b1&hair=short01&hairColor=796a45&eyes=variant01&eyebrows=variant10&mouth=variant01';">
                     <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#c8aa6e]/30 pointer-events-none"></div>
                     <div class="absolute inset-0 border-4 border-[#c8aa6e]/30 rounded-full pointer-events-none"></div>
                 </div>
                 <h2 class="text-2xl medieval-font text-[#e0e0e0]">Странник</h2>
                 <p class="text-sm text-[#a0a0a0] mb-2">Начинающий искатель приключений</p>
+                <div class="panel rounded p-2 text-center text-[10px] text-[#a0a0a0] w-full max-w-xs mb-2">
+                    <div class="flex items-center justify-center gap-2">
+                        <span>Имя:</span>
+                        <span id="player-name" class="text-[#c8aa6e] font-bold">Странник</span>
+                    </div>
+                    <div class="mt-1">ID: <span id="player-id" class="text-[#c8aa6e] font-bold">—</span></div>
+                </div>
                 
                 <!-- Level Progress -->
                 <div class="w-full max-w-xs space-y-1">
@@ -616,6 +797,16 @@
                     <div id="inventory-grid" class="grid grid-cols-4 gap-2">
                         <!-- Slots populated by JS -->
                     </div>
+                    <div class="mt-2">
+                        <div class="flex items-center justify-between text-[10px] text-[#a0a0a0] mb-1">
+                            <span>Нагрузка</span>
+                            <span id="weight-text" class="text-[#c8aa6e] font-bold">0 / 50 кг</span>
+                        </div>
+                        <div class="h-1.5 bg-[#000] border border-[#333] rounded-full overflow-hidden">
+                            <div id="weight-bar" class="h-full bg-gradient-to-r from-emerald-700 to-[#c8aa6e] w-0 transition-all duration-300"></div>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-[#777] mt-2">Вместимость рюкзака можно улучшать через крафт (рецепт продается в Книжном Доме).</p>
                 </div>
 
                 <!-- Crafting UI -->
@@ -639,6 +830,16 @@
                     <div class="flex justify-between items-center p-2 bg-black/20 rounded border border-[#333]">
                         <span class="text-sm text-[#a0a0a0]"><i class="fas fa-star text-yellow-500 mr-1"></i> Жетоны навыков</span>
                         <span class="text-xl font-bold text-[#c8aa6e]" id="skill-points-display">0</span>
+                    </div>
+
+                    <div class="panel p-3 rounded flex justify-between items-center bg-[#151518]">
+                        <div>
+                            <div class="text-[#e0e0e0] font-bold text-xs"><i class="fas fa-suitcase text-yellow-500 mr-1"></i> Рюкзак (Ур <span id="bag-level-display">0</span>)</div>
+                            <div class="text-[10px] text-[#777]">+8 слотов к инвентарю</div>
+                        </div>
+                        <button onclick="crafting.upgradeBag(event)" class="bg-[#222] border border-[#c8aa6e] text-[#c8aa6e] px-3 py-1 text-[10px] rounded hover:bg-[#c8aa6e] hover:text-black transition-colors uppercase">
+                            Улучшить
+                        </button>
                     </div>
 
                     <!-- Max HP -->
@@ -689,6 +890,13 @@
                 <div class="grid grid-cols-2 gap-3">
                     <!-- Jobs -->
                     <button onclick="router.navigate('jobs')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-gradient-to-br from-[#0b2a55]/80 via-[#1a1a1d] to-[#0f0f10]">
+                        <img 
+                          src="https://i.postimg.cc/zvrrJHQg/IMG-4559.jpg"
+                          alt="Работы"
+                          class="absolute inset-0 w-full h-full object-cover opacity-35 witcher-img"
+                          onerror="this.onerror=null; this.style.display='none';"
+                        />
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/10 via-black/40 to-black/70"></div>
                         <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(30,144,255,0.18),transparent_60%)]"></div>
                         <div class="absolute top-2 right-2 w-6 h-6 rounded-full bg-[#1E90FF]/20 flex items-center justify-center">
                             <i class="fas fa-chevron-right text-[#7fb7ff]/70 text-[10px]"></i>
@@ -705,6 +913,13 @@
 
                     <!-- Town Square -->
                     <button onclick="router.navigate('town-square')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-gradient-to-br from-[#3b1f0b]/85 via-[#1a1a1d] to-[#0f0f10]">
+                        <img 
+                          src="https://i.postimg.cc/BnPztnfV/IMG-4542.jpg"
+                          alt="Городская площадь"
+                          class="absolute inset-0 w-full h-full object-cover opacity-35 witcher-img"
+                          onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1697730268732-1bb29e0bb8f6?w=1200&q=85';"
+                        />
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/10 via-black/40 to-black/70"></div>
                         <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(139,69,19,0.2),transparent_60%)]"></div>
                         <div class="absolute top-2 right-2 w-6 h-6 rounded-full bg-[#8B4513]/20 flex items-center justify-center">
                             <i class="fas fa-chevron-right text-[#d2a679]/70 text-[10px]"></i>
@@ -721,6 +936,13 @@
 
                     <!-- Tavern -->
                     <button onclick="router.navigate('tavern')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-gradient-to-br from-orange-950/80 via-[#1a1a1d] to-[#0f0f10]">
+                        <img 
+                          src="https://i.postimg.cc/kGckq181/IMG-4560.jpg"
+                          alt="Таверна"
+                          class="absolute inset-0 w-full h-full object-cover opacity-35 witcher-img"
+                          onerror="this.onerror=null; this.style.display='none';"
+                        />
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/10 via-black/40 to-black/70"></div>
                         <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(249,115,22,0.15),transparent_60%)]"></div>
                         <div class="absolute top-2 right-2 w-6 h-6 rounded-full bg-orange-600/20 flex items-center justify-center">
                             <i class="fas fa-chevron-right text-orange-500/60 text-[10px]"></i>
@@ -737,6 +959,13 @@
 
                     <!-- Treasury -->
                     <button onclick="router.navigate('treasury')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-gradient-to-br from-yellow-950/80 via-[#1a1a1d] to-[#0f0f10]">
+                        <img 
+                          src="https://i.postimg.cc/hvS5yLws/IMG-4561.jpg"
+                          alt="Казна"
+                          class="absolute inset-0 w-full h-full object-cover opacity-35 witcher-img"
+                          onerror="this.onerror=null; this.style.display='none';"
+                        />
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/10 via-black/40 to-black/70"></div>
                         <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(234,179,8,0.15),transparent_60%)]"></div>
                         <div class="absolute top-2 right-2 w-6 h-6 rounded-full bg-yellow-600/20 flex items-center justify-center">
                             <i class="fas fa-chevron-right text-yellow-500/60 text-[10px]"></i>
@@ -753,6 +982,13 @@
 
                     <!-- Healer's Hut -->
                     <button onclick="router.navigate('healer')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-gradient-to-br from-red-950/80 via-[#1a1a1d] to-[#0f0f10]">
+                        <img 
+                          src="https://i.postimg.cc/rpXgZGRd/IMG-4564.jpg"
+                          alt="Хижина лекаря"
+                          class="absolute inset-0 w-full h-full object-cover opacity-35 witcher-img"
+                          onerror="this.onerror=null; this.style.display='none';"
+                        />
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/10 via-black/40 to-black/70"></div>
                         <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(239,68,68,0.15),transparent_60%)]"></div>
                         <div class="absolute top-2 right-2 w-6 h-6 rounded-full bg-red-600/20 flex items-center justify-center">
                             <i class="fas fa-chevron-right text-red-500/60 text-[10px]"></i>
@@ -769,6 +1005,13 @@
 
                     <!-- Royal Castle -->
                     <button onclick="router.navigate('royal-castle')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-gradient-to-br from-indigo-950/80 via-[#1a1a1d] to-[#0f0f10]">
+                        <img 
+                          src="https://i.postimg.cc/JnqyJXkK/IMG-4567.jpg"
+                          alt="Королевский замок"
+                          class="absolute inset-0 w-full h-full object-cover opacity-35 witcher-img"
+                          onerror="this.onerror=null; this.style.display='none';"
+                        />
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/10 via-black/40 to-black/70"></div>
                         <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(99,102,241,0.15),transparent_60%)]"></div>
                         <div class="absolute top-2 right-2 w-6 h-6 rounded-full bg-indigo-600/20 flex items-center justify-center">
                             <i class="fas fa-chevron-right text-indigo-500/60 text-[10px]"></i>
@@ -785,6 +1028,13 @@
 
                     <!-- Noble Quarter -->
                     <button onclick="router.navigate('noble-quarter')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-gradient-to-br from-yellow-900/80 via-[#1a1a1d] to-[#0f0f10]">
+                        <img 
+                          src="https://i.postimg.cc/hv51LVqc/IMG-4565.jpg"
+                          alt="Дворянский квартал"
+                          class="absolute inset-0 w-full h-full object-cover opacity-35 witcher-img"
+                          onerror="this.onerror=null; this.style.display='none';"
+                        />
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/10 via-black/40 to-black/70"></div>
                         <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(202,138,4,0.15),transparent_60%)]"></div>
                         <div class="absolute top-2 right-2 w-6 h-6 rounded-full bg-yellow-600/20 flex items-center justify-center">
                             <i class="fas fa-chevron-right text-yellow-500/60 text-[10px]"></i>
@@ -801,6 +1051,13 @@
 
                     <!-- Poor District -->
                     <button onclick="router.navigate('poor-district')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-gradient-to-br from-stone-900/80 via-[#1a1a1d] to-[#0f0f10]">
+                        <img 
+                          src="https://i.postimg.cc/B6hT32bL/IMG-4566.jpg"
+                          alt="Район для бедняков"
+                          class="absolute inset-0 w-full h-full object-cover opacity-35 witcher-img"
+                          onerror="this.onerror=null; this.style.display='none';"
+                        />
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/10 via-black/40 to-black/70"></div>
                         <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(120,113,108,0.1),transparent_60%)]"></div>
                         <div class="absolute top-2 right-2 w-6 h-6 rounded-full bg-stone-600/20 flex items-center justify-center">
                             <i class="fas fa-chevron-right text-stone-500/60 text-[10px]"></i>
@@ -823,6 +1080,13 @@
                 <div class="grid grid-cols-2 gap-3">
                     <!-- Village -->
                     <button id="btn-loc-village" onclick="router.navigate('village')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-gradient-to-br from-[#0b2b17]/85 via-[#1a1a1d] to-[#0f0f10]">
+                        <img 
+                          src="https://i.postimg.cc/P5BFss9w/IMG-4562.jpg"
+                          alt="Деревня"
+                          class="absolute inset-0 w-full h-full object-cover opacity-35 witcher-img"
+                          onerror="this.onerror=null; this.style.display='none';"
+                        />
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/10 via-black/40 to-black/70"></div>
                         <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(0,128,0,0.2),transparent_60%)]"></div>
                         <div class="absolute top-2 right-2 w-6 h-6 rounded-full bg-[#008000]/20 flex items-center justify-center">
                             <i id="village-lock-icon" class="fas fa-chevron-right text-[#7ad37a]/70 text-[10px]"></i>
@@ -837,8 +1101,38 @@
                         <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#008000]/50 to-transparent"></div>
                     </button>
 
+                    <!-- Livestock Trader -->
+                    <button id="btn-loc-livestock" onclick="router.navigate('livestock-trader')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-gradient-to-br from-emerald-950/80 via-[#1a1a1d] to-[#0f0f10]">
+                        <img 
+                          src="https://i.postimg.cc/zvw13wHX/IMG-4569.jpg"
+                          alt="Торговец скотом"
+                          class="absolute inset-0 w-full h-full object-cover opacity-35 witcher-img"
+                          onerror="this.onerror=null; this.style.display='none';"
+                        />
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/10 via-black/40 to-black/70"></div>
+                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(16,185,129,0.18),transparent_60%)]"></div>
+                        <div class="absolute top-2 right-2 w-6 h-6 rounded-full bg-emerald-600/20 flex items-center justify-center">
+                            <i class="fas fa-chevron-right text-emerald-500/70 text-[10px]"></i>
+                        </div>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center p-3">
+                            <div class="w-14 h-14 rounded-full bg-gradient-to-br from-emerald-900/60 to-emerald-950 flex items-center justify-center border-2 border-emerald-500/60 shadow-[0_0_20px_rgba(16,185,129,0.35)] mb-2 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-cow text-emerald-400 text-xl drop-shadow-lg"></i>
+                            </div>
+                            <h3 class="medieval-font text-sm text-emerald-100 drop-shadow-lg text-center">Торговец скотом</h3>
+                            <p class="text-[9px] text-emerald-300/60 text-center mt-0.5">Животные и корм</p>
+                        </div>
+                        <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent"></div>
+                    </button>
+
                     <!-- Refugee Camp -->
                     <button id="btn-loc-refugee" onclick="router.navigate('refugee-camp')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-gradient-to-br from-slate-900/80 via-[#1a1a1d] to-[#0f0f10]">
+                        <img 
+                          src="https://i.postimg.cc/d3CV6T7L/IMG-4568.jpg"
+                          alt="Лагерь беженцев"
+                          class="absolute inset-0 w-full h-full object-cover opacity-35 witcher-img"
+                          onerror="this.onerror=null; this.style.display='none';"
+                        />
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/10 via-black/40 to-black/70"></div>
                         <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(100,116,139,0.1),transparent_60%)]"></div>
                         <div class="absolute top-2 right-2 w-6 h-6 rounded-full bg-slate-600/20 flex items-center justify-center">
                             <i id="refugee-lock-icon" class="fas fa-lock text-slate-500/60 text-[10px]"></i>
@@ -855,6 +1149,13 @@
 
                     <!-- Dark Forest -->
                     <button id="btn-loc-forest" onclick="router.navigate('dark-forest')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-gradient-to-br from-purple-950/80 via-[#1a1a1d] to-[#0f0f10]">
+                        <img 
+                          src="https://i.postimg.cc/kGXTFn6F/IMG-4563.jpg"
+                          alt="Тёмный лес"
+                          class="absolute inset-0 w-full h-full object-cover opacity-35 witcher-img"
+                          onerror="this.onerror=null; this.style.display='none';"
+                        />
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/10 via-black/40 to-black/70"></div>
                         <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(168,85,247,0.15),transparent_60%)]"></div>
                         <div class="absolute top-2 right-2 w-6 h-6 rounded-full bg-purple-600/20 flex items-center justify-center">
                             <i id="forest-lock-icon" class="fas fa-chevron-right text-purple-500/60 text-[10px]"></i>
@@ -869,8 +1170,22 @@
                         <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-purple-500/40 to-transparent"></div>
                     </button>
 
-                    <!-- Training Camp -->
+                </div>
+
+                <div class="flex items-center gap-2 text-[11px] text-[#c8aa6e] uppercase tracking-[0.3em] pt-2">
+                    <i class="fas fa-tower-observation"></i>
+                    Цитадель
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <!-- Training Camp (moved here) -->
                     <button id="btn-loc-camp" onclick="router.navigate('training-camp')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-gradient-to-br from-red-950/80 via-[#1a1a1d] to-[#0f0f10]">
+                        <img 
+                          src="https://i.postimg.cc/C1D36CNf/IMG-4570.jpg"
+                          alt="Учебный лагерь"
+                          class="absolute inset-0 w-full h-full object-cover opacity-35 witcher-img"
+                          onerror="this.onerror=null; this.style.display='none';"
+                        />
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/10 via-black/40 to-black/70"></div>
                         <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(220,38,38,0.15),transparent_60%)]"></div>
                         <div class="absolute top-2 right-2 w-6 h-6 rounded-full bg-red-700/20 flex items-center justify-center">
                             <i id="camp-lock-icon" class="fas fa-chevron-right text-red-600/60 text-[10px]"></i>
@@ -884,6 +1199,50 @@
                         </div>
                         <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-red-600/40 to-transparent"></div>
                     </button>
+
+                    <!-- Military Fortress -->
+                    <button id="btn-loc-fortress" onclick="router.navigate('military-fortress')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-gradient-to-br from-slate-950/80 via-[#1a1a1d] to-[#0f0f10]">
+                        <img 
+                          src="https://i.postimg.cc/Ss0582pT/IMG-4571.jpg"
+                          alt="Военная Крепость"
+                          class="absolute inset-0 w-full h-full object-cover opacity-35 witcher-img"
+                          onerror="this.onerror=null; this.style.display='none';"
+                        />
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/10 via-black/40 to-black/70"></div>
+                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(148,163,184,0.12),transparent_60%)]"></div>
+                        <div class="absolute top-2 right-2 w-6 h-6 rounded-full bg-slate-600/20 flex items-center justify-center">
+                            <i id="fortress-lock-icon" class="fas fa-lock text-slate-500/70 text-[10px]"></i>
+                        </div>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center p-3">
+                            <div class="w-14 h-14 rounded-full bg-gradient-to-br from-slate-800/60 to-slate-950 flex items-center justify-center border-2 border-slate-500/60 shadow-[0_0_20px_rgba(148,163,184,0.25)] mb-2 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-tower-observation text-slate-300 text-xl drop-shadow-lg"></i>
+                            </div>
+                            <h3 class="medieval-font text-sm text-slate-100 drop-shadow-lg text-center">Военная Крепость</h3>
+                            <p id="fortress-desc" class="text-[9px] text-slate-300/60 text-center mt-0.5">Только для обученных</p>
+                        </div>
+                        <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-slate-500/40 to-transparent"></div>
+                    </button>
+
+                    <!-- Online Mode (Soon) -->
+                    <button onclick="ui.showFloatText(this, 'Скоро', '#777')" class="panel col-span-2 p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative h-20 bg-gradient-to-br from-[#1a1a1d] via-[#121214] to-[#0f0f10]">
+                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(200,170,110,0.12),transparent_60%)]"></div>
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/10 via-black/30 to-black/60"></div>
+                        <div class="absolute inset-0 flex items-center justify-between px-5">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-full bg-[#111] border border-[#c8aa6e]/40 flex items-center justify-center shadow-[0_0_18px_rgba(200,170,110,0.18)]">
+                                    <i class="fas fa-globe text-[#c8aa6e] text-lg"></i>
+                                </div>
+                                <div class="text-left">
+                                    <div class="medieval-font text-sm text-[#e0e0e0]">Онлайн режим</div>
+                                    <div class="text-[10px] text-[#777]">Скоро</div>
+                                </div>
+                            </div>
+                            <div class="text-[10px] px-2 py-1 rounded border border-[#333] bg-black/30 text-[#777] uppercase tracking-widest">
+                                Скоро
+                            </div>
+                        </div>
+                        <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#c8aa6e]/30 to-transparent"></div>
+                    </button>
                 </div>
             </div>
         </section>
@@ -891,7 +1250,7 @@
         <!-- SUB-VIEW: JOBS -->
         <section id="view-jobs" class="hidden space-y-4">
             <!-- Header with Gradient -->
-            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-[#0b2a55]/80 via-[#1a1a1d] to-[#0f0f10]">
+            <div class="loc-hero h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-[#0b2a55]/80 via-[#1a1a1d] to-[#0f0f10]" data-loc="jobs" style="--hero-img: none;">
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(30,144,255,0.25),transparent_60%)]"></div>
                 <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#1E90FF]/60 to-transparent"></div>
                 <div class="absolute top-4 left-4">
@@ -1016,6 +1375,9 @@
                             <div class="text-sm text-blue-400 flex items-center gap-1 drop-shadow-md">
                                 <i class="fas fa-star"></i> +8 XP
                             </div>
+                            <div class="text-[11px] text-emerald-400 flex items-center gap-1 drop-shadow-md">
+                                <i class="far fa-gem"></i> Шанс найти изумруды
+                            </div>
                         </div>
                         <button id="btn-work-mine" disabled onclick="game.work('mine', event)" class="btn-medieval w-full py-2 rounded font-bold flex items-center justify-center gap-2 shadow-lg">
                             <i class="fas fa-lock text-xs"></i> Закрыто
@@ -1056,7 +1418,7 @@
 
         <!-- VIEW: DARK FOREST -->
         <section id="view-dark-forest" class="hidden space-y-4">
-            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-purple-950/80 via-[#1a1a1d] to-[#0f0f10]">
+            <div class="loc-hero h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-purple-950/80 via-[#1a1a1d] to-[#0f0f10]" data-loc="dark-forest" style="--hero-img: none;">
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(168,85,247,0.2),transparent_60%)]"></div>
                 <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-purple-500/50 to-transparent"></div>
                 <div class="absolute top-4 left-4">
@@ -1145,7 +1507,7 @@
 
         <!-- VIEW: TOWN SQUARE -->
         <section id="view-town-square" class="hidden space-y-4">
-            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-[#3b1f0b]/85 via-[#1a1a1d] to-[#0f0f10]">
+            <div class="loc-hero h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-[#3b1f0b]/85 via-[#1a1a1d] to-[#0f0f10]" data-loc="town-square" style="--hero-img: none;">
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(139,69,19,0.25),transparent_60%)]"></div>
                 <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#8B4513]/60 to-transparent"></div>
                 <div class="absolute top-4 left-4">
@@ -1627,7 +1989,7 @@
 
         <!-- VIEW: HEALER -->
         <section id="view-healer" class="hidden space-y-4">
-            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-red-950/80 via-[#1a1a1d] to-[#0f0f10]">
+            <div class="loc-hero h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-red-950/80 via-[#1a1a1d] to-[#0f0f10]" data-loc="healer" style="--hero-img: none;">
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(239,68,68,0.15),transparent_60%)]"></div>
                 <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-red-500/50 to-transparent"></div>
                 <div class="absolute top-4 left-4">
@@ -1732,7 +2094,7 @@
 
         <!-- VIEW: TREASURY -->
         <section id="view-treasury" class="hidden space-y-4">
-            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-yellow-950/80 via-[#1a1a1d] to-[#0f0f10]">
+            <div class="loc-hero h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-yellow-950/80 via-[#1a1a1d] to-[#0f0f10]" data-loc="treasury" style="--hero-img: none;">
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(234,179,8,0.2),transparent_60%)]"></div>
                 <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent"></div>
                 <div class="absolute top-4 left-4">
@@ -1814,7 +2176,7 @@
 
         <!-- VIEW: TAVERN -->
         <section id="view-tavern" class="hidden space-y-4">
-            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-orange-950/80 via-[#1a1a1d] to-[#0f0f10]">
+            <div class="loc-hero h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-orange-950/80 via-[#1a1a1d] to-[#0f0f10]" data-loc="tavern" style="--hero-img: none;">
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(249,115,22,0.2),transparent_60%)]"></div>
                 <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-orange-500/50 to-transparent"></div>
                 <div class="absolute top-4 left-4">
@@ -1982,7 +2344,7 @@
                 <div class="panel p-3 rounded flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 bg-[#222] border border-[#333] rounded flex items-center justify-center text-[#c8aa6e]">
-                            <i class="fas fa-wand-magic"></i>
+                            <svg class="w-6 h-6 text-[#c8aa6e]" viewBox="0 0 24 24"><use href="#icon-rod"></use></svg>
                         </div>
                         <div>
                             <div class="text-[#e0e0e0] font-serif">Удочка</div>
@@ -1998,7 +2360,7 @@
                 <div class="panel p-3 rounded flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 bg-[#222] border border-[#333] rounded flex items-center justify-center text-[#c8aa6e]">
-                            <i class="fas fa-sickle"></i>
+                            <svg class="w-6 h-6 text-[#c8aa6e]" viewBox="0 0 24 24"><use href="#icon-sickle"></use></svg>
                         </div>
                         <div>
                             <div class="text-[#e0e0e0] font-serif">Серп</div>
@@ -2014,7 +2376,7 @@
                 <div class="panel p-3 rounded flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 bg-[#222] border border-[#333] rounded flex items-center justify-center text-[#c8aa6e]">
-                            <i class="fas fa-hammer"></i>
+                            <i class="fas fa-person-digging"></i>
                         </div>
                         <div>
                             <div class="text-[#e0e0e0] font-serif">Кирка</div>
@@ -2030,7 +2392,7 @@
                  <div class="panel p-3 rounded flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 bg-[#222] border border-[#333] rounded flex items-center justify-center text-[#c8aa6e]">
-                            <i class="fas fa-crosshairs"></i>
+                            <svg class="w-6 h-6 text-[#c8aa6e]" viewBox="0 0 24 24"><use href="#icon-crossbow"></use></svg>
                         </div>
                         <div>
                             <div class="text-[#e0e0e0] font-serif">Арбалет</div>
@@ -2170,9 +2532,132 @@
 
         </section>
 
+        <!-- VIEW: LIVESTOCK TRADER -->
+        <section id="view-livestock-trader" class="hidden space-y-4">
+            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-emerald-950/80 via-[#1a1a1d] to-[#0f0f10]">
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(16,185,129,0.18),transparent_60%)]"></div>
+                <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent"></div>
+                <div class="absolute top-4 left-4">
+                    <button onclick="router.navigate('map')" class="w-8 h-8 rounded border border-emerald-900/50 bg-black/30 flex items-center justify-center text-emerald-400 hover:bg-emerald-900/30 transition-colors">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                </div>
+                <div class="absolute top-1/2 left-16 -translate-y-1/2 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-900/60 to-emerald-950 flex items-center justify-center border-2 border-emerald-500/60 shadow-[0_0_15px_rgba(16,185,129,0.35)]">
+                        <i class="fas fa-cow text-emerald-400 text-lg"></i>
+                    </div>
+                    <h2 class="medieval-font text-2xl text-emerald-300 drop-shadow-md">Торговец скотом</h2>
+                </div>
+            </div>
+
+            <div class="panel rounded-lg p-4 space-y-4">
+                <div class="panel p-3 rounded flex items-center justify-between border-emerald-900/30 bg-emerald-900/10">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-full border border-emerald-500 bg-[#222] flex items-center justify-center">
+                            <i class="fas fa-hat-cowboy text-emerald-400"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm text-[#e0e0e0] font-bold">Фермер Хью</div>
+                            <div class="text-[10px] text-[#a0a0a0]">Торговец скотом</div>
+                        </div>
+                    </div>
+                    <button onclick="ui.showFloatText(this, 'Кормлю людей... и зверей', '#34d399')" class="btn-medieval px-4 py-1.5 rounded text-xs">
+                        Говорить
+                    </button>
+                </div>
+
+                <div class="panel p-3 rounded bg-black/20 border border-[#333] text-[10px] text-[#a0a0a0]">
+                    <div class="text-[10px] text-emerald-400 font-bold uppercase tracking-widest mb-1">Важно</div>
+                    Купить животных можно только если у тебя есть <span class="text-[#c8aa6e] font-bold">дом</span> с загоном для животных.
+                </div>
+
+                <div class="space-y-3">
+                    <h3 class="text-xs text-[#777] uppercase border-b border-[#333] pb-1">Животные</h3>
+
+                    <div class="border border-[#333] rounded p-3 bg-black/20">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="flex gap-3">
+                                <i class="fas fa-rabbit text-emerald-300 text-lg mt-1"></i>
+                                <div>
+                                    <div class="text-sm font-bold text-[#e0e0e0]">Кролик</div>
+                                    <div class="text-[10px] text-[#777]">Для хозяйства. Ест овощи.</div>
+                                </div>
+                            </div>
+                            <div class="text-sm text-yellow-400 font-bold">4,000 <i class="fas fa-coins"></i></div>
+                        </div>
+                        <button onclick="livestock.buyAnimal('rabbit')" class="btn-medieval w-full py-1.5 rounded text-[10px]">Купить</button>
+                    </div>
+
+                    <div class="border border-[#333] rounded p-3 bg-black/20">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="flex gap-3">
+                                <i class="fas fa-kiwi-bird text-amber-300 text-lg mt-1"></i>
+                                <div>
+                                    <div class="text-sm font-bold text-[#e0e0e0]">Курица</div>
+                                    <div class="text-[10px] text-[#777]">Несёт яйца. Ест зерно.</div>
+                                </div>
+                            </div>
+                            <div class="text-sm text-yellow-400 font-bold">5,000 <i class="fas fa-coins"></i></div>
+                        </div>
+                        <button onclick="livestock.buyAnimal('chicken')" class="btn-medieval w-full py-1.5 rounded text-[10px]">Купить</button>
+                    </div>
+
+                    <div class="border border-[#333] rounded p-3 bg-black/20">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="flex gap-3">
+                                <i class="fas fa-piggy-bank text-pink-300 text-lg mt-1"></i>
+                                <div>
+                                    <div class="text-sm font-bold text-[#e0e0e0]">Свинья</div>
+                                    <div class="text-[10px] text-[#777]">Даёт мясо. Ест овощи.</div>
+                                </div>
+                            </div>
+                            <div class="text-sm text-yellow-400 font-bold">10,000 <i class="fas fa-coins"></i></div>
+                        </div>
+                        <button onclick="livestock.buyAnimal('pig')" class="btn-medieval w-full py-1.5 rounded text-[10px]">Купить</button>
+                    </div>
+
+                    <div class="border border-[#333] rounded p-3 bg-black/20">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="flex gap-3">
+                                <i class="fas fa-cow text-white text-lg mt-1"></i>
+                                <div>
+                                    <div class="text-sm font-bold text-[#e0e0e0]">Корова</div>
+                                    <div class="text-[10px] text-[#777]">Даёт молоко. Ест сено.</div>
+                                </div>
+                            </div>
+                            <div class="text-sm text-yellow-400 font-bold">50,000 <i class="fas fa-coins"></i></div>
+                        </div>
+                        <button onclick="livestock.buyAnimal('cow')" class="btn-medieval w-full py-1.5 rounded text-[10px]">Купить</button>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <h3 class="text-xs text-[#777] uppercase border-b border-[#333] pb-1">Корм</h3>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="livestock.buyFeed('grain')" class="panel p-2 rounded bg-black/20 border border-[#333] text-center">
+                            <i class="fas fa-wheat-awn text-amber-300"></i>
+                            <div class="text-[10px] text-[#e0e0e0] mt-1">Зерно</div>
+                            <div class="text-[10px] text-yellow-500">20 <i class="fas fa-coins"></i></div>
+                        </button>
+                        <button onclick="livestock.buyFeed('hay')" class="panel p-2 rounded bg-black/20 border border-[#333] text-center">
+                            <i class="fas fa-seedling text-green-300"></i>
+                            <div class="text-[10px] text-[#e0e0e0] mt-1">Сено</div>
+                            <div class="text-[10px] text-yellow-500">30 <i class="fas fa-coins"></i></div>
+                        </button>
+                        <button onclick="livestock.buyFeed('vegetables')" class="panel p-2 rounded bg-black/20 border border-[#333] text-center">
+                            <i class="fas fa-carrot text-orange-300"></i>
+                            <div class="text-[10px] text-[#e0e0e0] mt-1">Овощи</div>
+                            <div class="text-[10px] text-yellow-500">15 <i class="fas fa-coins"></i></div>
+                        </button>
+                    </div>
+                    <p class="text-[10px] text-[#777]">Корм добавляется в инвентарь как ресурс и имеет вес.</p>
+                </div>
+            </div>
+        </section>
+
         <!-- VIEW: VILLAGE -->
         <section id="view-village" class="hidden space-y-4">
-            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-[#0b2b17]/85 via-[#1a1a1d] to-[#0f0f10]">
+            <div class="loc-hero h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-[#0b2b17]/85 via-[#1a1a1d] to-[#0f0f10]" data-loc="village" style="--hero-img: none;">
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(0,128,0,0.25),transparent_60%)]"></div>
                 <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#008000]/60 to-transparent"></div>
                 <div class="absolute top-4 left-4">
@@ -2371,6 +2856,51 @@
                 <div class="p-4 border border-[#333] rounded bg-black/20">
                     <i class="fas fa-dumbbell text-3xl text-gray-600 mb-2"></i>
                     <p class="text-xs text-gray-500">Тренировки временно недоступны.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: MILITARY FORTRESS -->
+        <section id="view-military-fortress" class="hidden space-y-4">
+            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-slate-950/80 via-[#1a1a1d] to-[#0f0f10]">
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(148,163,184,0.15),transparent_60%)]"></div>
+                <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-slate-500/50 to-transparent"></div>
+                <div class="absolute top-4 left-4">
+                    <button onclick="router.navigate('map')" class="w-8 h-8 rounded border border-slate-700/50 bg-black/30 flex items-center justify-center text-slate-300 hover:bg-slate-800/30 transition-colors">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                </div>
+                <div class="absolute top-1/2 left-16 -translate-y-1/2 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-slate-800/60 to-slate-950 flex items-center justify-center border-2 border-slate-500/60 shadow-[0_0_15px_rgba(148,163,184,0.25)]">
+                        <i class="fas fa-tower-observation text-slate-300 text-lg"></i>
+                    </div>
+                    <h2 class="medieval-font text-2xl text-slate-200 drop-shadow-md">Военная Крепость</h2>
+                </div>
+            </div>
+
+            <div class="panel rounded-lg p-4 space-y-4">
+                <div class="text-center text-xs text-[#777] bg-black/20 border border-[#333] rounded p-3">
+                    За высокими стенами — железная дисциплина, оружейные склады и элитные отряды королевства.
+                </div>
+
+                <div class="panel p-3 rounded flex items-center justify-between border-slate-600/30 bg-slate-900/10">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-full border border-slate-500 bg-[#222] flex items-center justify-center">
+                            <i class="fas fa-shield-halved text-slate-300"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm text-[#e0e0e0] font-bold">Капрал</div>
+                            <div class="text-[10px] text-[#a0a0a0]">Страж крепости</div>
+                        </div>
+                    </div>
+                    <button onclick="dialogue.start('fortress_guard')" class="btn-medieval px-4 py-1.5 rounded text-xs">
+                        Говорить
+                    </button>
+                </div>
+
+                <div class="panel p-3 rounded bg-black/20 border border-[#333] text-[10px] text-[#a0a0a0]">
+                    <div class="text-[10px] text-slate-300 font-bold uppercase tracking-widest mb-1">Пропуск</div>
+                    Вход сюда разрешён только тем, кто прошёл подготовку в Учебном лагере.
                 </div>
             </div>
         </section>
@@ -2687,12 +3217,13 @@
     <script>
         // --- CONSTANTS ---
         const TOOLS_DB = {
-            rod: { id: 'rod', name: 'Удочка', baseCost: 50, icon: 'fa-wand-magic', job: 'port' },
-            sickle: { id: 'sickle', name: 'Серп', baseCost: 500, icon: 'fa-sickle', job: 'field' },
-            pickaxe: { id: 'pickaxe', name: 'Кирка', baseCost: 2000, icon: 'fa-hammer', job: 'mine' },
-            crossbow: { id: 'crossbow', name: 'Арбалет', baseCost: 5000, icon: 'fa-crosshairs', job: 'hunter' },
+            rod: { id: 'rod', name: 'Удочка', baseCost: 50, icon: 'icon-rod', job: 'port' },
+            sickle: { id: 'sickle', name: 'Серп', baseCost: 500, icon: 'icon-sickle', job: 'field' },
+            pickaxe: { id: 'pickaxe', name: 'Кирка', baseCost: 2000, icon: 'icon-pickaxe', job: 'mine' },
+            crossbow: { id: 'crossbow', name: 'Арбалет', baseCost: 5000, icon: 'icon-crossbow', job: 'hunter' },
             sword: { id: 'sword', name: 'Меч', baseCost: 1000, icon: 'fa-khanda', job: 'guard' }
         };
+
 
         const JOBS_DB = {
             port: { name: 'Порт', resource: 'fish', price: 5, xp: 1, tool: 'rod', injuryChance: 0.04 },
@@ -2709,14 +3240,65 @@
             bread: { name: 'Хлеб', icon: 'fa-bread-slice' },
             eggs: { name: 'Яйца', icon: 'fa-egg' },
             milk: { name: 'Молоко', icon: 'fa-mug-hot' },
+
             ore: { name: 'Руда', icon: 'fa-cube' },
             bronze: { name: 'Бронза', icon: 'fa-coins' },
             silver: { name: 'Серебро', icon: 'fa-ring' },
+
             wheat: { name: 'Пшеница', icon: 'fa-wheat-awn' },
             wood: { name: 'Палка', icon: 'fa-tree' },
             stone: { name: 'Камень', icon: 'fa-shapes' },
             herbs: { name: 'Травы', icon: 'fa-leaf' },
-            leather: { name: 'Кожа', icon: 'fa-scroll' }
+            leather: { name: 'Кожа', icon: 'icon-leather' },
+
+            wool: { name: 'Шерсть', icon: 'fa-cloud' },
+            rope: { name: 'Верёвка', icon: 'fa-link' },
+            cloth: { name: 'Ткань', icon: 'icon-cloth' },
+
+            grain: { name: 'Зерно', icon: 'fa-wheat-awn' },
+            hay: { name: 'Сено', icon: 'fa-seedling' },
+            vegetables: { name: 'Овощи', icon: 'fa-carrot' }
+        };
+
+        const RESOURCE_WEIGHTS = {
+            fish: 0.6,
+            meat: 1.2,
+            mushrooms: 0.2,
+            bread: 0.5,
+            eggs: 0.2,
+            milk: 1.0,
+
+            ore: 3.0,
+            bronze: 2.5,
+            silver: 2.0,
+
+            wheat: 0.8,
+            wood: 1.0,
+            stone: 1.5,
+            herbs: 0.3,
+            leather: 1.1,
+
+            wool: 0.5,
+            rope: 0.7,
+            cloth: 0.6,
+
+            grain: 0.7,
+            hay: 1.2,
+            vegetables: 0.6
+        };
+
+        const TOOL_WEIGHTS = {
+            rod: 1.0,
+            sickle: 1.2,
+            pickaxe: 3.5,
+            crossbow: 2.8,
+            sword: 3.0
+        };
+
+        const SHOES_WEIGHTS = {
+            peasant: 1.0,
+            quality: 1.2,
+            elite: 1.4
         };
 
         // --- GAME STATE ---
@@ -2750,8 +3332,15 @@
             stone: 0,
             herbs: 0,
             leather: 0,
+            wool: 0,
+            rope: 0,
+            cloth: 0,
+            grain: 0,
+            hay: 0,
+            vegetables: 0,
             
             inventory: [],
+            bagLevel: 0,
             // Tools State: owns boolean, current level
             tools: {
                 rod: { owned: false, level: 0 },
@@ -2759,6 +3348,12 @@
                 pickaxe: { owned: false, level: 0 },
                 crossbow: { owned: false, level: 0 },
                 sword: { owned: false, level: 0 }
+            },
+            livestock: {
+                rabbit: false,
+                chicken: false,
+                pig: false,
+                cow: false
             },
             
             // Quests
@@ -2780,6 +3375,12 @@
             meat: 0,
             lastMeatCollect: 0,
             hasHorse: false,
+            livestock: {
+                rabbit: false,
+                chicken: false,
+                pig: false,
+                cow: false
+            },
 
             // Shoes
             shoes: {
@@ -2809,7 +3410,9 @@
             installDate: null, // Track when user first played
             dailyStreak: 0,
             rentExpiry: 0,
-            introShown: false
+            introShown: false,
+            playerId: null,
+            playerName: "Странник"
         };
 
         // --- NPC DATABASE ---
@@ -2843,9 +3446,9 @@
                         return "no_quest";
                     },
                     quest_offer: {
-                        text: "Мне нужно 3 рыбы для лекарства. Принесешь — заплачу.",
+                        text: "Мне нужно 3 рыбы для лекарства. Принесешь — заплачу. Кстати, как тебя зовут?",
                         options: [
-                            { text: "Берусь!", action: "start_q_arthur_1", next: "quest_accepted" },
+                            { text: "Сказать имя", action: "set_player_name", next: "quest_accepted" },
                             { text: "Не сейчас", next: "root" }
                         ]
                     },
@@ -3426,6 +4029,29 @@
                     }
                 }
             },
+            fortress_guard: {
+                name: "Капрал",
+                role: "Страж крепости",
+                icon: "fa-shield-halved",
+                dialogue: {
+                    root: function() {
+                        if (gameState.npcStates && gameState.npcStates.campTrained) return "allow";
+                        return "deny";
+                    },
+                    deny: {
+                        text: "Стой. В крепость пускают только тех, кто прошёл подготовку в Учебном лагере. Ты ещё не готов.",
+                        options: [
+                            { text: "Понял, вернусь позже", next: "exit" }
+                        ]
+                    },
+                    allow: {
+                        text: "Вижу печать наставника. Проходи. Здесь слабых не держат.",
+                        options: [
+                            { text: "Я готов", next: "exit" }
+                        ]
+                    }
+                }
+            },
             noble_guard: {
                 name: "Стражник квартала",
                 role: "Дворцовая охрана",
@@ -3548,6 +4174,16 @@
                 }
                 if (action === 'start_q_marius_1') {
                     this.addQuest('q_marius_1', 'Травы для Мариуса', 'Собрать 5 трав.', {type: 'gather', target: 'herbs', count: 5}, {gold: 75, xp: 25});
+                }
+                if (action === 'set_player_name') {
+                    const name = prompt('Как тебя зовут?').trim();
+                    if (name) {
+                        gameState.playerName = name.slice(0, 20);
+                        game.save();
+                        ui.updateStats();
+                        ui.showFloatText(document.body, `Имя обновлено: ${gameState.playerName}`, "#34d399");
+                    }
+                    this.addQuest('q_arthur_1', 'Просьба Артура', 'Принести 3 рыбы Артуру.', {type: 'gather', target: 'fish', count: 3}, {gold: 50, xp: 10});
                 }
                 if (action === 'accept_oldman') {
                     const stolenGold = gameState.gold;
@@ -3803,14 +4439,20 @@
                 if (q && q.state === 'active' && (force || q.current >= q.goals.count)) {
                     q.state = 'claimed';
                     // Force complete implies progress met just now
-                    if (force) q.current = q.goals.count; 
-                    
+                    if (force) q.current = q.goals.count;
+
+                    // Story flags
+                    if (!gameState.npcStates) gameState.npcStates = {};
+                    if (id === 'q_john_1') {
+                        gameState.npcStates.campTrained = true; // training completed
+                    }
+
                     gameState.gold += q.reward.gold;
                     game.addXp(q.reward.xp);
                     game.save();
                     ui.updateStats();
                     // If triggered from dialogue, event.target might not be valid or needed
-                    const target = event && event.target ? event.target : document.body;
+                    const target = (typeof event !== 'undefined' && event && event.target) ? event.target : document.body;
                     ui.showFloatText(target, `+${q.reward.gold} Gold +${q.reward.xp} XP`, "#fbbf24");
                     game.addReputation(2, target);
                     this.render();
@@ -3942,8 +4584,8 @@
                 this.load();
                 this.calculateNextLevel();
                 
-                // Initialize resources if undefined
-                ['fish', 'meat', 'mushrooms', 'bread', 'eggs', 'milk', 'ore', 'bronze', 'silver', 'wheat', 'wood', 'stone', 'herbs', 'leather'].forEach(r => {
+                // Initialize resources if undefined (for backward-compatible saves)
+                Object.keys(RESOURCE_NAMES).forEach(r => {
                     if (gameState[r] === undefined) gameState[r] = 0;
                 });
                 if (gameState.hp === undefined) gameState.hp = 100;
@@ -3970,11 +4612,18 @@
                 }
                 
                 // Initialize new state fields if missing
-                if(!gameState.recipes) gameState.recipes = { immortality: false, luck: false, saddle: false };
+                if(!gameState.recipes) gameState.recipes = { immortality: false, luck: false, saddle: false, bag: false };
                 if(!gameState.effects) gameState.effects = { immortality: 0, luck: 0 };
                 if (!gameState.npcStates) gameState.npcStates = {};
                 if (gameState.hasPoorHouse === undefined) gameState.hasPoorHouse = false;
                 if (gameState.hasNobleHouse === undefined) gameState.hasNobleHouse = false;
+                if (gameState.bagLevel === undefined) gameState.bagLevel = 0;
+                if (!gameState.playerId) {
+                    gameState.playerId = Math.random().toString(36).slice(2, 10).toUpperCase();
+                }
+                if (!gameState.playerName) {
+                    gameState.playerName = "Странник";
+                }
                 if (!gameState.shoes) gameState.shoes = { peasant: false, quality: false, elite: false };
                 if (gameState.treasuryPouchResolved === undefined) gameState.treasuryPouchResolved = false;
                 if (gameState.bookhousePouchResolved === undefined) gameState.bookhousePouchResolved = false;
@@ -4306,8 +4955,8 @@
                     amount += (toolState.level - 1);
                 }
 
-                // Chance for Emerald
-                const luckyDrop = Math.random() < 0.01;
+                // Chance for Emerald (only in Mine)
+                const luckyDrop = (jobType === 'mine') && (Math.random() < 0.005);
                 if (luckyDrop) {
                     gameState.emeralds += 1;
                     setTimeout(() => {
@@ -4324,6 +4973,11 @@
                     ui.showFloatText(event.target, `+${goldReward} Золота`, "#c8aa6e");
                 } else {
                     // Add Resource
+                    const extraWeight = (RESOURCE_WEIGHTS[job.resource] || 0) * amount;
+                    if (!this.hasWeightCapacity(extraWeight)) {
+                        this.showWeightWarning(event.target);
+                        return;
+                    }
                     if (gameState[job.resource] === undefined) gameState[job.resource] = 0;
                     gameState[job.resource] += amount;
                     
@@ -4336,6 +4990,7 @@
                 // Also trigger gather event for story quests
                 quests.onEvent('gather', job.resource, amount);
 
+                ui.updateStats();
                 if (window.navigator && window.navigator.vibrate) {
                     window.navigator.vibrate(10);
                 }
@@ -4360,9 +5015,46 @@
                         if (type === 'immortality') document.getElementById('craft-action-immortality').classList.remove('hidden');
                         if (type === 'luck') document.getElementById('craft-action-luck').classList.remove('hidden');
                     }
+
+                    if (type === 'bag') {
+                        ui.showFloatText(event.target, "Рюкзак можно улучшить в крафте", "#fbbf24");
+                    }
                 } else {
                     ui.showFloatText(event.target, "Не хватает изумрудов", "#ff5555");
                 }
+            },
+
+            getWeightCapacity: function() {
+                const base = 50;
+                const upgrades = (gameState.bagLevel || 0) * 50;
+                return base + upgrades;
+            },
+
+            getCurrentWeight: function() {
+                let total = 0;
+                Object.keys(RESOURCE_WEIGHTS).forEach(key => {
+                    const count = gameState[key] || 0;
+                    if (count > 0) total += count * RESOURCE_WEIGHTS[key];
+                });
+                Object.keys(gameState.tools || {}).forEach(key => {
+                    if (gameState.tools[key] && gameState.tools[key].owned) {
+                        total += TOOL_WEIGHTS[key] || 0;
+                    }
+                });
+                if (gameState.shoes) {
+                    Object.keys(gameState.shoes).forEach(key => {
+                        if (gameState.shoes[key]) total += SHOES_WEIGHTS[key] || 0;
+                    });
+                }
+                return Math.round(total * 10) / 10;
+            },
+
+            hasWeightCapacity: function(extra = 0) {
+                return (this.getCurrentWeight() + extra) <= this.getWeightCapacity();
+            },
+
+            showWeightWarning: function(anchor) {
+                ui.showFloatText(anchor || document.body, "Рюкзак перегружен", "#ff5555");
             },
 
             activateEffect: function(effectType) {
@@ -4717,11 +5409,6 @@
                     quests.onEvent('gather', k, gained[k]);
                 });
                 
-                if (Math.random() < (0.05 + luckBonus/2)) {
-                    gameState.emeralds++;
-                    setTimeout(() => ui.showFloatText(event.target, "+1 Изумруд!", "#34d399"), 500);
-                }
-                
                 // Chance to get measles
                 disease.tryInfect();
                 
@@ -4754,10 +5441,8 @@
                 } else {
                     // Critical win / Chest
                     const gold = 100 + Math.floor(Math.random() * 100);
-                    const gems = Math.random() < 0.5 ? 1 : 0;
                     gameState.gold += gold;
-                    gameState.emeralds += gems;
-                    ui.showFloatText(event.target, `ЛЕГЕНДАРНО! +${gold} Золота ${gems ? '+1 Гем' : ''}`, "#fbbf24");
+                    ui.showFloatText(event.target, `ЛЕГЕНДАРНО! +${gold} Золота`, "#fbbf24");
                 }
                 
                 game.save();
@@ -4813,20 +5498,27 @@
             },
 
             resourcePrices: {
-                fish: 5,
-                meat: 20,
-                mushrooms: 25,
-                bread: 12,
-                eggs: 8,
-                milk: 10,
-                ore: 40,
-                bronze: 80,
-                silver: 120,
-                wheat: 15,
-                wood: 5,
-                stone: 5,
-                herbs: 10,
-                leather: 100
+                // Продажа (покупка = x2)
+                fish: 3,
+                meat: 10,
+                mushrooms: 15,
+                bread: 6,
+                eggs: 4,
+                milk: 6,
+
+                ore: 25,
+                bronze: 50,
+                silver: 80,
+
+                wheat: 8,
+                wood: 2,
+                stone: 2,
+                herbs: 6,
+                leather: 60,
+
+                wool: 8,
+                rope: 10,
+                cloth: 12
             },
 
             getResourcePrice: function(resType) {
@@ -4861,12 +5553,26 @@
                         if (gameState.gold < price) btn.style.opacity = '0.5';
                         else btn.style.opacity = '1';
                     }
+
+                    // Update tool icon to ensure SVG/FA consistency
+                    const toolContainer = btn.closest('.panel');
+                    if (toolContainer) {
+                        const iconContainer = toolContainer.querySelector('.w-12.h-12');
+                        if (iconContainer) {
+                            iconContainer.innerHTML = ui.getIconHtml(TOOLS_DB[key].icon, 'w-6 h-6');
+                        }
+                    }
                 });
             },
 
             buyOrUpgradeTool: function(key) {
                 const price = this.getToolPrice(key);
                 if (gameState.gold >= price) {
+                    const nextWeight = !gameState.tools[key].owned ? (TOOL_WEIGHTS[key] || 0) : 0;
+                    if (!game.hasWeightCapacity(nextWeight)) {
+                        game.showWeightWarning(event.target);
+                        return;
+                    }
                     gameState.gold -= price;
                     if (!gameState.tools[key].owned) {
                         gameState.tools[key].owned = true;
@@ -4884,6 +5590,19 @@
                 } else {
                     ui.showFloatText(event.target, "Не хватает золота", "#ff5555");
                 }
+            },
+
+            ensureWeightCapacity: function(extraWeight) {
+                if (!game.hasWeightCapacity(extraWeight)) {
+                    game.showWeightWarning(document.body);
+                    return false;
+                }
+                return true;
+            },
+
+            ensureWeightCapacityForItem: function(itemKey, count = 1) {
+                const extraWeight = (RESOURCE_WEIGHTS[itemKey] || 0) * count;
+                return this.ensureWeightCapacity(extraWeight);
             },
 
             buyClothes: function(type, cost) {
@@ -4945,6 +5664,11 @@
                     return;
                 }
                 if (gameState.gold >= totalCost) {
+                    const extraWeight = (RESOURCE_WEIGHTS[resType] || 0) * amount;
+                    if (!game.hasWeightCapacity(extraWeight)) {
+                        game.showWeightWarning(event.target);
+                        return;
+                    }
                     gameState.gold -= totalCost;
                     gameState[resType] = (gameState[resType] || 0) + amount;
                     game.save();
@@ -4953,6 +5677,24 @@
                 } else {
                     ui.showFloatText(event.target, "Не хватает золота", "#ff5555");
                 }
+            },
+
+            canAddWeight: function(resType, amount) {
+                const extraWeight = (RESOURCE_WEIGHTS[resType] || 0) * amount;
+                return game.hasWeightCapacity(extraWeight);
+            },
+
+            canAddTool: function(toolKey) {
+                return game.hasWeightCapacity(TOOL_WEIGHTS[toolKey] || 0);
+            },
+
+            canAddWeight: function(resType, amount) {
+                const extraWeight = (RESOURCE_WEIGHTS[resType] || 0) * amount;
+                return game.hasWeightCapacity(extraWeight);
+            },
+
+            canAddTool: function(toolKey) {
+                return game.hasWeightCapacity(TOOL_WEIGHTS[toolKey] || 0);
             },
 
             switchTradeMode: function(mode) {
@@ -5167,6 +5909,11 @@
                 const meatGain = Math.floor(hoursPass * gameState.pigPenLevel);
                 
                 if (meatGain > 0) {
+                    const extraWeight = (RESOURCE_WEIGHTS.meat || 0) * meatGain;
+                    if (!game.hasWeightCapacity(extraWeight)) {
+                        game.showWeightWarning(event.target);
+                        return;
+                    }
                     gameState.meat = (gameState.meat || 0) + meatGain;
                     gameState.lastMeatCollect = now;
                     game.save();
@@ -5302,6 +6049,78 @@
         };
 
         // --- SKILLS CONTROLLER ---
+        const livestock = {
+            animalPrices: {
+                rabbit: 4000,
+                chicken: 5000,
+                pig: 10000,
+                cow: 50000
+            },
+            feedPrices: {
+                grain: 20,
+                hay: 30,
+                vegetables: 15
+            },
+
+            ensureHasHouse: function(anchor) {
+                if (!gameState.hasHouse) {
+                    ui.showFloatText(anchor || document.body, "Нужен дом с загоном", "#ff5555");
+                    return false;
+                }
+                return true;
+            },
+
+            buyAnimal: function(animal) {
+                const anchor = event && event.target ? event.target : document.body;
+                if (!this.ensureHasHouse(anchor)) return;
+
+                if (!gameState.livestock) gameState.livestock = { rabbit: false, chicken: false, pig: false, cow: false };
+                if (gameState.livestock[animal]) {
+                    ui.showFloatText(anchor, "У вас уже есть это животное", "#777");
+                    return;
+                }
+
+                const price = this.animalPrices[animal];
+                if (!price) return;
+
+                if (gameState.gold < price) {
+                    ui.showFloatText(anchor, "Не хватает золота", "#ff5555");
+                    return;
+                }
+
+                gameState.gold -= price;
+                gameState.livestock[animal] = true;
+                game.save();
+                ui.updateStats();
+                ui.showFloatText(anchor, "Животное куплено!", "#34d399");
+                game.addReputation(1, anchor);
+            },
+
+            buyFeed: function(feed) {
+                const anchor = event && event.target ? event.target : document.body;
+                if (!this.ensureHasHouse(anchor)) return;
+                const price = this.feedPrices[feed];
+                if (!price) return;
+
+                if (gameState.gold < price) {
+                    ui.showFloatText(anchor, "Не хватает золота", "#ff5555");
+                    return;
+                }
+
+                if (!game.hasWeightCapacity(RESOURCE_WEIGHTS[feed] || 0)) {
+                    game.showWeightWarning(anchor);
+                    return;
+                }
+
+                gameState.gold -= price;
+                gameState[feed] = (gameState[feed] || 0) + 1;
+                game.save();
+                ui.updateStats();
+                ui.showFloatText(anchor, `Куплено: ${RESOURCE_NAMES[feed].name}`, "#34d399");
+            }
+        };
+
+        // --- SKILLS CONTROLLER ---
         const skills = {
             upgrade: function(type) {
                 if (gameState.skillPoints < 1) {
@@ -5353,6 +6172,24 @@
             switchCategory: function(cat) {
                 document.querySelectorAll('#ui-crafting .sub-tab').forEach(el => el.classList.remove('active'));
                 document.getElementById(`tab-craft-${cat}`).classList.add('active');
+            },
+            upgradeBag: function(event) {
+                if (!gameState.recipes || !gameState.recipes.bag) {
+                    ui.showFloatText(event.target, "Нужен рецепт сумки", "#ff5555");
+                    return;
+                }
+                const cost = 3;
+                if ((gameState.leather || 0) < cost || (gameState.wood || 0) < 2) {
+                    ui.showFloatText(event.target, "Нужно 3 кожи и 2 палки", "#ff5555");
+                    return;
+                }
+                gameState.leather -= cost;
+                gameState.wood -= 2;
+                gameState.bagLevel = (gameState.bagLevel || 0) + 1;
+                game.save();
+                ui.updateStats();
+                inventory.render();
+                ui.showFloatText(event.target, "+8 слотов", "#34d399");
             }
         };
 
@@ -5364,45 +6201,110 @@
                 document.getElementById(`tab-inv-${cat}`).classList.add('active');
                 this.render();
             },
-            render: function() {
-                const grid = document.getElementById('inventory-grid');
-                grid.innerHTML = ''; 
+
+            getCategoryItems: function() {
+                // Returns array of { kind: 'tool'|'resource'|'shoes', key, name, icon, count, weight, desc, level? }
+                const items = [];
+
                 if (this.currentCategory === 'tools') {
                     Object.keys(TOOLS_DB).forEach(key => {
                         const state = gameState.tools[key];
-                        if (state.owned) {
+                        if (state && state.owned) {
                             const db = TOOLS_DB[key];
-                            const el = document.createElement('div');
-                            el.className = 'aspect-square bg-[#1a1a1d] border border-[#c8aa6e] rounded flex flex-col items-center justify-center relative p-1';
-                            el.innerHTML = `
-                                <i class="fas ${db.icon} text-[#c8aa6e] text-xl mb-1"></i>
-                                <span class="text-[8px] uppercase text-center leading-tight text-gray-400">${db.name}</span>
-                                <span class="absolute top-0 right-1 text-[8px] text-white font-bold">${state.level}</span>
-                            `;
-                            grid.appendChild(el);
+                            items.push({
+                                kind: 'tool',
+                                key,
+                                name: db.name,
+                                icon: db.icon,
+                                level: state.level,
+                                count: 1,
+                                weight: TOOL_WEIGHTS[key] || 0,
+                                desc: itemModal.getDescriptionForTool(key)
+                            });
                         }
                     });
-                } else if (this.currentCategory === 'other') {
-                     const resList = ['fish', 'wheat', 'ore', 'leather', 'mushrooms', 'wood', 'stone', 'herbs'];
-                     resList.forEach(r => {
-                         if (gameState[r] > 0) {
-                            const def = RESOURCE_NAMES[r];
-                            const el = document.createElement('div');
-                            el.className = 'aspect-square bg-[#1a1a1d] border border-[#c8aa6e] rounded flex flex-col items-center justify-center relative p-1';
-                            el.innerHTML = `
-                                <i class="fas ${def.icon} text-[#c8aa6e] text-xl mb-1"></i>
-                                <span class="text-[8px] uppercase text-center leading-tight text-gray-400">${def.name}</span>
-                                <span class="absolute top-0 right-1 text-[8px] text-white font-bold">${gameState[r]}</span>
-                            `;
-                            grid.appendChild(el);
-                         }
-                     });
                 }
+
+                if (this.currentCategory === 'weapons') {
+                    // For now: swords live in tools, but we still show sword here if owned
+                    const key = 'sword';
+                    const state = gameState.tools && gameState.tools[key];
+                    if (state && state.owned) {
+                        const db = TOOLS_DB[key];
+                        items.push({
+                            kind: 'tool',
+                            key,
+                            name: db.name,
+                            icon: db.icon,
+                            level: state.level,
+                            count: 1,
+                            weight: TOOL_WEIGHTS[key] || 0,
+                            desc: itemModal.getDescriptionForTool(key)
+                        });
+                    }
+                }
+
+                if (this.currentCategory === 'other') {
+                    const resList = Object.keys(RESOURCE_NAMES);
+                    resList.forEach(key => {
+                        const count = gameState[key] || 0;
+                        if (count > 0) {
+                            const def = RESOURCE_NAMES[key];
+                            items.push({
+                                kind: 'resource',
+                                key,
+                                name: def.name,
+                                icon: def.icon,
+                                count,
+                                weight: (RESOURCE_WEIGHTS[key] || 0),
+                                desc: itemModal.getDescriptionForResource(key)
+                            });
+                        }
+                    });
+                }
+
+                if (this.currentCategory === 'armor') {
+                    // Placeholder category (future)
+                }
+
+                if (this.currentCategory === 'potions') {
+                    // Placeholder category (future)
+                }
+
+                return items;
+            },
+
+            render: function() {
+                const grid = document.getElementById('inventory-grid');
+                grid.innerHTML = '';
+
+                const items = this.getCategoryItems();
+
+                items.forEach(item => {
+                    const el = document.createElement('div');
+                    el.className = 'inv-item aspect-square bg-[#1a1a1d] border border-[#c8aa6e] rounded flex flex-col items-center justify-center relative p-1';
+
+                    const iconHtml = ui.getIconHtml(item.icon, 'text-xl mb-1 w-6 h-6 text-[#c8aa6e]');
+
+                    el.innerHTML = `
+                        ${iconHtml}
+                        <span class="text-[8px] uppercase text-center leading-tight text-gray-400">${item.name}</span>
+                        ${item.kind === 'tool' ? `<span class="absolute top-0 right-1 text-[8px] text-white font-bold">${item.level}</span>` : ''}
+                        ${item.kind !== 'tool' ? `<span class="absolute top-0 right-1 text-[8px] text-white font-bold">${item.count}</span>` : ''}
+                    `;
+                    el.onclick = () => itemModal.open(item);
+                    grid.appendChild(el);
+                });
+
+                // Capacity by bag slots
+                const bagLevel = gameState.bagLevel || 0;
+                const capacity = 4 + bagLevel * 8;
                 const children = grid.children.length;
-                for(let i=0; i < (12 - children); i++) {
+                for (let i = 0; i < Math.max(0, capacity - children); i++) {
                     grid.appendChild(this.createEmptySlot());
                 }
             },
+
             createEmptySlot: function() {
                 const el = document.createElement('div');
                 el.className = 'aspect-square bg-[#111] border border-[#333] rounded';
@@ -5412,6 +6314,17 @@
 
         // --- UI HANDLER ---
         const ui = {
+            getIconHtml: function(iconName, extraClasses = '') {
+                if (iconName && iconName.startsWith('icon-')) {
+                    return `<svg class="icon-svg ${extraClasses}" viewBox="0 0 24 24"><use href="#${iconName}"></use></svg>`;
+                }
+                return `<i class="fas ${iconName} ${extraClasses}"></i>`;
+            },
+
+            openSettings: function() {
+                ui.showFloatText(document.body, 'Скоро', '#777');
+            },
+
             updateAll: function() {
                 this.updateStats();
                 this.updateJobs();
@@ -5455,7 +6368,7 @@
                         id: 'other',
                         title: 'Другое',
                         tone: 'emerald',
-                        items: ['wheat', 'wood', 'stone', 'herbs', 'leather']
+                        items: ['wheat', 'wood', 'stone', 'herbs', 'leather', 'wool', 'rope', 'cloth']
                     }
                 ];
 
@@ -5480,7 +6393,9 @@
                         const card = document.createElement('div');
                         card.className = 'panel p-2 rounded flex flex-col items-center text-center border-[#333] bg-black/20';
                         card.innerHTML = `
-                            <i class="fas ${def.icon} text-[#c8aa6e] mb-1"></i>
+                            <div class="w-6 h-6 flex items-center justify-center text-[#c8aa6e] mb-1">
+                                ${ui.getIconHtml(def.icon, 'w-full h-full')}
+                            </div>
                             <div class="text-xs text-[#e0e0e0]">${def.name}</div>
                             <div class="text-[10px] text-[#a0a0a0] mb-1"><span id="price-${item}">0</span> <i class="fas fa-coins"></i></div>
                             <div class="text-[10px] text-blue-300 mb-1">У вас: <span id="market-count-${item}">0</span></div>
@@ -5503,6 +6418,11 @@
                 document.getElementById('gold-display').innerText = gameState.gold;
                 document.getElementById('emerald-display').innerText = gameState.emeralds;
                 document.getElementById('char-level').innerText = gameState.level;
+
+                const playerIdEl = document.getElementById('player-id');
+                if (playerIdEl) playerIdEl.innerText = gameState.playerId || "—";
+                const playerNameEl = document.getElementById('player-name');
+                if (playerNameEl) playerNameEl.innerText = gameState.playerName || "Странник";
                 
                 const bankDisplay = document.getElementById('bank-display');
                 if(bankDisplay) bankDisplay.innerText = gameState.bankedGold;
@@ -5529,6 +6449,16 @@
                 document.getElementById('hp-bar').style.width = `${hpPercent}%`;
                 document.getElementById('hp-text').innerText = `${gameState.hp} / ${gameState.maxHp}`;
                 ui.updateMarketCounts();
+
+                const weightText = document.getElementById('weight-text');
+                const weightBar = document.getElementById('weight-bar');
+                if (weightText && weightBar) {
+                    const currentWeight = game.getCurrentWeight();
+                    const capacity = game.getWeightCapacity();
+                    weightText.innerText = `${currentWeight} / ${capacity} кг`;
+                    weightBar.style.width = `${Math.min(100, (currentWeight / capacity) * 100)}%`;
+                    weightBar.classList.toggle('bg-red-500', currentWeight >= capacity);
+                }
 
                 const repValue = Math.max(0, Math.min(100, gameState.reputation || 0));
                 const repValueEl = document.getElementById('rep-value');
@@ -5594,6 +6524,8 @@
                 // Update Skills UI
                 const spEl = document.getElementById('skill-points-display');
                 if(spEl) spEl.innerText = gameState.skillPoints || 0;
+                const bagLevelEl = document.getElementById('bag-level-display');
+                if (bagLevelEl) bagLevelEl.innerText = gameState.bagLevel || 0;
                 const luckEl = document.getElementById('luck-display');
                 if(luckEl) luckEl.innerText = gameState.luck || 0;
                 const agilityEl = document.getElementById('agility-display');
@@ -5739,6 +6671,30 @@
                          campDesc.innerText = "Путь воина";
                          campDesc.className = "text-xs text-red-300";
                          campIcon.className = "fas fa-chevron-right text-gray-400 z-10";
+                    }
+                }
+
+                // Military Fortress Logic
+                const fortressBtn = document.getElementById('btn-loc-fortress');
+                const fortressDesc = document.getElementById('fortress-desc');
+                const fortressIcon = document.getElementById('fortress-lock-icon');
+                const trained = !!(gameState.npcStates && gameState.npcStates.campTrained);
+
+                if (fortressBtn && fortressDesc && fortressIcon) {
+                    if (!trained) {
+                        fortressBtn.onclick = function() {
+                            dialogue.start('fortress_guard');
+                        };
+                        fortressBtn.classList.add('opacity-60');
+                        fortressDesc.innerText = "Нужно пройти обучение";
+                        fortressDesc.className = "text-[9px] text-slate-500 text-center mt-0.5";
+                        fortressIcon.className = "fas fa-lock text-slate-500/70 text-[10px]";
+                    } else {
+                        fortressBtn.onclick = function() { router.navigate('military-fortress'); };
+                        fortressBtn.classList.remove('opacity-60');
+                        fortressDesc.innerText = "Казармы и приказы";
+                        fortressDesc.className = "text-[9px] text-slate-300/60 text-center mt-0.5";
+                        fortressIcon.className = "fas fa-chevron-right text-slate-300/70 text-[10px]";
                     }
                 }
 
@@ -5917,6 +6873,78 @@
             }
         };
 
+        const itemModal = {
+            open: function(item) {
+                const modal = document.getElementById('modal-item');
+                if (!modal) return;
+
+                const iconEl = document.getElementById('item-modal-icon');
+                const nameEl = document.getElementById('item-modal-name');
+                const descEl = document.getElementById('item-modal-desc');
+                const weightEl = document.getElementById('item-modal-weight');
+                const countEl = document.getElementById('item-modal-count');
+
+                iconEl.className = 'w-16 h-16 flex items-center justify-center text-[#c8aa6e] mx-auto';
+                iconEl.innerHTML = ui.getIconHtml(item.icon, 'w-10 h-10');
+
+                nameEl.innerText = item.name;
+                descEl.innerText = item.desc || '—';
+
+                if (item.kind === 'tool') {
+                    countEl.innerText = `Уровень: ${item.level}`;
+                    weightEl.innerText = `${(item.weight || 0).toFixed(1)} кг`;
+                } else {
+                    const totalW = (item.weight || 0) * (item.count || 0);
+                    countEl.innerText = `Количество: ${item.count}`;
+                    weightEl.innerText = `${(item.weight || 0).toFixed(1)} кг/шт • ${(totalW).toFixed(1)} кг всего`;
+                }
+
+                modal.classList.add('open');
+            },
+
+            close: function() {
+                const modal = document.getElementById('modal-item');
+                if (modal) modal.classList.remove('open');
+            },
+
+            getDescriptionForTool: function(key) {
+                const map = {
+                    rod: 'Удочка нужна для работы в порту. Чем выше уровень — тем больше добыча.',
+                    sickle: 'Серп нужен для работы на пшеничном поле.',
+                    pickaxe: 'Кирка нужна для добычи руды в шахте. В шахте есть шанс найти изумруд.',
+                    crossbow: 'Арбалет нужен для охоты и добычи кожи.',
+                    sword: 'Меч нужен для опасных дел и защиты. Некоторые люди не разговаривают без оружия.'
+                };
+                return map[key] || 'Инструмент для приключений.';
+            },
+
+            getDescriptionForResource: function(key) {
+                const map = {
+                    fish: 'Рыба — еда и товар. Можно продать на рынке или использовать в заданиях.',
+                    meat: 'Мясо — питательная еда. Можно продать на рынке и использовать в рецептах.',
+                    mushrooms: 'Грибы — редкий ингредиент для зелий и сделок.',
+                    bread: 'Хлеб — простая еда. Легко продать или хранить в дорогу.',
+                    eggs: 'Яйца — еда и товар. Нужны в хозяйстве и торговле.',
+                    milk: 'Молоко — еда и товар. Тяжелее других продуктов.',
+                    ore: 'Руда — металл для крафта и заказов кузнеца.',
+                    bronze: 'Бронза — ценный металл. Покупают и продают на рынке.',
+                    silver: 'Серебро — редкий металл высокой ценности.',
+                    wheat: 'Пшеница — урожай с поля. Используется в торговле и быту.',
+                    wood: 'Палки — простой материал для крафта.',
+                    stone: 'Камни — материал для ремесла.',
+                    herbs: 'Травы — важный ингредиент для лечения и зелий.',
+                    leather: 'Кожа — ценный ресурс для брони и сумок.',
+                    grain: 'Зерно — корм для куриц.',
+                    hay: 'Сено — корм для коров.',
+                    vegetables: 'Овощи — корм для кроликов и свиней.',
+                    wool: 'Шерсть — полезный материал для ремесла и торговли. Мягкая, но ценится у портных.',
+                    rope: 'Верёвка — универсальный расходник. Нужна в хозяйстве, крафте и для привязи.',
+                    cloth: 'Ткань — основа одежды и сумок. Хорошо продаётся на рынке.'
+                };
+                return map[key] || 'Ресурс.';
+            }
+        };
+
         // --- ROUTER ---
         const router = {
             currentTab: 'map',
@@ -5957,6 +6985,8 @@
                 document.getElementById('view-dark-forest').classList.add('hidden');
                 const trainingCamp = document.getElementById('view-training-camp');
                 if (trainingCamp) trainingCamp.classList.add('hidden');
+                const fortressView = document.getElementById('view-military-fortress');
+                if (fortressView) fortressView.classList.add('hidden');
                 const villageView = document.getElementById('view-village');
                 if (villageView) villageView.classList.add('hidden');
                 const healerView = document.getElementById('view-healer');
@@ -5977,6 +7007,8 @@
                 if (tailorView) tailorView.classList.add('hidden');
                 const shoemakerView = document.getElementById('view-shoemaker');
                 if (shoemakerView) shoemakerView.classList.add('hidden');
+                const livestockView = document.getElementById('view-livestock-trader');
+                if (livestockView) livestockView.classList.add('hidden');
                 
                 const target = document.getElementById(`view-${screenId}`);
                 if (target) target.classList.remove('hidden');
@@ -5986,6 +7018,9 @@
                     if (screenId === 'market') {
                         market.switchTradeMode(market.tradeMode || 'sell');
                     }
+                }
+                if (screenId === 'livestock-trader') {
+                    ui.updateAll();
                 }
                 if(screenId === 'poor-district' || screenId === 'noble-quarter') housing.updateUI();
                 if (screenId === 'noble-quarter') {
@@ -6022,6 +7057,37 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
 
+            // Apply location header images (same as map cards)
+            const HERO_HEADER_IMAGES = {
+                'jobs': 'https://i.postimg.cc/zvrrJHQg/IMG-4559.jpg',
+                'town-square': 'https://i.postimg.cc/BnPztnfV/IMG-4542.jpg',
+                'tavern': 'https://i.postimg.cc/kGckq181/IMG-4560.jpg',
+                'treasury': 'https://i.postimg.cc/hvS5yLws/IMG-4561.jpg',
+                'village': 'https://i.postimg.cc/P5BFss9w/IMG-4562.jpg',
+                'dark-forest': 'https://i.postimg.cc/kGXTFn6F/IMG-4563.jpg',
+                'healer': 'https://i.postimg.cc/rpXgZGRd/IMG-4564.jpg',
+                'noble-quarter': 'https://i.postimg.cc/hv51LVqc/IMG-4565.jpg',
+                'poor-district': 'https://i.postimg.cc/B6hT32bL/IMG-4566.jpg',
+                'royal-castle': 'https://i.postimg.cc/JnqyJXkK/IMG-4567.jpg',
+                'refugee-camp': 'https://i.postimg.cc/d3CV6T7L/IMG-4568.jpg',
+                'livestock-trader': 'https://i.postimg.cc/zvw13wHX/IMG-4569.jpg',
+                'training-camp': 'https://i.postimg.cc/C1D36CNf/IMG-4570.jpg',
+                'military-fortress': 'https://i.postimg.cc/Ss0582pT/IMG-4571.jpg'
+            };
+
+            const applyHeroHeaderImages = () => {
+                Object.entries(HERO_HEADER_IMAGES).forEach(([screenId, url]) => {
+                    const sections = document.querySelectorAll(`#view-${screenId}`);
+                    sections.forEach(section => {
+                        const header = section.firstElementChild;
+                        if (!header || !(header instanceof HTMLElement)) return;
+                        // Only apply to the top header blocks (they are always the first child)
+                        header.classList.add('loc-hero');
+                        header.style.setProperty('--hero-img', `url('${url}')`);
+                    });
+                });
+            };
+            applyHeroHeaderImages();
 
             // Enhance router.switchTab to call updateLocations
             const originalSwitchTab = router.switchTab;
