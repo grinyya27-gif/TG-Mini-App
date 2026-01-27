@@ -1428,7 +1428,9 @@
 
             <!-- The Loader (Unlocked by Alex) -->
             <div id="job-loader" class="panel rounded-lg p-0 relative overflow-hidden h-40 group hidden">
-                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1578575437130-527eed3abbec?q=80&w=2070')] bg-cover bg-center opacity-30 group-hover:opacity-40 transition-opacity"></div>
+                <div class="absolute inset-0 bg-[url('https://i.postimg.cc/kG0pmVtr/IMG-4592.jpg')] bg-cover bg-center opacity-30 group-hover:opacity-40 transition-opacity"></div>
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(30,144,255,0.25),transparent_60%)]"></div>
+                <div class="absolute inset-0 bg-black/30"></div>
                 <div class="absolute inset-0 p-4 flex flex-col justify-between">
                     <div class="flex justify-between items-start">
                         <div>
@@ -1523,7 +1525,7 @@
             </div>
 
             <!-- The Hunter -->
-            <div id="job-hunter" class="panel rounded-lg p-0 relative overflow-hidden h-40 opacity-50 group">
+            <div id="job-hunter" class="panel rounded-lg p-0 relative overflow-hidden h-48 opacity-50 group">
                 <div class="absolute inset-0 bg-[url('https://i.postimg.cc/52T6Mbsn/IMG-4590.jpg')] bg-cover bg-center opacity-40 group-hover:opacity-50 transition-opacity"></div>
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(239,68,68,0.25),transparent_60%)]"></div>
                 <div class="absolute inset-0 bg-black/30"></div>
@@ -3542,10 +3544,11 @@
                         </div>
                         <div>
                             <div class="text-sm text-[#e0e0e0] font-bold">Столовая для бедных</div>
-                            <div class="text-[10px] text-[#a0a0a0]">Бесплатный суп раз в день</div>
+                            <div class="text-[10px] text-[#a0a0a0]">+50% сытости • до 7 уровня • 1 раз/день</div>
+                            <div class="text-[10px] text-green-400 mt-1">До следующего бесплатного посещения: <span id="poor-canteen-timer">--:--:--</span></div>
                         </div>
                     </div>
-                    <button class="btn-medieval px-4 py-1.5 rounded text-xs" onclick="ui.showFloatText(this, 'Горячий суп согреет душу', '#34d399')">Зайти</button>
+                    <button id="btn-poor-canteen" class="btn-medieval px-4 py-1.5 rounded text-xs" onclick="poorDistrict.eatCanteen(event)">Поесть</button>
                 </div>
 
                 <!-- Ларёк со свежим хлебом -->
@@ -3976,7 +3979,7 @@
             bronze: 2.5,
             silver: 2.0,
 
-            wheat: 0.8,
+            wheat: 0.1,
             wood: 1.0,
             stone: 1.5,
             herbs: 0.3,
@@ -4800,7 +4803,13 @@
                 role: "Нищий",
                 icon: "fa-user-injured",
                 dialogue: {
-                    root: {
+                    root: function() {
+                        if (!gameState.npcStates) gameState.npcStates = {};
+                        if (gameState.npcStates.old_beggar_helped) return "thanks";
+                        if (gameState.npcStates.old_beggar_refused) return "silent";
+                        return "root_default";
+                    },
+                    root_default: {
                         text: "Подайте монетку, добрый человек... Я уже три дня не ел... Старик совсем обессилел...",
                         options: [
                             { text: "Подать 10 золотых", next: "give_small" },
@@ -4823,7 +4832,15 @@
                     },
                     refuse: {
                         text: "*кивает с пониманием* Ничего страшного... Времена нынче тяжелые для всех...",
-                        options: [{ text: "Прощайте", next: "exit" }]
+                        options: [{ text: "Прощайте", action: "beggar_refuse", next: "exit" }]
+                    },
+                    thanks: {
+                        text: "Спасибо вам за помощь, добрый человек. Я не забуду вашей доброты.",
+                        options: [{ text: "Пусть вам сопутствует удача", next: "exit" }]
+                    },
+                    silent: {
+                        text: "...",
+                        options: [{ text: "Уйти", next: "exit" }]
                     }
                 }
             },
@@ -4985,6 +5002,24 @@
                     game.save();
                     ui.showFloatText(document.body, "Новая работа: Грузчик!", "#fbbf24");
                     ui.updateJobs();
+                }
+                if (action === 'beggar_give_10' || action === 'beggar_give_50' || action === 'beggar_give_100') {
+                    if (!gameState.npcStates) gameState.npcStates = {};
+                    const amount = action === 'beggar_give_10' ? 10 : action === 'beggar_give_50' ? 50 : 100;
+                    if (gameState.gold >= amount) {
+                        gameState.gold -= amount;
+                        gameState.npcStates.old_beggar_helped = true;
+                        game.save();
+                        ui.updateStats();
+                        ui.showFloatText(document.body, `- ${amount} золота`, "#ffdd55");
+                    } else {
+                        ui.showFloatText(document.body, "Не хватает золота", "#ff5555");
+                    }
+                }
+                if (action === 'beggar_refuse') {
+                    if (!gameState.npcStates) gameState.npcStates = {};
+                    gameState.npcStates.old_beggar_refused = true;
+                    game.save();
                 }
                 if (action === 'buy_peasant') {
                     game.buyClothes('peasant', 5000);
@@ -7184,6 +7219,79 @@
                 } else {
                     ui.showFloatText(event.target, "Нужно 20 золота", "#ff5555");
                 }
+            },
+            
+            getMskDayKey: function(ts) {
+                return Math.floor((ts + 3 * 60 * 60 * 1000) / 86400000);
+            },
+            
+            getNextResetTs: function(nowTs = Date.now()) {
+                const next = new Date(nowTs);
+                next.setUTCHours(21, 0, 0, 0); // 00:00 MSK
+                if (nowTs >= next.getTime()) {
+                    next.setUTCDate(next.getUTCDate() + 1);
+                }
+                return next.getTime();
+            },
+            
+            eatCanteen: function(event) {
+                if (!gameState.npcStates) gameState.npcStates = {};
+                const btn = document.getElementById('btn-poor-canteen');
+                
+                if (gameState.level > 7) {
+                    ui.showFloatText(event.target, "Доступно до 7 уровня", "#ff5555");
+                    return;
+                }
+                
+                const today = this.getMskDayKey(Date.now());
+                const lastDay = gameState.npcStates.poorCanteenDay || -1;
+                if (lastDay === today) {
+                    const leftMs = this.getNextResetTs() - Date.now();
+                    const h = Math.floor(leftMs / 3600000);
+                    const m = Math.floor((leftMs % 3600000) / 60000);
+                    ui.showFloatText(event.target, `Уже поел. До следующего: ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`, "#777");
+                    return;
+                }
+                
+                const restore = Math.floor(gameState.maxHunger * 0.5);
+                gameState.hunger = Math.min(gameState.maxHunger, gameState.hunger + restore);
+                gameState.npcStates.poorCanteenDay = today;
+                game.save();
+                ui.updateStats();
+                ui.showFloatText(event.target, `+${restore} Сытость!`, "#34d399");
+                this.updateUI();
+            },
+            
+            startCanteenTimer: function() {
+                if (this._timerInterval) return;
+                this._timerInterval = setInterval(() => {
+                    const el = document.getElementById('poor-canteen-timer');
+                    if (!el) return;
+                    const nowTs = Date.now();
+                    const nextTs = this.getNextResetTs(nowTs);
+                    let diff = Math.max(0, nextTs - nowTs);
+                    const h = Math.floor(diff / 3600000);
+                    diff %= 3600000;
+                    const m = Math.floor(diff / 60000);
+                    diff %= 60000;
+                    const s = Math.floor(diff / 1000);
+                    el.innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+                }, 1000);
+            },
+            
+            updateUI: function() {
+                const btn = document.getElementById('btn-poor-canteen');
+                if (!btn) return;
+                btn.disabled = false;
+                btn.innerText = "Поесть";
+                
+                if (gameState.level > 7) {
+                    btn.disabled = true;
+                    btn.innerText = "Недоступно";
+                } else if (gameState.npcStates && this.getMskDayKey(Date.now()) === (gameState.npcStates.poorCanteenDay || -1)) {
+                    btn.disabled = true;
+                    btn.innerText = "Уже сегодня";
+                }
             }
         };
 
@@ -8342,6 +8450,10 @@
                     ui.updateAll();
                 }
                 if(screenId === 'poor-district' || screenId === 'noble-quarter') housing.updateUI();
+                if (screenId === 'poor-district') {
+                    poorDistrict.updateUI();
+                    poorDistrict.startCanteenTimer();
+                }
                 if (screenId === 'noble-quarter') {
                     if (!gameState.clothes || !gameState.clothes.peasant) {
                         dialogue.start('noble_guard');
