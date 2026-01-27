@@ -912,8 +912,7 @@
                     <!-- Inventory Tabs -->
                     <div class="flex items-center gap-2 overflow-x-auto pb-2 mb-2 no-scrollbar">
                         <button onclick="inventory.switchCategory('tools')" id="tab-inv-tools" class="sub-tab active">Инструменты</button>
-                        <button onclick="inventory.switchCategory('weapons')" id="tab-inv-weapons" class="sub-tab">Меч</button>
-                        <button onclick="inventory.switchCategory('armor')" id="tab-inv-armor" class="sub-tab">Броня</button>
+                        <button onclick="inventory.switchCategory('combat')" id="tab-inv-combat" class="sub-tab">Мечи/Броня</button>
                         <button onclick="inventory.switchCategory('potions')" id="tab-inv-potions" class="sub-tab">Зелья</button>
                         <button onclick="inventory.switchCategory('other')" id="tab-inv-other" class="sub-tab">Другое</button>
                     </div>
@@ -1399,7 +1398,9 @@
 
             <!-- The Port -->
             <div id="job-port" class="panel rounded-lg p-0 relative overflow-hidden h-40 group">
-                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1549140600-78c9b8275ee3?q=80&w=2070')] bg-cover bg-center opacity-30 group-hover:opacity-40 transition-opacity"></div>
+                <div class="absolute inset-0 bg-[url('https://i.postimg.cc/6Q8ndMmr/IMG-4591.jpg')] bg-cover bg-center opacity-30 group-hover:opacity-40 transition-opacity"></div>
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(30,144,255,0.25),transparent_60%)]"></div>
+                <div class="absolute inset-0 bg-black/30"></div>
                 <div class="absolute inset-0 p-4 flex flex-col justify-between">
                     <div class="flex justify-between items-start">
                         <div>
@@ -1458,7 +1459,9 @@
 
             <!-- The Field -->
             <div id="job-field" class="panel rounded-lg p-0 relative overflow-hidden h-40 opacity-50 group">
-                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=2070')] bg-cover bg-center opacity-30 group-hover:opacity-40 transition-opacity"></div>
+                <div class="absolute inset-0 bg-[url('https://i.postimg.cc/446tb7WK/IMG-4588.jpg')] bg-cover bg-center opacity-30 group-hover:opacity-40 transition-opacity"></div>
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(200,170,110,0.25),transparent_60%)]"></div>
+                <div class="absolute inset-0 bg-black/30"></div>
                  <div class="absolute inset-0 p-4 flex flex-col justify-between">
                     <div class="flex justify-between items-start">
                         <div>
@@ -1487,7 +1490,9 @@
 
             <!-- The Mine -->
             <div id="job-mine" class="panel rounded-lg p-0 relative overflow-hidden h-40 opacity-50 group">
-                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1516937963518-0096035d50ac?q=80&w=2070')] bg-cover bg-center opacity-30 group-hover:opacity-40 transition-opacity"></div>
+                <div class="absolute inset-0 bg-[url('https://i.postimg.cc/dVxTt8Vg/IMG-4589.jpg')] bg-cover bg-center opacity-30 group-hover:opacity-40 transition-opacity"></div>
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(16,185,129,0.25),transparent_60%)]"></div>
+                <div class="absolute inset-0 bg-black/30"></div>
                  <div class="absolute inset-0 p-4 flex flex-col justify-between">
                     <div class="flex justify-between items-start">
                         <div>
@@ -1519,13 +1524,19 @@
 
             <!-- The Hunter -->
             <div id="job-hunter" class="panel rounded-lg p-0 relative overflow-hidden h-40 opacity-50 group">
-                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1599409385627-c37025816b3f?q=80&w=2070')] bg-cover bg-center opacity-40 group-hover:opacity-50 transition-opacity"></div>
+                <div class="absolute inset-0 bg-[url('https://i.postimg.cc/52T6Mbsn/IMG-4590.jpg')] bg-cover bg-center opacity-40 group-hover:opacity-50 transition-opacity"></div>
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(239,68,68,0.25),transparent_60%)]"></div>
+                <div class="absolute inset-0 bg-black/30"></div>
                  <div class="absolute inset-0 p-4 flex flex-col justify-between">
                     <div class="flex justify-between items-start">
                         <div>
                             <h3 class="medieval-font text-lg text-white drop-shadow-md">Охота</h3>
                             <p class="text-xs text-gray-300 drop-shadow-md">Добыча шкур в лесу.</p>
                             <p class="text-xs text-[#c8aa6e] mt-1 drop-shadow-md" id="job-info-hunter">Требуется: Арбалет</p>
+                            <div class="flex items-center gap-1 mt-1">
+                                <i class="fas fa-skull-crossbones text-red-500 text-xs"></i>
+                                <span class="text-xs text-red-500 font-bold drop-shadow-md">ОПАСНО</span>
+                            </div>
                         </div>
                         <span class="text-xs bg-red-900/80 text-red-200 px-2 py-0.5 rounded border border-red-800 backdrop-blur-sm">Ур 30</span>
                     </div>
@@ -2344,17 +2355,35 @@
                 <div class="absolute right-0 top-0 p-4 opacity-20">
                     <i class="fas fa-bed text-6xl"></i>
                 </div>
-                <h3 class="medieval-font text-lg text-[#e0e0e0]">Ночлег</h3>
-                <p class="text-xs text-[#a0a0a0] mb-3 w-3/4">Восстанавливает 100% здоровья.</p>
-                <div class="flex items-center gap-2 mb-3 text-sm">
-                    <span class="text-[#c8aa6e]">Цена: 20</span> <i class="far fa-gem text-emerald-400"></i> / сутки
+                <h3 class="medieval-font text-lg text-[#e0e0e0]">Комната</h3>
+                <p class="text-xs text-[#a0a0a0] mb-3 w-3/4">Личная комната с сундуком для вещей (200 кг).</p>
+                
+                <div id="tavern-room-rent-ui">
+                    <div class="flex items-center gap-2 mb-3 text-sm">
+                        <span class="text-[#c8aa6e]">Цена: 1000</span> <i class="fas fa-coins text-yellow-500"></i> / сутки
+                    </div>
+                    <button onclick="locations.tavernRent()" class="btn-medieval w-full py-2 rounded text-sm">
+                        Снять комнату
+                    </button>
                 </div>
-                <button id="btn-rent-room" onclick="locations.tavernRent()" class="btn-medieval w-full py-2 rounded text-sm">
-                    Снять комнату
-                </button>
-                <p id="rent-status" class="text-xs text-green-500 mt-2 hidden">
-                    <i class="fas fa-check-circle"></i> Комната оплачена
-                </p>
+
+                <div id="tavern-room-active-ui" class="hidden">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="text-xs text-green-400"><i class="fas fa-check-circle"></i> Арендовано</div>
+                        <div id="room-timer" class="text-xs font-mono text-[#c8aa6e]">--:--:--</div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-2 mt-2">
+                        <button onclick="locations.openTavernChest()" class="panel p-2 rounded flex flex-col items-center justify-center hover:bg-[#222] transition-colors">
+                            <i class="fas fa-box-open text-2xl text-[#c8aa6e] mb-1"></i>
+                            <span class="text-xs font-bold">Сундук</span>
+                        </button>
+                        <button onclick="locations.tavernExtendRent()" class="panel p-2 rounded flex flex-col items-center justify-center hover:bg-[#222] transition-colors">
+                            <i class="fas fa-clock text-2xl text-blue-400 mb-1"></i>
+                            <span class="text-xs font-bold">Продлить (1к)</span>
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <!-- Brawl Night -->
@@ -2477,6 +2506,41 @@
             </div>
         </section>
 
+        <!-- Tavern Chest View -->
+        <section id="view-tavern-chest" class="hidden space-y-4 h-full flex flex-col">
+             <div class="flex items-center gap-4 mb-2">
+                <button onclick="router.navigate('tavern')" class="w-8 h-8 rounded border border-[#333] bg-black/30 flex items-center justify-center text-[#a0a0a0] hover:bg-[#333]">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h2 class="medieval-font text-xl text-[#c8aa6e]">Сундук в комнате</h2>
+            </div>
+
+            <div class="flex-1 overflow-hidden grid grid-cols-2 gap-2 h-full">
+                <!-- Inventory Side -->
+                <div class="panel p-2 rounded flex flex-col h-full overflow-hidden">
+                    <h3 class="text-xs font-bold text-[#a0a0a0] mb-2 uppercase text-center border-b border-[#333] pb-1">Инвентарь</h3>
+                    <div id="chest-inventory-grid" class="flex-1 overflow-y-auto grid grid-cols-3 gap-1 content-start pr-1">
+                        <!-- Items -->
+                    </div>
+                </div>
+
+                <!-- Chest Side -->
+                <div class="panel p-2 rounded flex flex-col h-full overflow-hidden border border-[#c8aa6e]/30">
+                    <div class="flex justify-between items-center mb-2 border-b border-[#333] pb-1">
+                        <h3 class="text-xs font-bold text-[#c8aa6e] uppercase">Сундук</h3>
+                        <span class="text-[10px] text-[#a0a0a0]"><span id="chest-weight">0</span>/200 кг</span>
+                    </div>
+                    <div id="chest-storage-grid" class="flex-1 overflow-y-auto grid grid-cols-3 gap-1 content-start pr-1">
+                        <!-- Stored Items -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel p-2 rounded text-[10px] text-[#777] text-center">
+                Нажмите на предмет, чтобы переместить его.
+            </div>
+        </section>
+
         <!-- VIEW: MARKET -->
         <section id="view-market" class="hidden space-y-4">
             <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-amber-950/80 via-[#1a1a1d] to-[#0f0f10]">
@@ -2511,7 +2575,7 @@
                 <button onclick="market.switchCategory('tools')" id="tab-market-tools" class="sub-tab active">Инструменты</button>
                 <button onclick="market.switchCategory('armor')" id="tab-market-armor" class="sub-tab">Бронник</button>
                 <button onclick="market.switchCategory('weapons')" id="tab-market-weapons" class="sub-tab">Мечник</button>
-                <button onclick="market.switchCategory('horses')" id="tab-market-horses" class="sub-tab">Конюшня</button>
+                <!-- Horses tab removed -->
             </div>
 
             <!-- Content: Tools -->
@@ -2766,8 +2830,9 @@
 
             <!-- Content: Placeholders -->
             <div id="market-placeholder" class="hidden flex flex-col items-center justify-center py-10 opacity-50">
-                <i class="fas fa-dungeon text-4xl mb-3 text-gray-600"></i>
-                <p class="text-sm text-gray-500">Этот торговец еще не прибыл в город.</p>
+                <i class="fas fa-horse-head text-4xl mb-3 text-amber-700"></i>
+                <p class="text-sm text-gray-400 text-center mb-2">Лошади продаются у Фермера Хью</p>
+                <button onclick="router.navigate('view-livestock-trader')" class="btn-medieval px-4 py-1 rounded text-xs">Перейти к Фермеру</button>
             </div>
 
             <!-- Resources Trade -->
@@ -2971,6 +3036,101 @@
                         </div>
                         <button onclick="livestock.buyAnimal('cow')" class="btn-medieval w-full py-1.5 rounded text-[10px]">Купить</button>
                     </div>
+
+                    <!-- Horses Section -->
+                    <div class="space-y-3 mt-4 pt-4 border-t border-[#333]">
+                        <h3 class="text-xs text-[#777] uppercase pb-1">Лошади</h3>
+                        
+                        <!-- Arabian -->
+                        <div class="border border-[#333] rounded p-3 bg-black/20">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="flex gap-3">
+                                    <i class="fas fa-horse text-amber-200 text-lg mt-1"></i>
+                                    <div>
+                                        <div class="text-sm font-bold text-[#e0e0e0]">Арабский скакун</div>
+                                        <div class="text-[10px] text-[#777]">Быстрая и выносливая.</div>
+                                    </div>
+                                </div>
+                                <div class="text-sm text-yellow-400 font-bold">150,000 <i class="fas fa-coins"></i></div>
+                            </div>
+                            <button onclick="livestock.buyHorse('arabian')" class="btn-medieval w-full py-1.5 rounded text-[10px]">Купить</button>
+                        </div>
+
+                        <!-- Thoroughbred -->
+                        <div class="border border-[#333] rounded p-3 bg-black/20">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="flex gap-3">
+                                    <i class="fas fa-horse-head text-orange-300 text-lg mt-1"></i>
+                                    <div>
+                                        <div class="text-sm font-bold text-[#e0e0e0]">Чистокровная</div>
+                                        <div class="text-[10px] text-[#777]">Рождена для скачек.</div>
+                                    </div>
+                                </div>
+                                <div class="text-sm text-yellow-400 font-bold">120,000 <i class="fas fa-coins"></i></div>
+                            </div>
+                            <button onclick="livestock.buyHorse('thoroughbred')" class="btn-medieval w-full py-1.5 rounded text-[10px]">Купить</button>
+                        </div>
+
+                        <!-- Draft -->
+                        <div class="border border-[#333] rounded p-3 bg-black/20">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="flex gap-3">
+                                    <i class="fas fa-weight-hanging text-stone-400 text-lg mt-1"></i>
+                                    <div>
+                                        <div class="text-sm font-bold text-[#e0e0e0]">Тяжеловоз</div>
+                                        <div class="text-[10px] text-[#777]">Мощная. +100кг веса.</div>
+                                    </div>
+                                </div>
+                                <div class="text-sm text-yellow-400 font-bold">80,000 <i class="fas fa-coins"></i></div>
+                            </div>
+                            <button onclick="livestock.buyHorse('draft')" class="btn-medieval w-full py-1.5 rounded text-[10px]">Купить</button>
+                        </div>
+                        
+                         <!-- Pony -->
+                        <div class="border border-[#333] rounded p-3 bg-black/20">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="flex gap-3">
+                                    <i class="fas fa-horse text-yellow-600 text-lg mt-1"></i>
+                                    <div>
+                                        <div class="text-sm font-bold text-[#e0e0e0]">Пони</div>
+                                        <div class="text-[10px] text-[#777]">Недорогая.</div>
+                                    </div>
+                                </div>
+                                <div class="text-sm text-yellow-400 font-bold">30,000 <i class="fas fa-coins"></i></div>
+                            </div>
+                            <button onclick="livestock.buyHorse('pony')" class="btn-medieval w-full py-1.5 rounded text-[10px]">Купить</button>
+                        </div>
+
+                        <!-- Mustang -->
+                        <div class="border border-[#333] rounded p-3 bg-black/20">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="flex gap-3">
+                                    <i class="fas fa-wind text-slate-400 text-lg mt-1"></i>
+                                    <div>
+                                        <div class="text-sm font-bold text-[#e0e0e0]">Мустанг</div>
+                                        <div class="text-[10px] text-[#777]">Дикая и своенравная.</div>
+                                    </div>
+                                </div>
+                                <div class="text-sm text-yellow-400 font-bold">90,000 <i class="fas fa-coins"></i></div>
+                            </div>
+                            <button onclick="livestock.buyHorse('mustang')" class="btn-medieval w-full py-1.5 rounded text-[10px]">Купить</button>
+                        </div>
+
+                        <!-- Warhorse -->
+                        <div class="border border-[#333] rounded p-3 bg-black/20">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="flex gap-3">
+                                    <i class="fas fa-chess-knight text-red-500 text-lg mt-1"></i>
+                                    <div>
+                                        <div class="text-sm font-bold text-[#e0e0e0]">Боевой конь</div>
+                                        <div class="text-[10px] text-[#777]">Тренированная для битв.</div>
+                                    </div>
+                                </div>
+                                <div class="text-sm text-yellow-400 font-bold">250,000 <i class="fas fa-coins"></i></div>
+                            </div>
+                            <button onclick="livestock.buyHorse('warhorse')" class="btn-medieval w-full py-1.5 rounded text-[10px]">Купить</button>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="space-y-3">
@@ -3056,6 +3216,31 @@
                             <span class="text-xs text-[#e0e0e0]">Верстак</span>
                         </div>
                         <p class="text-[10px] text-gray-500">Создавайте новые предметы (в разработке)</p>
+                    </div>
+
+                    <!-- Stable -->
+                    <div class="border border-[#333] rounded p-2 bg-black/20">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-horse-head text-amber-500"></i>
+                                <span class="text-xs text-[#e0e0e0]">Конюшня (Ур <span id="stable-level">0</span>)</span>
+                            </div>
+                        </div>
+                        <div id="stable-empty" class="text-[10px] text-gray-500 mb-2">Нет лошади</div>
+                        <div id="stable-occupied" class="hidden flex items-center gap-2 mb-2 p-2 bg-[#1a1a1d] rounded border border-[#333]">
+                             <div class="w-8 h-8 flex items-center justify-center bg-black/50 rounded text-[#c8aa6e]">
+                                 <i id="horse-icon" class="fas fa-horse"></i>
+                             </div>
+                             <div>
+                                 <div id="horse-name" class="text-xs text-[#e0e0e0] font-bold">Лошадь</div>
+                                 <div id="horse-desc" class="text-[8px] text-gray-500">Описание</div>
+                             </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="village.upgradeStable()" class="flex-1 bg-[#222] border border-amber-600 text-amber-500 py-1 rounded text-[10px] hover:bg-amber-900/30">
+                                Улучшить (2000 <i class="fas fa-coins"></i>)
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Pig Pen -->
@@ -3326,7 +3511,7 @@
                     <div class="w-12 h-12 rounded-full bg-gradient-to-br from-stone-800/60 to-stone-950 flex items-center justify-center border-2 border-stone-600/60 shadow-[0_0_15px_rgba(120,113,108,0.2)]">
                         <i class="fas fa-house-crack text-stone-400 text-lg"></i>
                     </div>
-                    <h2 class="medieval-font text-2xl text-stone-300 drop-shadow-md">Район для бедняков</h2>
+                    <h2 class="medieval-font text-2xl text-stone-300 drop-shadow-md">Район бедняков</h2>
                 </div>
             </div>
 
@@ -3335,17 +3520,69 @@
                     Узкие грязные улочки, старые лачуги и отчаянные люди. Здесь выживают, а не живут.
                 </div>
 
+                <!-- Старый нищий -->
                 <div class="panel p-3 rounded flex items-center justify-between border-gray-700/30 bg-gray-900/20">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-full border border-gray-500 bg-[#222] flex items-center justify-center">
-                            <i class="fas fa-hand-holding-medical text-gray-400"></i>
+                            <i class="fas fa-user-injured text-gray-400"></i>
                         </div>
                         <div>
                             <div class="text-sm text-[#e0e0e0] font-bold">Старый нищий</div>
-                            <div class="text-[10px] text-[#a0a0a0]">Проситель</div>
+                            <div class="text-[10px] text-[#a0a0a0]">Просит милостыню</div>
                         </div>
                     </div>
-                    <button class="btn-medieval px-4 py-1.5 rounded text-xs" onclick="ui.showFloatText(this, 'Скоро...', '#777')">Говорить</button>
+                    <button class="btn-medieval px-4 py-1.5 rounded text-xs" onclick="dialogue.start('old_beggar')">Говорить</button>
+                </div>
+
+                <!-- Благотворительная столовая -->
+                <div class="panel p-3 rounded flex items-center justify-between border-green-700/30 bg-green-900/10">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full border border-green-600 bg-[#222] flex items-center justify-center">
+                            <i class="fas fa-bowl-food text-green-500"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm text-[#e0e0e0] font-bold">Столовая для бедных</div>
+                            <div class="text-[10px] text-[#a0a0a0]">Бесплатный суп раз в день</div>
+                        </div>
+                    </div>
+                    <button class="btn-medieval px-4 py-1.5 rounded text-xs" onclick="ui.showFloatText(this, 'Горячий суп согреет душу', '#34d399')">Зайти</button>
+                </div>
+
+                <!-- Ларёк со свежим хлебом -->
+                <div class="panel rounded-lg p-3 space-y-3 border-amber-700/30 bg-amber-900/10">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-sm text-amber-300 font-bold"><i class="fas fa-bread-slice mr-2"></i>Ларёк со свежим хлебом</h3>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-bread-slice text-3xl text-amber-400"></i>
+                            <div>
+                                <div class="text-sm text-[#e0e0e0] font-bold">Свежий хлеб</div>
+                                <div class="text-[10px] text-gray-400">Восстанавливает 20% голода</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm">
+                        <span class="text-yellow-500">Цена: 20 <i class="fas fa-coins"></i></span>
+                    </div>
+                    <button onclick="poorDistrict.buyBread(event)" class="btn-medieval w-full py-2 rounded text-sm">
+                        Купить хлеб
+                    </button>
+                </div>
+
+                <!-- Азартный игрок -->
+                <div class="panel p-3 rounded flex items-center justify-between border-yellow-700/30 bg-yellow-900/10">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full border border-yellow-600 bg-[#222] flex items-center justify-center">
+                            <i class="fas fa-dice text-yellow-500"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm text-[#e0e0e0] font-bold">Азартный игрок</div>
+                            <div class="text-[10px] text-[#a0a0a0]">Предлагает сыграть в кости</div>
+                        </div>
+                    </div>
+                    <button class="btn-medieval px-4 py-1.5 rounded text-xs" onclick="dialogue.start('gambler')">Сыграть</button>
                 </div>
 
                 <!-- Poor House Section -->
@@ -3693,11 +3930,11 @@
         };
 
         const JOBS_DB = {
-            port: { name: 'Порт', resource: 'fish', price: 5, xp: 1, tool: 'rod', injuryChance: 0.04 },
-            loader: { name: 'Грузчик', resource: 'gold', price: 6, xp: 2, tool: null, levelReq: 3, injuryChance: 0.04, requiresAlex: true },
-            field: { name: 'Поле', resource: 'wheat', price: 15, xp: 3, tool: 'sickle', levelReq: 5 },
-            mine: { name: 'Рудник', resource: 'ore', price: 40, xp: 8, tool: 'pickaxe', levelReq: 15 },
-            hunter: { name: 'Охота', resource: 'leather', price: 100, xp: 15, tool: 'crossbow', levelReq: 30 }
+            port: { name: 'Порт', resource: 'fish', price: 5, xp: 1, tool: 'rod', injuryChance: 0.01 },
+            loader: { name: 'Грузчик', resource: 'gold', price: 6, xp: 2, tool: null, levelReq: 3, injuryChance: 0.01, requiresAlex: true },
+            field: { name: 'Поле', resource: 'wheat', price: 15, xp: 3, tool: 'sickle', levelReq: 5, injuryChance: 0.01 },
+            mine: { name: 'Рудник', resource: 'ore', price: 40, xp: 8, tool: 'pickaxe', levelReq: 15, injuryChance: 0.03 },
+            hunter: { name: 'Охота', resource: 'leather', price: 100, xp: 15, tool: 'crossbow', levelReq: 30, injuryChance: 0.05 }
         };
         
         const RESOURCE_NAMES = {
@@ -4557,6 +4794,78 @@
                         options: [{ text: "Понял", next: "exit" }]
                     }
                 }
+            },
+            old_beggar: {
+                name: "Старый нищий",
+                role: "Нищий",
+                icon: "fa-user-injured",
+                dialogue: {
+                    root: {
+                        text: "Подайте монетку, добрый человек... Я уже три дня не ел... Старик совсем обессилел...",
+                        options: [
+                            { text: "Подать 10 золотых", next: "give_small" },
+                            { text: "Подать 50 золотых", next: "give_medium" },
+                            { text: "Подать 100 золотых", next: "give_large" },
+                            { text: "Извини, ничего нет", next: "refuse" }
+                        ]
+                    },
+                    give_small: {
+                        text: "Благословит вас Господь! Хоть на хлеба хватит...",
+                        options: [{ text: "Всего хорошего", action: "beggar_give_10", next: "exit" }]
+                    },
+                    give_medium: {
+                        text: "О, такой щедрости я не видел уже много лет! Спасибо вам, добрый человек! Пусть удача сопутствует вам!",
+                        options: [{ text: "Поправляйтесь", action: "beggar_give_50", next: "exit" }]
+                    },
+                    give_large: {
+                        text: "Сто золотых?! Это... это целое состояние для меня! Благословение небес на вас! Вы спасли мою жизнь!",
+                        options: [{ text: "Берегите себя", action: "beggar_give_100", next: "exit" }]
+                    },
+                    refuse: {
+                        text: "*кивает с пониманием* Ничего страшного... Времена нынче тяжелые для всех...",
+                        options: [{ text: "Прощайте", next: "exit" }]
+                    }
+                }
+            },
+            gambler: {
+                name: "Азартный игрок",
+                role: "Игрок в кости",
+                icon: "fa-dice",
+                dialogue: {
+                    root: {
+                        text: "Эй, приятель! Хочешь испытать удачу? Сыграем в кости на 500 золотых? Все честно — бросаем два кубика, у кого сумма больше, тот и выиграл!",
+                        options: [
+                            { text: "Давай сыграем! (500 золотых)", next: "check_gold" },
+                            { text: "Как это работает?", next: "rules" },
+                            { text: "Нет, спасибо", next: "refuse" }
+                        ]
+                    },
+                    rules: {
+                        text: "Все просто! Каждый бросает два кубика. У кого сумма выпавших чисел больше — тот забирает банк в 1000 золотых! Ничья — деньги возвращаются. Азарт, да?",
+                        options: [
+                            { text: "Ладно, сыграем! (500 золотых)", next: "check_gold" },
+                            { text: "Не сегодня", next: "exit" }
+                        ]
+                    },
+                    check_gold: function() {
+                        if (gameState.gold >= 500) {
+                            return "play";
+                        }
+                        return "no_gold";
+                    },
+                    no_gold: {
+                        text: "Хм, приятель, похоже у тебя не хватает золота. Возвращайся, когда будет 500 золотых!",
+                        options: [{ text: "Вернусь позже", next: "exit" }]
+                    },
+                    play: {
+                        text: "Отлично! Делаем ставки... Бросаем кости!",
+                        options: [{ text: "Бросить кости!", action: "play_dice", next: "exit" }]
+                    },
+                    refuse: {
+                        text: "Как знаешь! Но помни — удача любит смелых! Заходи, если передумаешь!",
+                        options: [{ text: "Может быть позже", next: "exit" }]
+                    }
+                }
             }
         };
 
@@ -4742,6 +5051,75 @@
                 }
                 if (action === 'start_q_lili_visit') {
                     this.addQuest('q_lili_visit', 'Приглашение Лили', 'Навестить Лили в Дворянском квартале.', {type: 'visit', target: 'noble-quarter', count: 1}, {gold: 0, xp: 50});
+                }
+                if (action === 'beggar_give_10') {
+                    if (gameState.gold >= 10) {
+                        gameState.gold -= 10;
+                        game.addReputation(1, document.body);
+                        game.save();
+                        ui.updateStats();
+                        ui.showFloatText(document.body, "-10 золота", "#fbbf24");
+                    }
+                }
+                if (action === 'beggar_give_50') {
+                    if (gameState.gold >= 50) {
+                        gameState.gold -= 50;
+                        game.addReputation(3, document.body);
+                        game.save();
+                        ui.updateStats();
+                        ui.showFloatText(document.body, "-50 золота", "#fbbf24");
+                    }
+                }
+                if (action === 'beggar_give_100') {
+                    if (gameState.gold >= 100) {
+                        gameState.gold -= 100;
+                        game.addReputation(5, document.body);
+                        game.save();
+                        ui.updateStats();
+                        ui.showFloatText(document.body, "-100 золота", "#fbbf24");
+                    }
+                }
+                if (action === 'play_dice') {
+                    if (gameState.gold >= 500) {
+                        gameState.gold -= 500;
+                        
+                        // Player rolls
+                        const playerDice1 = Math.floor(Math.random() * 6) + 1;
+                        const playerDice2 = Math.floor(Math.random() * 6) + 1;
+                        const playerTotal = playerDice1 + playerDice2;
+                        
+                        // Gambler rolls
+                        const gamblerDice1 = Math.floor(Math.random() * 6) + 1;
+                        const gamblerDice2 = Math.floor(Math.random() * 6) + 1;
+                        const gamblerTotal = gamblerDice1 + gamblerDice2;
+                        
+                        game.save();
+                        ui.updateStats();
+                        
+                        setTimeout(() => {
+                            let resultText = `Вы: ${playerDice1} + ${playerDice2} = ${playerTotal}\nИгрок: ${gamblerDice1} + ${gamblerDice2} = ${gamblerTotal}\n\n`;
+                            
+                            if (playerTotal > gamblerTotal) {
+                                gameState.gold += 1000;
+                                resultText += "Вы выиграли 1000 золотых!";
+                                game.save();
+                                ui.updateStats();
+                                alert(resultText);
+                                ui.showFloatText(document.body, "+500 золота (выигрыш)", "#34d399");
+                            } else if (playerTotal < gamblerTotal) {
+                                resultText += "Вы проиграли... Игрок забирает банк.";
+                                alert(resultText);
+                                ui.showFloatText(document.body, "-500 золота (проигрыш)", "#ef4444");
+                            } else {
+                                gameState.gold += 500;
+                                resultText += "Ничья! Ставка возвращена.";
+                                game.save();
+                                ui.updateStats();
+                                alert(resultText);
+                                ui.showFloatText(document.body, "Ставка возвращена", "#fbbf24");
+                            }
+                        }, 500);
+                    }
                 }
             },
             
@@ -5435,7 +5813,7 @@
                 // Injury Chance (custom for loader job - 1%, others - 10%)
                 const injuryChance = job.injuryChance !== undefined ? job.injuryChance : 0.1;
                 if (Math.random() < injuryChance) {
-                    let dmg = Math.floor(Math.random() * 10) + 5;
+                    let dmg = Math.floor(Math.random() * 7) + 6; // Урон от 6 до 12
                     // Apply hunger damage multiplier
                     dmg = Math.floor(dmg * this.getHungerDamageMultiplier());
                     gameState.hp = Math.max(0, gameState.hp - dmg);
@@ -5740,15 +6118,177 @@
                 }
             },
 
-            tavernRent: function() {
-                if (gameState.emeralds >= 20) {
-                    gameState.emeralds -= 20;
-                    gameState.hp = gameState.maxHp; 
+            tavernRent: function(event) {
+                if (gameState.gold >= 1000) {
+                    gameState.gold -= 1000;
+                    if (!gameState.tavernRoom) gameState.tavernRoom = { rented: false, expiresAt: 0, chest: {} };
+                    
+                    const now = Date.now();
+                    // If active, extend. If not, start new.
+                    if (gameState.tavernRoom.rented && gameState.tavernRoom.expiresAt > now) {
+                        gameState.tavernRoom.expiresAt += 24 * 60 * 60 * 1000;
+                    } else {
+                        gameState.tavernRoom.rented = true;
+                        gameState.tavernRoom.expiresAt = now + 24 * 60 * 60 * 1000;
+                    }
+                    
                     ui.updateStats();
-                    ui.showFloatText(event.target, "Отдых... HP восстановлено!", "#34d399");
+                    locations.updateTavernUI();
+                    ui.showFloatText(event.target, "Комната оплачена!", "#34d399");
                     game.save();
                 } else {
-                    ui.showFloatText(event.target, "Не хватает изумрудов", "#ff5555");
+                    ui.showFloatText(event.target, "Нужно 1000 золота", "#ff5555");
+                }
+            },
+            
+            tavernExtendRent: function() {
+                 this.tavernRent(event);
+            },
+
+            updateTavernUI: function() {
+                if (!gameState.tavernRoom) gameState.tavernRoom = { rented: false, expiresAt: 0, chest: {} };
+                
+                const now = Date.now();
+                const rentUI = document.getElementById('tavern-room-rent-ui');
+                const activeUI = document.getElementById('tavern-room-active-ui');
+                const timerEl = document.getElementById('room-timer');
+                
+                // Render Location Quest
+                const questContainer = document.getElementById('tavern-quest-container');
+                if (questContainer) {
+                    if (gameState.locationQuests && gameState.locationQuests.tavern && !gameState.locationQuests.tavern.claimed) {
+                        const q = gameState.locationQuests.tavern;
+                        questContainer.innerHTML = `
+                            <div class="panel p-2 rounded border border-yellow-600/50 mb-4">
+                                <div class="text-xs text-[#c8aa6e] font-bold mb-1">Задание: ${q.text}</div>
+                                <div class="flex justify-between items-center">
+                                    <div class="text-[10px] text-[#a0a0a0]">${q.current}/${q.goal}</div>
+                                    ${q.current >= q.goal ? 
+                                        `<button onclick="quests.claimLocationQuest('tavern')" class="btn-medieval px-2 py-0.5 text-[10px] rounded">Забрать награду</button>` : 
+                                        `<div class="text-[10px] text-blue-400">Награда: ${q.reward.gold ? q.reward.gold + ' монет' : ''}</div>`
+                                    }
+                                </div>
+                            </div>
+                        `;
+                        questContainer.classList.remove('hidden');
+                    } else {
+                        questContainer.classList.add('hidden');
+                    }
+                }
+                
+                if (gameState.tavernRoom.rented && gameState.tavernRoom.expiresAt > now) {
+                    if (rentUI) rentUI.classList.add('hidden');
+                    if (activeUI) activeUI.classList.remove('hidden');
+                    
+                    const diff = gameState.tavernRoom.expiresAt - now;
+                    const h = Math.floor(diff / 3600000);
+                    const m = Math.floor((diff % 3600000) / 60000);
+                    if (timerEl) timerEl.innerText = `${h}ч ${m}м`;
+                } else {
+                    gameState.tavernRoom.rented = false;
+                    if (rentUI) rentUI.classList.remove('hidden');
+                    if (activeUI) activeUI.classList.add('hidden');
+                }
+            },
+            
+            openTavernChest: function() {
+                router.navigate('tavern-chest');
+            },
+            
+            renderChest: function() {
+                if (!gameState.tavernRoom) gameState.tavernRoom = { rented: false, expiresAt: 0, chest: {} };
+                if (!gameState.tavernRoom.chest) gameState.tavernRoom.chest = {};
+                
+                // Inventory
+                const invGrid = document.getElementById('chest-inventory-grid');
+                if (invGrid) {
+                    invGrid.innerHTML = '';
+                    Object.keys(RESOURCE_NAMES).forEach(key => {
+                        const count = gameState[key] || 0;
+                        if (count > 0) {
+                            const def = RESOURCE_NAMES[key];
+                            const el = document.createElement('div');
+                            el.className = 'aspect-square bg-[#222] border border-[#444] rounded flex flex-col items-center justify-center relative p-1 cursor-pointer hover:border-[#c8aa6e]';
+                            el.innerHTML = `
+                                ${ui.getIconHtml(def.icon, 'text-lg mb-1')}
+                                <span class="text-[8px] uppercase text-gray-400 truncate w-full text-center">${def.name}</span>
+                                <span class="absolute top-0 right-1 text-[8px] font-bold text-white">${count}</span>
+                            `;
+                            el.onclick = () => locations.moveItemToChest(key);
+                            invGrid.appendChild(el);
+                        }
+                    });
+                }
+                
+                // Chest
+                const chestGrid = document.getElementById('chest-storage-grid');
+                const weightEl = document.getElementById('chest-weight');
+                let totalWeight = 0;
+                
+                if (chestGrid) {
+                    chestGrid.innerHTML = '';
+                    Object.keys(gameState.tavernRoom.chest).forEach(key => {
+                        const count = gameState.tavernRoom.chest[key];
+                        if (count > 0) {
+                            const def = RESOURCE_NAMES[key];
+                            const w = (RESOURCE_WEIGHTS[key] || 0) * count;
+                            totalWeight += w;
+                            
+                            const el = document.createElement('div');
+                            el.className = 'aspect-square bg-[#2d1810] border border-orange-900 rounded flex flex-col items-center justify-center relative p-1 cursor-pointer hover:border-orange-500';
+                            el.innerHTML = `
+                                ${ui.getIconHtml(def.icon, 'text-lg mb-1')}
+                                <span class="text-[8px] uppercase text-gray-400 truncate w-full text-center">${def.name}</span>
+                                <span class="absolute top-0 right-1 text-[8px] font-bold text-white">${count}</span>
+                            `;
+                            el.onclick = () => locations.moveItemFromChest(key);
+                            chestGrid.appendChild(el);
+                        }
+                    });
+                }
+                
+                if (weightEl) weightEl.innerText = totalWeight.toFixed(1);
+            },
+            
+            moveItemToChest: function(key) {
+                 if (!gameState.tavernRoom) return;
+                 
+                 if (gameState[key] > 0) {
+                     const weight = RESOURCE_WEIGHTS[key] || 0;
+                     let currentWeight = 0;
+                     Object.keys(gameState.tavernRoom.chest || {}).forEach(k => {
+                         currentWeight += (gameState.tavernRoom.chest[k] || 0) * (RESOURCE_WEIGHTS[k] || 0);
+                     });
+                     
+                     if (currentWeight + weight > 200) {
+                         ui.showFloatText(event.target, "Сундук полон!", "#ff5555");
+                         return;
+                     }
+                     
+                     gameState[key]--;
+                     if (!gameState.tavernRoom.chest) gameState.tavernRoom.chest = {};
+                     if (!gameState.tavernRoom.chest[key]) gameState.tavernRoom.chest[key] = 0;
+                     gameState.tavernRoom.chest[key]++;
+                     
+                     game.save();
+                     locations.renderChest();
+                     ui.updateStats(); // Update inventory weight
+                 }
+            },
+            
+            moveItemFromChest: function(key) {
+                if (!gameState.tavernRoom || !gameState.tavernRoom.chest[key]) return;
+                
+                if (game.hasWeightCapacity(RESOURCE_WEIGHTS[key] || 0)) {
+                    gameState.tavernRoom.chest[key]--;
+                    gameState[key]++;
+                    if (gameState.tavernRoom.chest[key] <= 0) delete gameState.tavernRoom.chest[key];
+                    
+                    game.save();
+                    locations.renderChest();
+                    ui.updateStats();
+                } else {
+                     ui.showFloatText(event.target, "Перегруз!", "#ff5555");
                 }
             },
 
@@ -5975,6 +6515,7 @@
         // --- MARKET CONTROLLER ---
         const market = {
             currentCategory: 'tools',
+            toolMaxLevel: { rod: 5, sickle: 5, pickaxe: 3, crossbow: 3 },
 
             switchCategory: function(cat) {
                 this.currentCategory = cat;
@@ -6044,8 +6585,10 @@
             getToolPrice: function(toolKey) {
                 const toolState = gameState.tools[toolKey];
                 const base = TOOLS_DB[toolKey].baseCost;
-                if (!toolState.owned) return base;
-                return Math.floor(base * (toolState.level + 1) * 1.5);
+                if (!toolState || !toolState.owned) return base;
+                const max = this.toolMaxLevel[toolKey] || 99;
+                if (toolState.level >= max) return 0;
+                return Math.floor(base * Math.pow(5, toolState.level));
             },
 
             renderTools: function() {
@@ -6056,18 +6599,28 @@
                     const btn = document.getElementById(`btn-buy-${key}`);
                     const lvlSpan = document.getElementById(`market-lvl-${key}`);
                     const priceSpan = document.getElementById(`price-${key}`);
+                    const max = this.toolMaxLevel[key] || 99;
                     
                     if(lvlSpan) lvlSpan.innerText = state.owned ? `Ур: ${state.level}` : `Не куплено`;
                     
                     if(btn && priceSpan) {
-                         priceSpan.innerText = price;
-                         if (!state.owned) {
-                            btn.innerHTML = `<span id="price-${key}">${price}</span> <i class="fas fa-coins text-[10px]"></i>`;
+                        if (state.owned && state.level >= max) {
+                            btn.disabled = true;
+                            btn.innerHTML = `Макс`;
+                            if (priceSpan) priceSpan.innerText = '';
+                            btn.style.opacity = '0.6';
                         } else {
-                            btn.innerHTML = `Улучшить <span id="price-${key}">${price}</span> <i class="fas fa-coins text-[10px]"></i>`;
+                            priceSpan.innerText = price;
+                            if (!state.owned) {
+                                btn.disabled = false;
+                                btn.innerHTML = `<span id="price-${key}">${price}</span> <i class="fas fa-coins text-[10px]"></i>`;
+                            } else {
+                                btn.disabled = false;
+                                btn.innerHTML = `Улучшить <span id="price-${key}">${price}</span> <i class="fas fa-coins text-[10px]"></i>`;
+                            }
+                            if (gameState.gold < price) btn.style.opacity = '0.5';
+                            else btn.style.opacity = '1';
                         }
-                        if (gameState.gold < price) btn.style.opacity = '0.5';
-                        else btn.style.opacity = '1';
                     }
 
                     // Update tool icon to ensure SVG/FA consistency
@@ -6082,6 +6635,12 @@
             },
 
             buyOrUpgradeTool: function(key) {
+                const state = gameState.tools[key];
+                const max = this.toolMaxLevel[key] || 99;
+                if (state && state.owned && state.level >= max) {
+                    ui.showFloatText(event.target, "Максимальный уровень", "#777");
+                    return;
+                }
                 const price = this.getToolPrice(key);
                 if (gameState.gold >= price) {
                     const nextWeight = !gameState.tools[key].owned ? (TOOL_WEIGHTS[key] || 0) : 0;
@@ -6425,6 +6984,14 @@
                 const measlesWarning = document.getElementById('measles-warning');
                 const cureSection = document.getElementById('cure-measles-section');
                 
+                // Stable elements
+                const stableLevel = document.getElementById('stable-level');
+                const stableEmpty = document.getElementById('stable-empty');
+                const stableOccupied = document.getElementById('stable-occupied');
+                const horseName = document.getElementById('horse-name');
+                const horseIcon = document.getElementById('horse-icon');
+                const horseDesc = document.getElementById('horse-desc');
+                
                 if (gameState.hasHouse) {
                     if(houseOwned) houseOwned.classList.remove('hidden');
                     if(houseNotOwned) houseNotOwned.classList.add('hidden');
@@ -6440,6 +7007,24 @@
                 if(pigLevel) pigLevel.innerText = gameState.pigPenLevel || 0;
                 if(meatCount) meatCount.innerText = gameState.meat || 0;
                 
+                // Stable Update
+                if (stableLevel) stableLevel.innerText = gameState.stableLevel || 0;
+                
+                if (gameState.horse) {
+                    if (stableEmpty) stableEmpty.classList.add('hidden');
+                    if (stableOccupied) stableOccupied.classList.remove('hidden');
+                    
+                    const horse = HORSES_DB[gameState.horse];
+                    if (horse) {
+                        if (horseName) horseName.innerText = horse.name;
+                        if (horseDesc) horseDesc.innerText = horse.desc;
+                        if (horseIcon) horseIcon.className = `fas ${horse.icon}`;
+                    }
+                } else {
+                    if (stableEmpty) stableEmpty.classList.remove('hidden');
+                    if (stableOccupied) stableOccupied.classList.add('hidden');
+                }
+
                 if (gameState.hasMeasles) {
                     if(measlesWarning) measlesWarning.classList.remove('hidden');
                     if(cureSection) cureSection.classList.remove('hidden');
@@ -6477,6 +7062,22 @@
                 }
             },
             
+            upgradeStable: function() {
+                const currentLevel = gameState.stableLevel || 0;
+                const cost = (currentLevel + 1) * 2000;
+                
+                if (gameState.gold >= cost) {
+                    gameState.gold -= cost;
+                    gameState.stableLevel = (gameState.stableLevel || 0) + 1;
+                    game.save();
+                    ui.updateStats();
+                    this.updateUI();
+                    ui.showFloatText(event.target, "Конюшня улучшена!", "#ec4899");
+                } else {
+                    ui.showFloatText(event.target, `Нужно ${cost} золота`, "#ff5555");
+                }
+            },
+
             collectMeat: function() {
                 if (gameState.pigPenLevel < 1) {
                     ui.showFloatText(event.target, "Сначала постройте свинарник", "#ff5555");
@@ -6570,6 +7171,22 @@
             }
         };
 
+        // --- POOR DISTRICT CONTROLLER ---
+        const poorDistrict = {
+            buyBread: function(event) {
+                if (gameState.gold >= 20) {
+                    gameState.gold -= 20;
+                    const hungerRestore = Math.floor(gameState.maxHunger * 0.2); // 20% от максимального голода
+                    gameState.hunger = Math.min(gameState.maxHunger, gameState.hunger + hungerRestore);
+                    game.save();
+                    ui.updateStats();
+                    ui.showFloatText(event.target, `+${hungerRestore} Сытость!`, "#fbbf24");
+                } else {
+                    ui.showFloatText(event.target, "Нужно 20 золота", "#ff5555");
+                }
+            }
+        };
+
         // --- BULLETIN BOARD CONTROLLER ---
         const bulletin = {
             quests: {
@@ -6642,6 +7259,15 @@
         };
 
         // --- SKILLS CONTROLLER ---
+        const HORSES_DB = {
+            'arabian': { name: 'Арабский скакун', price: 150000, speed: 1.5, carry: 20, desc: 'Быстрая и выносливая лошадь. Увеличивает скорость путешествий.', icon: 'fa-horse' },
+            'thoroughbred': { name: 'Чистокровная', price: 120000, speed: 1.4, carry: 15, desc: 'Рождена для скачек. Очень быстрая.', icon: 'fa-horse-head' },
+            'draft': { name: 'Тяжеловоз', price: 80000, speed: 0.8, carry: 100, desc: 'Мощная лошадь для перевозки грузов. Сильно увеличивает переносимый вес.', icon: 'fa-weight-hanging' },
+            'pony': { name: 'Пони', price: 30000, speed: 1.0, carry: 10, desc: 'Маленькая лошадка. Недорогая и неприхотливая.', icon: 'fa-horse' },
+            'mustang': { name: 'Мустанг', price: 90000, speed: 1.3, carry: 25, desc: 'Дикая и своенравная. Хороша в дальних переходах.', icon: 'fa-wind' },
+            'warhorse': { name: 'Боевой конь', price: 250000, speed: 1.2, carry: 40, desc: 'Тренированная для битв. Повышает авторитет.', icon: 'fa-chess-knight' }
+        };
+
         const livestock = {
             animalPrices: {
                 rabbit: 4000,
@@ -6687,6 +7313,37 @@
                 ui.updateStats();
                 ui.showFloatText(anchor, "Животное куплено!", "#34d399");
                 game.addReputation(1, anchor);
+            },
+
+            buyHorse: function(key) {
+                const anchor = event && event.target ? event.target : document.body;
+                
+                // Check if stable exists
+                if (!gameState.stableLevel || gameState.stableLevel < 1) {
+                    ui.showFloatText(anchor, "Нужна конюшня (в деревне)", "#ff5555");
+                    return;
+                }
+                
+                // Check if already have a horse
+                if (gameState.horse) {
+                    if (!confirm("У вас уже есть лошадь. Заменить её? Старая лошадь пропадет.")) return;
+                }
+                
+                const horse = HORSES_DB[key];
+                if (!horse) return;
+                
+                if (gameState.gold < horse.price) {
+                    ui.showFloatText(anchor, "Не хватает золота", "#ff5555");
+                    return;
+                }
+                
+                gameState.gold -= horse.price;
+                gameState.horse = key;
+                game.save();
+                ui.updateStats();
+                village.updateUI();
+                ui.showFloatText(anchor, `Куплено: ${horse.name}`, "#34d399");
+                game.addReputation(5, anchor);
             },
 
             buyFeed: function(feed) {
@@ -6818,8 +7475,29 @@
                     });
                 }
 
+                if (this.currentCategory === 'combat') {
+                    // Объединенная категория для мечей и брони
+                    // Показываем мечи
+                    const swordKey = 'sword';
+                    const swordState = gameState.tools && gameState.tools[swordKey];
+                    if (swordState && swordState.owned) {
+                        const db = TOOLS_DB[swordKey];
+                        items.push({
+                            kind: 'tool',
+                            key: swordKey,
+                            name: db.name,
+                            icon: db.icon,
+                            level: swordState.level,
+                            count: 1,
+                            weight: TOOL_WEIGHTS[swordKey] || 0,
+                            desc: itemModal.getDescriptionForTool(swordKey)
+                        });
+                    }
+                    // Здесь можно добавить броню в будущем
+                }
+
                 if (this.currentCategory === 'weapons') {
-                    // For now: swords live in tools, but we still show sword here if owned
+                    // Старая категория weapons - для обратной совместимости
                     const key = 'sword';
                     const state = gameState.tools && gameState.tools[key];
                     if (state && state.owned) {
@@ -7620,6 +8298,8 @@
                 document.getElementById('view-jobs').classList.add('hidden');
                 document.getElementById('view-town-square').classList.add('hidden');
                 document.getElementById('view-tavern').classList.add('hidden');
+                const tavernChest = document.getElementById('view-tavern-chest');
+                if (tavernChest) tavernChest.classList.add('hidden');
                 document.getElementById('view-treasury').classList.add('hidden');
                 document.getElementById('view-dark-forest').classList.add('hidden');
                 const trainingCamp = document.getElementById('view-training-camp');
@@ -7689,6 +8369,18 @@
                 }
                 if (screenId === 'bookhouse') {
                     ui.maybeTriggerBookhousePouch();
+                }
+
+                if (screenId === 'tavern') {
+                    locations.updateTavernUI();
+                }
+                if (screenId === 'tavern-chest') {
+                    locations.renderChest();
+                }
+
+                // Random Location Quests
+                if (screenId === 'tavern' || screenId === 'poor-district') {
+                    quests.tryGenerateLocationQuest(screenId);
                 }
             }
         };
