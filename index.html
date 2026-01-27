@@ -297,7 +297,15 @@
             transition: transform 3s cubic-bezier(0.1, 0.7, 0.1, 1);
         }
         .spin-anim {
-            animation: spin 0.5s linear infinite;
+            animation: wheelSpin 1.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+        }
+        @keyframes wheelSpin {
+            0% { 
+                transform: rotate(0deg);
+            }
+            100% { 
+                transform: rotate(1080deg);
+            }
         }
         @keyframes spin {
             100% { transform: rotate(360deg); }
@@ -2396,30 +2404,75 @@
             <div class="panel rounded-lg p-4 text-center space-y-4 overflow-hidden relative">
                 <h3 class="medieval-font text-lg text-[#c8aa6e]">Колесо Удачи</h3>
                 
-                <div class="relative w-48 h-48 mx-auto my-4">
-                    <div id="wheel" class="w-full h-full rounded-full border-4 border-[#c8aa6e] relative bg-[#222] shadow-[0_0_20px_rgba(0,0,0,0.5)] flex items-center justify-center overflow-hidden wheel-container">
-                        <div class="absolute inset-0 opacity-20 bg-[conic-gradient(#444_0deg_36deg,#222_36deg_72deg,#444_72deg_108deg,#222_108deg_144deg,#444_144deg_180deg,#222_180deg_216deg,#444_216deg_252deg,#222_252deg_288deg,#444_288deg_324deg,#222_324deg_360deg)]"></div>
-                        <i class="fas fa-dice text-4xl text-[#555]"></i>
+                <div class="relative w-56 h-56 mx-auto my-4">
+                    <!-- Wheel -->
+                    <div id="wheel" class="w-full h-full rounded-full border-4 border-[#c8aa6e] relative shadow-[0_0_30px_rgba(200,170,110,0.4)] flex items-center justify-center overflow-hidden wheel-container" style="background: conic-gradient(
+                        from 0deg,
+                        #2d1810 0deg 60deg,
+                        #1a1410 60deg 120deg,
+                        #2d1810 120deg 180deg,
+                        #1a1410 180deg 240deg,
+                        #2d1810 240deg 300deg,
+                        #1a1410 300deg 360deg
+                    );">
+                        <!-- Center circle -->
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-[#c8aa6e] to-[#8b733d] border-2 border-[#e0c89b] shadow-[0_0_20px_rgba(200,170,110,0.6)] flex items-center justify-center">
+                                <i class="fas fa-dice text-2xl text-[#1a1410]"></i>
+                            </div>
+                        </div>
+                        
+                        <!-- Prize segments (decorative) -->
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <!-- Lines dividing segments -->
+                            <div class="absolute w-full h-0.5 bg-[#c8aa6e]/30 rotate-0"></div>
+                            <div class="absolute w-full h-0.5 bg-[#c8aa6e]/30 rotate-60"></div>
+                            <div class="absolute w-full h-0.5 bg-[#c8aa6e]/30 rotate-[120deg]"></div>
+                        </div>
                     </div>
-                    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-2 text-[#c8aa6e] z-10 text-2xl">
-                        <i class="fas fa-caret-down"></i>
+                    
+                    <!-- Pointer -->
+                    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-3 z-10">
+                        <div class="relative">
+                            <i class="fas fa-caret-down text-4xl text-[#c8aa6e] drop-shadow-[0_0_8px_rgba(200,170,110,0.8)]"></i>
+                            <div class="absolute inset-0 blur-sm">
+                                <i class="fas fa-caret-down text-4xl text-[#c8aa6e]"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="text-sm text-[#a0a0a0]">
-                    Цена: <span class="text-emerald-400 font-bold">1 <i class="far fa-gem"></i></span>
+                <div class="text-sm text-[#a0a0a0] mb-3">
+                    Цена: <span class="text-emerald-400 font-bold text-lg">1 <i class="far fa-gem"></i></span>
                 </div>
 
-                <div class="grid grid-cols-2 gap-2 text-[10px] text-gray-500 text-left px-2">
-                    <div>10 <i class="far fa-gem text-emerald-400"></i> (10%)</div>
-                    <div>100 <i class="far fa-gem text-emerald-400"></i> (1%)</div>
-                    <div>10к <i class="fas fa-coins text-yellow-500"></i> (15%)</div>
-                    <div>5к <i class="fas fa-coins text-yellow-500"></i> (25%)</div>
-                    <div class="col-span-2 text-center">1к <i class="fas fa-coins text-yellow-500"></i> (49%)</div>
+                <!-- Prize list -->
+                <div class="bg-black/30 rounded-lg p-3 mb-3 border border-[#c8aa6e]/20">
+                    <div class="text-xs text-[#c8aa6e] font-bold mb-2 uppercase tracking-wider">Возможные призы:</div>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <div class="bg-[#1a1410] rounded p-2 border border-yellow-600/30">
+                            <i class="fas fa-coins text-yellow-500"></i> <span class="text-[#e0e0e0]">500 золота</span>
+                        </div>
+                        <div class="bg-[#1a1410] rounded p-2 border border-yellow-600/30">
+                            <i class="fas fa-coins text-yellow-500"></i> <span class="text-[#e0e0e0]">1,000 золота</span>
+                        </div>
+                        <div class="bg-[#1a1410] rounded p-2 border border-yellow-600/40">
+                            <i class="fas fa-coins text-yellow-500"></i> <span class="text-[#e0e0e0]">5,000 золота</span>
+                        </div>
+                        <div class="bg-[#1a1410] rounded p-2 border border-emerald-600/30">
+                            <i class="far fa-gem text-emerald-400"></i> <span class="text-[#e0e0e0]">10 изумрудов</span>
+                        </div>
+                        <div class="bg-[#1a1410] rounded p-2 border border-emerald-600/40">
+                            <i class="far fa-gem text-emerald-400"></i> <span class="text-[#e0e0e0]">30 изумрудов</span>
+                        </div>
+                        <div class="bg-[#1a1410] rounded p-2 border border-emerald-600/50 shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+                            <i class="far fa-gem text-emerald-400"></i> <span class="text-[#e0e0e0] font-bold">100 изумрудов!</span>
+                        </div>
+                    </div>
                 </div>
 
-                <button id="btn-spin" onclick="locations.tavernSpin()" class="btn-medieval w-full py-2 rounded font-bold">
-                    Крутить!
+                <button id="btn-spin" onclick="locations.tavernSpin()" class="btn-medieval w-full py-3 rounded font-bold text-base">
+                    <i class="fas fa-dice-d20 mr-2"></i>Испытать удачу!
                 </button>
             </div>
         </section>
@@ -5762,28 +5815,46 @@
                 const wheel = document.getElementById('wheel');
                 wheel.classList.add('spin-anim');
                 
-                // Determine Reward
+                // Determine Reward with new probabilities
+                // 500 gold: 50%, 1000 gold: 30%, 5000 gold: 10%, 10 gems: 5%, 30 gems: 4%, 100 gems: 1%
                 const rand = Math.random() * 100;
-                let reward = { type: 'gold', val: 1000, text: '1000 Золота' };
+                let reward = { type: 'gold', val: 500, text: '500 Золота' };
                 
-                if (rand < 1) reward = { type: 'gem', val: 100, text: '100 ИЗУМРУДОВ!' };
-                else if (rand < 11) reward = { type: 'gem', val: 10, text: '10 Изумрудов' };
-                else if (rand < 26) reward = { type: 'gold', val: 10000, text: '10,000 Золота' };
-                else if (rand < 51) reward = { type: 'gold', val: 5000, text: '5,000 Золота' };
+                if (rand < 1) {
+                    // 1% chance
+                    reward = { type: 'gem', val: 100, text: '100 ИЗУМРУДОВ!' };
+                } else if (rand < 5) {
+                    // 4% chance (1-5)
+                    reward = { type: 'gem', val: 30, text: '30 Изумрудов' };
+                } else if (rand < 10) {
+                    // 5% chance (5-10)
+                    reward = { type: 'gem', val: 10, text: '10 Изумрудов' };
+                } else if (rand < 20) {
+                    // 10% chance (10-20)
+                    reward = { type: 'gold', val: 5000, text: '5,000 Золота' };
+                } else if (rand < 50) {
+                    // 30% chance (20-50)
+                    reward = { type: 'gold', val: 1000, text: '1,000 Золота' };
+                }
+                // else: 50% chance (50-100) - 500 gold (default)
                 
                 setTimeout(() => {
                     wheel.classList.remove('spin-anim');
                     btn.disabled = false;
                     
-                    if (reward.type === 'gold') gameState.gold += reward.val;
-                    else gameState.emeralds += reward.val;
+                    if (reward.type === 'gold') {
+                        gameState.gold += reward.val;
+                    } else {
+                        gameState.emeralds += reward.val;
+                    }
                     
                     game.save();
                     ui.updateStats();
                     
                     const color = reward.type === 'gem' ? '#34d399' : '#c8aa6e';
-                    ui.showFloatText(btn, `+${reward.text}`, color);
-                }, 1000);
+                    const icon = reward.type === 'gem' ? '💎' : '🪙';
+                    ui.showFloatText(btn, `${icon} +${reward.text}`, color);
+                }, 1500);
             },
 
             tavernEat: function(type) {
@@ -7668,7 +7739,30 @@
                 try {
                     this.allPlayers = {};
                     
-                    // Scan all localStorage keys for player data
+                    // Check if there's a current game save
+                    const currentSave = localStorage.getItem('medieval_rpg_save_v5');
+                    if (currentSave) {
+                        try {
+                            const gameData = JSON.parse(currentSave);
+                            // Get player ID from Telegram or generate one
+                            let playerId = 'current_player';
+                            if (window.Telegram && window.Telegram.WebApp && 
+                                window.Telegram.WebApp.initDataUnsafe && 
+                                window.Telegram.WebApp.initDataUnsafe.user) {
+                                playerId = window.Telegram.WebApp.initDataUnsafe.user.id.toString();
+                                gameData.username = window.Telegram.WebApp.initDataUnsafe.user.username || 
+                                                   window.Telegram.WebApp.initDataUnsafe.user.first_name || 
+                                                   'Игрок';
+                            }
+                            gameData.telegramId = playerId;
+                            gameData.lastPlayed = Date.now();
+                            this.allPlayers[playerId] = gameData;
+                        } catch (e) {
+                            console.error('Error parsing current save:', e);
+                        }
+                    }
+                    
+                    // Also scan for any player_* keys (legacy or multi-user support)
                     for (let i = 0; i < localStorage.length; i++) {
                         const key = localStorage.key(i);
                         if (key && key.startsWith('player_')) {
@@ -7693,6 +7787,7 @@
                             <div class="text-center text-gray-500 py-4">
                                 <i class="fas fa-users text-3xl mb-2 opacity-30"></i>
                                 <div>Нет сохраненных игроков</div>
+                                <div class="text-xs mt-2 text-gray-600">Начните игру, чтобы увидеть данные</div>
                             </div>
                         `;
                     } else {
@@ -7866,7 +7961,14 @@
                     playerData.hunger = parseInt(document.getElementById('dev-edit-hunger').value) || 100;
                     
                     // Save to localStorage
-                    localStorage.setItem(`player_${this.currentPlayerId}`, JSON.stringify(playerData));
+                    if (this.currentPlayerId === 'current_player' || 
+                        localStorage.getItem('medieval_rpg_save_v5')) {
+                        // This is the current game save
+                        localStorage.setItem('medieval_rpg_save_v5', JSON.stringify(playerData));
+                    } else {
+                        // This is a separate player save
+                        localStorage.setItem(`player_${this.currentPlayerId}`, JSON.stringify(playerData));
+                    }
                     
                     // Update in memory
                     this.allPlayers[this.currentPlayerId] = playerData;
@@ -7886,10 +7988,11 @@
                     this.loadAllPlayers();
                     
                     // If this is current player, offer to reload
-                    if (window.Telegram && window.Telegram.WebApp && 
+                    if (this.currentPlayerId === 'current_player' || 
+                        (window.Telegram && window.Telegram.WebApp && 
                         window.Telegram.WebApp.initDataUnsafe && 
                         window.Telegram.WebApp.initDataUnsafe.user &&
-                        window.Telegram.WebApp.initDataUnsafe.user.id == this.currentPlayerId) {
+                        window.Telegram.WebApp.initDataUnsafe.user.id == this.currentPlayerId)) {
                         
                         if (confirm('Это текущий игрок. Перезагрузить игру для применения изменений?')) {
                             location.reload();
@@ -7912,7 +8015,12 @@
                 }
                 
                 try {
-                    localStorage.removeItem(`player_${this.currentPlayerId}`);
+                    if (this.currentPlayerId === 'current_player' || 
+                        localStorage.getItem('medieval_rpg_save_v5')) {
+                        localStorage.removeItem('medieval_rpg_save_v5');
+                    } else {
+                        localStorage.removeItem(`player_${this.currentPlayerId}`);
+                    }
                     delete this.allPlayers[this.currentPlayerId];
                     
                     // Show success message
