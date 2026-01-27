@@ -185,6 +185,94 @@
             transform: scale(1);
         }
 
+        /* Developer Panel Styles */
+        .dev-panel-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(8px);
+            z-index: 200;
+            display: none;
+            overflow-y: auto;
+        }
+        .dev-panel-overlay.open {
+            display: block;
+        }
+        .dev-panel-content {
+            background: linear-gradient(135deg, #1a1a1d 0%, #2a1a2a 100%);
+            border: 2px solid #ff00ff;
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.4);
+            margin: 20px auto;
+            max-width: 800px;
+            border-radius: 8px;
+        }
+        .dev-search-input {
+            background: #0f0f10;
+            border: 1px solid #ff00ff;
+            color: #e0e0e0;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            width: 100%;
+            font-family: monospace;
+        }
+        .dev-search-input:focus {
+            outline: none;
+            border-color: #c8aa6e;
+            box-shadow: 0 0 10px rgba(200, 170, 110, 0.3);
+        }
+        .dev-player-card {
+            background: #1a1a1d;
+            border: 1px solid #3e3e42;
+            border-radius: 6px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .dev-player-card:hover {
+            border-color: #ff00ff;
+            background: #2a1a2a;
+            transform: translateX(4px);
+        }
+        .dev-stat-input {
+            background: #0f0f10;
+            border: 1px solid #3e3e42;
+            color: #e0e0e0;
+            padding: 0.4rem 0.75rem;
+            border-radius: 4px;
+            width: 100%;
+            font-family: monospace;
+        }
+        .dev-stat-input:focus {
+            outline: none;
+            border-color: #c8aa6e;
+        }
+        .dev-btn {
+            background: linear-gradient(to bottom, #ff00ff, #8b008b);
+            border: 1px solid #ff00ff;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .dev-btn:hover {
+            background: linear-gradient(to bottom, #ff44ff, #aa00aa);
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+        }
+        .dev-btn:active {
+            transform: scale(0.98);
+        }
+        .game-title-secret {
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s;
+        }
+        .game-title-secret:active {
+            color: #ff00ff;
+        }
+
         /* Level Up Modal Animations */
         .levelup-card {
             border: 1px solid rgba(200, 170, 110, 0.6);
@@ -373,11 +461,6 @@
             <path fill="currentColor" d="M392.074,61.312H191.302c-5.541,0-10.039,4.497-10.039,10.039c0,5.532,4.497,10.039,10.039,10.039h200.771c5.531,0,10.028-4.506,10.029-10.039C402.101,65.81,397.605,61.312,392.074,61.312z"/>
             <path fill="currentColor" d="M433.592,100.102c-5.541,0-10.039,4.496-10.039,10.029V292.1c0,5.531,4.497,10.039,10.039,10.039c5.531,0,10.039-4.508,10.039-10.039V110.141C443.63,104.599,439.124,100.102,433.592,100.102z"/>
             <path fill="currentColor" d="M432.227,81.39c5.531,0,10.027-4.506,10.027-10.039c0-5.541-4.496-10.039-10.027-10.039c-5.542,0-10.039,4.497-10.039,10.039C422.188,76.883,426.684,81.39,432.227,81.39z"/>
-        </symbol>
-        <!-- Mushrooms (Solid) -->
-        <symbol id="icon-mushroom" viewBox="0 0 330.18 330.18">
-            <path fill="currentColor" d="M165.09,0C88.446,0,26.316,57.804,26.316,129.108c0,4.096,0.214,34.958,0.615,38.957c0,0,4.17,17.875,138.159,17.875c135.583,0,138.158-17.875,138.158-17.875c0.4-4,0.615-34.861,0.615-38.957C303.863,57.804,241.732,0,165.09,0z M121.426,41.466c-11.932,2.803-23.274,8.827-33.276,17.01c-23.177,18.962-32.125,46.485-29.974,75.899c0.542,7.416-10.981,7.363-11.52,0c-2.307-31.545,7.718-63.076,32.705-83.519c11.18-9.146,24.783-17.158,39.002-20.498C125.59,28.661,128.656,39.768,121.426,41.466z"/>
-            <path fill="currentColor" d="M206.987,194.845c-13.836,0.513-25.226,0.775-41.898,0.775c-14.889,0-26.655-0.226-41.896-0.817L109.045,316.47c-0.494,7.54,5.284,13.71,12.841,13.71h86.407c7.557,0,13.336-6.17,12.84-13.71L206.987,194.845z"/>
         </symbol>
     </svg>
 
@@ -569,6 +652,28 @@
         </div>
     </div>
 
+    <!-- Hunger Warning Modal -->
+    <div id="modal-hunger" class="modal-overlay">
+        <div class="modal-content rounded-lg p-6 text-center relative overflow-hidden border-orange-500">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-orange-400 to-transparent"></div>
+            <div class="absolute inset-0 opacity-20 pointer-events-none bg-[radial-gradient(circle_at_top,rgba(251,146,60,0.2),transparent_60%)]"></div>
+            <div class="relative">
+                <div class="w-16 h-16 rounded-full border border-orange-500/60 bg-[#111] flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-utensils text-3xl text-orange-400"></i>
+                </div>
+                <h2 class="medieval-font text-2xl text-orange-300 mb-2">Сильный голод</h2>
+                <p class="text-sm text-[#a0a0a0] mb-4">Ваш персонаж очень голоден! Теперь вы будете получать в два раза больше урона.</p>
+                <div class="panel p-3 rounded bg-black/40 border border-[#333] mb-4 text-left">
+                    <div class="text-[10px] text-[#c8aa6e] uppercase tracking-widest mb-1">Совет</div>
+                    <p class="text-xs text-[#e0e0e0] leading-relaxed">Приготовьте еду, поешьте в таверне или в другом месте, чтобы восстановить сытость.</p>
+                </div>
+                <button onclick="ui.dismissHungerWarning()" class="btn-medieval w-full py-2 rounded text-xs border-orange-500 text-orange-300">
+                    Понял
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Reputation Info Modal -->
     <div id="modal-reputation" class="modal-overlay">
         <div class="modal-content rounded-lg p-6 text-center relative overflow-hidden">
@@ -718,6 +823,17 @@
                     </div>
                     <div class="h-2 bg-[#000] border border-[#333] rounded-full overflow-hidden relative">
                         <div id="hp-bar" class="h-full bg-red-600 w-full transition-all duration-300"></div>
+                    </div>
+                </div>
+
+                <!-- Hunger Status -->
+                <div class="w-full max-w-xs mt-2">
+                    <div class="flex justify-between text-xs text-[#a0a0a0] mb-1">
+                        <span>Голод</span>
+                        <span id="hunger-text" class="text-amber-400">100 / 100</span>
+                    </div>
+                    <div class="h-2 bg-[#000] border border-[#333] rounded-full overflow-hidden relative">
+                        <div id="hunger-bar" class="h-full bg-amber-500 w-full transition-all duration-300"></div>
                     </div>
                 </div>
             </div>
@@ -874,6 +990,13 @@
                             1 Жетон
                         </button>
                     </div>
+                </div>
+            </div>
+            
+            <!-- Secret Game Title (10 clicks to open dev panel) -->
+            <div class="text-center mt-6 pb-4">
+                <div class="game-title-secret text-[10px] text-gray-700 medieval-font tracking-wider" onclick="devPanel.handleSecretClick()">
+                    Medieval Legacy
                 </div>
             </div>
         </section>
@@ -2253,7 +2376,7 @@
             <!-- Food & Thomas Event -->
             <div class="panel rounded-lg p-4 space-y-3">
                 <h3 class="medieval-font text-lg text-[#c8aa6e]">Горячая еда</h3>
-                <p class="text-xs text-[#a0a0a0]">Восстанавливает 100% здоровья.</p>
+                <p class="text-xs text-[#a0a0a0]">Восстанавливает 100% здоровья и 100% сытости.</p>
                 
                 <div class="grid grid-cols-2 gap-3">
                     <button onclick="locations.tavernEat('stew')" class="panel p-2 rounded flex flex-col items-center bg-[#222] border border-[#333] hover:border-[#c8aa6e] transition-colors group">
@@ -2418,6 +2541,172 @@
                     </div>
                     <button id="btn-buy-sword" onclick="market.buyOrUpgradeTool('sword')" class="bg-[#111] border border-[#333] px-3 py-1.5 text-xs text-[#c8aa6e] rounded hover:border-[#c8aa6e]">
                         <span id="price-sword">1000</span> <i class="fas fa-coins text-[10px]"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Content: Weapons (Swords) -->
+            <div id="market-weapons" class="hidden space-y-3">
+                <!-- Wooden Sword -->
+                <div class="panel p-3 rounded flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-[#222] border border-[#333] rounded flex items-center justify-center text-amber-700">
+                            <i class="fas fa-splotch text-2xl"></i>
+                        </div>
+                        <div>
+                            <div class="text-[#e0e0e0] font-serif">Деревянный меч</div>
+                            <div class="text-xs text-[#a0a0a0]">Урон: +5</div>
+                        </div>
+                    </div>
+                    <button onclick="market.buySword('wooden')" class="bg-[#111] border border-[#333] px-3 py-1.5 text-xs text-[#c8aa6e] rounded hover:border-[#c8aa6e]">
+                        5,000 <i class="fas fa-coins text-[10px]"></i>
+                    </button>
+                </div>
+                
+                <!-- Stone Sword -->
+                <div class="panel p-3 rounded flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-[#222] border border-[#333] rounded flex items-center justify-center text-gray-500">
+                            <i class="fas fa-monument text-2xl"></i>
+                        </div>
+                        <div>
+                            <div class="text-[#e0e0e0] font-serif">Каменный меч</div>
+                            <div class="text-xs text-[#a0a0a0]">Урон: +15</div>
+                        </div>
+                    </div>
+                    <button onclick="market.buySword('stone')" class="bg-[#111] border border-[#333] px-3 py-1.5 text-xs text-[#c8aa6e] rounded hover:border-[#c8aa6e]">
+                        15,000 <i class="fas fa-coins text-[10px]"></i>
+                    </button>
+                </div>
+                
+                <!-- Metal Sword -->
+                <div class="panel p-3 rounded flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-[#222] border border-[#333] rounded flex items-center justify-center text-blue-400">
+                            <i class="fas fa-khanda text-2xl"></i>
+                        </div>
+                        <div>
+                            <div class="text-[#e0e0e0] font-serif">Металлический меч</div>
+                            <div class="text-xs text-[#a0a0a0]">Урон: +25</div>
+                        </div>
+                    </div>
+                    <button onclick="market.buySword('metal')" class="bg-[#111] border border-[#333] px-3 py-1.5 text-xs text-emerald-400 rounded hover:border-emerald-400">
+                        200 <i class="far fa-gem text-[10px]"></i>
+                    </button>
+                </div>
+                
+                <!-- Steel Sword -->
+                <div class="panel p-3 rounded flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-[#222] border border-[#333] rounded flex items-center justify-center text-cyan-400">
+                            <i class="fas fa-sword text-2xl"></i>
+                        </div>
+                        <div>
+                            <div class="text-[#e0e0e0] font-serif">Стальной меч</div>
+                            <div class="text-xs text-[#a0a0a0]">Урон: +40</div>
+                        </div>
+                    </div>
+                    <button onclick="market.buySword('steel')" class="bg-[#111] border border-[#333] px-3 py-1.5 text-xs text-emerald-400 rounded hover:border-emerald-400">
+                        500 <i class="far fa-gem text-[10px]"></i>
+                    </button>
+                </div>
+                
+                <!-- Silver Master Sword -->
+                <div class="panel p-3 rounded flex items-center justify-between border-purple-900/50 bg-purple-900/10">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-[#222] border border-purple-500 rounded flex items-center justify-center text-purple-300">
+                            <i class="fas fa-wand-magic-sparkles text-2xl"></i>
+                        </div>
+                        <div>
+                            <div class="text-purple-200 font-serif">Серебряный меч мастера</div>
+                            <div class="text-xs text-purple-400">Урон: +60</div>
+                        </div>
+                    </div>
+                    <button onclick="market.buySword('silver')" class="bg-[#111] border border-purple-500 px-3 py-1.5 text-xs text-emerald-400 rounded hover:border-purple-400">
+                        1,500 <i class="far fa-gem text-[10px]"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Content: Armor -->
+            <div id="market-armor" class="hidden space-y-3">
+                <!-- Leather Armor -->
+                <div class="panel p-3 rounded flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-[#222] border border-[#333] rounded flex items-center justify-center text-amber-700">
+                            <i class="fas fa-vest text-2xl"></i>
+                        </div>
+                        <div>
+                            <div class="text-[#e0e0e0] font-serif">Кожаная броня</div>
+                            <div class="text-xs text-[#a0a0a0]">Броня: +5</div>
+                        </div>
+                    </div>
+                    <button onclick="market.buyArmor('leather')" class="bg-[#111] border border-[#333] px-3 py-1.5 text-xs text-[#c8aa6e] rounded hover:border-[#c8aa6e]">
+                        10,000 <i class="fas fa-coins text-[10px]"></i>
+                    </button>
+                </div>
+                
+                <!-- Improved Leather -->
+                <div class="panel p-3 rounded flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-[#222] border border-[#333] rounded flex items-center justify-center text-amber-600">
+                            <i class="fas fa-vest-patches text-2xl"></i>
+                        </div>
+                        <div>
+                            <div class="text-[#e0e0e0] font-serif">Улучшенная кожаная броня</div>
+                            <div class="text-xs text-[#a0a0a0]">Броня: +15</div>
+                        </div>
+                    </div>
+                    <button onclick="market.buyArmor('improved')" class="bg-[#111] border border-[#333] px-3 py-1.5 text-xs text-[#c8aa6e] rounded hover:border-[#c8aa6e]">
+                        30,000 <i class="fas fa-coins text-[10px]"></i>
+                    </button>
+                </div>
+                
+                <!-- Chainmail -->
+                <div class="panel p-3 rounded flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-[#222] border border-[#333] rounded flex items-center justify-center text-gray-400">
+                            <i class="fas fa-user-shield text-2xl"></i>
+                        </div>
+                        <div>
+                            <div class="text-[#e0e0e0] font-serif">Кольчужная броня</div>
+                            <div class="text-xs text-[#a0a0a0]">Броня: +25</div>
+                        </div>
+                    </div>
+                    <button onclick="market.buyArmor('chainmail')" class="bg-[#111] border border-[#333] px-3 py-1.5 text-xs text-emerald-400 rounded hover:border-emerald-400">
+                        200 <i class="far fa-gem text-[10px]"></i>
+                    </button>
+                </div>
+                
+                <!-- Iron Armor -->
+                <div class="panel p-3 rounded flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-[#222] border border-[#333] rounded flex items-center justify-center text-blue-300">
+                            <i class="fas fa-shield text-2xl"></i>
+                        </div>
+                        <div>
+                            <div class="text-[#e0e0e0] font-serif">Железная броня</div>
+                            <div class="text-xs text-[#a0a0a0]">Броня: +40</div>
+                        </div>
+                    </div>
+                    <button onclick="market.buyArmor('iron')" class="bg-[#111] border border-[#333] px-3 py-1.5 text-xs text-emerald-400 rounded hover:border-emerald-400">
+                        600 <i class="far fa-gem text-[10px]"></i>
+                    </button>
+                </div>
+                
+                <!-- Silver Master Armor -->
+                <div class="panel p-3 rounded flex items-center justify-between border-purple-900/50 bg-purple-900/10">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-[#222] border border-purple-500 rounded flex items-center justify-center text-purple-300">
+                            <i class="fas fa-shield-halved text-2xl"></i>
+                        </div>
+                        <div>
+                            <div class="text-purple-200 font-serif">Серебряная броня мастера</div>
+                            <div class="text-xs text-purple-400">Броня: +60</div>
+                        </div>
+                    </div>
+                    <button onclick="market.buyArmor('silver_master')" class="bg-[#111] border border-purple-500 px-3 py-1.5 text-xs text-emerald-400 rounded hover:border-purple-400">
+                        1,200 <i class="far fa-gem text-[10px]"></i>
                     </button>
                 </div>
             </div>
@@ -2812,6 +3101,31 @@
                             150 <i class="far fa-gem"></i>
                         </button>
                     </div>
+                </div>
+            </div>
+
+            <!-- Fresh Bread Stall -->
+            <div class="panel rounded-lg p-4 space-y-3">
+                <div class="flex items-center justify-between">
+                    <h3 class="medieval-font text-lg text-amber-300"><i class="fas fa-bread-slice mr-2"></i>Ларёк со свежим хлебом</h3>
+                </div>
+                
+                <div class="panel p-3 rounded bg-amber-900/10 border border-amber-700/30">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-bread-slice text-4xl text-amber-400"></i>
+                            <div>
+                                <div class="text-sm text-[#e0e0e0] font-bold">Свежий хлеб</div>
+                                <div class="text-[10px] text-gray-400">Восстанавливает 20% голода</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 mb-3 text-sm">
+                        <span class="text-yellow-500">Цена: 20 <i class="fas fa-coins"></i></span>
+                    </div>
+                    <button onclick="village.buyBread(event)" class="btn-medieval w-full py-2 rounded text-sm">
+                        Купить хлеб
+                    </button>
                 </div>
             </div>
         </section>
@@ -3214,16 +3528,116 @@
         </button>
     </nav>
 
+    <!-- Developer Panel -->
+    <div id="dev-panel" class="dev-panel-overlay">
+        <div class="dev-panel-content">
+            <div class="p-4 border-b-2 border-purple-600 flex justify-between items-center">
+                <h2 class="text-xl font-bold medieval-font" style="color: #ff00ff;">🔧 Developer Panel</h2>
+                <button onclick="devPanel.close()" class="text-2xl text-purple-500 hover:text-purple-300" style="line-height: 1;">&times;</button>
+            </div>
+            
+            <div class="p-4">
+                <!-- Search -->
+                <div class="mb-4">
+                    <label class="block text-sm text-gray-400 mb-2">🔍 Поиск по ID или Username</label>
+                    <input 
+                        type="text" 
+                        id="dev-search" 
+                        class="dev-search-input" 
+                        placeholder="Введите ID или username..."
+                        oninput="devPanel.search(this.value)"
+                    >
+                </div>
+
+                <!-- Players List -->
+                <div id="dev-players-list" class="mb-4" style="max-height: 300px; overflow-y: auto;">
+                    <!-- Players will be listed here -->
+                </div>
+
+                <!-- Player Details -->
+                <div id="dev-player-details" class="hidden">
+                    <div class="border-t-2 border-purple-600 pt-4 mt-4">
+                        <h3 class="text-lg font-bold mb-3" style="color: #ff00ff;">Редактирование игрока</h3>
+                        
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <div>
+                                <label class="block text-xs text-gray-400 mb-1">ID</label>
+                                <input type="text" id="dev-edit-id" class="dev-stat-input" readonly>
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-400 mb-1">Username</label>
+                                <input type="text" id="dev-edit-username" class="dev-stat-input" readonly>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <div>
+                                <label class="block text-xs text-gray-400 mb-1">💰 Золото</label>
+                                <input type="number" id="dev-edit-gold" class="dev-stat-input">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-400 mb-1">💎 Изумруды</label>
+                                <input type="number" id="dev-edit-gems" class="dev-stat-input">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <div>
+                                <label class="block text-xs text-gray-400 mb-1">⚔️ Уровень</label>
+                                <input type="number" id="dev-edit-level" class="dev-stat-input" min="1" max="100">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-400 mb-1">✨ Опыт</label>
+                                <input type="number" id="dev-edit-xp" class="dev-stat-input" min="0">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 mb-4">
+                            <div>
+                                <label class="block text-xs text-gray-400 mb-1">❤️ Здоровье</label>
+                                <input type="number" id="dev-edit-hp" class="dev-stat-input" min="0" max="100">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-400 mb-1">🍖 Сытость</label>
+                                <input type="number" id="dev-edit-hunger" class="dev-stat-input" min="0" max="100">
+                            </div>
+                        </div>
+
+                        <div class="flex gap-2">
+                            <button onclick="devPanel.savePlayer()" class="dev-btn flex-1">💾 Сохранить</button>
+                            <button onclick="devPanel.deletePlayer()" class="dev-btn flex-1" style="background: linear-gradient(to bottom, #dc2626, #991b1b);">🗑️ Удалить</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // --- CONSTANTS ---
         const TOOLS_DB = {
             rod: { id: 'rod', name: 'Удочка', baseCost: 50, icon: 'icon-rod', job: 'port' },
             sickle: { id: 'sickle', name: 'Серп', baseCost: 500, icon: 'icon-sickle', job: 'field' },
             pickaxe: { id: 'pickaxe', name: 'Кирка', baseCost: 2000, icon: 'icon-pickaxe', job: 'mine' },
-            crossbow: { id: 'crossbow', name: 'Арбалет', baseCost: 5000, icon: 'icon-crossbow', job: 'hunter' },
+            crossbow: { id: 'crossbow', name: 'Арбалет', baseCost: 5000, icon: 'fa-crosshairs', job: 'hunter' },
             sword: { id: 'sword', name: 'Меч', baseCost: 1000, icon: 'fa-khanda', job: 'guard' }
         };
 
+        const SWORDS_DB = {
+            wooden: { id: 'wooden', name: 'Деревянный меч', cost: 5000, costType: 'gold', damage: 5, icon: 'fa-splotch' },
+            stone: { id: 'stone', name: 'Каменный меч', cost: 15000, costType: 'gold', damage: 15, icon: 'fa-monument' },
+            metal: { id: 'metal', name: 'Металлический меч', cost: 200, costType: 'emeralds', damage: 25, icon: 'fa-khanda' },
+            steel: { id: 'steel', name: 'Стальной меч', cost: 500, costType: 'emeralds', damage: 40, icon: 'fa-sword' },
+            silver: { id: 'silver', name: 'Серебряный меч мастера', cost: 1500, costType: 'emeralds', damage: 60, icon: 'fa-wand-magic-sparkles' }
+        };
+
+        const ARMOR_DB = {
+            leather: { id: 'leather', name: 'Кожаная броня', cost: 10000, costType: 'gold', armor: 5, icon: 'fa-vest' },
+            improved: { id: 'improved', name: 'Улучшенная кожаная броня', cost: 30000, costType: 'gold', armor: 15, icon: 'fa-vest-patches' },
+            chainmail: { id: 'chainmail', name: 'Кольчужная броня', cost: 200, costType: 'emeralds', armor: 25, icon: 'fa-user-shield' },
+            iron: { id: 'iron', name: 'Железная броня', cost: 600, costType: 'emeralds', armor: 40, icon: 'fa-shield' },
+            silver_master: { id: 'silver_master', name: 'Серебряная броня мастера', cost: 1200, costType: 'emeralds', armor: 60, icon: 'fa-shield-halved' }
+        };
 
         const JOBS_DB = {
             port: { name: 'Порт', resource: 'fish', price: 5, xp: 1, tool: 'rod', injuryChance: 0.04 },
@@ -3309,6 +3723,9 @@
             level: 1,
             hp: 100,
             maxHp: 100,
+            hunger: 100,
+            maxHunger: 100,
+            actionCount: 0,
             skillPoints: 0,
             luck: 0,
             agility: 0,
@@ -4590,6 +5007,10 @@
                 });
                 if (gameState.hp === undefined) gameState.hp = 100;
                 if (gameState.maxHp === undefined) gameState.maxHp = 100;
+                if (gameState.hunger === undefined) gameState.hunger = 100;
+                if (gameState.maxHunger === undefined) gameState.maxHunger = 100;
+                if (gameState.actionCount === undefined) gameState.actionCount = 0;
+                if (gameState.lastHungerWarning === undefined) gameState.lastHungerWarning = 0;
                 if (gameState.skillPoints === undefined) gameState.skillPoints = 0;
                 if (gameState.luck === undefined) gameState.luck = 0;
                 if (gameState.reputation === undefined) gameState.reputation = 0;
@@ -4826,6 +5247,25 @@
                 }
             },
 
+            trackAction: function() {
+                // Increment action count
+                gameState.actionCount = (gameState.actionCount || 0) + 1;
+                
+                // Every 2 actions, decrease hunger by 1
+                if (gameState.actionCount >= 2) {
+                    gameState.actionCount = 0;
+                    gameState.hunger = Math.max(0, gameState.hunger - 1);
+                }
+                
+                this.save();
+                ui.updateStats();
+            },
+
+            getHungerDamageMultiplier: function() {
+                // Double damage when hunger is 0
+                return gameState.hunger <= 0 ? 2 : 1;
+            },
+
             checkDailyReward: function() {
                 const today = new Date().toDateString();
                 
@@ -4942,7 +5382,9 @@
                 // Injury Chance (custom for loader job - 1%, others - 10%)
                 const injuryChance = job.injuryChance !== undefined ? job.injuryChance : 0.1;
                 if (Math.random() < injuryChance) {
-                    const dmg = Math.floor(Math.random() * 10) + 5;
+                    let dmg = Math.floor(Math.random() * 10) + 5;
+                    // Apply hunger damage multiplier
+                    dmg = Math.floor(dmg * this.getHungerDamageMultiplier());
                     gameState.hp = Math.max(0, gameState.hp - dmg);
                     ui.showFloatText(event.target, `-${dmg} HP (Травма!)`, "#ef4444");
                     ui.updateStats();
@@ -4989,6 +5431,9 @@
                 quests.onEvent('work', jobType, 1);
                 // Also trigger gather event for story quests
                 quests.onEvent('gather', job.resource, amount);
+
+                // Track action for hunger system
+                this.trackAction();
 
                 ui.updateStats();
                 if (window.navigator && window.navigator.vibrate) {
@@ -5291,7 +5736,8 @@
                         game.addReputation(rep, btn);
                         ui.showFloatText(btn, `Победа! +${gold} монет`, "#fbbf24");
                     } else {
-                        const dmg = 15 + Math.floor(Math.random() * 15);
+                        let dmg = 15 + Math.floor(Math.random() * 15);
+                        dmg = Math.floor(dmg * game.getHungerDamageMultiplier());
                         gameState.hp = Math.max(1, gameState.hp - dmg);
                         ui.showFloatText(btn, `Поражение... -${dmg} HP`, "#ef4444");
                     }
@@ -5342,15 +5788,16 @@
 
             tavernEat: function(type) {
                 if (gameState.gold >= 100) {
-                    if (gameState.hp >= gameState.maxHp) {
+                    if (gameState.hp >= gameState.maxHp && gameState.hunger >= gameState.maxHunger) {
                         ui.showFloatText(event.target, "Вы сыты", "#c8aa6e");
                         return;
                     }
                     gameState.gold -= 100;
                     gameState.hp = gameState.maxHp;
+                    gameState.hunger = gameState.maxHunger; // Восстанавливаем голод на 100%
                     ui.updateStats();
                     game.save();
-                    ui.showFloatText(event.target, "HP Восстановлено!", "#34d399");
+                    ui.showFloatText(event.target, "HP и Голод восстановлены!", "#34d399");
 
                     // Thomas Event Trigger
                     if (!gameState.npcStates) gameState.npcStates = {};
@@ -5370,7 +5817,10 @@
                     ui.showFloatText(event.target, "Мало здоровья", "#ff5555");
                     return;
                 }
-                if (!isImmortal) gameState.hp -= 5;
+                if (!isImmortal) {
+                    const dmg = Math.floor(5 * game.getHungerDamageMultiplier());
+                    gameState.hp -= dmg;
+                }
                 
                 game.addXp(3);
                 
@@ -5421,7 +5871,8 @@
                     ui.showFloatText(event.target, "Слишком опасно...", "#ff5555");
                     return;
                 }
-                gameState.hp -= 20;
+                const dmg = Math.floor(20 * game.getHungerDamageMultiplier());
+                gameState.hp -= dmg;
                 game.addXp(20);
                 
                 const roll = Math.random();
@@ -5461,10 +5912,11 @@
                 if(btn) btn.classList.add('active');
 
                 document.getElementById('market-tools').classList.add('hidden');
+                document.getElementById('market-weapons').classList.add('hidden');
+                document.getElementById('market-armor').classList.add('hidden');
                 document.getElementById('market-placeholder').classList.add('hidden');
 
                 if (cat === 'tools') {
-                    // Show common tools
                     document.getElementById('market-tools').classList.remove('hidden');
                     // Hide sword for tools tab
                     const swordEl = document.getElementById('btn-buy-sword').parentElement;
@@ -5476,17 +5928,10 @@
                     });
                     this.renderTools();
                 } else if (cat === 'weapons') {
-                    document.getElementById('market-tools').classList.remove('hidden');
-                    // Hide common tools
-                    ['rod','sickle','pickaxe','crossbow'].forEach(k => {
-                        const el = document.getElementById(`btn-buy-${k}`).parentElement;
-                        if(el) el.style.display = 'none';
-                    });
-                    // Show sword
-                    const swordEl = document.getElementById('btn-buy-sword').parentElement;
-                    if(swordEl) swordEl.style.display = 'flex';
-                    this.renderTools();
-                } else {
+                    document.getElementById('market-weapons').classList.remove('hidden');
+                } else if (cat === 'armor') {
+                    document.getElementById('market-armor').classList.remove('hidden');
+                } else if (cat === 'horses') {
                     document.getElementById('market-placeholder').classList.remove('hidden');
                 }
             },
@@ -5590,6 +6035,70 @@
                 } else {
                     ui.showFloatText(event.target, "Не хватает золота", "#ff5555");
                 }
+            },
+
+            buySword: function(swordId) {
+                const sword = SWORDS_DB[swordId];
+                if (!sword) return;
+
+                // Check if already have this sword
+                if (gameState.currentSword === swordId) {
+                    ui.showFloatText(event.target, "Уже куплено!", "#777");
+                    return;
+                }
+
+                // Check cost
+                if (sword.costType === 'gold') {
+                    if (gameState.gold < sword.cost) {
+                        ui.showFloatText(event.target, "Не хватает золота", "#ff5555");
+                        return;
+                    }
+                    gameState.gold -= sword.cost;
+                } else {
+                    if (gameState.emeralds < sword.cost) {
+                        ui.showFloatText(event.target, "Не хватает изумрудов", "#ff5555");
+                        return;
+                    }
+                    gameState.emeralds -= sword.cost;
+                }
+
+                gameState.currentSword = swordId;
+                gameState.damage = sword.damage;
+                game.save();
+                ui.updateStats();
+                ui.showFloatText(event.target, `${sword.name} куплен!`, "#34d399");
+            },
+
+            buyArmor: function(armorId) {
+                const armor = ARMOR_DB[armorId];
+                if (!armor) return;
+
+                // Check if already have this armor
+                if (gameState.currentArmor === armorId) {
+                    ui.showFloatText(event.target, "Уже куплено!", "#777");
+                    return;
+                }
+
+                // Check cost
+                if (armor.costType === 'gold') {
+                    if (gameState.gold < armor.cost) {
+                        ui.showFloatText(event.target, "Не хватает золота", "#ff5555");
+                        return;
+                    }
+                    gameState.gold -= armor.cost;
+                } else {
+                    if (gameState.emeralds < armor.cost) {
+                        ui.showFloatText(event.target, "Не хватает изумрудов", "#ff5555");
+                        return;
+                    }
+                    gameState.emeralds -= armor.cost;
+                }
+
+                gameState.currentArmor = armorId;
+                gameState.armor = armor.armor;
+                game.save();
+                ui.updateStats();
+                ui.showFloatText(event.target, `${armor.name} куплена!`, "#34d399");
             },
 
             ensureWeightCapacity: function(extraWeight) {
@@ -5921,6 +6430,19 @@
                     ui.showFloatText(event.target, `+${meatGain} Мяса`, "#ec4899");
                 } else {
                     ui.showFloatText(event.target, "Подождите ещё", "#777");
+                }
+            },
+            
+            buyBread: function(event) {
+                if (gameState.gold >= 20) {
+                    gameState.gold -= 20;
+                    const hungerRestore = Math.floor(gameState.maxHunger * 0.2); // 20% от максимального голода
+                    gameState.hunger = Math.min(gameState.maxHunger, gameState.hunger + hungerRestore);
+                    game.save();
+                    ui.updateStats();
+                    ui.showFloatText(event.target, `+${hungerRestore} Сытость!`, "#fbbf24");
+                } else {
+                    ui.showFloatText(event.target, "Нужно 20 золота", "#ff5555");
                 }
             },
             
@@ -6448,6 +6970,14 @@
                 const hpPercent = (gameState.hp / gameState.maxHp) * 100;
                 document.getElementById('hp-bar').style.width = `${hpPercent}%`;
                 document.getElementById('hp-text').innerText = `${gameState.hp} / ${gameState.maxHp}`;
+                
+                // Update hunger bar
+                const hungerPercent = (gameState.hunger / gameState.maxHunger) * 100;
+                const hungerBar = document.getElementById('hunger-bar');
+                const hungerText = document.getElementById('hunger-text');
+                if (hungerBar) hungerBar.style.width = `${hungerPercent}%`;
+                if (hungerText) hungerText.innerText = `${gameState.hunger} / ${gameState.maxHunger}`;
+                
                 ui.updateMarketCounts();
 
                 const weightText = document.getElementById('weight-text');
@@ -6494,6 +7024,20 @@
                     const lowHpModal = document.getElementById('modal-lowhp');
                     if (lowHpModal && lowHpModal.classList.contains('open')) {
                         lowHpModal.classList.remove('open');
+                    }
+                }
+                
+                // Check hunger level
+                if (gameState.hunger <= 0) {
+                    const cooldown = 2 * 60 * 1000;
+                    const lastWarn = gameState.lastHungerWarning || 0;
+                    if (Date.now() - lastWarn > cooldown) {
+                        this.showHungerWarning();
+                    }
+                } else {
+                    const hungerModal = document.getElementById('modal-hunger');
+                    if (hungerModal && hungerModal.classList.contains('open')) {
+                        hungerModal.classList.remove('open');
                     }
                 }
             },
@@ -6786,6 +7330,20 @@
                 if (modal) modal.classList.remove('open');
             },
 
+            showHungerWarning: function() {
+                const modal = document.getElementById('modal-hunger');
+                if (!modal) return;
+                if (modal.classList.contains('open')) return;
+                modal.classList.add('open');
+                gameState.lastHungerWarning = Date.now();
+                game.save();
+            },
+
+            dismissHungerWarning: function() {
+                const modal = document.getElementById('modal-hunger');
+                if (modal) modal.classList.remove('open');
+            },
+
             maybeTriggerTreasuryPouch: function() {
                 if (gameState.treasuryPouchResolved) return;
                 if (gameState.level < 3) return;
@@ -6977,6 +7535,16 @@
                 }
             },
             navigate: function(screenId) {
+                // Track action for hunger system (only for location changes, not UI tabs)
+                const locationScreens = ['jobs', 'town-square', 'tavern', 'treasury', 'dark-forest', 
+                    'training-camp', 'military-fortress', 'village', 'healer', 'bookhouse', 
+                    'royal-castle', 'poor-district', 'noble-quarter', 'refugee-camp', 
+                    'tailor', 'shoemaker', 'livestock-trader', 'bulletin'];
+                
+                if (locationScreens.includes(screenId)) {
+                    game.trackAction();
+                }
+                
                 document.getElementById('view-map').classList.add('hidden');
                 document.getElementById('view-jobs').classList.add('hidden');
                 document.getElementById('view-town-square').classList.add('hidden');
@@ -7050,6 +7618,254 @@
                 }
                 if (screenId === 'bookhouse') {
                     ui.maybeTriggerBookhousePouch();
+                }
+            }
+        };
+        
+        // Developer Panel System
+        const devPanel = {
+            clickCount: 0,
+            clickTimer: null,
+            currentPlayerId: null,
+            
+            init: function() {
+                // This will be called when DOM is ready
+            },
+            
+            handleSecretClick: function() {
+                this.clickCount++;
+                
+                if (this.clickTimer) {
+                    clearTimeout(this.clickTimer);
+                }
+                
+                // Reset count after 2 seconds of inactivity
+                this.clickTimer = setTimeout(() => {
+                    this.clickCount = 0;
+                }, 2000);
+                
+                // Open panel after 10 clicks
+                if (this.clickCount >= 10) {
+                    this.clickCount = 0;
+                    this.open();
+                }
+            },
+            
+            open: function() {
+                document.getElementById('dev-panel').classList.add('open');
+                this.loadAllPlayers();
+            },
+            
+            close: function() {
+                document.getElementById('dev-panel').classList.remove('open');
+                document.getElementById('dev-player-details').classList.add('hidden');
+                document.getElementById('dev-search').value = '';
+                this.currentPlayerId = null;
+            },
+            
+            loadAllPlayers: async function() {
+                try {
+                    // Get all stored player data
+                    const result = await window.storage.list('player:', true);
+                    if (!result || !result.keys || result.keys.length === 0) {
+                        document.getElementById('dev-players-list').innerHTML = `
+                            <div class="text-center text-gray-500 py-4">
+                                Нет сохраненных игроков
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    // Load all player data
+                    const players = [];
+                    for (const key of result.keys) {
+                        try {
+                            const data = await window.storage.get(key, true);
+                            if (data && data.value) {
+                                const playerData = JSON.parse(data.value);
+                                players.push(playerData);
+                            }
+                        } catch (e) {
+                            console.error('Error loading player:', key, e);
+                        }
+                    }
+                    
+                    this.renderPlayersList(players);
+                } catch (error) {
+                    console.error('Error loading players:', error);
+                    document.getElementById('dev-players-list').innerHTML = `
+                        <div class="text-center text-red-500 py-4">
+                            Ошибка загрузки данных
+                        </div>
+                    `;
+                }
+            },
+            
+            renderPlayersList: function(players) {
+                const container = document.getElementById('dev-players-list');
+                
+                if (players.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center text-gray-500 py-4">
+                            Игроки не найдены
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Sort by last played
+                players.sort((a, b) => (b.lastPlayed || 0) - (a.lastPlayed || 0));
+                
+                container.innerHTML = players.map(p => `
+                    <div class="dev-player-card" onclick="devPanel.selectPlayer('${p.telegramId}')">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <div class="font-bold" style="color: #c8aa6e;">@${p.username || 'unknown'}</div>
+                                <div class="text-xs text-gray-500">ID: ${p.telegramId}</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-sm">⚔️ Ур. ${p.level || 1}</div>
+                                <div class="text-xs text-gray-500">💰 ${p.gold || 0} | 💎 ${p.gems || 0}</div>
+                            </div>
+                        </div>
+                        <div class="text-xs text-gray-600">
+                            Последний вход: ${p.lastPlayed ? new Date(p.lastPlayed).toLocaleString('ru-RU') : 'неизвестно'}
+                        </div>
+                    </div>
+                `).join('');
+            },
+            
+            search: async function(query) {
+                if (!query || query.trim() === '') {
+                    this.loadAllPlayers();
+                    return;
+                }
+                
+                const searchTerm = query.toLowerCase().trim();
+                
+                try {
+                    const result = await window.storage.list('player:', true);
+                    if (!result || !result.keys) return;
+                    
+                    const players = [];
+                    for (const key of result.keys) {
+                        try {
+                            const data = await window.storage.get(key, true);
+                            if (data && data.value) {
+                                const playerData = JSON.parse(data.value);
+                                const matchesId = playerData.telegramId && playerData.telegramId.toString().includes(searchTerm);
+                                const matchesUsername = playerData.username && playerData.username.toLowerCase().includes(searchTerm);
+                                
+                                if (matchesId || matchesUsername) {
+                                    players.push(playerData);
+                                }
+                            }
+                        } catch (e) {
+                            console.error('Error searching player:', key, e);
+                        }
+                    }
+                    
+                    this.renderPlayersList(players);
+                } catch (error) {
+                    console.error('Search error:', error);
+                }
+            },
+            
+            selectPlayer: async function(playerId) {
+                try {
+                    const data = await window.storage.get(`player:${playerId}`, true);
+                    if (!data || !data.value) {
+                        alert('Не удалось загрузить данные игрока');
+                        return;
+                    }
+                    
+                    const playerData = JSON.parse(data.value);
+                    this.currentPlayerId = playerId;
+                    
+                    // Fill form
+                    document.getElementById('dev-edit-id').value = playerData.telegramId || '';
+                    document.getElementById('dev-edit-username').value = playerData.username || '';
+                    document.getElementById('dev-edit-gold').value = playerData.gold || 0;
+                    document.getElementById('dev-edit-gems').value = playerData.gems || 0;
+                    document.getElementById('dev-edit-level').value = playerData.level || 1;
+                    document.getElementById('dev-edit-xp').value = playerData.xp || 0;
+                    document.getElementById('dev-edit-hp').value = playerData.hp || 100;
+                    document.getElementById('dev-edit-hunger').value = playerData.hunger || 100;
+                    
+                    // Show details section
+                    document.getElementById('dev-player-details').classList.remove('hidden');
+                    
+                    // Scroll to details
+                    document.getElementById('dev-player-details').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                } catch (error) {
+                    console.error('Error selecting player:', error);
+                    alert('Ошибка при загрузке игрока');
+                }
+            },
+            
+            savePlayer: async function() {
+                if (!this.currentPlayerId) return;
+                
+                try {
+                    // Load current data
+                    const data = await window.storage.get(`player:${this.currentPlayerId}`, true);
+                    if (!data || !data.value) {
+                        alert('Не удалось загрузить данные игрока');
+                        return;
+                    }
+                    
+                    const playerData = JSON.parse(data.value);
+                    
+                    // Update values
+                    playerData.gold = parseInt(document.getElementById('dev-edit-gold').value) || 0;
+                    playerData.gems = parseInt(document.getElementById('dev-edit-gems').value) || 0;
+                    playerData.level = parseInt(document.getElementById('dev-edit-level').value) || 1;
+                    playerData.xp = parseInt(document.getElementById('dev-edit-xp').value) || 0;
+                    playerData.hp = parseInt(document.getElementById('dev-edit-hp').value) || 100;
+                    playerData.hunger = parseInt(document.getElementById('dev-edit-hunger').value) || 100;
+                    
+                    // Save
+                    await window.storage.set(`player:${this.currentPlayerId}`, JSON.stringify(playerData), true);
+                    
+                    alert('✅ Данные игрока успешно сохранены!');
+                    
+                    // Refresh list
+                    this.loadAllPlayers();
+                    
+                    // If this is current player, reload game
+                    if (window.Telegram && window.Telegram.WebApp && 
+                        window.Telegram.WebApp.initDataUnsafe && 
+                        window.Telegram.WebApp.initDataUnsafe.user &&
+                        window.Telegram.WebApp.initDataUnsafe.user.id == this.currentPlayerId) {
+                        
+                        if (confirm('Это текущий игрок. Перезагрузить игру?')) {
+                            location.reload();
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error saving player:', error);
+                    alert('❌ Ошибка при сохранении данных');
+                }
+            },
+            
+            deletePlayer: async function() {
+                if (!this.currentPlayerId) return;
+                
+                if (!confirm('Вы уверены, что хотите удалить этого игрока? Это действие необратимо!')) {
+                    return;
+                }
+                
+                try {
+                    await window.storage.delete(`player:${this.currentPlayerId}`, true);
+                    
+                    alert('🗑️ Игрок успешно удален!');
+                    
+                    this.currentPlayerId = null;
+                    document.getElementById('dev-player-details').classList.add('hidden');
+                    this.loadAllPlayers();
+                } catch (error) {
+                    console.error('Error deleting player:', error);
+                    alert('❌ Ошибка при удалении игрока');
                 }
             }
         };
