@@ -7627,6 +7627,7 @@
             clickCount: 0,
             clickTimer: null,
             currentPlayerId: null,
+            allPlayers: {},
             
             init: function() {
                 // This will be called when DOM is ready
@@ -7663,42 +7664,85 @@
                 this.currentPlayerId = null;
             },
             
-            loadAllPlayers: async function() {
+            loadAllPlayers: function() {
                 try {
-                    // Get all stored player data
-                    const result = await window.storage.list('player:', true);
-                    if (!result || !result.keys || result.keys.length === 0) {
-                        document.getElementById('dev-players-list').innerHTML = `
-                            <div class="text-center text-gray-500 py-4">
-                                Нет сохраненных игроков
-                            </div>
-                        `;
-                        return;
-                    }
+                    this.allPlayers = {};
                     
-                    // Load all player data
-                    const players = [];
-                    for (const key of result.keys) {
-                        try {
-                            const data = await window.storage.get(key, true);
-                            if (data && data.value) {
-                                const playerData = JSON.parse(data.value);
-                                players.push(playerData);
+                    // Scan all localStorage keys for player data
+                    for (let i = 0; i < localStorage.length; i++) {
+                        const key = localStorage.key(i);
+                        if (key && key.startsWith('player_')) {
+                            try {
+                                const playerId = key.replace('player_', '');
+                                const data = localStorage.getItem(key);
+                                if (data) {
+                                    const playerData = JSON.parse(data);
+                                    playerData.telegramId = playerId;
+                                    this.allPlayers[playerId] = playerData;
+                                }
+                            } catch (e) {
+                                console.error('Error parsing player data:', key, e);
                             }
-                        } catch (e) {
-                            console.error('Error loading player:', key, e);
                         }
                     }
                     
-                    this.renderPlayersList(players);
+                    const players = Object.values(this.allPlayers);
+                    
+                    if (players.length === 0) {
+                        document.getElementById('dev-players-list').innerHTML = `
+                            <div class="text-center text-gray-500 py-4">
+                                <i class="fas fa-users text-3xl mb-2 opacity-30"></i>
+                                <div>Нет сохраненных игроков</div>
+                            </div>
+                        `;
+                    } else {
+                        this.renderPlayersList(players);
+                    }
+                    
+                    this.updateStats(players);
                 } catch (error) {
                     console.error('Error loading players:', error);
                     document.getElementById('dev-players-list').innerHTML = `
                         <div class="text-center text-red-500 py-4">
-                            Ошибка загрузки данных
+                            <i class="fas fa-exclamation-triangle text-2xl mb-2"></i>
+                            <div>Ошибка загрузки данных</div>
+                            <div class="text-xs mt-2">${error.message}</div>
                         </div>
                     `;
                 }
+            },
+            
+            updateStats: function(players) {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const todayTimestamp = today.getTime();
+                
+                const playersToday = players.filter(p => {
+                    if (!p.lastPlayed) return false;
+                    return p.lastPlayed >= todayTimestamp;
+                });
+                
+                const statsHtml = `
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <div class="panel p-3 rounded text-center border border-purple-600/50">
+                            <div class="text-2xl font-bold text-purple-400">${players.length}</div>
+                            <div class="text-[10px] text-gray-500 uppercase">Всего игроков</div>
+                        </div>
+                        <div class="panel p-3 rounded text-center border border-green-600/50">
+                            <div class="text-2xl font-bold text-green-400">${playersToday.length}</div>
+                            <div class="text-[10px] text-gray-500 uppercase">Заходили сегодня</div>
+                        </div>
+                    </div>
+                `;
+                
+                const searchDiv = document.getElementById('dev-search').parentElement;
+                let statsDiv = document.getElementById('dev-stats');
+                if (!statsDiv) {
+                    statsDiv = document.createElement('div');
+                    statsDiv.id = 'dev-stats';
+                    searchDiv.parentElement.insertBefore(statsDiv, searchDiv);
+                }
+                statsDiv.innerHTML = statsHtml;
             },
             
             renderPlayersList: function(players) {
@@ -7707,7 +7751,8 @@
                 if (players.length === 0) {
                     container.innerHTML = `
                         <div class="text-center text-gray-500 py-4">
-                            Игроки не найдены
+                            <i class="fas fa-search text-3xl mb-2 opacity-30"></i>
+                            <div>Игроки не найдены</div>
                         </div>
                     `;
                     return;
@@ -7716,70 +7761,67 @@
                 // Sort by last played
                 players.sort((a, b) => (b.lastPlayed || 0) - (a.lastPlayed || 0));
                 
-                container.innerHTML = players.map(p => `
-                    <div class="dev-player-card" onclick="devPanel.selectPlayer('${p.telegramId}')">
-                        <div class="flex justify-between items-start mb-2">
-                            <div>
-                                <div class="font-bold" style="color: #c8aa6e;">@${p.username || 'unknown'}</div>
-                                <div class="text-xs text-gray-500">ID: ${p.telegramId}</div>
+                container.innerHTML = players.map(p => {
+                    const lastPlayedText = p.lastPlayed 
+                        ? new Date(p.lastPlayed).toLocaleString('ru-RU', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })
+                        : 'неизвестно';
+                    
+                    return `
+                        <div class="dev-player-card" onclick="devPanel.selectPlayer('${p.telegramId}')">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <div class="font-bold" style="color: #c8aa6e;">
+                                        <i class="fas fa-user mr-1"></i>
+                                        ${p.username ? '@' + p.username : 'Аноним'}
+                                    </div>
+                                    <div class="text-xs text-gray-500">ID: ${p.telegramId}</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm">⚔️ Ур. ${p.level || 1}</div>
+                                    <div class="text-xs text-gray-500">💰 ${p.gold || 0} | 💎 ${p.gems || 0}</div>
+                                </div>
                             </div>
-                            <div class="text-right">
-                                <div class="text-sm">⚔️ Ур. ${p.level || 1}</div>
-                                <div class="text-xs text-gray-500">💰 ${p.gold || 0} | 💎 ${p.gems || 0}</div>
+                            <div class="text-xs text-gray-600">
+                                <i class="fas fa-clock mr-1"></i>
+                                ${lastPlayedText}
                             </div>
                         </div>
-                        <div class="text-xs text-gray-600">
-                            Последний вход: ${p.lastPlayed ? new Date(p.lastPlayed).toLocaleString('ru-RU') : 'неизвестно'}
-                        </div>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
             },
             
-            search: async function(query) {
+            search: function(query) {
                 if (!query || query.trim() === '') {
-                    this.loadAllPlayers();
+                    const players = Object.values(this.allPlayers);
+                    this.renderPlayersList(players);
                     return;
                 }
                 
                 const searchTerm = query.toLowerCase().trim();
                 
-                try {
-                    const result = await window.storage.list('player:', true);
-                    if (!result || !result.keys) return;
-                    
-                    const players = [];
-                    for (const key of result.keys) {
-                        try {
-                            const data = await window.storage.get(key, true);
-                            if (data && data.value) {
-                                const playerData = JSON.parse(data.value);
-                                const matchesId = playerData.telegramId && playerData.telegramId.toString().includes(searchTerm);
-                                const matchesUsername = playerData.username && playerData.username.toLowerCase().includes(searchTerm);
-                                
-                                if (matchesId || matchesUsername) {
-                                    players.push(playerData);
-                                }
-                            }
-                        } catch (e) {
-                            console.error('Error searching player:', key, e);
-                        }
-                    }
-                    
-                    this.renderPlayersList(players);
-                } catch (error) {
-                    console.error('Search error:', error);
-                }
+                const players = Object.values(this.allPlayers).filter(p => {
+                    const matchesId = p.telegramId && p.telegramId.toString().includes(searchTerm);
+                    const matchesUsername = p.username && p.username.toLowerCase().includes(searchTerm);
+                    return matchesId || matchesUsername;
+                });
+                
+                this.renderPlayersList(players);
             },
             
-            selectPlayer: async function(playerId) {
+            selectPlayer: function(playerId) {
                 try {
-                    const data = await window.storage.get(`player:${playerId}`, true);
-                    if (!data || !data.value) {
+                    const playerData = this.allPlayers[playerId];
+                    if (!playerData) {
                         alert('Не удалось загрузить данные игрока');
                         return;
                     }
                     
-                    const playerData = JSON.parse(data.value);
                     this.currentPlayerId = playerId;
                     
                     // Fill form
@@ -7796,25 +7838,24 @@
                     document.getElementById('dev-player-details').classList.remove('hidden');
                     
                     // Scroll to details
-                    document.getElementById('dev-player-details').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    setTimeout(() => {
+                        document.getElementById('dev-player-details').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }, 100);
                 } catch (error) {
                     console.error('Error selecting player:', error);
-                    alert('Ошибка при загрузке игрока');
+                    alert('Ошибка при загрузке игрока: ' + error.message);
                 }
             },
             
-            savePlayer: async function() {
+            savePlayer: function() {
                 if (!this.currentPlayerId) return;
                 
                 try {
-                    // Load current data
-                    const data = await window.storage.get(`player:${this.currentPlayerId}`, true);
-                    if (!data || !data.value) {
+                    const playerData = this.allPlayers[this.currentPlayerId];
+                    if (!playerData) {
                         alert('Не удалось загрузить данные игрока');
                         return;
                     }
-                    
-                    const playerData = JSON.parse(data.value);
                     
                     // Update values
                     playerData.gold = parseInt(document.getElementById('dev-edit-gold').value) || 0;
@@ -7824,48 +7865,70 @@
                     playerData.hp = parseInt(document.getElementById('dev-edit-hp').value) || 100;
                     playerData.hunger = parseInt(document.getElementById('dev-edit-hunger').value) || 100;
                     
-                    // Save
-                    await window.storage.set(`player:${this.currentPlayerId}`, JSON.stringify(playerData), true);
+                    // Save to localStorage
+                    localStorage.setItem(`player_${this.currentPlayerId}`, JSON.stringify(playerData));
                     
-                    alert('✅ Данные игрока успешно сохранены!');
+                    // Update in memory
+                    this.allPlayers[this.currentPlayerId] = playerData;
+                    
+                    // Show success message
+                    const btn = event.target;
+                    const originalText = btn.textContent;
+                    btn.textContent = '✅ Сохранено!';
+                    btn.style.background = 'linear-gradient(to bottom, #10b981, #059669)';
+                    
+                    setTimeout(() => {
+                        btn.textContent = originalText;
+                        btn.style.background = '';
+                    }, 2000);
                     
                     // Refresh list
                     this.loadAllPlayers();
                     
-                    // If this is current player, reload game
+                    // If this is current player, offer to reload
                     if (window.Telegram && window.Telegram.WebApp && 
                         window.Telegram.WebApp.initDataUnsafe && 
                         window.Telegram.WebApp.initDataUnsafe.user &&
                         window.Telegram.WebApp.initDataUnsafe.user.id == this.currentPlayerId) {
                         
-                        if (confirm('Это текущий игрок. Перезагрузить игру?')) {
+                        if (confirm('Это текущий игрок. Перезагрузить игру для применения изменений?')) {
                             location.reload();
                         }
                     }
                 } catch (error) {
                     console.error('Error saving player:', error);
-                    alert('❌ Ошибка при сохранении данных');
+                    alert('❌ Ошибка при сохранении: ' + error.message);
                 }
             },
             
-            deletePlayer: async function() {
+            deletePlayer: function() {
                 if (!this.currentPlayerId) return;
                 
-                if (!confirm('Вы уверены, что хотите удалить этого игрока? Это действие необратимо!')) {
+                const playerData = this.allPlayers[this.currentPlayerId];
+                const username = playerData?.username || 'этого игрока';
+                
+                if (!confirm(`Вы уверены, что хотите удалить ${username} (ID: ${this.currentPlayerId})?\n\nЭто действие необратимо!`)) {
                     return;
                 }
                 
                 try {
-                    await window.storage.delete(`player:${this.currentPlayerId}`, true);
+                    localStorage.removeItem(`player_${this.currentPlayerId}`);
+                    delete this.allPlayers[this.currentPlayerId];
                     
-                    alert('🗑️ Игрок успешно удален!');
+                    // Show success message
+                    const btn = event.target;
+                    const originalText = btn.textContent;
+                    btn.textContent = '🗑️ Удалено!';
                     
-                    this.currentPlayerId = null;
-                    document.getElementById('dev-player-details').classList.add('hidden');
-                    this.loadAllPlayers();
+                    setTimeout(() => {
+                        btn.textContent = originalText;
+                        this.currentPlayerId = null;
+                        document.getElementById('dev-player-details').classList.add('hidden');
+                        this.loadAllPlayers();
+                    }, 1500);
                 } catch (error) {
                     console.error('Error deleting player:', error);
-                    alert('❌ Ошибка при удалении игрока');
+                    alert('❌ Ошибка при удалении: ' + error.message);
                 }
             }
         };
