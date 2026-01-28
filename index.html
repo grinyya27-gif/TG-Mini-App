@@ -504,6 +504,14 @@
             display: inline-block;
             vertical-align: middle;
         }
+        
+        .icon-svg-fill {
+            width: 1em;
+            height: 1em;
+            fill: currentColor;
+            display: inline-block;
+            vertical-align: middle;
+        }
     </style>
 </head>
 <body class="h-screen flex flex-col relative" style="overflow: hidden; -webkit-tap-highlight-color: transparent;">
@@ -569,6 +577,13 @@
             <path fill="currentColor" d="M392.074,61.312H191.302c-5.541,0-10.039,4.497-10.039,10.039c0,5.532,4.497,10.039,10.039,10.039h200.771c5.531,0,10.028-4.506,10.029-10.039C402.101,65.81,397.605,61.312,392.074,61.312z"/>
             <path fill="currentColor" d="M433.592,100.102c-5.541,0-10.039,4.496-10.039,10.029V292.1c0,5.531,4.497,10.039,10.039,10.039c5.531,0,10.039-4.508,10.039-10.039V110.141C443.63,104.599,439.124,100.102,433.592,100.102z"/>
             <path fill="currentColor" d="M432.227,81.39c5.531,0,10.027-4.506,10.027-10.039c0-5.541-4.496-10.039-10.027-10.039c-5.542,0-10.039,4.497-10.039,10.039C422.188,76.883,426.684,81.39,432.227,81.39z"/>
+        </symbol>
+        <!-- Mushroom (Solid) -->
+        <symbol id="icon-mushroom" viewBox="0 0 330.18 330.18">
+            <g>
+                <path fill="currentColor" d="M165.09,0C88.446,0,26.316,57.804,26.316,129.108c0,4.096,0.214,34.958,0.615,38.957c0,0,4.17,17.875,138.159,17.875 c135.583,0,138.158-17.875,138.158-17.875c0.4-4,0.615-34.861,0.615-38.957C303.863,57.804,241.732,0,165.09,0z M121.426,41.466 c-11.932,2.803-23.274,8.827-33.276,17.01c-23.177,18.962-32.125,46.485-29.974,75.899c0.542,7.416-10.981,7.363-11.52,0 c-2.307-31.545,7.718-63.076,32.705-83.519c11.18-9.146,24.783-17.158,39.002-20.498 C125.59,28.661,128.656,39.768,121.426,41.466z"/>
+                <path fill="currentColor" d="M206.987,194.845c-13.836,0.513-25.226,0.775-41.898,0.775c-14.889,0-26.655-0.226-41.896-0.817L109.045,316.47 c-0.494,7.54,5.284,13.71,12.841,13.71h86.407c7.557,0,13.336-6.17,12.84-13.71L206.987,194.845z"/>
+            </g>
         </symbol>
     </svg>
 
@@ -948,7 +963,7 @@
     
     <div id="loading-screen" class="fixed inset-0 z-50 overflow-hidden">
         <img src="https://i.postimg.cc/tRM04ctN/IMG-4543.png" alt="Loading" class="absolute inset-0 w-full h-full object-cover" onerror="this.onerror=null; this.style.display='none';">
-        <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-black/60 to-black/90"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-black/20 via-black/30 to-black/50"></div>
         <div class="absolute bottom-8 left-1/2 -translate-x-1/2 w-4/5 max-w-md">
             <div class="h-2 rounded-full overflow-hidden border border-[#c8aa6e]/60 bg-black/40">
                 <div id="loading-bar-fill" class="h-full bg-gradient-to-r from-[#8b733d] to-[#c8aa6e] w-0 transition-all duration-150"></div>
@@ -1096,6 +1111,13 @@
                     <div>
                         <div class="text-[10px] text-green-400 font-bold uppercase">Удача x2</div>
                         <div class="text-[10px] text-gray-400" id="timer-luck">00:00</div>
+                    </div>
+                </div>
+                <div id="effect-measles" class="panel p-2 rounded flex items-center gap-2 border-red-500/50 hidden">
+                    <i class="fas fa-virus text-red-500 animate-pulse"></i>
+                    <div>
+                        <div class="text-[10px] text-red-400 font-bold uppercase">Корь</div>
+                        <div class="text-[10px] text-gray-400">-1 HP каждые 20 сек</div>
                     </div>
                 </div>
             </div>
@@ -2436,18 +2458,20 @@
 
             <!-- NPC Marius -->
             <div class="panel p-4 rounded-lg border-red-500/40 bg-gradient-to-br from-red-900/80 via-[#1a1a1d] to-[#0f0f10] mb-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-full border border-red-500 bg-[#222] overflow-hidden">
-                         <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Marius&backgroundColor=1a1a1d&skinColor=ecad80&hair=long02&hairColor=3e3e42" alt="Мариус" class="w-full h-full object-cover">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-full border-2 border-red-500 bg-[#222] flex items-center justify-center shadow-[0_0_10px_rgba(239,68,68,0.3)]">
+                            <i class="fas fa-plus text-red-500 text-2xl"></i>
+                        </div>
+                        <div>
+                            <div class="text-base text-[#e0e0e0] font-bold medieval-font">Мариус</div>
+                            <div class="text-[10px] text-[#a0a0a0]">Алхимик</div>
+                        </div>
                     </div>
-                    <div>
-                        <div class="text-base text-[#e0e0e0] font-bold medieval-font">Мариус</div>
-                        <div class="text-[10px] text-[#a0a0a0]">Алхимик</div>
-                    </div>
+                    <button onclick="dialogue.start('marius')" class="btn-medieval px-4 py-1.5 rounded text-xs">
+                        Говорить
+                    </button>
                 </div>
-                <button onclick="dialogue.start('marius')" class="btn-medieval px-4 py-1.5 rounded text-xs">
-                    Говорить
-                </button>
             </div>
 
             <!-- Healing Service -->
@@ -2959,7 +2983,7 @@
                  <div class="market-item-card panel p-3 rounded flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-900/60 to-amber-950 border-2 border-amber-500/60 flex items-center justify-center shadow-[0_0_10px_rgba(217,119,6,0.3)]">
-                            <svg class="w-6 h-6 text-[#c8aa6e]" viewBox="0 0 512.001 512.001" preserveAspectRatio="xMidYMid meet"><use href="#icon-crossbow"></use></svg>
+                            <svg class="w-6 h-6 text-[#c8aa6e] mx-auto" viewBox="0 0 512.001 512.001" preserveAspectRatio="xMidYMid meet"><use href="#icon-crossbow"></use></svg>
                         </div>
                         <div>
                             <div class="text-[#e0e0e0] font-serif">Арбалет</div>
@@ -3314,7 +3338,7 @@
                                 <i class="fas fa-rabbit text-emerald-300 text-lg mt-1"></i>
                                 <div>
                                     <div class="text-sm font-bold text-[#e0e0e0]">Кролик</div>
-                                    <div class="text-[10px] text-[#777]">Для хозяйства. Ест овощи.</div>
+                                    <div class="text-[10px] text-[#777]">Для хозяйства.</div>
                                 </div>
                             </div>
                             <div class="text-sm text-yellow-400 font-bold">4,000 <i class="fas fa-coins"></i></div>
@@ -3328,7 +3352,7 @@
                                 <i class="fas fa-kiwi-bird text-amber-300 text-lg mt-1"></i>
                                 <div>
                                     <div class="text-sm font-bold text-[#e0e0e0]">Курица</div>
-                                    <div class="text-[10px] text-[#777]">Несёт яйца. Ест зерно.</div>
+                                    <div class="text-[10px] text-[#777]">Несёт яйца.</div>
                                 </div>
                             </div>
                             <div class="text-sm text-yellow-400 font-bold">5,000 <i class="fas fa-coins"></i></div>
@@ -3342,7 +3366,7 @@
                                 <i class="fas fa-piggy-bank text-pink-300 text-lg mt-1"></i>
                                 <div>
                                     <div class="text-sm font-bold text-[#e0e0e0]">Свинья</div>
-                                    <div class="text-[10px] text-[#777]">Даёт мясо. Ест овощи.</div>
+                                    <div class="text-[10px] text-[#777]">Даёт мясо.</div>
                                 </div>
                             </div>
                             <div class="text-sm text-yellow-400 font-bold">10,000 <i class="fas fa-coins"></i></div>
@@ -3356,7 +3380,7 @@
                                 <i class="fas fa-cow text-white text-lg mt-1"></i>
                                 <div>
                                     <div class="text-sm font-bold text-[#e0e0e0]">Корова</div>
-                                    <div class="text-[10px] text-[#777]">Даёт молоко. Ест сено.</div>
+                                    <div class="text-[10px] text-[#777]">Даёт молоко.</div>
                                 </div>
                             </div>
                             <div class="text-sm text-yellow-400 font-bold">50,000 <i class="fas fa-coins"></i></div>
@@ -3462,24 +3486,14 @@
 
                 <div class="space-y-3">
                     <h3 class="text-xs text-[#777] uppercase border-b border-[#333] pb-1">Корм</h3>
-                    <div class="grid grid-cols-3 gap-2">
-                        <button onclick="livestock.buyFeed('grain')" class="panel p-2 rounded bg-black/20 border border-[#333] text-center">
-                            <i class="fas fa-wheat-awn text-amber-300"></i>
-                            <div class="text-[10px] text-[#e0e0e0] mt-1">Зерно</div>
-                            <div class="text-[10px] text-yellow-500">20 <i class="fas fa-coins"></i></div>
-                        </button>
-                        <button onclick="livestock.buyFeed('hay')" class="panel p-2 rounded bg-black/20 border border-[#333] text-center">
-                            <i class="fas fa-seedling text-green-300"></i>
-                            <div class="text-[10px] text-[#e0e0e0] mt-1">Сено</div>
-                            <div class="text-[10px] text-yellow-500">30 <i class="fas fa-coins"></i></div>
-                        </button>
-                        <button onclick="livestock.buyFeed('vegetables')" class="panel p-2 rounded bg-black/20 border border-[#333] text-center">
-                            <i class="fas fa-carrot text-orange-300"></i>
-                            <div class="text-[10px] text-[#e0e0e0] mt-1">Овощи</div>
-                            <div class="text-[10px] text-yellow-500">15 <i class="fas fa-coins"></i></div>
+                    <div class="grid grid-cols-1 gap-2">
+                        <button onclick="livestock.buyFeed('feed')" class="panel p-3 rounded bg-black/20 border border-[#333] text-center">
+                            <i class="fas fa-carrot text-orange-300 text-2xl"></i>
+                            <div class="text-sm text-[#e0e0e0] mt-2 font-bold">Корм</div>
+                            <div class="text-xs text-yellow-500 mt-1">20 <i class="fas fa-coins"></i></div>
                         </button>
                     </div>
-                    <p class="text-[10px] text-[#777]">Корм добавляется в инвентарь как ресурс и имеет вес.</p>
+                    <p class="text-[10px] text-[#777]">Универсальный корм для всех животных. Добавляется в инвентарь как ресурс и имеет вес.</p>
                 </div>
             </div>
         </section>
@@ -3601,10 +3615,9 @@
             </div>
 
             <!-- Sage's House -->
-            <div class="panel p-4 rounded-lg border-indigo-500/40 space-y-3 relative overflow-hidden">
-                <!-- Background Image with Overlay -->
-                <div class="absolute inset-0 z-0">
-                    <img src="https://i.postimg.cc/KYjjDTKd/IMG-4607.jpg" alt="Sage House" class="w-full h-full object-cover opacity-20">
+            <div class="panel p-4 rounded-lg border-indigo-500/40 space-y-3 relative overflow-hidden" style="background: linear-gradient(to bottom right, rgba(99, 102, 241, 0.15), rgba(26, 26, 29, 1), rgba(15, 15, 16, 1)), url('https://i.postimg.cc/KYjjDTKd/IMG-4607.jpg'); background-size: cover; background-position: center; background-blend-mode: overlay;">
+                <!-- Overlay -->
+                <div class="absolute inset-0 z-0 pointer-events-none">
                     <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80"></div>
                     <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(99,102,241,0.2),transparent_60%)]"></div>
                 </div>
@@ -3684,12 +3697,11 @@
             </div>
 
             <!-- Fresh Bread Stall -->
-            <div class="panel rounded-lg p-4 space-y-3 relative overflow-hidden bg-gradient-to-br from-amber-900/30 via-[#1a1a1d] to-[#0f0f10] border border-amber-700/40">
-                <!-- Background Image with Overlay -->
-                <div class="absolute inset-0 z-0 pointer-events-none rounded-lg">
-                    <img src="https://i.postimg.cc/6QJnHYXF/IMG-4600.jpg" alt="Bread Stall" class="w-full h-full object-cover opacity-25 rounded-lg" onerror="this.onerror=null; this.style.display='none';">
-                    <div class="absolute inset-0 rounded-lg bg-gradient-to-b from-black/70 via-black/50 to-black/80"></div>
-                    <div class="absolute inset-0 rounded-lg bg-[radial-gradient(circle_at_30%_30%,rgba(217,119,6,0.2),transparent_60%)]"></div>
+            <div class="panel rounded-lg p-4 space-y-3 relative overflow-hidden border border-amber-700/40" style="background: linear-gradient(to bottom right, rgba(120, 53, 15, 0.3), rgba(26, 26, 29, 1), rgba(15, 15, 16, 1)), url('https://i.postimg.cc/6QJnHYXF/IMG-4600.jpg'); background-size: cover; background-position: center; background-blend-mode: overlay;">
+                <!-- Overlay -->
+                <div class="absolute inset-0 z-0 pointer-events-none">
+                    <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80"></div>
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(217,119,6,0.2),transparent_60%)]"></div>
                 </div>
                 
                 <div class="relative z-10 flex items-center justify-between">
@@ -4109,9 +4121,9 @@
                 </div>
 
                 <!-- Ларёк со свежим хлебом -->
-                <div class="panel rounded-lg p-4 space-y-3 relative overflow-hidden bg-gradient-to-br from-amber-900/30 via-[#1a1a1d] to-[#0f0f10] border border-amber-700/40">
-                    <div class="absolute inset-0 z-0">
-                        <img src="https://i.postimg.cc/6QJnHYXF/IMG-4600.jpg" alt="Bread Stall" class="w-full h-full object-cover opacity-20">
+                <div class="panel rounded-lg p-4 space-y-3 relative overflow-hidden border border-amber-700/40" style="background: linear-gradient(to bottom right, rgba(120, 53, 15, 0.3), rgba(26, 26, 29, 1), rgba(15, 15, 16, 1)), url('https://i.postimg.cc/6QJnHYXF/IMG-4600.jpg'); background-size: cover; background-position: center; background-blend-mode: overlay;">
+                    <!-- Overlay -->
+                    <div class="absolute inset-0 z-0 pointer-events-none">
                         <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80"></div>
                         <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(217,119,6,0.2),transparent_60%)]"></div>
                     </div>
@@ -4662,7 +4674,7 @@
         const RESOURCE_NAMES = {
             fish: { name: 'Рыба', icon: 'fa-fish' },
             meat: { name: 'Мясо', icon: 'fa-drumstick-bite' },
-            mushrooms: { name: 'Грибы', icon: 'fa-umbrella' },
+            mushrooms: { name: 'Грибы', icon: 'icon-mushroom', isSvg: true },
             bread: { name: 'Хлеб', icon: 'fa-bread-slice' },
             eggs: { name: 'Яйца', icon: 'fa-egg' },
             milk: { name: 'Молоко', icon: 'fa-mug-hot' },
@@ -4681,9 +4693,7 @@
             rope: { name: 'Верёвка', icon: 'fa-link' },
             cloth: { name: 'Ткань', icon: 'icon-cloth' },
 
-            grain: { name: 'Зерно', icon: 'fa-wheat-awn' },
-            hay: { name: 'Сено', icon: 'fa-seedling' },
-            vegetables: { name: 'Овощи', icon: 'fa-carrot' }
+            feed: { name: 'Корм', icon: 'fa-carrot' }
         };
 
         const RESOURCE_WEIGHTS = {
@@ -4708,9 +4718,7 @@
             rope: 0.7,
             cloth: 0.6,
 
-            grain: 0.7,
-            hay: 1.2,
-            vegetables: 0.6
+            feed: 0.7
         };
 
         const TOOL_WEIGHTS = {
@@ -4764,9 +4772,7 @@
             wool: 0,
             rope: 0,
             cloth: 0,
-            grain: 0,
-            hay: 0,
-            vegetables: 0,
+            feed: 0,
             
             inventory: [],
             bagLevel: 0,
@@ -6983,8 +6989,15 @@
 
             getWeightCapacity: function() {
                 const base = 50;
-                const upgrades = (gameState.bagLevel || 0) * 50;
-                return base + upgrades;
+                const bagLevel = gameState.bagLevel || 0;
+                if (bagLevel === 0) {
+                    return base;
+                } else if (bagLevel === 1) {
+                    return 100; // Улучшенный рюкзак дает 100кг
+                } else {
+                    // Для дальнейших улучшений можно добавить логику
+                    return 100 + (bagLevel - 1) * 50;
+                }
             },
 
             getCurrentWeight: function() {
@@ -7048,12 +7061,14 @@
                     const now = Date.now();
                     const immActive = gameState.effects.immortality > now;
                     const luckActive = gameState.effects.luck > now;
+                    const measlesActive = gameState.hasMeasles === true;
 
                     const effectsContainer = document.getElementById('active-effects-container');
                     const immEl = document.getElementById('effect-immortality');
                     const luckEl = document.getElementById('effect-luck');
+                    const measlesEl = document.getElementById('effect-measles');
 
-                    if (immActive || luckActive) effectsContainer.classList.remove('hidden');
+                    if (immActive || luckActive || measlesActive) effectsContainer.classList.remove('hidden');
                     else effectsContainer.classList.add('hidden');
 
                     if (immActive) {
@@ -7070,6 +7085,12 @@
                         document.getElementById('timer-luck').innerText = `${Math.floor(remaining/60)}:${String(remaining%60).padStart(2,'0')}`;
                     } else {
                         luckEl.classList.add('hidden');
+                    }
+
+                    if (measlesActive) {
+                        measlesEl.classList.remove('hidden');
+                    } else {
+                        measlesEl.classList.add('hidden');
                     }
                 }, 1000);
             },
@@ -8430,13 +8451,13 @@
                 }
                 
                 // Check if player has feed (using grain as feed)
-                if (!gameState.grain || gameState.grain < animal.feedCost) {
+                if (!gameState.feed || gameState.feed < animal.feedCost) {
                     ui.showFloatText(event.target, `Нужно ${animal.feedCost} корма`, "#ff5555");
                     return;
                 }
                 
                 // Feed the animal
-                gameState.grain -= animal.feedCost;
+                gameState.feed -= animal.feedCost;
                 gameState.livestockFeeding[animalType] = now;
                 
                 // Give rewards
@@ -8684,9 +8705,7 @@
                 cow: 50000
             },
             feedPrices: {
-                grain: 20,
-                hay: 30,
-                vegetables: 15
+                feed: 20
             },
 
             ensureHasHouse: function(anchor) {
@@ -8916,6 +8935,20 @@
                         return;
                     }
                 }
+                
+                // Check weight capacity for produced items
+                if (def.produce) {
+                    const key = def.produce.key;
+                    const count = def.produce.count;
+                    const itemWeight = RESOURCE_WEIGHTS[key] || 0;
+                    const extraWeight = itemWeight * count;
+                    
+                    if (!game.hasWeightCapacity(extraWeight)) {
+                        ui.showFloatText(e.target, "Недостаточно места в рюкзаке", "#ff5555");
+                        return;
+                    }
+                }
+                
                 for (const k in req) {
                     gameState[k] -= req[k];
                 }
@@ -9063,7 +9096,7 @@
 
                 // Capacity by bag slots
                 const bagLevel = gameState.bagLevel || 0;
-                const capacity = 4 + bagLevel * 8;
+                const capacity = 8 + bagLevel * 8;
                 const children = grid.children.length;
                 for (let i = 0; i < Math.max(0, capacity - children); i++) {
                     grid.appendChild(this.createEmptySlot());
@@ -9081,7 +9114,15 @@
         const ui = {
             getIconHtml: function(iconName, extraClasses = '') {
                 if (iconName && iconName.startsWith('icon-')) {
-                    return `<svg class="icon-svg ${extraClasses}" viewBox="0 0 24 24"><use href="#${iconName}"></use></svg>`;
+                    // Определяем viewBox в зависимости от иконки
+                    let viewBox = '0 0 24 24';
+                    if (iconName === 'icon-mushroom') viewBox = '0 0 330.18 330.18';
+                    else if (iconName === 'icon-crossbow') viewBox = '0 0 512.001 512.001';
+                    else if (iconName === 'icon-pickaxe') viewBox = '0 0 512 512';
+                    else if (iconName === 'icon-leather') viewBox = '0 0 467.473 467.473';
+                    else if (iconName === 'icon-cloth') viewBox = '0 0 512.001 512.001';
+                    
+                    return `<svg class="icon-svg-fill ${extraClasses}" viewBox="${viewBox}"><use href="#${iconName}"></use></svg>`;
                 }
                 return `<i class="fas ${iconName} ${extraClasses}"></i>`;
             },
@@ -9736,9 +9777,7 @@
                     stone: 'Камни — материал для ремесла.',
                     herbs: 'Травы — важный ингредиент для лечения и зелий.',
                     leather: 'Кожа — ценный ресурс для брони и сумок.',
-                    grain: 'Зерно — корм для куриц.',
-                    hay: 'Сено — корм для коров.',
-                    vegetables: 'Овощи — корм для кроликов и свиней.',
+                    feed: 'Корм — универсальная еда для всех животных в хозяйстве.',
                     wool: 'Шерсть — полезный материал для ремесла и торговли. Мягкая, но ценится у портных.',
                     rope: 'Верёвка — универсальный расходник. Нужна в хозяйстве, крафте и для привязи.',
                     cloth: 'Ткань — основа одежды и сумок. Хорошо продаётся на рынке.'
@@ -10349,7 +10388,7 @@
                 loadingEl.style.transition = 'opacity 400ms';
                 let p = 0;
                 const timer = setInterval(() => {
-                    p = Math.min(100, p + 12 + Math.random() * 18);
+                    p = Math.min(100, p + 5 + Math.random() * 8);
                     barEl.style.width = p + '%';
                     if (p >= 100) {
                         clearInterval(timer);
