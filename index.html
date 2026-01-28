@@ -10282,79 +10282,87 @@
         
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-
-            // Apply location header images (same as map cards)
-            const HERO_HEADER_IMAGES = {
-                'jobs': 'https://i.postimg.cc/zvrrJHQg/IMG-4559.jpg',
-                'town-square': 'https://i.postimg.cc/BnPztnfV/IMG-4542.jpg',
-                'tavern': 'https://i.postimg.cc/kGckq181/IMG-4560.jpg',
-                'treasury': 'https://i.postimg.cc/hvS5yLws/IMG-4561.jpg',
-                'village': 'https://i.postimg.cc/P5BFss9w/IMG-4562.jpg',
-                'dark-forest': 'https://i.postimg.cc/kGXTFn6F/IMG-4563.jpg',
-                'healer': 'https://i.postimg.cc/rpXgZGRd/IMG-4564.jpg',
-                'noble-quarter': 'https://i.postimg.cc/hv51LVqc/IMG-4565.jpg',
-                'poor-district': 'https://i.postimg.cc/B6hT32bL/IMG-4566.jpg',
-                'royal-castle': 'https://i.postimg.cc/JnqyJXkK/IMG-4567.jpg',
-                'refugee-camp': 'https://i.postimg.cc/d3CV6T7L/IMG-4568.jpg',
-                'livestock-trader': 'https://i.postimg.cc/zvw13wHX/IMG-4569.jpg',
-                'training-camp': 'https://i.postimg.cc/C1D36CNf/IMG-4570.jpg',
-                'military-fortress': 'https://i.postimg.cc/Ss0582pT/IMG-4571.jpg',
-                'knight-tournament': 'https://i.postimg.cc/s2cXkKrW/IMG-4610.jpg'
-            };
-
-            const applyHeroHeaderImages = () => {
-                Object.entries(HERO_HEADER_IMAGES).forEach(([screenId, url]) => {
-                    const sections = document.querySelectorAll(`#view-${screenId}`);
-                    sections.forEach(section => {
-                        const header = section.firstElementChild;
-                        if (!header || !(header instanceof HTMLElement)) return;
-                        // Only apply to the top header blocks (they are always the first child)
-                        header.classList.add('loc-hero');
-                        header.style.setProperty('--hero-img', `url('${url}')`);
+            const startApp = () => {
+                const HERO_HEADER_IMAGES = {
+                    'jobs': 'https://i.postimg.cc/zvrrJHQg/IMG-4559.jpg',
+                    'town-square': 'https://i.postimg.cc/BnPztnfV/IMG-4542.jpg',
+                    'tavern': 'https://i.postimg.cc/kGckq181/IMG-4560.jpg',
+                    'treasury': 'https://i.postimg.cc/hvS5yLws/IMG-4561.jpg',
+                    'village': 'https://i.postimg.cc/P5BFss9w/IMG-4562.jpg',
+                    'dark-forest': 'https://i.postimg.cc/kGXTFn6F/IMG-4563.jpg',
+                    'healer': 'https://i.postimg.cc/rpXgZGRd/IMG-4564.jpg',
+                    'noble-quarter': 'https://i.postimg.cc/hv51LVqc/IMG-4565.jpg',
+                    'poor-district': 'https://i.postimg.cc/B6hT32bL/IMG-4566.jpg',
+                    'royal-castle': 'https://i.postimg.cc/JnqyJXkK/IMG-4567.jpg',
+                    'refugee-camp': 'https://i.postimg.cc/d3CV6T7L/IMG-4568.jpg',
+                    'livestock-trader': 'https://i.postimg.cc/zvw13wHX/IMG-4569.jpg',
+                    'training-camp': 'https://i.postimg.cc/C1D36CNf/IMG-4570.jpg',
+                    'military-fortress': 'https://i.postimg.cc/Ss0582pT/IMG-4571.jpg',
+                    'knight-tournament': 'https://i.postimg.cc/s2cXkKrW/IMG-4610.jpg'
+                };
+                const applyHeroHeaderImages = () => {
+                    Object.entries(HERO_HEADER_IMAGES).forEach(([screenId, url]) => {
+                        const sections = document.querySelectorAll(`#view-${screenId}`);
+                        sections.forEach(section => {
+                            const header = section.firstElementChild;
+                            if (!header || !(header instanceof HTMLElement)) return;
+                            header.classList.add('loc-hero');
+                            header.style.setProperty('--hero-img', `url('${url}')`);
+                        });
                     });
-                });
-            };
-            applyHeroHeaderImages();
-
-            // Enhance router.switchTab to call updateLocations
-            const originalSwitchTab = router.switchTab;
-            router.switchTab = function(tabId) {
-                originalSwitchTab.call(router, tabId);
-                if (tabId === 'map') {
+                };
+                applyHeroHeaderImages();
+                const originalSwitchTab = router.switchTab;
+                router.switchTab = function(tabId) {
+                    originalSwitchTab.call(router, tabId);
+                    if (tabId === 'map') {
+                        ui.updateLocations();
+                    }
+                };
+                const originalLevelUp = game.levelUp;
+                game.levelUp = function() {
+                    originalLevelUp.call(game);
                     ui.updateLocations();
-                }
-            };
-
-            // Enhance game.levelUp to call updateLocations
-            const originalLevelUp = game.levelUp;
-            game.levelUp = function() {
-                originalLevelUp.call(game);
-                ui.updateLocations();
-            };
-
-            game.init();
-            router.switchTab('map');
-            
-            // Start disease tick
-            disease.startTick();
-
-            document.addEventListener('visibilitychange', () => {
-                if (!document.hidden) {
+                };
+                game.init();
+                router.switchTab('map');
+                disease.startTick();
+                document.addEventListener('visibilitychange', () => {
+                    if (!document.hidden) {
+                        game.checkUnconscious();
+                        ui.updateUnconsciousUI();
+                    }
+                });
+                setInterval(() => {
                     game.checkUnconscious();
-                    ui.updateUnconsciousUI();
-                }
-            });
-
-            setInterval(() => {
-                game.checkUnconscious();
-                // We don't need to call updateUnconsciousUI constantly, just the timer text
-                if (gameState.unconsciousUntil && gameState.unconsciousUntil > Date.now()) {
-                    ui.updateTimerVisuals();
-                } else if (document.getElementById('modal-unconscious').classList.contains('open') && (!gameState.unconsciousUntil || gameState.unconsciousUntil <= Date.now())) {
-                    // Close modal if timer expired naturally
-                    ui.updateUnconsciousUI();
-                }
-            }, 1000);
+                    if (gameState.unconsciousUntil && gameState.unconsciousUntil > Date.now()) {
+                        ui.updateTimerVisuals();
+                    } else if (document.getElementById('modal-unconscious').classList.contains('open') && (!gameState.unconsciousUntil || gameState.unconsciousUntil <= Date.now())) {
+                        ui.updateUnconsciousUI();
+                    }
+                }, 1000);
+            };
+            const loadingEl = document.getElementById('loading-screen');
+            const barEl = document.getElementById('loading-bar-fill');
+            if (loadingEl && barEl) {
+                loadingEl.style.opacity = '1';
+                loadingEl.style.transition = 'opacity 400ms';
+                let p = 0;
+                const timer = setInterval(() => {
+                    p = Math.min(100, p + 12 + Math.random() * 18);
+                    barEl.style.width = p + '%';
+                    if (p >= 100) {
+                        clearInterval(timer);
+                        loadingEl.style.opacity = '0';
+                        setTimeout(() => {
+                            loadingEl.style.display = 'none';
+                            startApp();
+                        }, 420);
+                    }
+                }, 180);
+            } else {
+                startApp();
+            }
         });
 
     </script>
