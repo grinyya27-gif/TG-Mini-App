@@ -13,6 +13,7 @@
     
     <!-- Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+        <script src="usersStore.js"></script>
 
     <!-- Google Fonts: Cinzel -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -81,6 +82,16 @@
             position: relative;
             overflow: hidden;
         }
+        .btn-ghost {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--accent-gold);
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            font-family: 'Cinzel', serif;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+            backdrop-filter: blur(4px);
+        }
 
         .btn-medieval:active {
             transform: scale(0.98);
@@ -93,6 +104,15 @@
             color: #555;
             opacity: 0.7;
             pointer-events: none;
+        }
+        
+        .quest-card {
+            background: linear-gradient(135deg, rgba(26,26,29,0.85), rgba(42,42,46,0.7));
+            border: 1px solid rgba(200,170,110,0.25);
+        }
+        .recipe-card {
+            background: linear-gradient(135deg, rgba(26,26,29,0.85), rgba(42,42,46,0.7));
+            border: 1px solid rgba(200,170,110,0.25);
         }
 
         /* Tab Styles */
@@ -183,6 +203,86 @@
         }
         .modal-overlay.open .modal-content {
             transform: scale(1);
+        }
+
+        /* Job Button Styles - Similar to location cards */
+        .job-button {
+            background: rgba(26, 26, 29, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(200, 170, 110, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .job-button:hover {
+            background: rgba(26, 26, 29, 0.85);
+            border-color: rgba(200, 170, 110, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(200, 170, 110, 0.2);
+        }
+        
+        .job-button:active {
+            transform: translateY(0);
+            background: rgba(200, 170, 110, 0.2);
+        }
+        
+        .job-button:disabled {
+            background: rgba(26, 26, 29, 0.4);
+            border-color: rgba(85, 85, 85, 0.3);
+            opacity: 0.5;
+        }
+        
+        /* Quest Card Gradient Styles */
+        .quest-card {
+            background: linear-gradient(135deg, 
+                rgba(26, 26, 29, 0.9) 0%, 
+                rgba(42, 42, 46, 0.8) 50%, 
+                rgba(26, 26, 29, 0.9) 100%);
+            border: 1px solid rgba(200, 170, 110, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .quest-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(200, 170, 110, 0.1), 
+                transparent);
+            transition: left 0.5s;
+        }
+        
+        .quest-card:hover::before {
+            left: 100%;
+        }
+        
+        .quest-card:hover {
+            border-color: rgba(200, 170, 110, 0.6);
+            box-shadow: 0 4px 16px rgba(200, 170, 110, 0.15);
+        }
+
+        /* Market Item Card - Gradient Style */
+        .market-item-card {
+            background: linear-gradient(135deg, 
+                rgba(26, 26, 29, 0.9) 0%, 
+                rgba(42, 42, 46, 0.8) 50%, 
+                rgba(26, 26, 29, 0.9) 100%);
+            border: 1px solid rgba(200, 170, 110, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .market-item-card:hover {
+            border-color: rgba(200, 170, 110, 0.5);
+            box-shadow: 0 4px 12px rgba(200, 170, 110, 0.2);
+        }
+
+        /* Gem Price Color */
+        .gem-price {
+            color: #34d399 !important;
         }
 
         /* Developer Panel Styles */
@@ -486,6 +586,28 @@
                     <p class="text-[10px] text-[#777]">Травник</p>
                 </div>
             </div>
+            
+            <div class="panel rounded p-4 mt-4 relative overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-b from-black/10 via-black/30 to-black/60"></div>
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_25%_15%,rgba(200,170,110,0.12),transparent_60%)]"></div>
+                <div class="relative">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="medieval-font text-sm text-[#c8aa6e]"><i class="fas fa-hammer mr-1"></i> Крафт</h3>
+                    </div>
+                    <div id="ui-crafting">
+                        <div class="flex items-center gap-2 overflow-x-auto pb-2 mb-2 no-scrollbar">
+                            <button onclick="crafting.switchCategory('potions')" id="tab-craft-potions" class="sub-tab active">Зелья</button>
+                            <button onclick="crafting.switchCategory('charms')" id="tab-craft-charms" class="sub-tab">Обереги</button>
+                            <button onclick="crafting.switchCategory('tools')" id="tab-craft-tools" class="sub-tab">Материалы</button>
+                            <button onclick="crafting.switchCategory('food')" id="tab-craft-food" class="sub-tab">Еда</button>
+                        </div>
+                        <div id="crafting-list" class="space-y-3">
+                            <div class="text-center text-xs text-gray-500 py-4">Нет рецептов</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
 
             <div class="space-y-3 text-sm text-[#e0e0e0] leading-relaxed">
                 <p>Очнулся наконец? Я нашёл тебя без сознания под мостом.</p>
@@ -905,9 +1027,6 @@
                 <div id="ui-inventory">
                     <div class="flex justify-between items-center mb-2">
                         <h3 class="medieval-font text-sm text-[#c8aa6e]">Рюкзак</h3>
-                        <button onclick="crafting.toggleMode()" class="text-[10px] text-[#777] underline">
-                            <i class="fas fa-hammer mr-1"></i> <span id="craft-btn-text">Перейти к крафту</span>
-                        </button>
                     </div>
                     <!-- Inventory Tabs -->
                     <div class="flex items-center gap-2 overflow-x-auto pb-2 mb-2 no-scrollbar">
@@ -932,21 +1051,7 @@
                     <p class="text-[10px] text-[#777] mt-2">Вместимость рюкзака можно улучшать через крафт (рецепт продается в Книжном Доме).</p>
                 </div>
 
-                <!-- Crafting UI -->
-                <div id="ui-crafting" class="hidden">
-                     <!-- Crafting Tabs -->
-                     <div class="flex items-center gap-2 overflow-x-auto pb-2 mb-2 no-scrollbar">
-                        <button onclick="crafting.switchCategory('potions')" id="tab-craft-potions" class="sub-tab active">Зелья</button>
-                        <button onclick="crafting.switchCategory('charms')" id="tab-craft-charms" class="sub-tab">Обереги</button>
-                        <button onclick="crafting.switchCategory('tools')" id="tab-craft-tools" class="sub-tab">Материалы</button>
-                        <button onclick="crafting.switchCategory('food')" id="tab-craft-food" class="sub-tab">Еда</button>
-                    </div>
-
-                    <div id="crafting-list" class="space-y-3">
-                        <!-- Recipes populated by JS -->
-                        <div class="text-center text-xs text-gray-500 py-4">Нет рецептов</div>
-                    </div>
-                </div>
+                <!-- Crafting UI moved to separate panel below -->
 
                 <!-- Skills UI -->
                 <div id="ui-skills" class="hidden space-y-3">
@@ -1419,7 +1524,7 @@
                                 <i class="fas fa-star"></i> +1 XP
                             </div>
                         </div>
-                        <button id="btn-work-port" onclick="game.work('port', event)" class="btn-medieval w-full py-2 rounded font-bold shadow-lg">
+                        <button id="btn-work-port" onclick="game.work('port', event)" class="job-button w-full py-2 rounded font-bold shadow-lg">
                             <i class="fas fa-fish mr-2"></i> Рыбачить
                         </button>
                     </div>
@@ -1452,7 +1557,7 @@
                                 <i class="fas fa-shield-alt"></i> 1% травма
                             </div>
                         </div>
-                        <button id="btn-work-loader" onclick="game.work('loader', event)" class="btn-medieval w-full py-2 rounded font-bold shadow-lg">
+                        <button id="btn-work-loader" onclick="game.work('loader', event)" class="job-button w-full py-2 rounded font-bold shadow-lg">
                             <i class="fas fa-box mr-2"></i> Разгружать
                         </button>
                     </div>
@@ -1483,7 +1588,7 @@
                                 <i class="fas fa-star"></i> +3 XP
                             </div>
                         </div>
-                        <button id="btn-work-field" disabled onclick="game.work('field', event)" class="btn-medieval w-full py-2 rounded font-bold flex items-center justify-center gap-2 shadow-lg">
+                        <button id="btn-work-field" disabled onclick="game.work('field', event)" class="job-button w-full py-2 rounded font-bold flex items-center justify-center gap-2 shadow-lg">
                             <i class="fas fa-lock text-xs"></i> Закрыто
                         </button>
                     </div>
@@ -1514,10 +1619,10 @@
                                 <i class="fas fa-star"></i> +8 XP
                             </div>
                             <div class="text-[11px] text-emerald-400 flex items-center gap-1 drop-shadow-md">
-                                <i class="far fa-gem"></i> Шанс найти изумруды
+                                <i class="far fa-gem gem-price"></i> Шанс найти изумруды
                             </div>
                         </div>
-                        <button id="btn-work-mine" disabled onclick="game.work('mine', event)" class="btn-medieval w-full py-2 rounded font-bold flex items-center justify-center gap-2 shadow-lg">
+                        <button id="btn-work-mine" disabled onclick="game.work('mine', event)" class="job-button w-full py-2 rounded font-bold flex items-center justify-center gap-2 shadow-lg">
                             <i class="fas fa-lock text-xs"></i> Закрыто
                         </button>
                     </div>
@@ -1552,7 +1657,7 @@
                                 <i class="fas fa-star"></i> +15 XP
                             </div>
                         </div>
-                        <button id="btn-work-hunter" disabled onclick="game.work('hunter', event)" class="btn-medieval w-full py-2 rounded font-bold flex items-center justify-center gap-2 shadow-lg">
+                        <button id="btn-work-hunter" disabled onclick="game.work('hunter', event)" class="job-button w-full py-2 rounded font-bold flex items-center justify-center gap-2 shadow-lg">
                             <i class="fas fa-lock text-xs"></i> Закрыто
                         </button>
                     </div>
@@ -1591,7 +1696,7 @@
                             <i class="fas fa-hood-cloak text-purple-400"></i>
                         </div>
                         <div>
-                            <div class="text-sm text-[#e0e0e0] font-bold">Элара</div>
+                            <div class="text-base text-[#e0e0e0] font-bold medieval-font">Элара</div>
                             <div class="text-[10px] text-[#a0a0a0]">Следопыт</div>
                         </div>
                     </div>
@@ -1678,72 +1783,87 @@
                 </button>
                 <p class="text-[10px] text-gray-600 mb-4">+2 Золота за клик</p>
 
-                <div class="grid grid-cols-2 gap-3 border-t border-[#333] pt-4 mt-2">
-                    <div class="flex flex-col items-center">
-                        <div class="w-10 h-10 rounded-full border border-[#c8aa6e] bg-[#222] flex items-center justify-center mb-1">
-                            <i class="fas fa-user-tie text-[#c8aa6e]"></i>
+                <!-- Bulletin Board - Large Button -->
+                <div class="mt-4">
+                    <button onclick="router.navigate('bulletin')" class="panel w-full p-0 rounded-lg overflow-hidden group hover:border-amber-500 transition-all relative h-24">
+                        <img src="https://i.postimg.cc/BbHX1G86/IMG-4606.jpg" alt="Bulletin Board" class="absolute inset-0 w-full h-full object-cover opacity-30">
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80"></div>
+                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(217,119,6,0.2),transparent_60%)]"></div>
+                        <div class="absolute inset-0 flex items-center justify-between p-4">
+                            <div class="flex items-center gap-4">
+                                <div class="w-14 h-14 rounded-full bg-gradient-to-br from-amber-900/60 to-amber-950 border-2 border-amber-500/60 flex items-center justify-center shadow-[0_0_15px_rgba(217,119,6,0.3)]">
+                                    <i class="fas fa-clipboard-list text-amber-400 text-2xl"></i>
+                                </div>
+                                <div class="text-left">
+                                    <div class="text-base font-bold text-amber-300 medieval-font">Доска Объявлений</div>
+                                    <div class="text-xs text-amber-600/80">Работы, заказы и объявления</div>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-500 group-hover:text-amber-500 text-xl"></i>
                         </div>
-                        <p class="text-xs text-[#e0e0e0] mb-1">Артур</p>
-                        <button onclick="dialogue.start('arthur')" class="btn-medieval w-full py-1.5 rounded text-[10px]">
-                            Говорить
-                        </button>
-                    </div>
-                    <div class="flex flex-col items-center">
-                        <div class="w-10 h-10 rounded-full border border-amber-500 bg-[#222] flex items-center justify-center mb-1">
-                            <i class="fas fa-clipboard-list text-amber-400"></i>
-                        </div>
-                        <p class="text-xs text-[#e0e0e0] mb-1">Доска</p>
-                        <button onclick="router.navigate('bulletin')" class="btn-medieval w-full py-1.5 rounded text-[10px]">
-                            Смотреть
-                        </button>
-                    </div>
+                    </button>
                 </div>
                 
                 <!-- Book House Button -->
                 <div class="mt-4">
-                     <button onclick="router.navigate('bookhouse')" class="panel w-full p-3 rounded flex items-center justify-between group hover:border-blue-500 transition-colors">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-[#111] border border-blue-500 flex items-center justify-center">
-                                <i class="fas fa-book text-blue-400"></i>
+                     <button onclick="router.navigate('bookhouse')" class="panel w-full p-0 rounded-lg overflow-hidden group hover:border-blue-500 transition-all relative h-20">
+                        <img src="https://i.postimg.cc/s2jDDh9j/IMG-4603.jpg" alt="Book House" class="absolute inset-0 w-full h-full object-cover opacity-30">
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80"></div>
+                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(59,130,246,0.18),transparent_60%)]"></div>
+                        <div class="absolute inset-0 flex items-center justify-between p-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-[#111] border border-blue-500 flex items-center justify-center">
+                                    <i class="fas fa-book text-blue-400"></i>
+                                </div>
+                                <div class="text-left">
+                                    <div class="text-sm font-bold text-[#e0e0e0]">Книжный Дом</div>
+                                    <div class="text-[10px] text-[#777]">Рецепты и знания</div>
+                                </div>
                             </div>
-                            <div class="text-left">
-                                <div class="text-sm font-bold text-[#e0e0e0]">Книжный Дом</div>
-                                <div class="text-[10px] text-[#777]">Рецепты и знания</div>
-                            </div>
+                            <i class="fas fa-chevron-right text-gray-500 group-hover:text-blue-500"></i>
                         </div>
-                        <i class="fas fa-chevron-right text-gray-500 group-hover:text-blue-500"></i>
                     </button>
                 </div>
 
                 <!-- Tailor Button -->
                 <div class="mt-3">
-                    <button onclick="router.navigate('tailor')" class="panel w-full p-3 rounded flex items-center justify-between group hover:border-pink-500 transition-colors">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-[#111] border border-pink-500 flex items-center justify-center">
-                                <i class="fas fa-shirt text-pink-400"></i>
+                    <button onclick="router.navigate('tailor')" class="panel w-full p-0 rounded-lg overflow-hidden group hover:border-pink-500 transition-all relative h-20">
+                        <img src="https://i.postimg.cc/s1C3FQDt/IMG-4604.jpg" alt="Tailor Workshop" class="absolute inset-0 w-full h-full object-cover opacity-30">
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80"></div>
+                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(236,72,153,0.18),transparent_60%)]"></div>
+                        <div class="absolute inset-0 flex items-center justify-between p-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-[#111] border border-pink-500 flex items-center justify-center">
+                                    <i class="fas fa-shirt text-pink-400"></i>
+                                </div>
+                                <div class="text-left">
+                                    <div class="text-sm font-bold text-[#e0e0e0]">Мастерская Портного</div>
+                                    <div class="text-[10px] text-[#777]">Одежда на заказ</div>
+                                </div>
                             </div>
-                            <div class="text-left">
-                                <div class="text-sm font-bold text-[#e0e0e0]">Мастерская Портного</div>
-                                <div class="text-[10px] text-[#777]">Одежда на заказ</div>
-                            </div>
+                            <i class="fas fa-chevron-right text-gray-500 group-hover:text-pink-500"></i>
                         </div>
-                        <i class="fas fa-chevron-right text-gray-500 group-hover:text-pink-500"></i>
                     </button>
                 </div>
 
                 <!-- Shoemaker Button -->
                 <div class="mt-3">
-                    <button onclick="router.navigate('shoemaker')" class="panel w-full p-3 rounded flex items-center justify-between group hover:border-amber-500 transition-colors">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-[#111] border border-amber-500 flex items-center justify-center">
-                                <i class="fas fa-shoe-prints text-amber-400"></i>
+                    <button onclick="router.navigate('shoemaker')" class="panel w-full p-0 rounded-lg overflow-hidden group hover:border-amber-500 transition-all relative h-20">
+                        <img src="https://i.postimg.cc/MpxjVXmz/IMG-4605.jpg" alt="Shoemaker Workshop" class="absolute inset-0 w-full h-full object-cover opacity-30">
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80"></div>
+                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(217,119,6,0.2),transparent_60%)]"></div>
+                        <div class="absolute inset-0 flex items-center justify-between p-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-[#111] border border-amber-500 flex items-center justify-center">
+                                    <i class="fas fa-shoe-prints text-amber-400"></i>
+                                </div>
+                                <div class="text-left">
+                                    <div class="text-sm font-bold text-[#e0e0e0]">Мастерская Сапожника</div>
+                                    <div class="text-[10px] text-[#777]">Обувь и ремонт</div>
+                                </div>
                             </div>
-                            <div class="text-left">
-                                <div class="text-sm font-bold text-[#e0e0e0]">Мастерская Сапожника</div>
-                                <div class="text-[10px] text-[#777]">Обувь и ремонт</div>
-                            </div>
+                            <i class="fas fa-chevron-right text-gray-500 group-hover:text-amber-500"></i>
                         </div>
-                        <i class="fas fa-chevron-right text-gray-500 group-hover:text-amber-500"></i>
                     </button>
                 </div>
             </div>
@@ -1751,9 +1871,13 @@
 
         <!-- VIEW: BULLETIN BOARD -->
         <section id="view-bulletin" class="hidden space-y-4">
-            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-amber-950/80 via-[#1a1a1d] to-[#0f0f10]">
-                <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(217,119,6,0.15),transparent_60%)]"></div>
+            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden">
+                <!-- Background Image -->
+                <img src="https://i.postimg.cc/BbHX1G86/IMG-4606.jpg" alt="Bulletin Board" class="absolute inset-0 w-full h-full object-cover opacity-30">
+                <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80"></div>
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(217,119,6,0.2),transparent_60%)]"></div>
                 <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent"></div>
+                
                 <div class="absolute top-4 left-4">
                     <button onclick="router.navigate('town-square')" class="w-8 h-8 rounded border border-amber-900/50 bg-black/30 flex items-center justify-center text-amber-400 hover:bg-amber-900/30 transition-colors">
                         <i class="fas fa-arrow-left"></i>
@@ -1778,7 +1902,7 @@
                     <h3 class="text-xs text-[#777] uppercase border-b border-[#333] pb-1">Срочные заказы</h3>
                     
                     <!-- Bounty 1: Fish -->
-                    <div class="border border-[#333] rounded p-3 bg-black/20">
+                    <div class="market-item-card border rounded p-3">
                         <div class="flex justify-between items-start mb-2">
                             <div class="flex gap-3">
                                 <i class="fas fa-fish text-blue-400 text-lg mt-1"></i>
@@ -1793,13 +1917,13 @@
                                 <div class="text-[10px] text-blue-400">+15 XP</div>
                             </div>
                         </div>
-                        <button onclick="bulletin.acceptQuest('fish_delivery')" class="btn-medieval w-full py-1.5 rounded text-[10px]">
+                        <button onclick="bulletin.acceptQuest('fish_delivery')" class="w-full py-1.5 rounded text-[10px] border border-amber-700/40 bg-black/30 text-amber-300 hover:bg-amber-900/20 backdrop-blur-sm">
                             Взять заказ
                         </button>
                     </div>
 
                     <!-- Bounty 2: Herbs -->
-                    <div class="border border-[#333] rounded p-3 bg-black/20">
+                    <div class="market-item-card border rounded p-3">
                         <div class="flex justify-between items-start mb-2">
                             <div class="flex gap-3">
                                 <i class="fas fa-leaf text-green-400 text-lg mt-1"></i>
@@ -1814,13 +1938,13 @@
                                 <div class="text-[10px] text-blue-400">+10 XP</div>
                             </div>
                         </div>
-                        <button onclick="bulletin.acceptQuest('herbs_delivery')" class="btn-medieval w-full py-1.5 rounded text-[10px]">
+                        <button onclick="bulletin.acceptQuest('herbs_delivery')" class="w-full py-1.5 rounded text-[10px] border border-amber-700/40 bg-black/30 text-amber-300 hover:bg-amber-900/20 backdrop-blur-sm">
                             Взять заказ
                         </button>
                     </div>
 
                     <!-- Bounty 3: Ore -->
-                    <div class="border border-[#333] rounded p-3 bg-black/20">
+                    <div class="market-item-card border rounded p-3">
                         <div class="flex justify-between items-start mb-2">
                             <div class="flex gap-3">
                                 <i class="fas fa-cube text-gray-400 text-lg mt-1"></i>
@@ -1835,7 +1959,7 @@
                                 <div class="text-[10px] text-blue-400">+25 XP</div>
                             </div>
                         </div>
-                        <button onclick="bulletin.acceptQuest('ore_delivery')" class="btn-medieval w-full py-1.5 rounded text-[10px]">
+                        <button onclick="bulletin.acceptQuest('ore_delivery')" class="w-full py-1.5 rounded text-[10px] border border-amber-700/40 bg-black/30 text-amber-300 hover:bg-amber-900/20 backdrop-blur-sm">
                             Взять заказ
                         </button>
                     </div>
@@ -1860,35 +1984,45 @@
 
         <!-- VIEW: TAILOR -->
         <section id="view-tailor" class="hidden space-y-4">
-            <div class="h-16 w-full relative rounded-lg mb-4 overflow-hidden bg-[#1a1a1d]">
-                <div class="absolute inset-0 bg-gradient-to-r from-pink-900/20 to-transparent"></div>
-                <div class="absolute top-4 left-4 flex items-center gap-3">
-                    <button onclick="router.navigate('town-square')" class="w-8 h-8 rounded border border-[#333] bg-black/50 flex items-center justify-center text-[#a0a0a0] backdrop-blur-sm">
+            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden">
+                <!-- Background Image -->
+                <img src="https://i.postimg.cc/s1C3FQDt/IMG-4604.jpg" alt="Tailor Workshop" class="absolute inset-0 w-full h-full object-cover opacity-30">
+                <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80"></div>
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(236,72,153,0.2),transparent_60%)]"></div>
+                <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-pink-500/50 to-transparent"></div>
+                
+                <div class="absolute top-4 left-4">
+                    <button onclick="router.navigate('town-square')" class="w-8 h-8 rounded border border-pink-900/50 bg-black/30 flex items-center justify-center text-pink-400 hover:bg-pink-900/30 transition-colors backdrop-blur-sm">
                         <i class="fas fa-arrow-left"></i>
                     </button>
-                    <h2 class="medieval-font text-xl text-pink-400 drop-shadow-lg">Мастерская Портного</h2>
+                </div>
+                <div class="absolute top-1/2 left-16 -translate-y-1/2 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-pink-900/60 to-pink-950 flex items-center justify-center border-2 border-pink-500/60 shadow-[0_0_15px_rgba(236,72,153,0.3)]">
+                        <i class="fas fa-scissors text-pink-400 text-lg"></i>
+                    </div>
+                    <h2 class="medieval-font text-2xl text-pink-300 drop-shadow-md">Мастерская Портного</h2>
                 </div>
             </div>
 
             <!-- Tailor NPC -->
-            <div class="panel p-3 mb-4 rounded flex items-center justify-between border-pink-900/30 bg-pink-900/10">
+            <div class="panel p-4 rounded-lg border-pink-500/40 bg-gradient-to-br from-pink-900/80 via-[#1a1a1d] to-[#0f0f10] mb-4">
                 <div class="flex items-center gap-3">
                     <div class="w-12 h-12 rounded-full border border-pink-500 bg-[#222] flex items-center justify-center">
                         <i class="fas fa-scissors text-pink-400"></i>
                     </div>
                     <div>
-                        <div class="text-sm text-[#e0e0e0] font-bold">Портной Питер</div>
+                        <div class="text-base text-[#e0e0e0] font-bold medieval-font">Портной Питер</div>
                         <div class="text-[10px] text-[#a0a0a0]">Портной</div>
                     </div>
                 </div>
-                <button onclick="dialogue.start('peter')" class="btn-medieval px-4 py-1.5 rounded text-xs">
+                <button onclick="dialogue.start('peter')" class="px-4 py-1.5 rounded text-xs border border-pink-700/40 bg-black/30 text-pink-300 hover:bg-pink-900/20 backdrop-blur-sm">
                     Говорить
                 </button>
             </div>
 
             <div class="panel rounded p-4 space-y-3">
                 <h3 class="medieval-font text-sm text-[#c8aa6e]">Одежда на заказ</h3>
-                <div class="border border-[#333] rounded p-3 bg-black/20">
+                <div class="market-item-card border rounded p-3">
                     <div class="flex justify-between items-start mb-2">
                         <div class="flex gap-3">
                             <i class="fas fa-shirt text-[#c8aa6e] text-xl mt-1"></i>
@@ -1899,12 +2033,12 @@
                         </div>
                         <div class="text-sm text-yellow-400 font-bold">5,000 <i class="fas fa-coins"></i></div>
                     </div>
-                    <button onclick="game.buyClothes('peasant', 5000)" class="btn-medieval w-full py-1.5 rounded text-[10px]">
+                    <button onclick="game.buyClothes('peasant', 5000)" class="w-full py-1.5 rounded text-[10px] border border-pink-700/40 bg-black/30 text-pink-300 hover:bg-pink-900/20 backdrop-blur-sm">
                         Купить
                     </button>
                 </div>
 
-                <div class="border border-[#333] rounded p-3 bg-black/20">
+                <div class="market-item-card border rounded p-3">
                     <div class="flex justify-between items-start mb-2">
                         <div class="flex gap-3">
                             <i class="fas fa-shirt text-[#c8aa6e] text-xl mt-1"></i>
@@ -1915,12 +2049,12 @@
                         </div>
                         <div class="text-sm text-yellow-400 font-bold">50,000 <i class="fas fa-coins"></i></div>
                     </div>
-                    <button onclick="game.buyClothes('rich', 50000)" class="btn-medieval w-full py-1.5 rounded text-[10px]">
+                    <button onclick="game.buyClothes('rich', 50000)" class="w-full py-1.5 rounded text-[10px] border border-pink-700/40 bg-black/30 text-pink-300 hover:bg-pink-900/20 backdrop-blur-sm">
                         Купить
                     </button>
                 </div>
 
-                <div class="border border-[#333] rounded p-3 bg-black/20">
+                <div class="market-item-card border rounded p-3">
                     <div class="flex justify-between items-start mb-2">
                         <div class="flex gap-3">
                             <i class="fas fa-crown text-[#c8aa6e] text-xl mt-1"></i>
@@ -1929,9 +2063,9 @@
                                 <div class="text-[10px] text-[#777]">Высшее качество для истинной элиты.</div>
                             </div>
                         </div>
-                        <div class="text-sm text-emerald-400 font-bold">500 <i class="far fa-gem"></i></div>
+                        <div class="text-sm gem-price font-bold">500 <i class="far fa-gem gem-price"></i></div>
                     </div>
-                    <button onclick="game.buyClothes('noble', 500)" class="btn-medieval w-full py-1.5 rounded text-[10px]">
+                    <button onclick="game.buyClothes('noble', 500)" class="w-full py-1.5 rounded text-[10px] border border-pink-700/40 bg-black/30 text-pink-300 hover:bg-pink-900/20 backdrop-blur-sm">
                         Купить
                     </button>
                 </div>
@@ -1940,28 +2074,38 @@
 
         <!-- VIEW: SHOEMAKER -->
         <section id="view-shoemaker" class="hidden space-y-4">
-            <div class="h-16 w-full relative rounded-lg mb-4 overflow-hidden bg-[#1a1a1d]">
-                <div class="absolute inset-0 bg-gradient-to-r from-amber-900/20 to-transparent"></div>
-                <div class="absolute top-4 left-4 flex items-center gap-3">
-                    <button onclick="router.navigate('town-square')" class="w-8 h-8 rounded border border-[#333] bg-black/50 flex items-center justify-center text-[#a0a0a0] backdrop-blur-sm">
+            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden">
+                <!-- Background Image -->
+                <img src="https://i.postimg.cc/MpxjVXmz/IMG-4605.jpg" alt="Shoemaker Workshop" class="absolute inset-0 w-full h-full object-cover opacity-30">
+                <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80"></div>
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(217,119,6,0.2),transparent_60%)]"></div>
+                <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent"></div>
+                
+                <div class="absolute top-4 left-4">
+                    <button onclick="router.navigate('town-square')" class="w-8 h-8 rounded border border-amber-900/50 bg-black/30 flex items-center justify-center text-amber-400 hover:bg-amber-900/30 transition-colors backdrop-blur-sm">
                         <i class="fas fa-arrow-left"></i>
                     </button>
-                    <h2 class="medieval-font text-xl text-amber-400 drop-shadow-lg">Мастерская Сапожника</h2>
+                </div>
+                <div class="absolute top-1/2 left-16 -translate-y-1/2 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-900/60 to-amber-950 flex items-center justify-center border-2 border-amber-500/60 shadow-[0_0_15px_rgba(217,119,6,0.3)]">
+                        <i class="fas fa-shoe-prints text-amber-400 text-lg"></i>
+                    </div>
+                    <h2 class="medieval-font text-2xl text-amber-300 drop-shadow-md">Мастерская Сапожника</h2>
                 </div>
             </div>
 
             <!-- Shoemaker NPC -->
-            <div class="panel p-3 mb-4 rounded flex items-center justify-between border-amber-900/30 bg-amber-900/10">
+            <div class="panel p-4 rounded-lg border-amber-500/40 bg-gradient-to-br from-amber-900/80 via-[#1a1a1d] to-[#0f0f10] mb-4">
                 <div class="flex items-center gap-3">
                     <div class="w-12 h-12 rounded-full border border-amber-500 bg-[#222] flex items-center justify-center">
                         <i class="fas fa-shoe-prints text-amber-400"></i>
                     </div>
                     <div>
-                        <div class="text-sm text-[#e0e0e0] font-bold">Сапожник Лорен</div>
+                        <div class="text-base text-[#e0e0e0] font-bold medieval-font">Сапожник Лорен</div>
                         <div class="text-[10px] text-[#a0a0a0]">Мастер обуви</div>
                     </div>
                 </div>
-                <button onclick="dialogue.start('shoemaker')" class="btn-medieval px-4 py-1.5 rounded text-xs">
+                <button onclick="dialogue.start('shoemaker')" class="px-4 py-1.5 rounded text-xs border border-amber-700/40 bg-black/30 text-amber-300 hover:bg-amber-900/20 backdrop-blur-sm">
                     Говорить
                 </button>
             </div>
@@ -1969,7 +2113,7 @@
             <div class="panel rounded p-4 space-y-3">
                 <h3 class="medieval-font text-sm text-[#c8aa6e]">Обувь на заказ</h3>
 
-                <div class="border border-[#333] rounded p-3 bg-black/20">
+                <div class="market-item-card border rounded p-3">
                     <div class="flex justify-between items-start mb-2">
                         <div class="flex gap-3">
                             <i class="fas fa-shoe-prints text-amber-400 text-xl mt-1"></i>
@@ -1981,12 +2125,12 @@
                         <div class="text-sm text-yellow-400 font-bold">4,000 <i class="fas fa-coins"></i></div>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
-                        <button onclick="shoemaker.buyShoes('peasant')" class="btn-medieval w-full py-1.5 rounded text-[10px]">Купить</button>
-                        <button onclick="shoemaker.sellShoes('peasant')" class="btn-medieval w-full py-1.5 rounded text-[10px] border-amber-700 text-amber-300">Продать</button>
+                        <button onclick="shoemaker.buyShoes('peasant')" class="w-full py-1.5 rounded text-[10px] border border-amber-700/40 bg-black/30 text-amber-300 hover:bg-amber-900/20 backdrop-blur-sm">Купить</button>
+                        <button onclick="shoemaker.sellShoes('peasant')" class="w-full py-1.5 rounded text-[10px] border border-amber-700/40 bg-black/30 text-amber-300 hover:bg-amber-900/20 backdrop-blur-sm">Продать</button>
                     </div>
                 </div>
 
-                <div class="border border-[#333] rounded p-3 bg-black/20">
+                <div class="market-item-card border rounded p-3">
                     <div class="flex justify-between items-start mb-2">
                         <div class="flex gap-3">
                             <i class="fas fa-shoe-prints text-emerald-400 text-xl mt-1"></i>
@@ -1995,15 +2139,15 @@
                                 <div class="text-[10px] text-[#777]">Удобные, мягкие и прочные.</div>
                             </div>
                         </div>
-                        <div class="text-sm text-emerald-400 font-bold">100 <i class="far fa-gem"></i></div>
+                        <div class="text-sm gem-price font-bold">100 <i class="far fa-gem gem-price"></i></div>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
-                        <button onclick="shoemaker.buyShoes('quality')" class="btn-medieval w-full py-1.5 rounded text-[10px]">Купить</button>
-                        <button onclick="shoemaker.sellShoes('quality')" class="btn-medieval w-full py-1.5 rounded text-[10px] border-emerald-700 text-emerald-300">Продать</button>
+                        <button onclick="shoemaker.buyShoes('quality')" class="w-full py-1.5 rounded text-[10px] border border-emerald-700/40 bg-black/30 text-emerald-300 hover:bg-emerald-900/20 backdrop-blur-sm">Купить</button>
+                        <button onclick="shoemaker.sellShoes('quality')" class="w-full py-1.5 rounded text-[10px] border border-emerald-700/40 bg-black/30 text-emerald-300 hover:bg-emerald-900/20 backdrop-blur-sm">Продать</button>
                     </div>
                 </div>
 
-                <div class="border border-[#333] rounded p-3 bg-black/20">
+                <div class="market-item-card border rounded p-3">
                     <div class="flex justify-between items-start mb-2">
                         <div class="flex gap-3">
                             <i class="fas fa-crown text-yellow-400 text-xl mt-1"></i>
@@ -2012,11 +2156,11 @@
                                 <div class="text-[10px] text-[#777]">Для тех, кто ценит роскошь.</div>
                             </div>
                         </div>
-                        <div class="text-sm text-emerald-400 font-bold">300 <i class="far fa-gem"></i></div>
+                        <div class="text-sm gem-price font-bold">300 <i class="far fa-gem gem-price"></i></div>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
-                        <button onclick="shoemaker.buyShoes('elite')" class="btn-medieval w-full py-1.5 rounded text-[10px]">Купить</button>
-                        <button onclick="shoemaker.sellShoes('elite')" class="btn-medieval w-full py-1.5 rounded text-[10px] border-yellow-700 text-yellow-300">Продать</button>
+                        <button onclick="shoemaker.buyShoes('elite')" class="w-full py-1.5 rounded text-[10px] border border-yellow-700/40 bg-black/30 text-yellow-300 hover:bg-yellow-900/20 backdrop-blur-sm">Купить</button>
+                        <button onclick="shoemaker.sellShoes('elite')" class="w-full py-1.5 rounded text-[10px] border border-yellow-700/40 bg-black/30 text-yellow-300 hover:bg-yellow-900/20 backdrop-blur-sm">Продать</button>
                     </div>
                 </div>
 
@@ -2028,28 +2172,38 @@
 
         <!-- VIEW: BOOK HOUSE -->
         <section id="view-bookhouse" class="hidden space-y-4">
-            <div class="h-16 w-full relative rounded-lg mb-4 overflow-hidden bg-[#1a1a1d]">
-                <div class="absolute inset-0 bg-gradient-to-r from-blue-900/20 to-transparent"></div>
-                <div class="absolute top-4 left-4 flex items-center gap-3">
-                    <button onclick="router.navigate('town-square')" class="w-8 h-8 rounded border border-[#333] bg-black/50 flex items-center justify-center text-[#a0a0a0] backdrop-blur-sm">
+            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden">
+                <!-- Background Image -->
+                <img src="https://i.postimg.cc/s2jDDh9j/IMG-4603.jpg" alt="Book House" class="absolute inset-0 w-full h-full object-cover opacity-30">
+                <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80"></div>
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(59,130,246,0.2),transparent_60%)]"></div>
+                <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-blue-500/50 to-transparent"></div>
+                
+                <div class="absolute top-4 left-4">
+                    <button onclick="router.navigate('town-square')" class="w-8 h-8 rounded border border-blue-900/50 bg-black/30 flex items-center justify-center text-blue-400 hover:bg-blue-900/30 transition-colors backdrop-blur-sm">
                         <i class="fas fa-arrow-left"></i>
                     </button>
-                    <h2 class="medieval-font text-xl text-blue-400 drop-shadow-lg">Книжный Дом</h2>
+                </div>
+                <div class="absolute top-1/2 left-16 -translate-y-1/2 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-900/60 to-blue-950 flex items-center justify-center border-2 border-blue-500/60 shadow-[0_0_15px_rgba(59,130,246,0.3)]">
+                        <i class="fas fa-book text-blue-400 text-lg"></i>
+                    </div>
+                    <h2 class="medieval-font text-2xl text-blue-300 drop-shadow-md">Книжный Дом</h2>
                 </div>
             </div>
 
             <!-- Book House NPC -->
-            <div class="panel p-3 mb-4 rounded flex items-center justify-between border-blue-900/30 bg-blue-900/10">
+            <div class="panel p-4 rounded-lg border-blue-500/40 bg-gradient-to-br from-blue-900/80 via-[#1a1a1d] to-[#0f0f10] mb-4">
                 <div class="flex items-center gap-3">
                     <div class="w-12 h-12 rounded-full border border-pink-500 bg-[#222] flex items-center justify-center">
-                        <i class="fas fa-feather text-pink-400"></i>
+                        <i class="fas fa-feather text-pink-400 text-lg"></i>
                     </div>
                     <div>
-                        <div class="text-sm text-[#e0e0e0] font-bold">Лили</div>
+                        <div class="text-base text-[#e0e0e0] font-bold medieval-font">Лили</div>
                         <div class="text-[10px] text-[#a0a0a0]">Хранительница знаний</div>
                     </div>
                 </div>
-                <button onclick="dialogue.start('lili')" class="btn-medieval px-4 py-1.5 rounded text-xs">
+                <button onclick="dialogue.start('lili')" class="px-4 py-1.5 rounded text-xs border border-blue-700/40 bg-black/30 text-blue-300 hover:bg-blue-900/20 backdrop-blur-sm">
                     Говорить
                 </button>
             </div>
@@ -2058,7 +2212,7 @@
                 <h3 class="medieval-font text-sm text-[#c8aa6e] border-b border-[#333] pb-2">Рецепты в продаже</h3>
                 
                 <!-- Food Recipe -->
-                <div class="border border-[#333] rounded p-3 bg-black/20">
+                <div class="market-item-card border rounded p-3">
                     <div class="flex justify-between items-start mb-2">
                         <div class="flex gap-3">
                             <i class="fas fa-drumstick-bite text-amber-400 text-xl mt-1"></i>
@@ -2068,15 +2222,15 @@
                                 <div class="text-[10px] text-gray-500 mt-1">Требуется: 2 Мяса</div>
                             </div>
                         </div>
-                        <div class="text-sm text-emerald-400 font-bold">50 <i class="far fa-gem"></i></div>
+                        <div class="text-sm gem-price font-bold">50 <i class="far fa-gem gem-price"></i></div>
                     </div>
-                    <button id="btn-buy-recipe-food" onclick="game.buyRecipe('food', 50)" class="btn-medieval w-full py-1.5 rounded text-[10px]">
+                    <button id="btn-buy-recipe-food" onclick="game.buyRecipe('food', 50)" class="w-full py-1.5 rounded text-[10px] border border-blue-700/40 bg-black/30 text-blue-300 hover:bg-blue-900/20 backdrop-blur-sm">
                         Купить Рецепт
                     </button>
                 </div>
 
                 <!-- Sword Recipe -->
-                <div class="border border-[#333] rounded p-3 bg-black/20">
+                <div class="market-item-card border rounded p-3">
                     <div class="flex justify-between items-start mb-2">
                         <div class="flex gap-3">
                             <i class="fas fa-gavel text-gray-400 text-xl mt-1"></i>
@@ -2086,15 +2240,15 @@
                                 <div class="text-[10px] text-gray-500 mt-1">Требуется: 3 Руды, 2 Палки</div>
                             </div>
                         </div>
-                        <div class="text-sm text-emerald-400 font-bold">100 <i class="far fa-gem"></i></div>
+                        <div class="text-sm gem-price font-bold">100 <i class="far fa-gem gem-price"></i></div>
                     </div>
-                    <button id="btn-buy-recipe-sword" onclick="game.buyRecipe('sword', 100)" class="btn-medieval w-full py-1.5 rounded text-[10px]">
+                    <button id="btn-buy-recipe-sword" onclick="game.buyRecipe('sword', 100)" class="w-full py-1.5 rounded text-[10px] border border-blue-700/40 bg-black/30 text-blue-300 hover:bg-blue-900/20 backdrop-blur-sm">
                         Купить Рецепт
                     </button>
                 </div>
 
                 <!-- Leather Armor Recipe -->
-                <div class="border border-[#333] rounded p-3 bg-black/20">
+                <div class="market-item-card border rounded p-3">
                     <div class="flex justify-between items-start mb-2">
                         <div class="flex gap-3">
                             <i class="fas fa-vest text-amber-600 text-xl mt-1"></i>
@@ -2104,15 +2258,15 @@
                                 <div class="text-[10px] text-gray-500 mt-1">Требуется: 5 Кожи</div>
                             </div>
                         </div>
-                        <div class="text-sm text-emerald-400 font-bold">150 <i class="far fa-gem"></i></div>
+                        <div class="text-sm gem-price font-bold">150 <i class="far fa-gem gem-price"></i></div>
                     </div>
-                    <button id="btn-buy-recipe-armor" onclick="game.buyRecipe('armor', 150)" class="btn-medieval w-full py-1.5 rounded text-[10px]">
+                    <button id="btn-buy-recipe-armor" onclick="game.buyRecipe('armor', 150)" class="w-full py-1.5 rounded text-[10px] border border-blue-700/40 bg-black/30 text-blue-300 hover:bg-blue-900/20 backdrop-blur-sm">
                         Купить Рецепт
                     </button>
                 </div>
 
                 <!-- Upgraded Bag Recipe -->
-                <div class="border border-[#333] rounded p-3 bg-black/20">
+                <div class="market-item-card border rounded p-3">
                     <div class="flex justify-between items-start mb-2">
                         <div class="flex gap-3">
                             <i class="fas fa-suitcase text-yellow-500 text-xl mt-1"></i>
@@ -2122,9 +2276,9 @@
                                 <div class="text-[10px] text-gray-500 mt-1">Требуется: 3 Кожи, 2 Палки</div>
                             </div>
                         </div>
-                        <div class="text-sm text-emerald-400 font-bold">200 <i class="far fa-gem"></i></div>
+                        <div class="text-sm gem-price font-bold">200 <i class="far fa-gem gem-price"></i></div>
                     </div>
-                    <button id="btn-buy-recipe-bag" onclick="game.buyRecipe('bag', 200)" class="btn-medieval w-full py-1.5 rounded text-[10px]">
+                    <button id="btn-buy-recipe-bag" onclick="game.buyRecipe('bag', 200)" class="w-full py-1.5 rounded text-[10px] border border-blue-700/40 bg-black/30 text-blue-300 hover:bg-blue-900/20 backdrop-blur-sm">
                         Купить Рецепт
                     </button>
                 </div>
@@ -2150,13 +2304,13 @@
             </div>
 
             <!-- NPC Marius -->
-            <div class="panel p-3 mb-4 rounded flex items-center justify-between border-red-900/30 bg-red-900/10">
+            <div class="panel p-4 rounded-lg border-red-500/40 bg-gradient-to-br from-red-900/80 via-[#1a1a1d] to-[#0f0f10] mb-4">
                 <div class="flex items-center gap-3">
                     <div class="w-12 h-12 rounded-full border border-red-500 bg-[#222] overflow-hidden">
                          <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Marius&backgroundColor=1a1a1d&skinColor=ecad80&hair=long02&hairColor=3e3e42" alt="Мариус" class="w-full h-full object-cover">
                     </div>
                     <div>
-                        <div class="text-sm text-[#e0e0e0] font-bold">Мариус</div>
+                        <div class="text-base text-[#e0e0e0] font-bold medieval-font">Мариус</div>
                         <div class="text-[10px] text-[#a0a0a0]">Алхимик</div>
                     </div>
                 </div>
@@ -2191,7 +2345,7 @@
                                 <div class="text-[10px] text-[#777]">Неуязвимость на 2 минуты.</div>
                             </div>
                         </div>
-                        <div class="text-xs text-emerald-400 font-bold">100 <i class="far fa-gem"></i></div>
+                        <div class="text-xs gem-price font-bold">100 <i class="far fa-gem gem-price"></i></div>
                     </div>
                     <button id="btn-buy-recipe-immortality" onclick="game.buyRecipe('immortality', 100)" class="btn-medieval w-full py-1.5 rounded text-[10px]">
                         Купить Рецепт
@@ -2208,7 +2362,7 @@
                                 <div class="text-[10px] text-[#777]">x2 Добыча на 2 минуты.</div>
                             </div>
                         </div>
-                        <div class="text-xs text-emerald-400 font-bold">50 <i class="far fa-gem"></i></div>
+                        <div class="text-xs gem-price font-bold">50 <i class="far fa-gem gem-price"></i></div>
                     </div>
                     <button id="btn-buy-recipe-luck" onclick="game.buyRecipe('luck', 50)" class="btn-medieval w-full py-1.5 rounded text-[10px]">
                         Купить Рецепт
@@ -2251,6 +2405,32 @@
                         <i class="fas fa-coins text-yellow-400 text-lg"></i>
                     </div>
                     <h2 class="medieval-font text-2xl text-yellow-300 drop-shadow-md">Казна</h2>
+                </div>
+            </div>
+
+            <!-- Banker Hank NPC -->
+            <div class="panel p-4 rounded-lg border-yellow-900/40 bg-gradient-to-br from-yellow-900/20 via-[#1a1a1d] to-[#0f0f10] mb-4">
+                <div class="flex items-center justify-between border-b border-[#333] pb-3 mb-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-full border-2 border-yellow-500 bg-[#222] flex items-center justify-center shadow-[0_0_10px_rgba(234,179,8,0.3)]">
+                            <i class="fas fa-user-tie text-yellow-400 text-lg"></i>
+                        </div>
+                        <div>
+                            <div class="text-base text-[#e0e0e0] font-bold medieval-font">Хэнк</div>
+                            <div class="text-[10px] text-[#a0a0a0]">Главный банкир</div>
+                        </div>
+                    </div>
+                    <button onclick="dialogue.start('hank')" class="btn-medieval px-4 py-2 rounded text-xs">
+                        Говорить
+                    </button>
+                </div>
+                
+                <!-- Hank's Quest Status -->
+                <div id="hank-quest-status" class="hidden">
+                    <div class="text-xs text-yellow-600 bg-yellow-900/20 border border-yellow-900/50 rounded p-2">
+                        <i class="fas fa-scroll mr-1"></i>
+                        <span id="hank-quest-text">Ищите амулет брата Хэнка...</span>
+                    </div>
                 </div>
             </div>
 
@@ -2303,7 +2483,7 @@
                 <h3 class="text-sm font-bold text-[#e0e0e0] border-b border-[#333] pb-2">Обмен Валюты</h3>
                 <div class="flex justify-between items-center bg-[#000] p-2 rounded border border-[#333]">
                     <div class="flex items-center gap-2">
-                        <i class="far fa-gem text-emerald-400"></i>
+                        <i class="far fa-gem gem-price"></i>
                         <span class="font-bold">1</span>
                     </div>
                     <i class="fas fa-arrow-right text-gray-600"></i>
@@ -2337,79 +2517,91 @@
             </div>
 
             <!-- Tavern NPC -->
-            <div class="panel p-3 mb-4 rounded flex items-center justify-between border-orange-900/30 bg-orange-900/10">
+            <div class="panel p-4 rounded-lg border-orange-500/40 bg-gradient-to-br from-orange-900/80 via-[#1a1a1d] to-[#0f0f10] mb-4">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full border border-orange-500 bg-[#222] flex items-center justify-center">
-                        <i class="fas fa-wine-glass text-orange-400"></i>
+                    <div class="w-12 h-12 rounded-full border-2 border-orange-500 bg-[#222] flex items-center justify-center shadow-[0_0_10px_rgba(249,115,22,0.3)]">
+                        <i class="fas fa-wine-glass text-orange-400 text-lg"></i>
                     </div>
                     <div>
-                        <div class="text-sm text-[#e0e0e0] font-bold">Старый Бен</div>
+                        <div class="text-base text-[#e0e0e0] font-bold medieval-font">Старый Бен</div>
                         <div class="text-[10px] text-[#a0a0a0]">Трактирщик</div>
                     </div>
                 </div>
-                <button onclick="dialogue.start('ben')" class="btn-medieval px-4 py-1.5 rounded text-xs">
+                        <button onclick="dialogue.start('ben')" class="px-4 py-1.5 rounded text-xs border border-orange-700/40 bg-black/30 text-orange-300 hover:bg-orange-900/20 backdrop-blur-sm">
                     Слухи
                 </button>
             </div>
 
             <!-- Rent Room -->
-            <div class="panel rounded-lg p-4 relative overflow-hidden">
-                <div class="absolute right-0 top-0 p-4 opacity-20">
-                    <i class="fas fa-bed text-6xl"></i>
+            <div class="panel rounded-lg p-4 relative overflow-hidden bg-gradient-to-br from-amber-900/30 via-[#1a1a1d] to-[#0f0f10] border border-amber-700/40">
+                <!-- Background Image with Overlay -->
+                <div class="absolute inset-0 z-0">
+                    <img src="https://i.postimg.cc/brsZYtPY/IMG-4601.jpg" alt="Tavern Room" class="w-full h-full object-cover opacity-25">
+                    <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80"></div>
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(217,119,6,0.15),transparent_60%)]"></div>
                 </div>
-                <h3 class="medieval-font text-lg text-[#e0e0e0]">Комната</h3>
-                <p class="text-xs text-[#a0a0a0] mb-3 w-3/4">Личная комната с сундуком для вещей (200 кг).</p>
                 
-                <div id="tavern-room-rent-ui">
-                    <div class="flex items-center gap-2 mb-3 text-sm">
-                        <span class="text-[#c8aa6e]">Цена: 1000</span> <i class="fas fa-coins text-yellow-500"></i> / сутки
-                    </div>
-                    <button onclick="locations.tavernRent()" class="btn-medieval w-full py-2 rounded text-sm">
-                        Снять комнату
-                    </button>
-                </div>
-
-                <div id="tavern-room-active-ui" class="hidden">
-                    <div class="flex items-center justify-between mb-2">
-                        <div class="text-xs text-green-400"><i class="fas fa-check-circle"></i> Арендовано</div>
-                        <div id="room-timer" class="text-xs font-mono text-[#c8aa6e]">--:--:--</div>
-                    </div>
+                <div class="relative z-10">
+                    <h3 class="medieval-font text-lg text-amber-300">Комната</h3>
+                    <p class="text-xs text-[#a0a0a0] mb-3">Личная комната с сундуком для вещей (200 кг).</p>
                     
-                    <div class="grid grid-cols-2 gap-2 mt-2">
-                        <button onclick="locations.openTavernChest()" class="panel p-2 rounded flex flex-col items-center justify-center hover:bg-[#222] transition-colors">
-                            <i class="fas fa-box-open text-2xl text-[#c8aa6e] mb-1"></i>
-                            <span class="text-xs font-bold">Сундук</span>
+                    <div id="tavern-room-rent-ui" class="bg-black/30 backdrop-blur-sm rounded p-3 border border-amber-700/30">
+                        <div class="flex items-center gap-2 mb-3 text-sm">
+                            <span class="text-[#c8aa6e]">Цена: 1000</span> <i class="fas fa-coins text-yellow-500"></i> / сутки
+                        </div>
+                        <button onclick="locations.tavernRent()" class="w-full py-2 rounded text-sm border border-amber-700/40 bg-black/30 text-amber-300 hover:bg-amber-900/20 backdrop-blur-sm">
+                            Снять комнату
                         </button>
-                        <button onclick="locations.tavernExtendRent()" class="panel p-2 rounded flex flex-col items-center justify-center hover:bg-[#222] transition-colors">
-                            <i class="fas fa-clock text-2xl text-blue-400 mb-1"></i>
-                            <span class="text-xs font-bold">Продлить (1к)</span>
-                        </button>
+                    </div>
+
+                    <div id="tavern-room-active-ui" class="hidden bg-black/30 backdrop-blur-sm rounded p-3 border border-green-700/30">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="text-xs text-green-400"><i class="fas fa-check-circle"></i> Арендовано</div>
+                            <div id="room-timer" class="text-xs font-mono text-[#c8aa6e]">--:--:--</div>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-2 mt-2">
+                            <button onclick="locations.openTavernChest()" class="panel p-2 rounded flex flex-col items-center justify-center hover:bg-[#222] transition-colors backdrop-blur-sm">
+                                <i class="fas fa-box-open text-2xl text-[#c8aa6e] mb-1"></i>
+                                <span class="text-xs font-bold">Сундук</span>
+                            </button>
+                            <button onclick="locations.tavernExtendRent()" class="panel p-2 rounded flex flex-col items-center justify-center hover:bg-[#222] transition-colors backdrop-blur-sm">
+                                <i class="fas fa-clock text-2xl text-blue-400 mb-1"></i>
+                                <span class="text-xs font-bold">Продлить (1к)</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Brawl Night -->
-            <div class="panel rounded-lg p-4 relative overflow-hidden border-orange-900/40 bg-orange-900/10">
-                <div class="absolute -right-6 -top-6 text-7xl text-orange-900/30 pointer-events-none">
-                    <i class="fas fa-hand-fist"></i>
+            <div class="panel rounded-lg p-4 relative overflow-hidden border-orange-700/40 bg-gradient-to-br from-orange-900/30 via-[#1a1a1d] to-[#0f0f10]">
+                <!-- Background Image with Overlay -->
+                <div class="absolute inset-0 z-0">
+                    <img src="https://i.postimg.cc/B6wvznFS/IMG-4602.jpg" alt="Brawl Fight" class="w-full h-full object-cover opacity-25">
+                    <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80"></div>
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(249,115,22,0.2),transparent_60%)]"></div>
                 </div>
-                <div class="flex items-center justify-between mb-2">
-                    <div>
-                        <h3 class="medieval-font text-lg text-orange-300">Кулачные бои</h3>
-                        <p class="text-[10px] text-[#a0a0a0]">Раз в час. Ставки и слава.</p>
+                
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-2">
+                        <div>
+                            <h3 class="medieval-font text-lg text-orange-300">Кулачные бои</h3>
+                            <p class="text-[10px] text-[#a0a0a0]">Раз в час. Ставки и слава.</p>
+                        </div>
+                        <div class="text-[10px] text-[#c8aa6e] uppercase tracking-wider">Арена</div>
                     </div>
-                    <div class="text-[10px] text-[#c8aa6e] uppercase tracking-wider">Арена</div>
+                    <div class="panel p-2 rounded bg-black/50 backdrop-blur-sm border border-orange-700/30 text-[10px] text-[#a0a0a0] mb-3">
+                        Победа даёт золото и репутацию, поражение — травмы. Требуется 20+ HP.
+                    </div>
+                    <div class="flex items-center justify-between text-[10px] text-[#777] mb-3">
+                        <span>До следующего боя:</span>
+                        <span id="brawl-timer" class="text-[#c8aa6e] font-mono">Доступно</span>
+                    </div>
+                    <button id="btn-brawl" onclick="locations.tavernBrawl(event)" class="w-full py-2 rounded font-bold border border-orange-700/40 bg-black/30 text-orange-300 hover:bg-orange-900/20 backdrop-blur-sm">
+                        Выйти на бой
+                    </button>
                 </div>
-                <div class="panel p-2 rounded bg-black/40 border border-[#333] text-[10px] text-[#a0a0a0] mb-3">
-                    Победа даёт золото и репутацию, поражение — травмы. Требуется 20+ HP.
-                </div>
-                <div class="flex items-center justify-between text-[10px] text-[#777] mb-3">
-                    <span>До следующего боя:</span>
-                    <span id="brawl-timer" class="text-[#c8aa6e] font-mono">Доступно</span>
-                </div>
-                <button id="btn-brawl" onclick="locations.tavernBrawl(event)" class="btn-medieval w-full py-2 rounded font-bold border-orange-500 text-orange-300">
-                    Выйти на бой
-                </button>
             </div>
 
             <!-- Food & Thomas Event -->
@@ -2474,7 +2666,7 @@
                 </div>
 
                 <div class="text-sm text-[#a0a0a0] mb-3">
-                    Цена: <span class="text-emerald-400 font-bold text-lg">1 <i class="far fa-gem"></i></span>
+                    Цена: <span class="text-emerald-400 font-bold text-lg">1 <i class="far fa-gem gem-price"></i></span>
                 </div>
 
                 <!-- Prize list -->
@@ -2491,13 +2683,13 @@
                             <i class="fas fa-coins text-yellow-500"></i> <span class="text-[#e0e0e0]">5,000 золота</span>
                         </div>
                         <div class="bg-[#1a1410] rounded p-2 border border-emerald-600/30">
-                            <i class="far fa-gem text-emerald-400"></i> <span class="text-[#e0e0e0]">10 изумрудов</span>
+                            <i class="far fa-gem gem-price"></i> <span class="text-[#e0e0e0]">10 изумрудов</span>
                         </div>
                         <div class="bg-[#1a1410] rounded p-2 border border-emerald-600/40">
-                            <i class="far fa-gem text-emerald-400"></i> <span class="text-[#e0e0e0]">30 изумрудов</span>
+                            <i class="far fa-gem gem-price"></i> <span class="text-[#e0e0e0]">30 изумрудов</span>
                         </div>
                         <div class="bg-[#1a1410] rounded p-2 border border-emerald-600/50 shadow-[0_0_15px_rgba(16,185,129,0.3)]">
-                            <i class="far fa-gem text-emerald-400"></i> <span class="text-[#e0e0e0] font-bold">100 изумрудов!</span>
+                            <i class="far fa-gem gem-price"></i> <span class="text-[#e0e0e0] font-bold">100 изумрудов!</span>
                         </div>
                     </div>
                 </div>
@@ -2557,19 +2749,21 @@
             </div>
 
             <!-- Market NPC -->
-            <div class="panel p-3 mb-4 rounded flex items-center justify-between border-blue-900/30 bg-blue-900/10">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full border border-gray-500 bg-[#222] flex items-center justify-center">
-                        <i class="fas fa-hammer text-gray-400"></i>
+            <div class="panel p-4 rounded-lg border-gray-500/40 bg-gradient-to-br from-gray-900/80 via-[#1a1a1d] to-[#0f0f10] mb-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-full border-2 border-gray-500 bg-[#222] flex items-center justify-center shadow-[0_0_10px_rgba(107,114,128,0.3)]">
+                            <i class="fas fa-hammer text-gray-400 text-lg"></i>
+                        </div>
+                        <div>
+                            <div class="text-base text-[#e0e0e0] font-bold medieval-font">Горн</div>
+                            <div class="text-[10px] text-[#a0a0a0]">Кузнец</div>
+                        </div>
                     </div>
-                    <div>
-                        <div class="text-sm text-[#e0e0e0] font-bold">Горн</div>
-                        <div class="text-[10px] text-[#a0a0a0]">Кузнец</div>
-                    </div>
+                    <button onclick="dialogue.start('gorn')" class="btn-medieval px-4 py-2 rounded text-xs">
+                        Говорить
+                    </button>
                 </div>
-                <button onclick="dialogue.start('gorn')" class="btn-medieval px-4 py-1.5 rounded text-xs">
-                    Говорить
-                </button>
             </div>
 
             <!-- Market Tabs -->
@@ -2583,9 +2777,9 @@
             <!-- Content: Tools -->
             <div id="market-tools" class="space-y-3">
                 <!-- Rod -->
-                <div class="panel p-3 rounded flex items-center justify-between">
+                <div class="market-item-card panel p-3 rounded flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 bg-[#222] border border-[#333] rounded flex items-center justify-center text-[#c8aa6e]">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-900/60 to-amber-950 border-2 border-amber-500/60 flex items-center justify-center shadow-[0_0_10px_rgba(217,119,6,0.3)]">
                             <svg class="w-6 h-6 text-[#c8aa6e]" viewBox="0 0 24 24"><use href="#icon-rod"></use></svg>
                         </div>
                         <div>
@@ -2594,14 +2788,14 @@
                             <div class="text-xs text-blue-400" id="market-lvl-rod">Ур: 0</div>
                         </div>
                     </div>
-                    <button id="btn-buy-rod" onclick="market.buyOrUpgradeTool('rod')" class="bg-[#111] border border-[#333] px-3 py-1.5 text-xs text-[#c8aa6e] rounded hover:border-[#c8aa6e]">
+                    <button id="btn-buy-rod" onclick="market.buyOrUpgradeTool('rod')" class="btn-ghost px-3 py-1.5 text-xs rounded">
                         <span id="price-rod">50</span> <i class="fas fa-coins text-[10px]"></i>
                     </button>
                 </div>
                 <!-- Sickle -->
-                <div class="panel p-3 rounded flex items-center justify-between">
+                <div class="market-item-card panel p-3 rounded flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 bg-[#222] border border-[#333] rounded flex items-center justify-center text-[#c8aa6e]">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-900/60 to-amber-950 border-2 border-amber-500/60 flex items-center justify-center shadow-[0_0_10px_rgba(217,119,6,0.3)]">
                             <svg class="w-6 h-6 text-[#c8aa6e]" viewBox="0 0 24 24"><use href="#icon-sickle"></use></svg>
                         </div>
                         <div>
@@ -2610,14 +2804,14 @@
                             <div class="text-xs text-blue-400" id="market-lvl-sickle">Ур: 0</div>
                         </div>
                     </div>
-                    <button id="btn-buy-sickle" onclick="market.buyOrUpgradeTool('sickle')" class="bg-[#111] border border-[#333] px-3 py-1.5 text-xs text-[#c8aa6e] rounded hover:border-[#c8aa6e]">
+                    <button id="btn-buy-sickle" onclick="market.buyOrUpgradeTool('sickle')" class="btn-ghost px-3 py-1.5 text-xs rounded">
                         <span id="price-sickle">500</span> <i class="fas fa-coins text-[10px]"></i>
                     </button>
                 </div>
                 <!-- Pickaxe -->
-                <div class="panel p-3 rounded flex items-center justify-between">
+                <div class="market-item-card panel p-3 rounded flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 bg-[#222] border border-[#333] rounded flex items-center justify-center text-[#c8aa6e]">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-900/60 to-amber-950 border-2 border-amber-500/60 flex items-center justify-center shadow-[0_0_10px_rgba(217,119,6,0.3)]">
                             <i class="fas fa-person-digging"></i>
                         </div>
                         <div>
@@ -2626,14 +2820,14 @@
                             <div class="text-xs text-blue-400" id="market-lvl-pickaxe">Ур: 0</div>
                         </div>
                     </div>
-                    <button id="btn-buy-pickaxe" onclick="market.buyOrUpgradeTool('pickaxe')" class="bg-[#111] border border-[#333] px-3 py-1.5 text-xs text-[#c8aa6e] rounded hover:border-[#c8aa6e]">
+                    <button id="btn-buy-pickaxe" onclick="market.buyOrUpgradeTool('pickaxe')" class="btn-ghost px-3 py-1.5 text-xs rounded">
                         <span id="price-pickaxe">2000</span> <i class="fas fa-coins text-[10px]"></i>
                     </button>
                 </div>
                  <!-- Crossbow -->
-                 <div class="panel p-3 rounded flex items-center justify-between">
+                 <div class="market-item-card panel p-3 rounded flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 bg-[#222] border border-[#333] rounded flex items-center justify-center text-[#c8aa6e]">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-900/60 to-amber-950 border-2 border-amber-500/60 flex items-center justify-center shadow-[0_0_10px_rgba(217,119,6,0.3)]">
                             <svg class="w-6 h-6 text-[#c8aa6e]" viewBox="0 0 24 24"><use href="#icon-crossbow"></use></svg>
                         </div>
                         <div>
@@ -2642,14 +2836,14 @@
                             <div class="text-xs text-blue-400" id="market-lvl-crossbow">Ур: 0</div>
                         </div>
                     </div>
-                    <button id="btn-buy-crossbow" onclick="market.buyOrUpgradeTool('crossbow')" class="bg-[#111] border border-[#333] px-3 py-1.5 text-xs text-[#c8aa6e] rounded hover:border-[#c8aa6e]">
+                    <button id="btn-buy-crossbow" onclick="market.buyOrUpgradeTool('crossbow')" class="btn-ghost px-3 py-1.5 text-xs rounded">
                         <span id="price-crossbow">5000</span> <i class="fas fa-coins text-[10px]"></i>
                     </button>
                 </div>
                 <!-- Sword -->
-                 <div class="panel p-3 rounded flex items-center justify-between">
+                 <div class="market-item-card panel p-3 rounded flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 bg-[#222] border border-[#333] rounded flex items-center justify-center text-[#c8aa6e]">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-900/60 to-amber-950 border-2 border-amber-500/60 flex items-center justify-center shadow-[0_0_10px_rgba(217,119,6,0.3)]">
                             <i class="fas fa-khanda"></i>
                         </div>
                         <div>
@@ -2658,7 +2852,7 @@
                             <div class="text-xs text-blue-400" id="market-lvl-sword">Ур: 0</div>
                         </div>
                     </div>
-                    <button id="btn-buy-sword" onclick="market.buyOrUpgradeTool('sword')" class="bg-[#111] border border-[#333] px-3 py-1.5 text-xs text-[#c8aa6e] rounded hover:border-[#c8aa6e]">
+                    <button id="btn-buy-sword" onclick="market.buyOrUpgradeTool('sword')" class="btn-ghost px-3 py-1.5 text-xs rounded">
                         <span id="price-sword">1000</span> <i class="fas fa-coins text-[10px]"></i>
                     </button>
                 </div>
@@ -2667,9 +2861,9 @@
             <!-- Content: Weapons (Swords) -->
             <div id="market-weapons" class="hidden space-y-3">
                 <!-- Wooden Sword -->
-                <div class="panel p-3 rounded flex items-center justify-between">
+                <div class="market-item-card panel p-3 rounded flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 bg-[#222] border border-[#333] rounded flex items-center justify-center text-amber-700">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-800/60 to-amber-950 border-2 border-amber-600/60 flex items-center justify-center shadow-[0_0_10px_rgba(217,119,6,0.3)]">
                             <i class="fas fa-splotch text-2xl"></i>
                         </div>
                         <div>
@@ -2677,15 +2871,15 @@
                             <div class="text-xs text-[#a0a0a0]">Урон: +5</div>
                         </div>
                     </div>
-                    <button onclick="market.buySword('wooden')" class="bg-[#111] border border-[#333] px-3 py-1.5 text-xs text-[#c8aa6e] rounded hover:border-[#c8aa6e]">
+                    <button onclick="market.buySword('wooden')" class="btn-ghost px-3 py-1.5 text-xs rounded">
                         5,000 <i class="fas fa-coins text-[10px]"></i>
                     </button>
                 </div>
                 
                 <!-- Stone Sword -->
-                <div class="panel p-3 rounded flex items-center justify-between">
+                <div class="market-item-card panel p-3 rounded flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 bg-[#222] border border-[#333] rounded flex items-center justify-center text-gray-500">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-gray-700/60 to-gray-900 border-2 border-gray-500/60 flex items-center justify-center shadow-[0_0_10px_rgba(107,114,128,0.3)]">
                             <i class="fas fa-monument text-2xl"></i>
                         </div>
                         <div>
@@ -2693,15 +2887,15 @@
                             <div class="text-xs text-[#a0a0a0]">Урон: +15</div>
                         </div>
                     </div>
-                    <button onclick="market.buySword('stone')" class="bg-[#111] border border-[#333] px-3 py-1.5 text-xs text-[#c8aa6e] rounded hover:border-[#c8aa6e]">
+                    <button onclick="market.buySword('stone')" class="btn-ghost px-3 py-1.5 text-xs rounded">
                         15,000 <i class="fas fa-coins text-[10px]"></i>
                     </button>
                 </div>
                 
                 <!-- Metal Sword -->
-                <div class="panel p-3 rounded flex items-center justify-between">
+                <div class="market-item-card panel p-3 rounded flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 bg-[#222] border border-[#333] rounded flex items-center justify-center text-blue-400">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-800/60 to-blue-950 border-2 border-blue-500/60 flex items-center justify-center shadow-[0_0_10px_rgba(59,130,246,0.3)]">
                             <i class="fas fa-khanda text-2xl"></i>
                         </div>
                         <div>
@@ -2709,15 +2903,15 @@
                             <div class="text-xs text-[#a0a0a0]">Урон: +25</div>
                         </div>
                     </div>
-                    <button onclick="market.buySword('metal')" class="bg-[#111] border border-[#333] px-3 py-1.5 text-xs text-emerald-400 rounded hover:border-emerald-400">
+                    <button onclick="market.buySword('metal')" class="btn-ghost px-3 py-1.5 text-xs rounded">
                         200 <i class="far fa-gem text-[10px]"></i>
                     </button>
                 </div>
                 
                 <!-- Steel Sword -->
-                <div class="panel p-3 rounded flex items-center justify-between">
+                <div class="market-item-card panel p-3 rounded flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 bg-[#222] border border-[#333] rounded flex items-center justify-center text-cyan-400">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-800/60 to-cyan-950 border-2 border-cyan-500/60 flex items-center justify-center shadow-[0_0_10px_rgba(6,182,212,0.3)]">
                             <i class="fas fa-sword text-2xl"></i>
                         </div>
                         <div>
@@ -2725,7 +2919,7 @@
                             <div class="text-xs text-[#a0a0a0]">Урон: +40</div>
                         </div>
                     </div>
-                    <button onclick="market.buySword('steel')" class="bg-[#111] border border-[#333] px-3 py-1.5 text-xs text-emerald-400 rounded hover:border-emerald-400">
+                    <button onclick="market.buySword('steel')" class="btn-ghost px-3 py-1.5 text-xs rounded">
                         500 <i class="far fa-gem text-[10px]"></i>
                     </button>
                 </div>
@@ -2733,7 +2927,7 @@
                 <!-- Silver Master Sword -->
                 <div class="panel p-3 rounded flex items-center justify-between border-purple-900/50 bg-purple-900/10">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 bg-[#222] border border-purple-500 rounded flex items-center justify-center text-purple-300">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-800/60 to-purple-950 border-2 border-purple-400/80 flex items-center justify-center shadow-[0_0_15px_rgba(168,85,247,0.4)]">
                             <i class="fas fa-wand-magic-sparkles text-2xl"></i>
                         </div>
                         <div>
@@ -2741,7 +2935,7 @@
                             <div class="text-xs text-purple-400">Урон: +60</div>
                         </div>
                     </div>
-                    <button onclick="market.buySword('silver')" class="bg-[#111] border border-purple-500 px-3 py-1.5 text-xs text-emerald-400 rounded hover:border-purple-400">
+                    <button onclick="market.buySword('silver')" class="btn-ghost px-3 py-1.5 text-xs rounded border-purple-500">
                         1,500 <i class="far fa-gem text-[10px]"></i>
                     </button>
                 </div>
@@ -2750,9 +2944,9 @@
             <!-- Content: Armor -->
             <div id="market-armor" class="hidden space-y-3">
                 <!-- Leather Armor -->
-                <div class="panel p-3 rounded flex items-center justify-between">
+                <div class="market-item-card panel p-3 rounded flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 bg-[#222] border border-[#333] rounded flex items-center justify-center text-amber-700">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-800/60 to-amber-950 border-2 border-amber-600/60 flex items-center justify-center shadow-[0_0_10px_rgba(217,119,6,0.3)]">
                             <i class="fas fa-vest text-2xl"></i>
                         </div>
                         <div>
@@ -2760,13 +2954,13 @@
                             <div class="text-xs text-[#a0a0a0]">Броня: +5</div>
                         </div>
                     </div>
-                    <button onclick="market.buyArmor('leather')" class="bg-[#111] border border-[#333] px-3 py-1.5 text-xs text-[#c8aa6e] rounded hover:border-[#c8aa6e]">
+                    <button onclick="market.buyArmor('leather')" class="btn-ghost px-3 py-1.5 text-xs rounded">
                         10,000 <i class="fas fa-coins text-[10px]"></i>
                     </button>
                 </div>
                 
                 <!-- Improved Leather -->
-                <div class="panel p-3 rounded flex items-center justify-between">
+                <div class="market-item-card panel p-3 rounded flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 bg-[#222] border border-[#333] rounded flex items-center justify-center text-amber-600">
                             <i class="fas fa-vest-patches text-2xl"></i>
@@ -2776,13 +2970,13 @@
                             <div class="text-xs text-[#a0a0a0]">Броня: +15</div>
                         </div>
                     </div>
-                    <button onclick="market.buyArmor('improved')" class="bg-[#111] border border-[#333] px-3 py-1.5 text-xs text-[#c8aa6e] rounded hover:border-[#c8aa6e]">
+                    <button onclick="market.buyArmor('improved')" class="btn-ghost px-3 py-1.5 text-xs rounded">
                         30,000 <i class="fas fa-coins text-[10px]"></i>
                     </button>
                 </div>
                 
                 <!-- Chainmail -->
-                <div class="panel p-3 rounded flex items-center justify-between">
+                <div class="market-item-card panel p-3 rounded flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 bg-[#222] border border-[#333] rounded flex items-center justify-center text-gray-400">
                             <i class="fas fa-user-shield text-2xl"></i>
@@ -2792,13 +2986,13 @@
                             <div class="text-xs text-[#a0a0a0]">Броня: +25</div>
                         </div>
                     </div>
-                    <button onclick="market.buyArmor('chainmail')" class="bg-[#111] border border-[#333] px-3 py-1.5 text-xs text-emerald-400 rounded hover:border-emerald-400">
+                    <button onclick="market.buyArmor('chainmail')" class="btn-ghost px-3 py-1.5 text-xs rounded">
                         200 <i class="far fa-gem text-[10px]"></i>
                     </button>
                 </div>
                 
                 <!-- Iron Armor -->
-                <div class="panel p-3 rounded flex items-center justify-between">
+                <div class="market-item-card panel p-3 rounded flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 bg-[#222] border border-[#333] rounded flex items-center justify-center text-blue-300">
                             <i class="fas fa-shield text-2xl"></i>
@@ -2808,7 +3002,7 @@
                             <div class="text-xs text-[#a0a0a0]">Броня: +40</div>
                         </div>
                     </div>
-                    <button onclick="market.buyArmor('iron')" class="bg-[#111] border border-[#333] px-3 py-1.5 text-xs text-emerald-400 rounded hover:border-emerald-400">
+                    <button onclick="market.buyArmor('iron')" class="btn-ghost px-3 py-1.5 text-xs rounded">
                         600 <i class="far fa-gem text-[10px]"></i>
                     </button>
                 </div>
@@ -2816,7 +3010,7 @@
                 <!-- Silver Master Armor -->
                 <div class="panel p-3 rounded flex items-center justify-between border-purple-900/50 bg-purple-900/10">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 bg-[#222] border border-purple-500 rounded flex items-center justify-center text-purple-300">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-800/60 to-purple-950 border-2 border-purple-400/80 flex items-center justify-center shadow-[0_0_15px_rgba(168,85,247,0.4)]">
                             <i class="fas fa-shield-halved text-2xl"></i>
                         </div>
                         <div>
@@ -2824,7 +3018,7 @@
                             <div class="text-xs text-purple-400">Броня: +60</div>
                         </div>
                     </div>
-                    <button onclick="market.buyArmor('silver_master')" class="bg-[#111] border border-purple-500 px-3 py-1.5 text-xs text-emerald-400 rounded hover:border-purple-400">
+                    <button onclick="market.buyArmor('silver_master')" class="btn-ghost px-3 py-1.5 text-xs rounded border-purple-500">
                         1,200 <i class="far fa-gem text-[10px]"></i>
                     </button>
                 </div>
@@ -2857,7 +3051,7 @@
                             <input id="trade-input-fish" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#333] text-center text-[10px] text-white rounded p-0 outline-none focus:border-[#c8aa6e]">
                             <button onclick="market.setMax('fish')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
                         </div>
-                        <button onclick="market.sellFromInput('fish')" id="btn-trade-fish" class="w-full bg-[#2c2c30] border border-[#c8aa6e] rounded text-[10px] py-1 text-[#c8aa6e] hover:bg-[#c8aa6e] hover:text-black transition-colors uppercase">Продать</button>
+                        <button onclick="market.sellFromInput('fish')" id="btn-trade-fish" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-amber-900/20 transition-colors">Продать</button>
                     </div>
                     <div class="panel p-2 rounded flex flex-col items-center text-center border-yellow-900/30 bg-yellow-900/10">
                         <i class="fas fa-wheat-awn text-[#c8aa6e] mb-1"></i>
@@ -2868,7 +3062,7 @@
                             <input id="trade-input-wheat" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#333] text-center text-[10px] text-white rounded p-0 outline-none focus:border-[#c8aa6e]">
                             <button onclick="market.setMax('wheat')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
                         </div>
-                        <button onclick="market.sellFromInput('wheat')" id="btn-trade-wheat" class="w-full bg-[#2c2c30] border border-[#c8aa6e] rounded text-[10px] py-1 text-[#c8aa6e] hover:bg-[#c8aa6e] hover:text-black transition-colors uppercase">Продать</button>
+                        <button onclick="market.sellFromInput('wheat')" id="btn-trade-wheat" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-amber-900/20 transition-colors">Продать</button>
                     </div>
                     <div class="panel p-2 rounded flex flex-col items-center text-center border-gray-700/30 bg-gray-700/10">
                         <i class="fas fa-cube text-[#c8aa6e] mb-1"></i>
@@ -2879,7 +3073,7 @@
                             <input id="trade-input-ore" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#333] text-center text-[10px] text-white rounded p-0 outline-none focus:border-[#c8aa6e]">
                             <button onclick="market.setMax('ore')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
                         </div>
-                        <button onclick="market.sellFromInput('ore')" id="btn-trade-ore" class="w-full bg-[#2c2c30] border border-[#c8aa6e] rounded text-[10px] py-1 text-[#c8aa6e] hover:bg-[#c8aa6e] hover:text-black transition-colors uppercase">Продать</button>
+                        <button onclick="market.sellFromInput('ore')" id="btn-trade-ore" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-amber-900/20 transition-colors">Продать</button>
                     </div>
                     <div class="panel p-2 rounded flex flex-col items-center text-center border-red-900/30 bg-red-900/10">
                         <i class="fas fa-scroll text-[#c8aa6e] mb-1"></i>
@@ -2890,7 +3084,7 @@
                             <input id="trade-input-leather" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#333] text-center text-[10px] text-white rounded p-0 outline-none focus:border-[#c8aa6e]">
                             <button onclick="market.setMax('leather')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
                         </div>
-                        <button onclick="market.sellFromInput('leather')" id="btn-trade-leather" class="w-full bg-[#2c2c30] border border-[#c8aa6e] rounded text-[10px] py-1 text-[#c8aa6e] hover:bg-[#c8aa6e] hover:text-black transition-colors uppercase">Продать</button>
+                        <button onclick="market.sellFromInput('leather')" id="btn-trade-leather" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-amber-900/20 transition-colors">Продать</button>
                     </div>
                     <div class="panel p-2 rounded flex flex-col items-center text-center border-amber-900/30 bg-amber-900/10">
                         <i class="fas fa-tree text-[#c8aa6e] mb-1"></i>
@@ -2901,7 +3095,7 @@
                             <input id="trade-input-wood" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#333] text-center text-[10px] text-white rounded p-0 outline-none focus:border-[#c8aa6e]">
                             <button onclick="market.setMax('wood')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
                         </div>
-                        <button onclick="market.sellFromInput('wood')" id="btn-trade-wood" class="w-full bg-[#2c2c30] border border-[#c8aa6e] rounded text-[10px] py-1 text-[#c8aa6e] hover:bg-[#c8aa6e] hover:text-black transition-colors uppercase">Продать</button>
+                        <button onclick="market.sellFromInput('wood')" id="btn-trade-wood" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-amber-900/20 transition-colors">Продать</button>
                     </div>
                     <div class="panel p-2 rounded flex flex-col items-center text-center border-gray-600/30 bg-gray-600/10">
                         <i class="fas fa-shapes text-gray-400 mb-1"></i>
@@ -2912,7 +3106,7 @@
                             <input id="trade-input-stone" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#333] text-center text-[10px] text-white rounded p-0 outline-none focus:border-[#c8aa6e]">
                             <button onclick="market.setMax('stone')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
                         </div>
-                        <button onclick="market.sellFromInput('stone')" id="btn-trade-stone" class="w-full bg-[#2c2c30] border border-[#c8aa6e] rounded text-[10px] py-1 text-[#c8aa6e] hover:bg-[#c8aa6e] hover:text-black transition-colors uppercase">Продать</button>
+                        <button onclick="market.sellFromInput('stone')" id="btn-trade-stone" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-amber-900/20 transition-colors">Продать</button>
                     </div>
                     <div class="panel p-2 rounded flex flex-col items-center text-center border-green-900/30 bg-green-900/10">
                         <i class="fas fa-leaf text-green-400 mb-1"></i>
@@ -2923,7 +3117,7 @@
                             <input id="trade-input-herbs" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#333] text-center text-[10px] text-white rounded p-0 outline-none focus:border-[#c8aa6e]">
                             <button onclick="market.setMax('herbs')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
                         </div>
-                        <button onclick="market.sellFromInput('herbs')" id="btn-trade-herbs" class="w-full bg-[#2c2c30] border border-[#c8aa6e] rounded text-[10px] py-1 text-[#c8aa6e] hover:bg-[#c8aa6e] hover:text-black transition-colors uppercase">Продать</button>
+                        <button onclick="market.sellFromInput('herbs')" id="btn-trade-herbs" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-amber-900/20 transition-colors">Продать</button>
                     </div>
                     <div class="panel p-2 rounded flex flex-col items-center text-center border-purple-900/30 bg-purple-900/10">
                         <i class="fas fa-spider text-purple-400 mb-1"></i>
@@ -2934,7 +3128,7 @@
                             <input id="trade-input-mushrooms" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#333] text-center text-[10px] text-white rounded p-0 outline-none focus:border-[#c8aa6e]">
                             <button onclick="market.setMax('mushrooms')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
                         </div>
-                        <button onclick="market.sellFromInput('mushrooms')" id="btn-trade-mushrooms" class="w-full bg-[#2c2c30] border border-[#c8aa6e] rounded text-[10px] py-1 text-[#c8aa6e] hover:bg-[#c8aa6e] hover:text-black transition-colors uppercase">Продать</button>
+                        <button onclick="market.sellFromInput('mushrooms')" id="btn-trade-mushrooms" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-amber-900/20 transition-colors">Продать</button>
                     </div>
                 </div>
             </div>
@@ -2966,7 +3160,7 @@
                             <i class="fas fa-hat-cowboy text-emerald-400"></i>
                         </div>
                         <div>
-                            <div class="text-sm text-[#e0e0e0] font-bold">Фермер Хью</div>
+                            <div class="text-base text-[#e0e0e0] font-bold medieval-font">Фермер Хью</div>
                             <div class="text-[10px] text-[#a0a0a0]">Торговец скотом</div>
                         </div>
                     </div>
@@ -2983,7 +3177,7 @@
                 <div class="space-y-3">
                     <h3 class="text-xs text-[#777] uppercase border-b border-[#333] pb-1">Животные</h3>
 
-                    <div class="border border-[#333] rounded p-3 bg-black/20">
+                    <div class="market-item-card border rounded p-3">
                         <div class="flex justify-between items-start mb-2">
                             <div class="flex gap-3">
                                 <i class="fas fa-rabbit text-emerald-300 text-lg mt-1"></i>
@@ -2997,7 +3191,7 @@
                         <button onclick="livestock.buyAnimal('rabbit')" class="btn-medieval w-full py-1.5 rounded text-[10px]">Купить</button>
                     </div>
 
-                    <div class="border border-[#333] rounded p-3 bg-black/20">
+                    <div class="market-item-card border rounded p-3">
                         <div class="flex justify-between items-start mb-2">
                             <div class="flex gap-3">
                                 <i class="fas fa-kiwi-bird text-amber-300 text-lg mt-1"></i>
@@ -3011,7 +3205,7 @@
                         <button onclick="livestock.buyAnimal('chicken')" class="btn-medieval w-full py-1.5 rounded text-[10px]">Купить</button>
                     </div>
 
-                    <div class="border border-[#333] rounded p-3 bg-black/20">
+                    <div class="market-item-card border rounded p-3">
                         <div class="flex justify-between items-start mb-2">
                             <div class="flex gap-3">
                                 <i class="fas fa-piggy-bank text-pink-300 text-lg mt-1"></i>
@@ -3025,7 +3219,7 @@
                         <button onclick="livestock.buyAnimal('pig')" class="btn-medieval w-full py-1.5 rounded text-[10px]">Купить</button>
                     </div>
 
-                    <div class="border border-[#333] rounded p-3 bg-black/20">
+                    <div class="market-item-card border rounded p-3">
                         <div class="flex justify-between items-start mb-2">
                             <div class="flex gap-3">
                                 <i class="fas fa-cow text-white text-lg mt-1"></i>
@@ -3044,7 +3238,7 @@
                         <h3 class="text-xs text-[#777] uppercase pb-1">Лошади</h3>
                         
                         <!-- Arabian -->
-                        <div class="border border-[#333] rounded p-3 bg-black/20">
+                        <div class="market-item-card border rounded p-3">
                             <div class="flex justify-between items-start mb-2">
                                 <div class="flex gap-3">
                                     <i class="fas fa-horse text-amber-200 text-lg mt-1"></i>
@@ -3059,7 +3253,7 @@
                         </div>
 
                         <!-- Thoroughbred -->
-                        <div class="border border-[#333] rounded p-3 bg-black/20">
+                        <div class="market-item-card border rounded p-3">
                             <div class="flex justify-between items-start mb-2">
                                 <div class="flex gap-3">
                                     <i class="fas fa-horse-head text-orange-300 text-lg mt-1"></i>
@@ -3074,7 +3268,7 @@
                         </div>
 
                         <!-- Draft -->
-                        <div class="border border-[#333] rounded p-3 bg-black/20">
+                        <div class="market-item-card border rounded p-3">
                             <div class="flex justify-between items-start mb-2">
                                 <div class="flex gap-3">
                                     <i class="fas fa-weight-hanging text-stone-400 text-lg mt-1"></i>
@@ -3089,7 +3283,7 @@
                         </div>
                         
                          <!-- Pony -->
-                        <div class="border border-[#333] rounded p-3 bg-black/20">
+                        <div class="market-item-card border rounded p-3">
                             <div class="flex justify-between items-start mb-2">
                                 <div class="flex gap-3">
                                     <i class="fas fa-horse text-yellow-600 text-lg mt-1"></i>
@@ -3104,7 +3298,7 @@
                         </div>
 
                         <!-- Mustang -->
-                        <div class="border border-[#333] rounded p-3 bg-black/20">
+                        <div class="market-item-card border rounded p-3">
                             <div class="flex justify-between items-start mb-2">
                                 <div class="flex gap-3">
                                     <i class="fas fa-wind text-slate-400 text-lg mt-1"></i>
@@ -3119,7 +3313,7 @@
                         </div>
 
                         <!-- Warhorse -->
-                        <div class="border border-[#333] rounded p-3 bg-black/20">
+                        <div class="market-item-card border rounded p-3">
                             <div class="flex justify-between items-start mb-2">
                                 <div class="flex gap-3">
                                     <i class="fas fa-chess-knight text-red-500 text-lg mt-1"></i>
@@ -3197,7 +3391,7 @@
                     <i class="fas fa-house-circle-xmark text-4xl text-gray-600 mb-2"></i>
                     <p class="text-xs text-gray-400 mb-3">Купите дом, чтобы хранить вещи и заниматься хозяйством.</p>
                     <button onclick="village.buyHouse()" class="btn-medieval w-full py-2 rounded text-sm">
-                        Купить дом <span class="text-emerald-400">1000 <i class="far fa-gem"></i></span>
+                        Купить дом <span class="text-emerald-400">1000 <i class="far fa-gem gem-price"></i></span>
                     </button>
                 </div>
 
@@ -3276,86 +3470,107 @@
             </div>
 
             <!-- Sage's House -->
-            <div class="panel rounded-lg p-4 space-y-3">
-                <h3 class="medieval-font text-lg text-indigo-400"><i class="fas fa-hat-wizard mr-2"></i>Дом Мудреца</h3>
+            <div class="panel p-4 rounded-lg border-indigo-500/40 space-y-3 relative overflow-hidden">
+                <!-- Background Image with Overlay -->
+                <div class="absolute inset-0 z-0">
+                    <img src="https://i.postimg.cc/KYjjDTKd/IMG-4607.jpg" alt="Sage House" class="w-full h-full object-cover opacity-20">
+                    <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80"></div>
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(99,102,241,0.2),transparent_60%)]"></div>
+                </div>
                 
-                <!-- Sage NPC -->
-                <div class="flex items-center justify-between p-2 bg-indigo-900/20 rounded border border-indigo-900/30">
+                <div class="relative z-10 flex items-center justify-between border-b border-indigo-500/30 pb-3">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full border border-indigo-500 bg-[#222] flex items-center justify-center">
-                            <i class="fas fa-hat-wizard text-indigo-400"></i>
+                        <div class="w-12 h-12 rounded-full border-2 border-indigo-500 bg-[#222] flex items-center justify-center shadow-[0_0_10px_rgba(99,102,241,0.3)]">
+                            <i class="fas fa-hat-wizard text-indigo-400 text-lg"></i>
                         </div>
                         <div>
-                            <div class="text-sm text-[#e0e0e0] font-bold">Мудрец Эльдар</div>
+                            <div class="text-base text-[#e0e0e0] font-bold medieval-font">Мудрец Эльдар</div>
                             <div class="text-[10px] text-[#a0a0a0]">Хранитель знаний</div>
                         </div>
                     </div>
-                    <button onclick="dialogue.start('sage')" class="btn-medieval px-4 py-1.5 rounded text-xs">
+                    <button onclick="dialogue.start('sage')" class="px-4 py-2 rounded text-xs border border-indigo-700/40 bg-black/30 text-indigo-300 hover:bg-indigo-900/20 backdrop-blur-sm">
                         Говорить
                     </button>
                 </div>
 
                 <!-- Cure Measles -->
-                <div id="cure-measles-section" class="hidden border border-red-900/50 rounded p-3 bg-red-900/10">
+                <div id="cure-measles-section" class="relative z-10 hidden border border-red-900/50 rounded p-3 bg-red-900/20 backdrop-blur-sm">
                     <div class="flex items-center gap-2 mb-2">
-                        <i class="fas fa-flask text-red-400"></i>
-                        <span class="text-sm text-red-400 font-bold">Лечение от Кори</span>
+                        <i class="fas fa-flask text-red-400 text-xl"></i>
+                        <div>
+                            <div class="text-sm font-bold text-red-300">Лечение от Кори</div>
+                            <div class="text-[10px] text-gray-400">Мудрец может исцелить вас</div>
+                        </div>
                     </div>
-                    <p class="text-[10px] text-gray-400 mb-2">Мудрец может исцелить вас от страшной болезни.</p>
                     <div class="flex items-center gap-2 text-[10px] text-gray-500 mb-2">
                         <span>Требуется:</span>
-                        <span class="text-green-400">15 <i class="fas fa-leaf"></i> Трав</span>
-                        <span class="text-purple-400">10 <i class="fas fa-spider"></i> Грибов</span>
+                        <span class="text-green-400">15 <i class="fas fa-leaf"></i></span>
+                        <span class="text-purple-400">10 <i class="fas fa-spider"></i></span>
                     </div>
-                    <button onclick="village.cureMeasles()" class="btn-medieval w-full py-2 rounded text-xs border-red-500 text-red-400">
+                    <button onclick="village.cureMeasles()" class="w-full py-2 rounded text-xs border border-red-700/40 bg-black/30 text-red-300 hover:bg-red-900/20 backdrop-blur-sm">
                         Исцелиться
                     </button>
                 </div>
 
-                <!-- Sage's Recipes -->
-                <div class="space-y-2">
-                    <div class="text-xs text-gray-400 border-b border-[#333] pb-1">Рецепты от Мудреца</div>
+                <!-- Sage's Shop -->
+                <div class="relative z-10 space-y-2">
+                    <h4 class="text-xs text-indigo-400 uppercase tracking-wider font-bold">Магазин Мудреца</h4>
                     
-                    <div class="border border-[#333] rounded p-2 bg-black/20 flex justify-between items-center">
-                        <div class="flex gap-2">
-                            <i class="fas fa-scroll text-yellow-400"></i>
+                    <!-- Strength Potion Recipe -->
+                    <div class="border border-yellow-900/50 rounded p-3 bg-yellow-900/20 backdrop-blur-sm flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-scroll text-yellow-400 text-xl"></i>
                             <div>
-                                <div class="text-xs text-[#e0e0e0]">Рецепт: Зелье Силы</div>
-                                <div class="text-[10px] text-gray-500">+10 к урону на 5 мин</div>
+                                <div class="text-sm font-bold text-yellow-300">Рецепт: Зелье Силы</div>
+                                <div class="text-[10px] text-gray-400">+10 к урону на 5 мин</div>
                             </div>
                         </div>
-                        <button class="bg-[#222] border border-[#c8aa6e] text-[#c8aa6e] px-2 py-1 rounded text-[10px]">
-                            200 <i class="far fa-gem"></i>
-                        </button>
+                        <div class="text-right">
+                            <div class="text-sm gem-price font-bold">200 <i class="far fa-gem gem-price"></i></div>
+                            <button onclick="ui.showFloatText(this, 'В разработке', '#777')" class="btn-medieval px-3 py-1 rounded text-[10px] mt-1">
+                                Купить
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="border border-[#333] rounded p-2 bg-black/20 flex justify-between items-center">
-                        <div class="flex gap-2">
-                            <i class="fas fa-scroll text-cyan-400"></i>
+                    <!-- Speed Potion Recipe -->
+                    <div class="border border-cyan-900/50 rounded p-3 bg-cyan-900/20 backdrop-blur-sm flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-scroll text-cyan-400 text-xl"></i>
                             <div>
-                                <div class="text-xs text-[#e0e0e0]">Рецепт: Зелье Скорости</div>
-                                <div class="text-[10px] text-gray-500">+50% скорость работы</div>
+                                <div class="text-sm font-bold text-cyan-300">Рецепт: Зелье Скорости</div>
+                                <div class="text-[10px] text-gray-400">+50% скорость работы</div>
                             </div>
                         </div>
-                        <button class="bg-[#222] border border-[#c8aa6e] text-[#c8aa6e] px-2 py-1 rounded text-[10px]">
-                            150 <i class="far fa-gem"></i>
-                        </button>
+                        <div class="text-right">
+                            <div class="text-sm gem-price font-bold">150 <i class="far fa-gem gem-price"></i></div>
+                            <button onclick="ui.showFloatText(this, 'В разработке', '#777')" class="btn-medieval px-3 py-1 rounded text-[10px] mt-1">
+                                Купить
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Fresh Bread Stall -->
-            <div class="panel rounded-lg p-4 space-y-3">
-                <div class="flex items-center justify-between">
+            <div class="panel rounded-lg p-4 space-y-3 relative overflow-hidden bg-gradient-to-br from-amber-900/30 via-[#1a1a1d] to-[#0f0f10] border border-amber-700/40">
+                <!-- Background Image with Overlay -->
+                <div class="absolute inset-0 z-0">
+                    <img src="https://i.postimg.cc/6QJnHYXF/IMG-4600.jpg" alt="Bread Stall" class="w-full h-full object-cover opacity-20">
+                    <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80"></div>
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(217,119,6,0.2),transparent_60%)]"></div>
+                </div>
+                
+                <div class="relative z-10 flex items-center justify-between">
                     <h3 class="medieval-font text-lg text-amber-300"><i class="fas fa-bread-slice mr-2"></i>Ларёк со свежим хлебом</h3>
                 </div>
                 
-                <div class="panel p-3 rounded bg-amber-900/10 border border-amber-700/30">
+                <div class="relative z-10 panel p-3 rounded bg-amber-900/20 border border-amber-700/40 backdrop-blur-sm">
                     <div class="flex items-center justify-between mb-2">
                         <div class="flex items-center gap-3">
                             <i class="fas fa-bread-slice text-4xl text-amber-400"></i>
                             <div>
-                                <div class="text-sm text-[#e0e0e0] font-bold">Свежий хлеб</div>
+                                <div class="text-base text-[#e0e0e0] font-bold medieval-font">Свежий хлеб</div>
                                 <div class="text-[10px] text-gray-400">Восстанавливает 20% голода</div>
                             </div>
                         </div>
@@ -3363,9 +3578,141 @@
                     <div class="flex items-center gap-2 mb-3 text-sm">
                         <span class="text-yellow-500">Цена: 20 <i class="fas fa-coins"></i></span>
                     </div>
-                    <button onclick="village.buyBread(event)" class="btn-medieval w-full py-2 rounded text-sm">
+                    <button onclick="village.buyBread(event)" class="w-full py-2 rounded text-sm border border-amber-700/40 bg-black/30 text-amber-300 hover:bg-amber-900/20 backdrop-blur-sm">
                         Купить хлеб
                     </button>
+                </div>
+            </div>
+
+            <!-- Livestock Farm (Unlocks at Level 10) -->
+            <div class="mt-4">
+                <button id="livestock-farm-button" onclick="livestockFarm.tryOpen()" class="panel w-full p-4 rounded-lg flex items-center justify-between group transition-colors bg-gradient-to-br from-gray-900/20 via-[#1a1a1d] to-[#0f0f10] opacity-60">
+                    <div class="flex items-center gap-4">
+                        <div id="livestock-farm-icon" class="w-14 h-14 rounded-full bg-gradient-to-br from-gray-800/60 to-gray-950 border-2 border-gray-600/60 flex items-center justify-center shadow-[0_0_15px_rgba(107,114,128,0.2)]">
+                            <i class="fas fa-cow text-gray-500 text-2xl"></i>
+                        </div>
+                        <div class="text-left">
+                            <div id="livestock-farm-title" class="text-base font-bold text-gray-400 medieval-font">Скотный двор</div>
+                            <div id="livestock-farm-subtitle" class="text-xs text-gray-600">Ухаживайте за животными</div>
+                        </div>
+                    </div>
+                    <div id="livestock-farm-status" class="flex items-center gap-2">
+                        <i class="fas fa-lock text-gray-500 mr-2"></i>
+                        <span class="text-xs text-gray-500">Ур. 10</span>
+                    </div>
+                </button>
+            </div>
+        </section>
+
+        <!-- VIEW: LIVESTOCK FARM -->
+        <section id="view-livestock-farm" class="hidden space-y-4">
+            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-green-950/80 via-[#1a1a1d] to-[#0f0f10]">
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(34,197,94,0.2),transparent_60%)]"></div>
+                <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-green-500/50 to-transparent"></div>
+                <div class="absolute top-4 left-4">
+                    <button onclick="router.navigate('village')" class="w-8 h-8 rounded border border-green-900/50 bg-black/30 flex items-center justify-center text-green-400 hover:bg-green-900/30 transition-colors">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                </div>
+                <div class="absolute top-1/2 left-16 -translate-y-1/2 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-green-900/60 to-green-950 flex items-center justify-center border-2 border-green-500/60 shadow-[0_0_15px_rgba(34,197,94,0.3)]">
+                        <i class="fas fa-cow text-green-400 text-lg"></i>
+                    </div>
+                    <h2 class="medieval-font text-2xl text-green-300 drop-shadow-md">Скотный двор</h2>
+                </div>
+            </div>
+
+            <div class="panel rounded-lg p-4 space-y-3">
+                <div class="flex items-center justify-between border-b border-[#333] pb-3 mb-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-full border-2 border-green-500 bg-[#222] flex items-center justify-center shadow-[0_0_10px_rgba(34,197,94,0.3)]">
+                            <i class="fas fa-cow text-green-400 text-lg"></i>
+                        </div>
+                        <div>
+                            <div class="text-base text-[#e0e0e0] font-bold medieval-font">Скотный двор</div>
+                            <div class="text-[10px] text-[#a0a0a0]">Хозяйка: Анна</div>
+                        </div>
+                    </div>
+                    <button onclick="dialogue.start('anna')" class="btn-medieval px-4 py-2 rounded text-xs">
+                        Говорить
+                    </button>
+                </div>
+
+                <!-- Animals Grid -->
+                <div class="grid grid-cols-2 gap-3">
+                    <!-- Chicken -->
+                    <div id="animal-chicken" class="border border-amber-700/50 rounded p-3 bg-amber-900/10">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i class="fas fa-egg text-amber-400 text-xl"></i>
+                            <div class="text-base text-[#e0e0e0] font-bold medieval-font">Куры</div>
+                        </div>
+                        <div class="text-[10px] text-gray-400 mb-2">
+                            Кормление: <span id="chicken-feed-time">--:--:--</span>
+                        </div>
+                        <div class="text-[10px] text-green-400 mb-2">
+                            <i class="fas fa-gift"></i> Яйца, Мясо
+                        </div>
+                        <button onclick="livestockFarm.feedAnimal('chicken', event)" id="btn-feed-chicken" class="btn-medieval w-full py-1.5 rounded text-xs">
+                            Покормить (5 <i class="fas fa-seedling"></i>)
+                        </button>
+                    </div>
+
+                    <!-- Cow -->
+                    <div id="animal-cow" class="border border-blue-700/50 rounded p-3 bg-blue-900/10">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i class="fas fa-cow text-blue-300 text-xl"></i>
+                            <div class="text-base text-[#e0e0e0] font-bold medieval-font">Коровы</div>
+                        </div>
+                        <div class="text-[10px] text-gray-400 mb-2">
+                            Кормление: <span id="cow-feed-time">--:--:--</span>
+                        </div>
+                        <div class="text-[10px] text-green-400 mb-2">
+                            <i class="fas fa-gift"></i> Молоко, Кожа
+                        </div>
+                        <button onclick="livestockFarm.feedAnimal('cow', event)" id="btn-feed-cow" class="btn-medieval w-full py-1.5 rounded text-xs">
+                            Покормить (10 <i class="fas fa-seedling"></i>)
+                        </button>
+                    </div>
+
+                    <!-- Pig -->
+                    <div id="animal-pig" class="border border-pink-700/50 rounded p-3 bg-pink-900/10">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i class="fas fa-piggy-bank text-pink-400 text-xl"></i>
+                            <div class="text-base text-[#e0e0e0] font-bold medieval-font">Свиньи</div>
+                        </div>
+                        <div class="text-[10px] text-gray-400 mb-2">
+                            Кормление: <span id="pig-feed-time">--:--:--</span>
+                        </div>
+                        <div class="text-[10px] text-green-400 mb-2">
+                            <i class="fas fa-gift"></i> Мясо
+                        </div>
+                        <button onclick="livestockFarm.feedAnimal('pig', event)" id="btn-feed-pig" class="btn-medieval w-full py-1.5 rounded text-xs">
+                            Покормить (8 <i class="fas fa-seedling"></i>)
+                        </button>
+                    </div>
+
+                    <!-- Rabbit -->
+                    <div id="animal-rabbit" class="border border-gray-700/50 rounded p-3 bg-gray-900/10">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i class="fas fa-rabbit text-gray-300 text-xl"></i>
+                            <div class="text-base text-[#e0e0e0] font-bold medieval-font">Кролики</div>
+                        </div>
+                        <div class="text-[10px] text-gray-400 mb-2">
+                            Кормление: <span id="rabbit-feed-time">--:--:--</span>
+                        </div>
+                        <div class="text-[10px] text-green-400 mb-2">
+                            <i class="fas fa-gift"></i> Мясо, Кожа
+                        </div>
+                        <button onclick="livestockFarm.feedAnimal('rabbit', event)" id="btn-feed-rabbit" class="btn-medieval w-full py-1.5 rounded text-xs">
+                            Покормить (3 <i class="fas fa-seedling"></i>)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Info -->
+                <div class="text-xs text-gray-500 text-center mt-3 bg-black/20 border border-[#333] rounded p-2">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    Кормите животных раз в 4 часа для получения ресурсов. Корм можно купить у продавца скота.
                 </div>
             </div>
         </section>
@@ -3398,7 +3745,7 @@
                             <i class="fas fa-user-shield text-red-400"></i>
                         </div>
                         <div>
-                            <div class="text-sm text-[#e0e0e0] font-bold">Рыцарь Джон</div>
+                            <div class="text-base text-[#e0e0e0] font-bold medieval-font">Рыцарь Джон</div>
                             <div class="text-[10px] text-[#a0a0a0]">Наставник</div>
                         </div>
                     </div>
@@ -3443,7 +3790,7 @@
                             <i class="fas fa-shield-halved text-slate-300"></i>
                         </div>
                         <div>
-                            <div class="text-sm text-[#e0e0e0] font-bold">Капрал</div>
+                            <div class="text-base text-[#e0e0e0] font-bold medieval-font">Капрал</div>
                             <div class="text-[10px] text-[#a0a0a0]">Страж крепости</div>
                         </div>
                     </div>
@@ -3484,7 +3831,7 @@
                             <i class="fas fa-shield text-purple-400"></i>
                         </div>
                         <div>
-                            <div class="text-sm text-[#e0e0e0] font-bold">Стражник</div>
+                            <div class="text-base text-[#e0e0e0] font-bold medieval-font">Стражник</div>
                             <div class="text-[10px] text-[#a0a0a0]">Королевская стража</div>
                         </div>
                     </div>
@@ -3522,14 +3869,93 @@
                     Узкие грязные улочки, старые лачуги и отчаянные люди. Здесь выживают, а не живут.
                 </div>
 
+                <!-- Дом Артура -->
+                <div class="panel p-4 rounded-lg border-[#c8aa6e]/40 bg-gradient-to-br from-[#2a2520]/80 via-[#1a1a1d] to-[#0f0f10] space-y-3">
+                    <div class="flex items-center justify-between border-b border-[#333] pb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-full border-2 border-[#c8aa6e] bg-[#222] flex items-center justify-center shadow-[0_0_10px_rgba(200,170,110,0.3)]">
+                                <i class="fas fa-user-tie text-[#c8aa6e] text-lg"></i>
+                            </div>
+                            <div>
+                                <div class="text-base text-[#e0e0e0] font-bold medieval-font">Артур</div>
+                                <div class="text-[10px] text-[#a0a0a0]">Алхимик и старый друг</div>
+                            </div>
+                        </div>
+                        <button onclick="dialogue.start('arthur')" class="btn-medieval px-4 py-2 rounded text-xs">
+                            Говорить
+                        </button>
+                    </div>
+
+                    <!-- Arthur's Shop -->
+                    <div class="space-y-2">
+                        <h4 class="text-xs text-[#c8aa6e] uppercase tracking-wider font-bold">Зелья Артура</h4>
+                        
+                        <!-- XP Potion -->
+                        <div class="border border-blue-900/50 rounded p-3 bg-blue-900/10 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <i class="fas fa-flask text-blue-400 text-xl"></i>
+                                <div>
+                                    <div class="text-sm font-bold text-blue-300">Зелье Опыта</div>
+                                    <div class="text-[10px] text-gray-400">х2 опыт на 5 минут</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-sm gem-price font-bold">100 <i class="far fa-gem gem-price"></i></div>
+                                <button onclick="arthurShop.buyPotion('xp', event)" class="btn-medieval px-3 py-1 rounded text-[10px] mt-1">
+                                    Купить
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Strength Potion -->
+                        <div class="border border-red-900/50 rounded p-3 bg-red-900/10 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <i class="fas fa-dumbbell text-red-400 text-xl"></i>
+                                <div>
+                                    <div class="text-sm font-bold text-red-300">Зелье Силы</div>
+                                    <div class="text-[10px] text-gray-400">х2 урон на 5 минут</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-sm gem-price font-bold">100 <i class="far fa-gem gem-price"></i></div>
+                                <button onclick="arthurShop.buyPotion('strength', event)" class="btn-medieval px-3 py-1 rounded text-[10px] mt-1">
+                                    Купить
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Quest: Bring 100 Herbs -->
+                        <div id="arthur-quest-herbs" class="border border-green-900/50 rounded p-3 bg-green-900/10">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-leaf text-green-400 text-xl"></i>
+                                    <div>
+                                        <div class="text-sm font-bold text-green-300">Заказ Артура</div>
+                                        <div class="text-[10px] text-gray-400">Принести 100 трав</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-xs text-gray-400 mb-2">
+                                <span id="arthur-herbs-count">0</span> / 100 трав собрано
+                            </div>
+                            <div class="text-[10px] text-green-400 mb-2">
+                                <i class="fas fa-gift mr-1"></i>Награда: Зелье Силы (навсегда +5 урона)
+                            </div>
+                            <button id="btn-arthur-herbs" onclick="arthurShop.completeHerbQuest(event)" disabled class="btn-medieval w-full py-1.5 rounded text-xs">
+                                Отдать травы
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Старый нищий -->
                 <div class="panel p-3 rounded flex items-center justify-between border-gray-700/30 bg-gray-900/20">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full border border-gray-500 bg-[#222] flex items-center justify-center">
+                        <div class="w-12 h-12 rounded-full border-2 border-gray-500 bg-[#222] flex items-center justify-center shadow-[0_0_10px_rgba(107,114,128,0.3)]">
                             <i class="fas fa-user-injured text-gray-400"></i>
                         </div>
                         <div>
-                            <div class="text-sm text-[#e0e0e0] font-bold">Старый нищий</div>
+                            <div class="text-base text-[#e0e0e0] font-bold medieval-font">Старый нищий</div>
                             <div class="text-[10px] text-[#a0a0a0]">Просит милостыню</div>
                         </div>
                     </div>
@@ -3543,7 +3969,7 @@
                             <i class="fas fa-bowl-food text-green-500"></i>
                         </div>
                         <div>
-                            <div class="text-sm text-[#e0e0e0] font-bold">Столовая для бедных</div>
+                            <div class="text-base text-[#e0e0e0] font-bold medieval-font">Столовая для бедных</div>
                             <div class="text-[10px] text-[#a0a0a0]">+50% сытости • до 7 уровня • 1 раз/день</div>
                             <div class="text-[10px] text-green-400 mt-1">До следующего бесплатного посещения: <span id="poor-canteen-timer">--:--:--</span></div>
                         </div>
@@ -3552,26 +3978,32 @@
                 </div>
 
                 <!-- Ларёк со свежим хлебом -->
-                <div class="panel rounded-lg p-3 space-y-3 border-amber-700/30 bg-amber-900/10">
-                    <div class="flex items-center justify-between">
+                <div class="panel rounded-lg p-4 space-y-3 relative overflow-hidden bg-gradient-to-br from-amber-900/30 via-[#1a1a1d] to-[#0f0f10] border border-amber-700/40">
+                    <div class="absolute inset-0 z-0">
+                        <img src="https://i.postimg.cc/6QJnHYXF/IMG-4600.jpg" alt="Bread Stall" class="w-full h-full object-cover opacity-20">
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80"></div>
+                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(217,119,6,0.2),transparent_60%)]"></div>
+                    </div>
+                    <div class="relative z-10 flex items-center justify-between">
                         <h3 class="text-sm text-amber-300 font-bold"><i class="fas fa-bread-slice mr-2"></i>Ларёк со свежим хлебом</h3>
                     </div>
-                    
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <i class="fas fa-bread-slice text-3xl text-amber-400"></i>
-                            <div>
-                                <div class="text-sm text-[#e0e0e0] font-bold">Свежий хлеб</div>
-                                <div class="text-[10px] text-gray-400">Восстанавливает 20% голода</div>
+                    <div class="relative z-10 panel p-3 rounded bg-amber-900/20 border border-amber-700/40 backdrop-blur-sm">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center gap-3">
+                                <i class="fas fa-bread-slice text-3xl text-amber-400"></i>
+                                <div>
+                                    <div class="text-base text-[#e0e0e0] font-bold medieval-font">Свежий хлеб</div>
+                                    <div class="text-[10px] text-gray-400">Восстанавливает 20% голода</div>
+                                </div>
                             </div>
                         </div>
+                        <div class="flex items-center gap-2 text-sm">
+                            <span class="text-yellow-500">Цена: 20 <i class="fas fa-coins"></i></span>
+                        </div>
+                        <button onclick="poorDistrict.buyBread(event)" class="btn-ghost w-full py-2 rounded text-sm hover:bg-amber-900/20">
+                            Купить хлеб
+                        </button>
                     </div>
-                    <div class="flex items-center gap-2 text-sm">
-                        <span class="text-yellow-500">Цена: 20 <i class="fas fa-coins"></i></span>
-                    </div>
-                    <button onclick="poorDistrict.buyBread(event)" class="btn-medieval w-full py-2 rounded text-sm">
-                        Купить хлеб
-                    </button>
                 </div>
 
                 <!-- Азартный игрок -->
@@ -3581,7 +4013,7 @@
                             <i class="fas fa-dice text-yellow-500"></i>
                         </div>
                         <div>
-                            <div class="text-sm text-[#e0e0e0] font-bold">Азартный игрок</div>
+                            <div class="text-base text-[#e0e0e0] font-bold medieval-font">Азартный игрок</div>
                             <div class="text-[10px] text-[#a0a0a0]">Предлагает сыграть в кости</div>
                         </div>
                     </div>
@@ -3595,7 +4027,7 @@
                     <div id="poor-house-buy" class="text-center py-2">
                         <p class="text-xs text-gray-500 mb-2">Ветхая лачуга, но крыша не течёт. Есть хранилище, верстак и печь.</p>
                         <button onclick="housing.buyPoorHouse()" class="btn-medieval w-full py-2 rounded text-sm text-gray-300 border-gray-600">
-                            Купить (500 <i class="far fa-gem text-emerald-400"></i>)
+                            Купить (500 <i class="far fa-gem gem-price"></i>)
                         </button>
                     </div>
 
@@ -3645,7 +4077,7 @@
                             <i class="fas fa-user-tie text-yellow-400"></i>
                         </div>
                         <div>
-                            <div class="text-sm text-[#e0e0e0] font-bold">Советник</div>
+                            <div class="text-base text-[#e0e0e0] font-bold medieval-font">Советник</div>
                             <div class="text-[10px] text-[#a0a0a0]">Дворянин</div>
                         </div>
                     </div>
@@ -3659,7 +4091,7 @@
                     <div id="noble-house-buy" class="text-center py-2">
                         <p class="text-xs text-yellow-700/70 mb-2">Дом для истинной знати. Галерея, конюшня, оружейная.</p>
                         <button onclick="housing.buyNobleHouse()" class="btn-medieval w-full py-2 rounded text-sm text-yellow-200 border-yellow-600 bg-yellow-900/20">
-                            Купить (10,000 <i class="far fa-gem text-emerald-400"></i>)
+                            Купить (10,000 <i class="far fa-gem gem-price"></i>)
                         </button>
                     </div>
 
@@ -3723,7 +4155,7 @@
                             <i class="fas fa-user-secret text-gray-400"></i>
                         </div>
                         <div>
-                            <div class="text-sm text-[#e0e0e0] font-bold">Томас</div>
+                            <div class="text-base text-[#e0e0e0] font-bold medieval-font">Томас</div>
                             <div class="text-[10px] text-[#a0a0a0]">Перевозчик</div>
                         </div>
                     </div>
@@ -3763,7 +4195,7 @@
                             <i class="fas fa-user-secret text-gray-400"></i>
                         </div>
                         <div>
-                            <div class="text-sm text-[#e0e0e0] font-bold">Томас</div>
+                            <div class="text-base text-[#e0e0e0] font-bold medieval-font">Томас</div>
                             <div class="text-[10px] text-[#a0a0a0]">Перевозчик</div>
                         </div>
                     </div>
@@ -4114,6 +4546,10 @@
             // Tavern Brawl
             lastBrawlTime: 0,
 
+            // Arthur's Shop & Effects
+            activeEffects: {}, // { xpBoost: timestamp, strengthBoost: timestamp }
+            permanentStats: {}, // { bonusDamage: number }
+
             // Features
             bankedGold: 0,
             lastLoginDate: null,
@@ -4129,46 +4565,71 @@
         const NPC_DB = {
             arthur: {
                 name: "Артур",
-                role: "Травник",
+                role: "Алхимик",
                 icon: "fa-user-tie",
                 dialogue: {
-                    root: {
-                        text: "Здравствуй, путник. Рад видеть, что ты на ногах. Чем могу помочь?",
+                    root: function() {
+                        // Check if player has completed herb quest
+                        if (gameState.npcStates && gameState.npcStates.arthurHerbsComplete) {
+                            return "after_quest";
+                        }
+                        // First time or regular visit
+                        if (!gameState.npcStates || !gameState.npcStates.arthurMet) {
+                            if (!gameState.npcStates) gameState.npcStates = {};
+                            gameState.npcStates.arthurMet = true;
+                            game.save();
+                            return "first_meet";
+                        }
+                        return "regular";
+                    },
+                    first_meet: {
+                        text: "О, смотри-ка! Ты выглядишь уже намного лучше, чем когда я встретил тебя на площади. Рад, что ты на ногах и не сдался. Меня зовут Артур, я занимаюсь алхимией и травами.",
                         options: [
-                            { text: "Как заработать золота?", next: "earn" },
-                            { text: "Что это за место?", next: "lore" },
-                            { text: "Есть для меня работа?", next: "quest_check" },
+                            { text: "Спасибо. Что ты делаешь здесь?", next: "about" },
+                            { text: "У тебя есть зелья?", next: "potions" },
                             { text: "Пока", next: "exit" }
                         ]
                     },
-                    earn: {
-                        text: "Самый простой способ — работать в Порту или на Поле. Но сначала тебе понадобится инструмент. Попроси мелочь на площади, чтобы купить удочку.",
-                        options: [{ text: "Понял, спасибо", next: "root" }]
-                    },
-                    lore: {
-                        text: "Это вольный город на границе королевства. Здесь каждый сам за себя, но если трудиться — можно разбогатеть. Остерегайся Темного леса, пока не окрепнешь.",
-                        options: [{ text: "Ясно", next: "root" }]
-                    },
-                    quest_check: function() {
-                        if (!hasStoryQuest('q_arthur_1') && !isQuestCompleted('q_arthur_1')) {
-                            return "quest_offer";
-                        }
-                        return "no_quest";
-                    },
-                    quest_offer: {
-                        text: "Мне нужно 3 рыбы для лекарства. Принесешь — заплачу. Кстати, как тебя зовут?",
+                    regular: {
+                        text: "Снова здесь? Всегда рад помочь. Чем могу быть полезен?",
                         options: [
-                            { text: "Сказать имя", action: "set_player_name", next: "quest_accepted" },
-                            { text: "Не сейчас", next: "root" }
+                            { text: "Расскажи о своих зельях", next: "potions" },
+                            { text: "Есть ли у тебя работа?", next: "herb_quest" },
+                            { text: "До встречи", next: "exit" }
+                        ]
+                    },
+                    about: {
+                        text: "Я изучаю свойства трав и создаю зелья. Город полон опасностей, а мои эликсиры помогают выжить и стать сильнее. Если нужно — могу приготовить что-нибудь особенное.",
+                        options: [
+                            { text: "Что ты можешь предложить?", next: "potions" },
+                            { text: "Вернусь позже", next: "exit" }
+                        ]
+                    },
+                    potions: {
+                        text: "У меня есть зелье опыта — удваивает твой опыт на 5 минут. И зелье силы — удваивает урон. Оба стоят по 100 изумрудов. Но есть и кое-что особенное...",
+                        options: [
+                            { text: "Что особенного?", next: "herb_quest" },
+                            { text: "Куплю позже", next: "exit" }
+                        ]
+                    },
+                    herb_quest: {
+                        text: "Если принесёшь мне 100 трав, я сделаю тебе зелье силы особого рецепта. Оно навсегда увеличит твой урон на 5 единиц. Но мне нужно именно 100 трав — не меньше.",
+                        options: [
+                            { text: "Я постараюсь найти их", next: "quest_accepted" },
+                            { text: "Может позже", next: "exit" }
                         ]
                     },
                     quest_accepted: {
-                        text: "Отлично. Жду рыбу.",
-                        options: [{ text: "Ухожу", next: "exit" }]
+                        text: "Отлично! Травы можно собирать в тёмном лесу. Будь осторожен там. Жду тебя с травами.",
+                        options: [
+                            { text: "Вернусь с травами", next: "exit" }
+                        ]
                     },
-                    no_quest: {
-                        text: "Пока ничего нет. Заходи позже.",
-                        options: [{ text: "Ладно", next: "root" }]
+                    after_quest: {
+                        text: "Ты проделал отличную работу с теми травами. Зелье должно служить тебе верой и правдой. Если нужны обычные эликсиры — всегда к твоим услугам.",
+                        options: [
+                            { text: "Спасибо, Артур", next: "exit" }
+                        ]
                     }
                 }
             },
@@ -4883,6 +5344,154 @@
                         options: [{ text: "Может быть позже", next: "exit" }]
                     }
                 }
+            },
+            hank: {
+                name: "Хэнк",
+                role: "Главный банкир",
+                icon: "fa-user-tie",
+                dialogue: {
+                    root: function() {
+                        if (gameState.npcStates && gameState.npcStates.hankAmuletComplete) {
+                            return "after_quest";
+                        }
+                        if (gameState.npcStates && gameState.npcStates.hankAmuletActive) {
+                            return "quest_active";
+                        }
+                        if (!gameState.npcStates || !gameState.npcStates.hankMet) {
+                            if (!gameState.npcStates) gameState.npcStates = {};
+                            gameState.npcStates.hankMet = true;
+                            game.save();
+                            return "first_meet";
+                        }
+                        return "regular";
+                    },
+                    first_meet: {
+                        text: "Добро пожаловать в казну! Я Хэнк, главный банкир этого города. Позвольте объяснить, почему вам стоит хранить свои деньги здесь.",
+                        options: [
+                            { text: "Почему я должен хранить здесь золото?", next: "why_bank" },
+                            { text: "Расскажи о городе", next: "about_city" },
+                            { text: "До встречи", next: "exit" }
+                        ]
+                    },
+                    why_bank: {
+                        text: "В нашем городе полным-полно воров и обманщиков. Они только и ждут момента, чтобы обокрасть тебя до нитки! В казне твои деньги в безопасности, под надежной охраной.",
+                        options: [
+                            { text: "Понял. А чем ещё ты можешь помочь?", next: "regular" },
+                            { text: "Спасибо за совет", next: "exit" }
+                        ]
+                    },
+                    about_city: {
+                        text: "Этот город — опасное место для беспечных. Карманники, мошенники, бандиты... Но если ты умён и осторожен, можешь разбогатеть здесь.",
+                        options: [
+                            { text: "Понятно", next: "regular" }
+                        ]
+                    },
+                    regular: {
+                        text: "Чем могу помочь? Нужно положить золото в сейф или обменять изумруды?",
+                        options: [
+                            { text: "У тебя есть какая-то работа?", next: "quest_offer" },
+                            { text: "Просто зашёл поговорить", next: "exit" }
+                        ]
+                    },
+                    quest_offer: {
+                        text: "Знаешь... У меня есть одно личное дело. Мой брат потерял семейный амулет где-то в окрестностях города. Это очень важная реликвия для нашей семьи. Если найдёшь — щедро награжу.",
+                        options: [
+                            { text: "Где мне искать?", next: "quest_hint" },
+                            { text: "Я попробую найти", action: "accept_hank_quest", next: "quest_accepted" },
+                            { text: "Может позже", next: "exit" }
+                        ]
+                    },
+                    quest_hint: {
+                        text: "Точно не знаю... Он последний раз был в окрестностях города. Может, в лесу? Попробуй поискать в разных местах. Амулет небольшой, его легко не заметить.",
+                        options: [
+                            { text: "Я поищу его", action: "accept_hank_quest", next: "quest_accepted" },
+                            { text: "Хорошо, подумаю", next: "exit" }
+                        ]
+                    },
+                    quest_accepted: {
+                        text: "Благодарю тебя! Это очень много значит для моей семьи. Удачи в поисках!",
+                        options: [
+                            { text: "Вернусь, когда найду", next: "exit" }
+                        ]
+                    },
+                    quest_active: {
+                        text: "Нашёл амулет моего брата? Это небольшой золотой медальон с гравировкой.",
+                        options: function() {
+                            if (gameState.npcStates && gameState.npcStates.hankAmuletFound) {
+                                return [
+                                    { text: "Да! Вот он!", action: "return_amulet", next: "amulet_returned" }
+                                ];
+                            }
+                            return [
+                                { text: "Ещё ищу", next: "exit" },
+                                { text: "Пока нет", next: "exit" }
+                            ];
+                        }
+                    },
+                    amulet_returned: {
+                        text: "Это он! О, я так рад! Спасибо тебе огромное! Вот твоя награда — 10 изумрудов. Моя семья навеки в долгу перед тобой!",
+                        options: [
+                            { text: "Рад помочь", next: "exit" }
+                        ]
+                    },
+                    after_quest: {
+                        text: "Спасибо тебе ещё раз за возврат амулета! Моя семья в долгу перед тобой.",
+                        options: [
+                            { text: "Всегда пожалуйста", next: "exit" }
+                        ]
+                    }
+                }
+            },
+            anna: {
+                name: "Анна",
+                role: "Хозяйка скотного двора",
+                icon: "fa-cow",
+                dialogue: {
+                    root: function() {
+                        if (!gameState.npcStates || !gameState.npcStates.annaMet) {
+                            if (!gameState.npcStates) gameState.npcStates = {};
+                            gameState.npcStates.annaMet = true;
+                            game.save();
+                            return "first_meet";
+                        }
+                        return "regular";
+                    },
+                    first_meet: {
+                        text: "Привет, путник! Я Анна, присматриваю за животными здесь. Если хочешь помочь мне ухаживать за ними — получишь награду и ценные материалы!",
+                        options: [
+                            { text: "Как это работает?", next: "how_it_works" },
+                            { text: "Что за награды?", next: "rewards" },
+                            { text: "Спасибо, зайду позже", next: "exit" }
+                        ]
+                    },
+                    how_it_works: {
+                        text: "Всё просто! Корми животных раз в 4 часа специальным кормом. За это я дам тебе немного золота, а животные — ценные материалы: яйца, молоко, мясо, кожу.",
+                        options: [
+                            { text: "Где взять корм?", next: "where_feed" },
+                            { text: "Понятно", next: "regular" }
+                        ]
+                    },
+                    where_feed: {
+                        text: "Корм можно купить у продавца скота. Он продаёт качественный корм для всех видов животных.",
+                        options: [
+                            { text: "Спасибо за информацию", next: "exit" }
+                        ]
+                    },
+                    rewards: {
+                        text: "От кур получишь яйца и мясо, от коров — молоко и кожу, от свиней — мясо, от кроликов — мясо и кожу. Плюс я заплачу тебе золотом за работу!",
+                        options: [
+                            { text: "Звучит выгодно!", next: "exit" },
+                            { text: "Как часто кормить?", next: "how_it_works" }
+                        ]
+                    },
+                    regular: {
+                        text: "Снова здесь? Животные всегда рады свежему корму!",
+                        options: [
+                            { text: "Расскажи ещё раз как это работает", next: "how_it_works" },
+                            { text: "Пока", next: "exit" }
+                        ]
+                    }
+                }
             }
         };
 
@@ -5086,6 +5695,23 @@
                 }
                 if (action === 'start_q_lili_visit') {
                     this.addQuest('q_lili_visit', 'Приглашение Лили', 'Навестить Лили в Дворянском квартале.', {type: 'visit', target: 'noble-quarter', count: 1}, {gold: 0, xp: 50});
+                }
+                if (action === 'accept_hank_quest') {
+                    if (!gameState.npcStates) gameState.npcStates = {};
+                    gameState.npcStates.hankAmuletActive = true;
+                    game.save();
+                    ui.showFloatText(document.body, "Новый квест: Амулет Хэнка", "#fbbf24");
+                }
+                if (action === 'return_amulet') {
+                    if (gameState.npcStates && gameState.npcStates.hankAmuletFound) {
+                        gameState.npcStates.hankAmuletComplete = true;
+                        gameState.npcStates.hankAmuletActive = false;
+                        gameState.emeralds += 10;
+                        game.addReputation(3, document.body);
+                        game.save();
+                        ui.updateStats();
+                        ui.showFloatText(document.body, "+10 Изумрудов!", "#34d399");
+                    }
                 }
                 if (action === 'beggar_give_10') {
                     if (gameState.gold >= 10) {
@@ -5387,15 +6013,15 @@
                         const isDone = q.current >= q.goal;
 
                         const el = document.createElement('div');
-                        el.className = `panel p-3 rounded flex flex-col gap-2 ${q.claimed ? 'opacity-50' : ''}`;
+                        el.className = `quest-card panel p-3 rounded flex flex-col gap-2 ${q.claimed ? 'opacity-50' : ''}`;
                         el.innerHTML = `
                             <div class="flex justify-between items-start">
                                 <div>
-                                    <div class="text-sm text-[#e0e0e0] font-bold">${q.text}</div>
+                                    <div class="text-base text-[#e0e0e0] font-bold medieval-font">${q.text}</div>
                                     <div class="text-xs text-[#a0a0a0]">${q.current} / ${q.goal}</div>
                                 </div>
-                                <div class="text-xs text-emerald-400 font-bold border border-emerald-900 bg-emerald-900/20 px-2 py-1 rounded">
-                                    +${q.reward} <i class="far fa-gem"></i>
+                                <div class="text-xs gem-price font-bold border border-emerald-900 bg-emerald-900/20 px-2 py-1 rounded">
+                                    +${q.reward} <i class="far fa-gem gem-price"></i>
                                 </div>
                             </div>
                             <div class="w-full h-1.5 bg-[#000] rounded-full overflow-hidden border border-[#333]">
@@ -5435,7 +6061,7 @@
                         const isDone = q.current >= q.goals.count;
 
                         const el = document.createElement('div');
-                        el.className = "panel p-3 rounded flex flex-col gap-2 border-l-2 border-[#c8aa6e]";
+                        el.className = "quest-card panel p-3 rounded flex flex-col gap-2 border-l-2 border-[#c8aa6e]";
                         el.innerHTML = `
                             <div class="flex justify-between items-start">
                                 <div>
@@ -5572,6 +6198,11 @@
             },
 
             addXp: function(amount) {
+                // Apply XP boost if active
+                if (gameState.activeEffects && gameState.activeEffects.xpBoost && gameState.activeEffects.xpBoost > Date.now()) {
+                    amount *= 2;
+                }
+                
                 gameState.xp += amount;
                 if (gameState.xp >= gameState.xpToNextLevel) {
                     this.levelUp();
@@ -5605,6 +6236,11 @@
                 this.calculateNextLevel();
                 ui.updateJobs();
                 ui.updateStats();
+                
+                // Update livestock farm button if on village screen
+                if (router.currentTab === 'map') {
+                    livestockFarm.updateButtonUI();
+                }
 
                 this.showLevelUpModal(goldReward);
                 this.save();
@@ -5625,7 +6261,7 @@
                 } else if (gameState.level === 5) {
                     msg = "Открыты Пшеничное поле и Темный лес. Нужны серп и осторожность.";
                 } else if (gameState.level === 10) {
-                    msg = "Пора накопить на дом в деревне и начать хозяйство.";
+                    msg = "Открылся Скотный двор в деревне! Ухаживайте за животными и получайте ресурсы.";
                 } else if (gameState.level === 15) {
                     msg = "Открыт Рудник и Учебный лагерь. Навестите Рыцаря Джона.";
                 } else if (gameState.level === 30) {
@@ -6508,6 +7144,16 @@
                 // Chance to get measles
                 disease.tryInfect();
                 
+                // SECRET: Hank's Amulet (0.5% chance, only if quest is active and not found yet)
+                if (gameState.npcStates && gameState.npcStates.hankAmuletActive && 
+                    !gameState.npcStates.hankAmuletFound && Math.random() < 0.005) {
+                    gameState.npcStates.hankAmuletFound = true;
+                    setTimeout(() => {
+                        ui.showFloatText(document.body, "✨ Золотой амулет!", "#ffd700");
+                        ui.showFloatText(document.body, "Вернитесь к Хэнку!", "#c8aa6e");
+                    }, 500);
+                }
+                
                 game.save();
                 ui.updateStats();
             },
@@ -7206,6 +7852,250 @@
             }
         };
 
+        // --- ARTHUR'S SHOP CONTROLLER ---
+        const arthurShop = {
+            buyPotion: function(type, event) {
+                const cost = 100;
+                if (gameState.emeralds < cost) {
+                    ui.showFloatText(event.target, "Нужно 100 изумрудов", "#ff5555");
+                    return;
+                }
+                
+                gameState.emeralds -= cost;
+                
+                // Apply potion effect
+                if (!gameState.activeEffects) gameState.activeEffects = {};
+                const duration = 5 * 60 * 1000; // 5 minutes
+                const expiresAt = Date.now() + duration;
+                
+                if (type === 'xp') {
+                    gameState.activeEffects.xpBoost = expiresAt;
+                    ui.showFloatText(event.target, "х2 Опыт на 5 минут!", "#3b82f6");
+                } else if (type === 'strength') {
+                    gameState.activeEffects.strengthBoost = expiresAt;
+                    ui.showFloatText(event.target, "х2 Урон на 5 минут!", "#ef4444");
+                }
+                
+                game.save();
+                ui.updateStats();
+                this.startEffectTimers();
+            },
+            
+            completeHerbQuest: function(event) {
+                if (gameState.herbs < 100) {
+                    ui.showFloatText(event.target, "Нужно 100 трав", "#ff5555");
+                    return;
+                }
+                
+                gameState.herbs -= 100;
+                
+                // Permanently increase damage
+                if (!gameState.permanentStats) gameState.permanentStats = {};
+                gameState.permanentStats.bonusDamage = (gameState.permanentStats.bonusDamage || 0) + 5;
+                
+                // Mark quest as complete
+                if (!gameState.npcStates) gameState.npcStates = {};
+                gameState.npcStates.arthurHerbsComplete = true;
+                
+                game.save();
+                ui.updateStats();
+                ui.showFloatText(event.target, "+5 Урона навсегда!", "#10b981");
+                
+                // Update UI
+                this.updateHerbQuestUI();
+            },
+            
+            updateHerbQuestUI: function() {
+                const countEl = document.getElementById('arthur-herbs-count');
+                const btnEl = document.getElementById('btn-arthur-herbs');
+                const questEl = document.getElementById('arthur-quest-herbs');
+                
+                if (!countEl || !btnEl || !questEl) return;
+                
+                // Check if quest is complete
+                if (gameState.npcStates && gameState.npcStates.arthurHerbsComplete) {
+                    questEl.innerHTML = `
+                        <div class="text-center py-2">
+                            <i class="fas fa-check-circle text-green-400 text-2xl mb-2"></i>
+                            <div class="text-sm text-green-300">Задание выполнено!</div>
+                            <div class="text-xs text-gray-400">+5 урона получено</div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Update count
+                countEl.textContent = gameState.herbs || 0;
+                
+                // Update button
+                if (gameState.herbs >= 100) {
+                    btnEl.disabled = false;
+                    btnEl.classList.remove('opacity-50');
+                } else {
+                    btnEl.disabled = true;
+                    btnEl.classList.add('opacity-50');
+                }
+            },
+            
+            startEffectTimers: function() {
+                if (this._effectInterval) return;
+                
+                this._effectInterval = setInterval(() => {
+                    if (!gameState.activeEffects) return;
+                    
+                    const now = Date.now();
+                    
+                    // Remove expired effects
+                    if (gameState.activeEffects.xpBoost && gameState.activeEffects.xpBoost <= now) {
+                        delete gameState.activeEffects.xpBoost;
+                        game.save();
+                    }
+                    if (gameState.activeEffects.strengthBoost && gameState.activeEffects.strengthBoost <= now) {
+                        delete gameState.activeEffects.strengthBoost;
+                        game.save();
+                    }
+                }, 1000);
+            }
+        };
+
+        // --- LIVESTOCK FARM CONTROLLER ---
+        const livestockFarm = {
+            animals: {
+                chicken: { feedCost: 5, cooldown: 4 * 60 * 60 * 1000, rewards: { gold: 15, items: ['eggs', 'meat'] } },
+                cow: { feedCost: 10, cooldown: 4 * 60 * 60 * 1000, rewards: { gold: 30, items: ['milk', 'leather'] } },
+                pig: { feedCost: 8, cooldown: 4 * 60 * 60 * 1000, rewards: { gold: 20, items: ['meat'] } },
+                rabbit: { feedCost: 3, cooldown: 4 * 60 * 60 * 1000, rewards: { gold: 10, items: ['meat', 'leather'] } }
+            },
+
+            tryOpen: function() {
+                if (gameState.level >= 10) {
+                    router.navigate('livestock-farm');
+                } else {
+                    ui.showFloatText(document.body, `Требуется 10 уровень (сейчас ${gameState.level})`, "#ff5555");
+                }
+            },
+
+            updateButtonUI: function() {
+                const button = document.getElementById('livestock-farm-button');
+                const icon = document.getElementById('livestock-farm-icon');
+                const title = document.getElementById('livestock-farm-title');
+                const subtitle = document.getElementById('livestock-farm-subtitle');
+                const status = document.getElementById('livestock-farm-status');
+                
+                if (!button || !icon || !title || !subtitle || !status) return;
+                
+                if (gameState.level >= 10) {
+                    // Unlocked state - green style like bulletin board
+                    button.className = 'panel w-full p-4 rounded-lg flex items-center justify-between group hover:border-green-500 transition-colors bg-gradient-to-br from-green-900/20 via-[#1a1a1d] to-[#0f0f10]';
+                    icon.className = 'w-14 h-14 rounded-full bg-gradient-to-br from-green-900/60 to-green-950 border-2 border-green-500/60 flex items-center justify-center shadow-[0_0_15px_rgba(34,197,94,0.3)]';
+                    icon.querySelector('i').className = 'fas fa-cow text-green-400 text-2xl';
+                    title.className = 'text-base font-bold text-green-300 medieval-font';
+                    subtitle.className = 'text-xs text-green-600/80';
+                    status.innerHTML = '<i class="fas fa-chevron-right text-gray-500 group-hover:text-green-500 text-xl"></i>';
+                } else {
+                    // Locked state - gray with lock
+                    button.className = 'panel w-full p-4 rounded-lg flex items-center justify-between group transition-colors bg-gradient-to-br from-gray-900/20 via-[#1a1a1d] to-[#0f0f10] opacity-60';
+                    icon.className = 'w-14 h-14 rounded-full bg-gradient-to-br from-gray-800/60 to-gray-950 border-2 border-gray-600/60 flex items-center justify-center shadow-[0_0_15px_rgba(107,114,128,0.2)]';
+                    icon.querySelector('i').className = 'fas fa-cow text-gray-500 text-2xl';
+                    title.className = 'text-base font-bold text-gray-400 medieval-font';
+                    subtitle.className = 'text-xs text-gray-600';
+                    status.innerHTML = '<i class="fas fa-lock text-gray-500 mr-2"></i><span class="text-xs text-gray-500">Ур. 10</span>';
+                }
+            },
+
+            feedAnimal: function(animalType, event) {
+                if (!gameState.livestockFeeding) gameState.livestockFeeding = {};
+                
+                const animal = this.animals[animalType];
+                const now = Date.now();
+                const lastFed = gameState.livestockFeeding[animalType] || 0;
+                
+                // Check cooldown
+                if (now - lastFed < animal.cooldown) {
+                    const remaining = animal.cooldown - (now - lastFed);
+                    const hours = Math.floor(remaining / 3600000);
+                    const mins = Math.floor((remaining % 3600000) / 60000);
+                    ui.showFloatText(event.target, `Подождите ${hours}ч ${mins}м`, "#ff5555");
+                    return;
+                }
+                
+                // Check if player has feed (using grain as feed)
+                if (!gameState.grain || gameState.grain < animal.feedCost) {
+                    ui.showFloatText(event.target, `Нужно ${animal.feedCost} корма`, "#ff5555");
+                    return;
+                }
+                
+                // Feed the animal
+                gameState.grain -= animal.feedCost;
+                gameState.livestockFeeding[animalType] = now;
+                
+                // Give rewards
+                gameState.gold += animal.rewards.gold;
+                
+                let rewardText = `+${animal.rewards.gold} золота`;
+                animal.rewards.items.forEach(item => {
+                    const amount = Math.floor(Math.random() * 2) + 1; // 1-2 items
+                    gameState[item] = (gameState[item] || 0) + amount;
+                    rewardText += ` +${amount} ${RESOURCE_NAMES[item]?.name || item}`;
+                });
+                
+                game.save();
+                ui.updateStats();
+                ui.showFloatText(event.target, rewardText, "#34d399");
+                this.updateUI();
+            },
+            
+            updateUI: function() {
+                if (!gameState.livestockFeeding) gameState.livestockFeeding = {};
+                const now = Date.now();
+                
+                Object.keys(this.animals).forEach(animalType => {
+                    const lastFed = gameState.livestockFeeding[animalType] || 0;
+                    const animal = this.animals[animalType];
+                    const timerEl = document.getElementById(`${animalType}-feed-time`);
+                    const btnEl = document.getElementById(`btn-feed-${animalType}`);
+                    
+                    if (!timerEl || !btnEl) return;
+                    
+                    const remaining = animal.cooldown - (now - lastFed);
+                    
+                    if (remaining > 0) {
+                        const hours = Math.floor(remaining / 3600000);
+                        const mins = Math.floor((remaining % 3600000) / 60000);
+                        const secs = Math.floor((remaining % 60000) / 1000);
+                        timerEl.textContent = `${String(hours).padStart(2,'0')}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+                        btnEl.disabled = true;
+                        btnEl.classList.add('opacity-50');
+                    } else {
+                        timerEl.textContent = 'Готово!';
+                        timerEl.classList.add('text-green-400');
+                        btnEl.disabled = false;
+                        btnEl.classList.remove('opacity-50');
+                    }
+                });
+            },
+            
+            startTimers: function() {
+                if (this._interval) return;
+                this._interval = setInterval(() => {
+                    this.updateUI();
+                }, 1000);
+            }
+        };
+
+        // Function to complete Hank's amulet quest
+        function completeHankQuest() {
+            if (gameState.npcStates && gameState.npcStates.hankAmuletFound && 
+                !gameState.npcStates.hankAmuletComplete) {
+                gameState.npcStates.hankAmuletComplete = true;
+                gameState.emeralds += 10;
+                game.save();
+                ui.updateStats();
+                ui.showFloatText(document.body, "+10 Изумрудов!", "#34d399");
+                ui.showFloatText(document.body, "Квест завершён!", "#fbbf24");
+            }
+        }
+
         // --- POOR DISTRICT CONTROLLER ---
         const poorDistrict = {
             buyBread: function(event) {
@@ -7509,6 +8399,20 @@
         // --- CRAFTING & INVENTORY ---
         const crafting = {
             mode: 'inventory', 
+            currentCategory: 'potions',
+            recipesDef: {
+                potions: [
+                    { id: 'immortality', title: 'Зелье Бессмертия', req: { herbs: 100, mushrooms: 20 }, effect: { key: 'immortality', inc: 1 } },
+                    { id: 'luck', title: 'Зелье Удачи', req: { herbs: 50, mushrooms: 10 }, effect: { key: 'luck', inc: 1 } }
+                ],
+                charms: [
+                    { id: 'saddle', title: 'Седло', req: { leather: 5, rope: 2 }, produce: { key: 'saddle', count: 1 } }
+                ],
+                food: [
+                    { id: 'bread', title: 'Хлеб', req: { wheat: 3 }, produce: { key: 'bread', count: 1 } }
+                ],
+                tools: []
+            },
             toggleMode: function() {
                 const invUI = document.getElementById('ui-inventory');
                 const craftUI = document.getElementById('ui-crafting');
@@ -7530,6 +8434,8 @@
             switchCategory: function(cat) {
                 document.querySelectorAll('#ui-crafting .sub-tab').forEach(el => el.classList.remove('active'));
                 document.getElementById(`tab-craft-${cat}`).classList.add('active');
+                this.currentCategory = cat;
+                this.render();
             },
             upgradeBag: function(event) {
                 if (!gameState.recipes || !gameState.recipes.bag) {
@@ -7548,6 +8454,76 @@
                 ui.updateStats();
                 inventory.render();
                 ui.showFloatText(event.target, "+8 слотов", "#34d399");
+            },
+            render: function() {
+                const list = document.getElementById('crafting-list');
+                if (!list) return;
+                list.innerHTML = '';
+                const cat = this.currentCategory;
+                const defs = this.recipesDef[cat] || [];
+                const owned = gameState.recipes || {};
+                const filtered = defs.filter(d => {
+                    if (cat === 'potions') return owned[d.id];
+                    if (cat === 'charms') return owned[d.id];
+                    if (cat === 'food') return owned['food'];
+                    if (cat === 'tools') return owned['bag'];
+                    return false;
+                });
+                if (filtered.length === 0) {
+                    list.innerHTML = '<div class="text-center text-xs text-gray-500 py-4">Нет рецептов</div>';
+                    return;
+                }
+                filtered.forEach(d => {
+                    const card = document.createElement('div');
+                    card.className = 'recipe-card rounded p-3 flex items-center justify-between';
+                    const reqTexts = Object.keys(d.req).map(k => {
+                        const have = gameState[k] || 0;
+                        const need = d.req[k];
+                        const def = RESOURCE_NAMES[k];
+                        const ok = have >= need;
+                        return `<span class="${ok ? 'text-green-400' : 'text-red-400'}">${def ? def.name : k}: ${have}/${need}</span>`;
+                    }).join(' • ');
+                    card.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-hammer text-[#c8aa6e] text-xl"></i>
+                            <div>
+                                <div class="text-sm font-bold text-[#e0e0e0]">${d.title}</div>
+                                <div class="text-[10px] text-[#a0a0a0]">${reqTexts}</div>
+                            </div>
+                        </div>
+                        <button class="btn-ghost px-3 py-1 rounded text-[10px]" data-id="${d.id}">Создать</button>
+                    `;
+                    const btn = card.querySelector('button');
+                    btn.onclick = (e) => crafting.craft(d, e);
+                    list.appendChild(card);
+                });
+            },
+            craft: function(def, e) {
+                const req = def.req;
+                for (const k in req) {
+                    if ((gameState[k] || 0) < req[k]) {
+                        ui.showFloatText(e.target, "Не хватает материалов", "#ff5555");
+                        return;
+                    }
+                }
+                for (const k in req) {
+                    gameState[k] -= req[k];
+                }
+                if (def.produce) {
+                    const key = def.produce.key;
+                    const count = def.produce.count;
+                    gameState[key] = (gameState[key] || 0) + count;
+                }
+                if (def.effect) {
+                    const ek = def.effect.key;
+                    const inc = def.effect.inc;
+                    if (!gameState.effects) gameState.effects = {};
+                    gameState.effects[ek] = (gameState.effects[ek] || 0) + inc;
+                }
+                game.save();
+                ui.updateStats();
+                this.render();
+                ui.showFloatText(e.target, "Создано", "#34d399");
             }
         };
 
@@ -7718,6 +8694,7 @@
                 if (crafting.mode === 'inventory' && !document.getElementById('view-character').classList.contains('hidden') && document.getElementById('ui-skills').classList.contains('hidden')) {
                     inventory.render();
                 }
+                crafting.render();
                 if(router.currentTab === 'quests') quests.render();
             },
 
@@ -7782,7 +8759,7 @@
                                 <input id="trade-input-${item}" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#333] text-center text-[10px] text-white rounded p-0 outline-none focus:border-[#c8aa6e]">
                                 <button onclick="market.setMax('${item}')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
                             </div>
-                            <button onclick="market.sellFromInput('${item}')" id="btn-trade-${item}" class="w-full bg-[#2c2c30] border border-[#c8aa6e] rounded text-[10px] py-1 text-[#c8aa6e] hover:bg-[#c8aa6e] hover:text-black transition-colors uppercase">Продать</button>
+                            <button onclick="market.sellFromInput('${item}')" id="btn-trade-${item}" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-amber-900/20 transition-colors">Продать</button>
                         `;
                         groupGrid.appendChild(card);
                     });
@@ -8453,6 +9430,8 @@
                 if (screenId === 'poor-district') {
                     poorDistrict.updateUI();
                     poorDistrict.startCanteenTimer();
+                    arthurShop.updateHerbQuestUI();
+                    arthurShop.startEffectTimers();
                 }
                 if (screenId === 'noble-quarter') {
                     if (!gameState.clothes || !gameState.clothes.peasant) {
@@ -8467,6 +9446,8 @@
                 }
                 if(screenId === 'village') {
                     village.updateUI();
+                    livestockFarm.updateButtonUI();
+                    
                     if (!gameState.npcStates) gameState.npcStates = {};
                     if (!gameState.npcStates.villageBanditsDone && Math.random() < 0.35) {
                         gameState.npcStates.villageBanditsTriggered = true;
@@ -8476,7 +9457,23 @@
                     }
                 }
 
+                if (screenId === 'livestock-farm') {
+                    livestockFarm.updateUI();
+                    livestockFarm.startTimers();
+                }
+
                 if (screenId === 'treasury') {
+                    // Check if amulet was found and show option to return it
+                    if (gameState.npcStates && gameState.npcStates.hankAmuletFound && 
+                        !gameState.npcStates.hankAmuletComplete) {
+                        const questStatus = document.getElementById('hank-quest-status');
+                        const questText = document.getElementById('hank-quest-text');
+                        if (questStatus && questText) {
+                            questStatus.classList.remove('hidden');
+                            questText.textContent = 'У вас есть амулет! Поговорите с Хэнком.';
+                            questText.className = 'text-xs text-green-400';
+                        }
+                    }
                     ui.maybeTriggerTreasuryPouch();
                 }
                 if (screenId === 'bookhouse') {
@@ -8581,6 +9578,18 @@
                             } catch (e) {
                                 console.error('Error parsing player data:', key, e);
                             }
+                        }
+                    }
+                    
+                    if (window.UsersStore) {
+                        try {
+                            UsersStore.init();
+                            const users = UsersStore.listUsers();
+                            users.forEach(u => {
+                                this.allPlayers[u.telegramId] = u;
+                            });
+                        } catch (e) {
+                            console.error('UsersStore load error', e);
                         }
                     }
                     
@@ -8777,6 +9786,14 @@
                     // Update in memory
                     this.allPlayers[this.currentPlayerId] = playerData;
                     
+                    if (window.UsersStore) {
+                        try {
+                            UsersStore.saveUser(this.currentPlayerId, playerData);
+                        } catch (e) {
+                            console.error('UsersStore save error', e);
+                        }
+                    }
+                    
                     // Show success message
                     const btn = event.target;
                     const originalText = btn.textContent;
@@ -8826,6 +9843,14 @@
                         localStorage.removeItem(`player_${this.currentPlayerId}`);
                     }
                     delete this.allPlayers[this.currentPlayerId];
+                    
+                    if (window.UsersStore) {
+                        try {
+                            UsersStore.deleteUser(this.currentPlayerId);
+                        } catch (e) {
+                            console.error('UsersStore delete error', e);
+                        }
+                    }
                     
                     // Show success message
                     const btn = event.target;
