@@ -65,14 +65,16 @@
 
         /* UI Panel Style */
         .panel {
-            background-color: var(--bg-panel);
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(4px);
             border: 1px solid var(--border-color);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
 
         /* Button Styles */
         .btn-medieval {
-            background: linear-gradient(to bottom, #2c2c30, #1a1a1d);
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(4px);
             border: 1px solid var(--accent-gold);
             color: var(--accent-gold);
             text-transform: uppercase;
@@ -81,6 +83,10 @@
             transition: all 0.2s;
             position: relative;
             overflow: hidden;
+        }
+        .btn-medieval:hover {
+            background: rgba(0,0,0,0.5);
+            box-shadow: 0 4px 12px rgba(200, 170, 110, 0.3);
         }
         .btn-ghost {
             background: rgba(0,0,0,0.3);
@@ -91,6 +97,9 @@
             letter-spacing: 1px;
             transition: all 0.2s;
             backdrop-filter: blur(4px);
+        }
+        .btn-ghost:hover {
+            background: rgba(0,0,0,0.5);
         }
 
         .btn-medieval:active {
@@ -107,12 +116,24 @@
         }
         
         .quest-card {
-            background: linear-gradient(135deg, rgba(26,26,29,0.85), rgba(42,42,46,0.7));
-            border: 1px solid rgba(200,170,110,0.25);
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(200,170,110,0.3);
+            transition: all 0.3s ease;
+        }
+        .quest-card:hover {
+            background: rgba(0,0,0,0.4);
+            border-color: rgba(200,170,110,0.5);
         }
         .recipe-card {
-            background: linear-gradient(135deg, rgba(26,26,29,0.85), rgba(42,42,46,0.7));
-            border: 1px solid rgba(200,170,110,0.25);
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(200,170,110,0.3);
+            transition: all 0.3s ease;
+        }
+        .recipe-card:hover {
+            background: rgba(0,0,0,0.4);
+            border-color: rgba(200,170,110,0.5);
         }
 
         /* Tab Styles */
@@ -122,13 +143,19 @@
             border-radius: 0.5rem;
             font-size: 0.75rem;
             color: #777;
-            border: 1px solid transparent;
+            border: 1px solid rgba(200, 170, 110, 0.2);
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(4px);
             transition: all 0.2s;
+        }
+        .sub-tab:hover {
+            background: rgba(0,0,0,0.4);
+            border-color: rgba(200, 170, 110, 0.4);
         }
         .sub-tab.active {
             color: var(--accent-gold);
             border-color: var(--accent-gold);
-            background-color: rgba(200, 170, 110, 0.1);
+            background: rgba(200, 170, 110, 0.15);
         }
 
         /* Progress Bar */
@@ -267,15 +294,14 @@
 
         /* Market Item Card - Gradient Style */
         .market-item-card {
-            background: linear-gradient(135deg, 
-                rgba(26, 26, 29, 0.9) 0%, 
-                rgba(42, 42, 46, 0.8) 50%, 
-                rgba(26, 26, 29, 0.9) 100%);
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(4px);
             border: 1px solid rgba(200, 170, 110, 0.3);
             transition: all 0.3s ease;
         }
         
         .market-item-card:hover {
+            background: rgba(0, 0, 0, 0.4);
             border-color: rgba(200, 170, 110, 0.5);
             box-shadow: 0 4px 12px rgba(200, 170, 110, 0.2);
         }
@@ -837,7 +863,10 @@
                 </div>
             </div>
 
-            <button onclick="itemModal.close()" class="btn-medieval w-full py-2 rounded font-bold mt-4">Закрыть</button>
+            <button id="btn-discard-item" class="w-full py-2 rounded font-bold mt-4 border border-red-700/40 bg-red-900/20 text-red-400 hover:bg-red-900/30 transition-all backdrop-blur-sm" style="display: none;">
+                <i class="fas fa-trash mr-2"></i>Выбросить
+            </button>
+            <button onclick="itemModal.close()" class="btn-medieval w-full py-2 rounded font-bold mt-2">Закрыть</button>
         </div>
     </div>
 
@@ -1148,32 +1177,33 @@
                     <div class="mt-2">
                         <div class="flex items-center justify-between text-[10px] text-[#a0a0a0] mb-1">
                             <span>Нагрузка</span>
-                            <span id="weight-text" class="text-[#c8aa6e] font-bold">0 / 50 кг</span>
+                            <span id="weight-text" class="text-[#c8aa6e] font-bold">0 / 100 кг</span>
                         </div>
                         <div class="h-1.5 bg-[#000] border border-[#333] rounded-full overflow-hidden">
                             <div id="weight-bar" class="h-full bg-gradient-to-r from-emerald-700 to-[#c8aa6e] w-0 transition-all duration-300"></div>
                         </div>
                     </div>
                     <p class="text-[10px] text-[#777] mt-2">Вместимость рюкзака можно улучшать через крафт (рецепт продается в Книжном Доме).</p>
-                </div>
-
-                <!-- Crafting UI moved to separate panel below -->
-                <div class="panel rounded p-4 mt-4 relative overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-b from-black/10 via-black/30 to-black/60"></div>
-                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_25%_15%,rgba(200,170,110,0.12),transparent_60%)]"></div>
-                    <div class="relative">
-                        <div class="flex justify-between items-center mb-2">
-                            <h3 class="medieval-font text-sm text-[#c8aa6e]"><i class="fas fa-hammer mr-1"></i> Крафт</h3>
-                        </div>
-                        <div id="ui-crafting">
-                            <div class="flex items-center gap-2 overflow-x-auto pb-2 mb-2 no-scrollbar">
-                                <button onclick="crafting.switchCategory('potions')" id="tab-craft-potions" class="sub-tab active">Зелья</button>
-                                <button onclick="crafting.switchCategory('charms')" id="tab-craft-charms" class="sub-tab">Обереги</button>
-                                <button onclick="crafting.switchCategory('tools')" id="tab-craft-tools" class="sub-tab">Материалы</button>
-                                <button onclick="crafting.switchCategory('food')" id="tab-craft-food" class="sub-tab">Еда</button>
+                    
+                    <!-- Crafting UI moved to separate panel below -->
+                    <div class="panel rounded p-4 mt-4 relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/10 via-black/30 to-black/60"></div>
+                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_25%_15%,rgba(200,170,110,0.12),transparent_60%)]"></div>
+                        <div class="relative">
+                            <div class="flex justify-between items-center mb-2">
+                                <h3 class="medieval-font text-sm text-[#c8aa6e]"><i class="fas fa-hammer mr-1"></i> Крафт</h3>
                             </div>
-                            <div id="crafting-list" class="space-y-3">
-                                <div class="text-center text-xs text-gray-500 py-4">Нет рецептов</div>
+                            <div id="ui-crafting">
+                                <div class="flex items-center gap-2 overflow-x-auto pb-2 mb-2 no-scrollbar">
+                                    <button onclick="crafting.switchCategory('potions')" id="tab-craft-potions" class="sub-tab active">Зелья</button>
+                                    <button onclick="crafting.switchCategory('charms')" id="tab-craft-charms" class="sub-tab">Обереги</button>
+                                    <button onclick="crafting.switchCategory('tools')" id="tab-craft-tools" class="sub-tab">Материалы</button>
+                                    <button onclick="crafting.switchCategory('food')" id="tab-craft-food" class="sub-tab">Еда</button>
+                                    <button onclick="crafting.switchCategory('other')" id="tab-craft-other" class="sub-tab">Другое</button>
+                                </div>
+                                <div id="crafting-list" class="space-y-3">
+                                    <div class="text-center text-xs text-gray-500 py-4">Нет рецептов</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1184,16 +1214,6 @@
                     <div class="flex justify-between items-center p-2 bg-black/20 rounded border border-[#333]">
                         <span class="text-sm text-[#a0a0a0]"><i class="fas fa-star text-yellow-500 mr-1"></i> Жетоны навыков</span>
                         <span class="text-xl font-bold text-[#c8aa6e]" id="skill-points-display">0</span>
-                    </div>
-
-                    <div class="panel p-3 rounded flex justify-between items-center bg-[#151518]">
-                        <div>
-                            <div class="text-[#e0e0e0] font-bold text-xs"><i class="fas fa-suitcase text-yellow-500 mr-1"></i> Рюкзак (Ур <span id="bag-level-display">0</span>)</div>
-                            <div class="text-[10px] text-[#777]">+8 слотов к инвентарю</div>
-                        </div>
-                        <button onclick="crafting.upgradeBag(event)" class="bg-[#222] border border-[#c8aa6e] text-[#c8aa6e] px-3 py-1 text-[10px] rounded hover:bg-[#c8aa6e] hover:text-black transition-colors uppercase">
-                            Улучшить
-                        </button>
                     </div>
 
                     <!-- Max HP -->
@@ -1250,7 +1270,7 @@
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <!-- Jobs -->
-                    <button onclick="router.navigate('jobs')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-gradient-to-br from-[#0b2a55]/80 via-[#1a1a1d] to-[#0f0f10]">
+                    <button onclick="router.navigate('jobs')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-black/30 backdrop-blur-sm">
                         <img 
                           src="https://i.postimg.cc/zvrrJHQg/IMG-4559.jpg"
                           alt="Работы"
@@ -1273,7 +1293,7 @@
                     </button>
 
                     <!-- Town Square -->
-                    <button onclick="router.navigate('town-square')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-gradient-to-br from-[#3b1f0b]/85 via-[#1a1a1d] to-[#0f0f10]">
+                    <button onclick="router.navigate('town-square')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-black/30 backdrop-blur-sm">
                         <img 
                           src="https://i.postimg.cc/BnPztnfV/IMG-4542.jpg"
                           alt="Городская площадь"
@@ -1296,7 +1316,7 @@
                     </button>
 
                     <!-- Tavern -->
-                    <button onclick="router.navigate('tavern')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-gradient-to-br from-orange-950/80 via-[#1a1a1d] to-[#0f0f10]">
+                    <button onclick="router.navigate('tavern')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-black/30 backdrop-blur-sm">
                         <img 
                           src="https://i.postimg.cc/kGckq181/IMG-4560.jpg"
                           alt="Таверна"
@@ -1319,7 +1339,7 @@
                     </button>
 
                     <!-- Treasury -->
-                    <button onclick="router.navigate('treasury')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-gradient-to-br from-yellow-950/80 via-[#1a1a1d] to-[#0f0f10]">
+                    <button onclick="router.navigate('treasury')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-black/30 backdrop-blur-sm">
                         <img 
                           src="https://i.postimg.cc/hvS5yLws/IMG-4561.jpg"
                           alt="Казна"
@@ -1342,7 +1362,7 @@
                     </button>
 
                     <!-- Healer's Hut -->
-                    <button onclick="router.navigate('healer')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-gradient-to-br from-red-950/80 via-[#1a1a1d] to-[#0f0f10]">
+                    <button onclick="router.navigate('healer')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-black/30 backdrop-blur-sm">
                         <img 
                           src="https://i.postimg.cc/rpXgZGRd/IMG-4564.jpg"
                           alt="Хижина лекаря"
@@ -1365,7 +1385,7 @@
                     </button>
 
                     <!-- Royal Castle -->
-                    <button onclick="router.navigate('royal-castle')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-gradient-to-br from-indigo-950/80 via-[#1a1a1d] to-[#0f0f10]">
+                    <button onclick="router.navigate('royal-castle')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-black/30 backdrop-blur-sm">
                         <img 
                           src="https://i.postimg.cc/JnqyJXkK/IMG-4567.jpg"
                           alt="Королевский замок"
@@ -1388,7 +1408,7 @@
                     </button>
 
                     <!-- Noble Quarter -->
-                    <button onclick="router.navigate('noble-quarter')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-gradient-to-br from-yellow-900/80 via-[#1a1a1d] to-[#0f0f10]">
+                    <button onclick="router.navigate('noble-quarter')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-black/30 backdrop-blur-sm">
                         <img 
                           src="https://i.postimg.cc/hv51LVqc/IMG-4565.jpg"
                           alt="Дворянский квартал"
@@ -1411,7 +1431,7 @@
                     </button>
 
                     <!-- Poor District -->
-                    <button onclick="router.navigate('poor-district')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-gradient-to-br from-stone-900/80 via-[#1a1a1d] to-[#0f0f10]">
+                    <button onclick="router.navigate('poor-district')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-black/30 backdrop-blur-sm">
                         <img 
                           src="https://i.postimg.cc/B6hT32bL/IMG-4566.jpg"
                           alt="Район для бедняков"
@@ -1434,7 +1454,7 @@
                     </button>
 
                     <!-- Knight Tournament -->
-                    <button onclick="router.navigate('knight-tournament')" class="panel col-span-2 p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative h-32 bg-gradient-to-br from-amber-950/80 via-[#1a1a1d] to-[#0f0f10]">
+                    <button onclick="router.navigate('knight-tournament')" class="panel col-span-2 p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative h-32 bg-black/30 backdrop-blur-sm">
                         <img 
                           src="https://i.postimg.cc/s2cXkKrW/IMG-4610.jpg"
                           alt="Рыцарский Турнир"
@@ -1467,7 +1487,7 @@
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <!-- Village -->
-                    <button id="btn-loc-village" onclick="router.navigate('village')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-gradient-to-br from-[#0b2b17]/85 via-[#1a1a1d] to-[#0f0f10]">
+                    <button id="btn-loc-village" onclick="router.navigate('village')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-black/30 backdrop-blur-sm">
                         <img 
                           src="https://i.postimg.cc/P5BFss9w/IMG-4562.jpg"
                           alt="Деревня"
@@ -1490,7 +1510,7 @@
                     </button>
 
                     <!-- Livestock Trader -->
-                    <button id="btn-loc-livestock" onclick="router.navigate('livestock-trader')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-gradient-to-br from-emerald-950/80 via-[#1a1a1d] to-[#0f0f10]">
+                    <button id="btn-loc-livestock" onclick="router.navigate('livestock-trader')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-black/30 backdrop-blur-sm">
                         <img 
                           src="https://i.postimg.cc/zvw13wHX/IMG-4569.jpg"
                           alt="Торговец скотом"
@@ -1513,7 +1533,7 @@
                     </button>
 
                     <!-- Refugee Camp -->
-                    <button id="btn-loc-refugee" onclick="router.navigate('refugee-camp')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-gradient-to-br from-slate-900/80 via-[#1a1a1d] to-[#0f0f10]">
+                    <button id="btn-loc-refugee" onclick="router.navigate('refugee-camp')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-black/30 backdrop-blur-sm">
                         <img 
                           src="https://i.postimg.cc/d3CV6T7L/IMG-4568.jpg"
                           alt="Лагерь беженцев"
@@ -1536,7 +1556,7 @@
                     </button>
 
                     <!-- Dark Forest -->
-                    <button id="btn-loc-forest" onclick="router.navigate('dark-forest')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-gradient-to-br from-purple-950/80 via-[#1a1a1d] to-[#0f0f10]">
+                    <button id="btn-loc-forest" onclick="router.navigate('dark-forest')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-black/30 backdrop-blur-sm">
                         <img 
                           src="https://i.postimg.cc/kGXTFn6F/IMG-4563.jpg"
                           alt="Тёмный лес"
@@ -1566,7 +1586,7 @@
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <!-- Training Camp (moved here) -->
-                    <button id="btn-loc-camp" onclick="router.navigate('training-camp')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-gradient-to-br from-red-950/80 via-[#1a1a1d] to-[#0f0f10]">
+                    <button id="btn-loc-camp" onclick="router.navigate('training-camp')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-black/30 backdrop-blur-sm">
                         <img 
                           src="https://i.postimg.cc/C1D36CNf/IMG-4570.jpg"
                           alt="Учебный лагерь"
@@ -1589,7 +1609,7 @@
                     </button>
 
                     <!-- Military Fortress -->
-                    <button id="btn-loc-fortress" onclick="router.navigate('military-fortress')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-gradient-to-br from-slate-950/80 via-[#1a1a1d] to-[#0f0f10]">
+                    <button id="btn-loc-fortress" onclick="router.navigate('military-fortress')" class="panel p-0 rounded-lg overflow-hidden group hover:border-[#c8aa6e] transition-all relative aspect-square bg-black/30 backdrop-blur-sm">
                         <img 
                           src="https://i.postimg.cc/Ss0582pT/IMG-4571.jpg"
                           alt="Военная Крепость"
@@ -1638,7 +1658,7 @@
         <!-- SUB-VIEW: JOBS -->
         <section id="view-jobs" class="hidden space-y-4">
             <!-- Header with Gradient -->
-            <div class="loc-hero h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-[#0b2a55]/80 via-[#1a1a1d] to-[#0f0f10]" data-loc="jobs" style="--hero-img: none;">
+            <div class="loc-hero h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-black/30 backdrop-blur-sm" data-loc="jobs" style="--hero-img: none;">
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(30,144,255,0.25),transparent_60%)]"></div>
                 <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#1E90FF]/60 to-transparent"></div>
                 <div class="absolute top-4 left-4">
@@ -1820,7 +1840,7 @@
 
         <!-- VIEW: DARK FOREST -->
         <section id="view-dark-forest" class="hidden space-y-4">
-            <div class="loc-hero h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-purple-950/80 via-[#1a1a1d] to-[#0f0f10]" data-loc="dark-forest" style="--hero-img: none;">
+            <div class="loc-hero h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-black/30 backdrop-blur-sm" data-loc="dark-forest" style="--hero-img: none;">
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(168,85,247,0.2),transparent_60%)]"></div>
                 <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-purple-500/50 to-transparent"></div>
                 <div class="absolute top-4 left-4">
@@ -1909,7 +1929,7 @@
 
         <!-- VIEW: TOWN SQUARE -->
         <section id="view-town-square" class="hidden space-y-4">
-            <div class="loc-hero h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-[#3b1f0b]/85 via-[#1a1a1d] to-[#0f0f10]" data-loc="town-square" style="--hero-img: none;">
+            <div class="loc-hero h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-black/30 backdrop-blur-sm" data-loc="town-square" style="--hero-img: none;">
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(139,69,19,0.25),transparent_60%)]"></div>
                 <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#8B4513]/60 to-transparent"></div>
                 <div class="absolute top-4 left-4">
@@ -1925,7 +1945,7 @@
                 </div>
             </div>
 
-            <div class="panel rounded-lg p-6 text-center space-y-4">
+            <div class="rounded-lg p-6 text-center space-y-4 border border-amber-700/30" >
                 <i class="fas fa-hands text-4xl text-gray-500"></i>
                 <div>
                     <p class="text-sm text-[#e0e0e0]">Вы стоите посреди людной площади.</p>
@@ -1938,7 +1958,7 @@
 
                 <!-- Bulletin Board - Large Button -->
                 <div class="mt-4">
-                    <button onclick="router.navigate('bulletin')" class="panel w-full p-0 rounded-lg overflow-hidden group hover:border-amber-500 transition-all relative h-24">
+                    <button onclick="router.navigate('bulletin')" class="w-full p-0 rounded-lg overflow-hidden group hover:border-amber-500 transition-all relative h-24 border border-amber-700/30" >
                         <img src="https://i.postimg.cc/BbHX1G86/IMG-4606.jpg" alt="Bulletin Board" class="absolute inset-0 w-full h-full object-cover opacity-30">
                         <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80"></div>
                         <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(217,119,6,0.2),transparent_60%)]"></div>
@@ -1959,7 +1979,7 @@
                 
                 <!-- Book House Button -->
                 <div class="mt-4">
-                     <button onclick="router.navigate('bookhouse')" class="panel w-full p-0 rounded-lg overflow-hidden group hover:border-blue-500 transition-all relative h-20">
+                     <button onclick="router.navigate('bookhouse')" class="w-full p-0 rounded-lg overflow-hidden group hover:border-blue-500 transition-all relative h-20 border border-blue-700/30" >
                         <img src="https://i.postimg.cc/s2jDDh9j/IMG-4603.jpg" alt="Book House" class="absolute inset-0 w-full h-full object-cover opacity-30">
                         <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80"></div>
                         <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(59,130,246,0.18),transparent_60%)]"></div>
@@ -1980,7 +2000,7 @@
 
                 <!-- Tailor Button -->
                 <div class="mt-3">
-                    <button onclick="router.navigate('tailor')" class="panel w-full p-0 rounded-lg overflow-hidden group hover:border-pink-500 transition-all relative h-20">
+                    <button onclick="router.navigate('tailor')" class="w-full p-0 rounded-lg overflow-hidden group hover:border-pink-500 transition-all relative h-20 border border-pink-700/30" >
                         <img src="https://i.postimg.cc/s1C3FQDt/IMG-4604.jpg" alt="Tailor Workshop" class="absolute inset-0 w-full h-full object-cover opacity-30">
                         <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80"></div>
                         <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(236,72,153,0.18),transparent_60%)]"></div>
@@ -2001,7 +2021,7 @@
 
                 <!-- Shoemaker Button -->
                 <div class="mt-3">
-                    <button onclick="router.navigate('shoemaker')" class="panel w-full p-0 rounded-lg overflow-hidden group hover:border-amber-500 transition-all relative h-20">
+                    <button onclick="router.navigate('shoemaker')" class="w-full p-0 rounded-lg overflow-hidden group hover:border-amber-500 transition-all relative h-20 border border-amber-700/30" >
                         <img src="https://i.postimg.cc/MpxjVXmz/IMG-4605.jpg" alt="Shoemaker Workshop" class="absolute inset-0 w-full h-full object-cover opacity-30">
                         <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80"></div>
                         <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(217,119,6,0.2),transparent_60%)]"></div>
@@ -2158,7 +2178,7 @@
             </div>
 
             <!-- Tailor NPC -->
-            <div class="panel p-4 rounded-lg border-pink-500/40 bg-gradient-to-br from-pink-900/80 via-[#1a1a1d] to-[#0f0f10] mb-4">
+            <div class="panel p-4 rounded-lg border-pink-500/40 bg-black/30 backdrop-blur-sm mb-4">
                 <div class="flex items-center gap-3">
                     <div class="w-12 h-12 rounded-full border border-pink-500 bg-[#222] flex items-center justify-center">
                         <i class="fas fa-scissors text-pink-400"></i>
@@ -2248,7 +2268,7 @@
             </div>
 
             <!-- Shoemaker NPC -->
-            <div class="panel p-4 rounded-lg border-amber-500/40 bg-gradient-to-br from-amber-900/80 via-[#1a1a1d] to-[#0f0f10] mb-4">
+            <div class="panel p-4 rounded-lg border-amber-500/40 bg-black/30 backdrop-blur-sm mb-4">
                 <div class="flex items-center gap-3">
                     <div class="w-12 h-12 rounded-full border border-amber-500 bg-[#222] flex items-center justify-center">
                         <i class="fas fa-shoe-prints text-amber-400"></i>
@@ -2346,7 +2366,7 @@
             </div>
 
             <!-- Book House NPC -->
-            <div class="panel p-4 rounded-lg border-blue-500/40 bg-gradient-to-br from-blue-900/80 via-[#1a1a1d] to-[#0f0f10] mb-4">
+            <div class="panel p-4 rounded-lg border-blue-500/40 bg-black/30 backdrop-blur-sm mb-4">
                 <div class="flex items-center gap-3">
                     <div class="w-12 h-12 rounded-full border border-pink-500 bg-[#222] flex items-center justify-center">
                         <i class="fas fa-feather text-pink-400 text-lg"></i>
@@ -2440,7 +2460,7 @@
 
         <!-- VIEW: HEALER -->
         <section id="view-healer" class="hidden space-y-4">
-            <div class="loc-hero h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-red-950/80 via-[#1a1a1d] to-[#0f0f10]" data-loc="healer" style="--hero-img: none;">
+            <div class="loc-hero h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-black/30 backdrop-blur-sm" data-loc="healer" style="--hero-img: none;">
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(239,68,68,0.15),transparent_60%)]"></div>
                 <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-red-500/50 to-transparent"></div>
                 <div class="absolute top-4 left-4">
@@ -2457,7 +2477,7 @@
             </div>
 
             <!-- NPC Marius -->
-            <div class="panel p-4 rounded-lg border-red-500/40 bg-gradient-to-br from-red-900/80 via-[#1a1a1d] to-[#0f0f10] mb-4">
+            <div class="panel p-4 rounded-lg border-red-500/40 bg-black/30 backdrop-blur-sm mb-4">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 rounded-full border-2 border-red-500 bg-[#222] flex items-center justify-center shadow-[0_0_10px_rgba(239,68,68,0.3)]">
@@ -2547,7 +2567,7 @@
 
         <!-- VIEW: TREASURY -->
         <section id="view-treasury" class="hidden space-y-4">
-            <div class="loc-hero h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-yellow-950/80 via-[#1a1a1d] to-[#0f0f10]" data-loc="treasury" style="--hero-img: none;">
+            <div class="loc-hero h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-black/30 backdrop-blur-sm" data-loc="treasury" style="--hero-img: none;">
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(234,179,8,0.2),transparent_60%)]"></div>
                 <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent"></div>
                 <div class="absolute top-4 left-4">
@@ -2564,7 +2584,7 @@
             </div>
 
             <!-- Banker Hank NPC -->
-            <div class="panel p-4 rounded-lg border-yellow-900/40 bg-gradient-to-br from-yellow-900/20 via-[#1a1a1d] to-[#0f0f10] mb-4">
+            <div class="panel p-4 rounded-lg border-yellow-900/40 bg-black/30 backdrop-blur-sm mb-4">
                 <div class="flex items-center justify-between border-b border-[#333] pb-3 mb-3">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 rounded-full border-2 border-yellow-500 bg-[#222] flex items-center justify-center shadow-[0_0_10px_rgba(234,179,8,0.3)]">
@@ -2655,7 +2675,7 @@
 
         <!-- VIEW: TAVERN -->
         <section id="view-tavern" class="hidden space-y-4">
-            <div class="loc-hero h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-orange-950/80 via-[#1a1a1d] to-[#0f0f10]" data-loc="tavern" style="--hero-img: none;">
+            <div class="loc-hero h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-black/30 backdrop-blur-sm" data-loc="tavern" style="--hero-img: none;">
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(249,115,22,0.2),transparent_60%)]"></div>
                 <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-orange-500/50 to-transparent"></div>
                 <div class="absolute top-4 left-4">
@@ -2672,7 +2692,7 @@
             </div>
 
             <!-- Tavern NPC -->
-            <div class="panel p-4 rounded-lg border-orange-500/40 bg-gradient-to-br from-orange-900/80 via-[#1a1a1d] to-[#0f0f10] mb-4">
+            <div class="panel p-4 rounded-lg border-orange-500/40 bg-black/30 backdrop-blur-sm mb-4">
                 <div class="flex items-center gap-3">
                     <div class="w-12 h-12 rounded-full border-2 border-orange-500 bg-[#222] flex items-center justify-center shadow-[0_0_10px_rgba(249,115,22,0.3)]">
                         <i class="fas fa-wine-glass text-orange-400 text-lg"></i>
@@ -2688,7 +2708,7 @@
             </div>
 
             <!-- Rent Room -->
-            <div class="panel rounded-lg p-4 relative overflow-hidden bg-gradient-to-br from-amber-900/30 via-[#1a1a1d] to-[#0f0f10] border border-amber-700/40">
+            <div class="panel rounded-lg p-4 relative overflow-hidden bg-black/30 backdrop-blur-sm border border-amber-700/40">
                 <!-- Background Image with Overlay -->
                 <div class="absolute inset-0 z-0">
                     <img src="https://i.postimg.cc/brsZYtPY/IMG-4601.jpg" alt="Tavern Room" class="w-full h-full object-cover opacity-25">
@@ -2730,7 +2750,7 @@
             </div>
 
             <!-- Brawl Night -->
-            <div class="panel rounded-lg p-4 relative overflow-hidden border-orange-700/40 bg-gradient-to-br from-orange-900/30 via-[#1a1a1d] to-[#0f0f10]">
+            <div class="panel rounded-lg p-4 relative overflow-hidden border-orange-700/40 bg-black/30 backdrop-blur-sm">
                 <!-- Background Image with Overlay -->
                 <div class="absolute inset-0 z-0">
                     <img src="https://i.postimg.cc/B6wvznFS/IMG-4602.jpg" alt="Brawl Fight" class="w-full h-full object-cover opacity-25">
@@ -2892,7 +2912,7 @@
 
         <!-- VIEW: MARKET -->
         <section id="view-market" class="hidden space-y-4">
-            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-amber-950/80 via-[#1a1a1d] to-[#0f0f10]">
+            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-black/30 backdrop-blur-sm">
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(217,119,6,0.15),transparent_60%)]"></div>
                 <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent"></div>
                 <div class="absolute top-1/2 left-4 -translate-y-1/2 flex items-center gap-4">
@@ -2904,7 +2924,7 @@
             </div>
 
             <!-- Market NPC -->
-            <div class="panel p-4 rounded-lg border-gray-500/40 bg-gradient-to-br from-gray-900/80 via-[#1a1a1d] to-[#0f0f10] mb-4">
+            <div class="p-4 rounded-lg border-gray-500/40 mb-4" >
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 rounded-full border-2 border-gray-500 bg-[#222] flex items-center justify-center shadow-[0_0_10px_rgba(107,114,128,0.3)]">
@@ -2932,7 +2952,7 @@
             <!-- Content: Tools -->
             <div id="market-tools" class="space-y-3">
                 <!-- Rod -->
-                <div class="market-item-card panel p-3 rounded flex items-center justify-between">
+                <div class="market-item-card p-3 rounded flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-900/60 to-amber-950 border-2 border-amber-500/60 flex items-center justify-center shadow-[0_0_10px_rgba(217,119,6,0.3)]">
                             <svg class="w-6 h-6 text-[#c8aa6e]" viewBox="0 0 24 24"><use href="#icon-rod"></use></svg>
@@ -2948,7 +2968,7 @@
                     </button>
                 </div>
                 <!-- Sickle -->
-                <div class="market-item-card panel p-3 rounded flex items-center justify-between">
+                <div class="market-item-card p-3 rounded flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-900/60 to-amber-950 border-2 border-amber-500/60 flex items-center justify-center shadow-[0_0_10px_rgba(217,119,6,0.3)]">
                             <svg class="w-6 h-6 text-[#c8aa6e]" viewBox="0 0 24 24"><use href="#icon-sickle"></use></svg>
@@ -2964,7 +2984,7 @@
                     </button>
                 </div>
                 <!-- Pickaxe -->
-                <div class="market-item-card panel p-3 rounded flex items-center justify-between">
+                <div class="market-item-card p-3 rounded flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-900/60 to-amber-950 border-2 border-amber-500/60 flex items-center justify-center shadow-[0_0_10px_rgba(217,119,6,0.3)]">
                             <i class="fas fa-person-digging"></i>
@@ -2980,7 +3000,7 @@
                     </button>
                 </div>
                  <!-- Crossbow -->
-                 <div class="market-item-card panel p-3 rounded flex items-center justify-between">
+                 <div class="market-item-card p-3 rounded flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-900/60 to-amber-950 border-2 border-amber-500/60 flex items-center justify-center shadow-[0_0_10px_rgba(217,119,6,0.3)]">
                             <svg class="w-6 h-6 text-[#c8aa6e] mx-auto" viewBox="0 0 512.001 512.001" preserveAspectRatio="xMidYMid meet"><use href="#icon-crossbow"></use></svg>
@@ -2996,7 +3016,7 @@
                     </button>
                 </div>
                 <!-- Sword -->
-                 <div class="market-item-card panel p-3 rounded flex items-center justify-between">
+                 <div class="market-item-card p-3 rounded flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-900/60 to-amber-950 border-2 border-amber-500/60 flex items-center justify-center shadow-[0_0_10px_rgba(217,119,6,0.3)]">
                             <i class="fas fa-khanda"></i>
@@ -3016,7 +3036,7 @@
             <!-- Content: Weapons (Swords) -->
             <div id="market-weapons" class="hidden space-y-3">
                 <!-- Wooden Sword -->
-                <div class="market-item-card panel p-3 rounded flex items-center justify-between">
+                <div class="market-item-card p-3 rounded flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-800/60 to-amber-950 border-2 border-amber-600/60 flex items-center justify-center shadow-[0_0_10px_rgba(217,119,6,0.3)]">
                             <i class="fas fa-splotch text-2xl"></i>
@@ -3032,7 +3052,7 @@
                 </div>
                 
                 <!-- Stone Sword -->
-                <div class="market-item-card panel p-3 rounded flex items-center justify-between">
+                <div class="market-item-card p-3 rounded flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 rounded-full bg-gradient-to-br from-gray-700/60 to-gray-900 border-2 border-gray-500/60 flex items-center justify-center shadow-[0_0_10px_rgba(107,114,128,0.3)]">
                             <i class="fas fa-monument text-2xl"></i>
@@ -3048,7 +3068,7 @@
                 </div>
                 
                 <!-- Metal Sword -->
-                <div class="market-item-card panel p-3 rounded flex items-center justify-between">
+                <div class="market-item-card p-3 rounded flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-800/60 to-blue-950 border-2 border-blue-500/60 flex items-center justify-center shadow-[0_0_10px_rgba(59,130,246,0.3)]">
                             <i class="fas fa-khanda text-2xl"></i>
@@ -3064,7 +3084,7 @@
                 </div>
                 
                 <!-- Steel Sword -->
-                <div class="market-item-card panel p-3 rounded flex items-center justify-between">
+                <div class="market-item-card p-3 rounded flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-800/60 to-cyan-950 border-2 border-cyan-500/60 flex items-center justify-center shadow-[0_0_10px_rgba(6,182,212,0.3)]">
                             <i class="fas fa-sword text-2xl"></i>
@@ -3099,7 +3119,7 @@
             <!-- Content: Armor -->
             <div id="market-armor" class="hidden space-y-3">
                 <!-- Leather Armor -->
-                <div class="market-item-card panel p-3 rounded flex items-center justify-between">
+                <div class="market-item-card p-3 rounded flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-800/60 to-amber-950 border-2 border-amber-600/60 flex items-center justify-center shadow-[0_0_10px_rgba(217,119,6,0.3)]">
                             <i class="fas fa-vest text-2xl"></i>
@@ -3115,7 +3135,7 @@
                 </div>
                 
                 <!-- Improved Leather -->
-                <div class="market-item-card panel p-3 rounded flex items-center justify-between">
+                <div class="market-item-card p-3 rounded flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 bg-[#222] border border-[#333] rounded flex items-center justify-center text-amber-600">
                             <i class="fas fa-vest-patches text-2xl"></i>
@@ -3131,7 +3151,7 @@
                 </div>
                 
                 <!-- Chainmail -->
-                <div class="market-item-card panel p-3 rounded flex items-center justify-between">
+                <div class="market-item-card p-3 rounded flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 bg-[#222] border border-[#333] rounded flex items-center justify-center text-gray-400">
                             <i class="fas fa-user-shield text-2xl"></i>
@@ -3147,7 +3167,7 @@
                 </div>
                 
                 <!-- Iron Armor -->
-                <div class="market-item-card panel p-3 rounded flex items-center justify-between">
+                <div class="market-item-card p-3 rounded flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 bg-[#222] border border-[#333] rounded flex items-center justify-center text-blue-300">
                             <i class="fas fa-shield text-2xl"></i>
@@ -3187,7 +3207,7 @@
             </div>
 
             <!-- Resources Trade -->
-            <div class="panel rounded-lg p-4 mt-4">
+            <div class="rounded-lg p-4 mt-4 border border-amber-700/30" >
                 <div class="flex items-center justify-between mb-3">
                     <h3 class="medieval-font text-sm text-[#c8aa6e]">Материалы</h3>
                     <div class="flex gap-2">
@@ -3197,91 +3217,91 @@
                 </div>
 
                 <div id="market-trade-grid" class="grid grid-cols-2 gap-3">
-                    <div class="panel p-2 rounded flex flex-col items-center text-center border-blue-900/30 bg-blue-900/10">
+                    <div class="p-2 rounded flex flex-col items-center text-center border-blue-900/30" >
                         <i class="fas fa-fish text-[#c8aa6e] mb-1"></i>
                         <div class="text-xs text-[#e0e0e0]">Рыба</div>
                         <div class="text-[10px] text-[#a0a0a0] mb-1"><span id="price-fish">5</span> <i class="fas fa-coins"></i></div>
                         <div class="text-[10px] text-blue-300 mb-1">У вас: <span id="market-count-fish">0</span></div>
                         <div class="flex gap-1 w-full mb-1">
                             <input id="trade-input-fish" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#333] text-center text-[10px] text-white rounded p-0 outline-none focus:border-[#c8aa6e]">
-                            <button onclick="market.setMax('fish')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
+                            <button onclick="market.setMax('fish')" class="w-auto px-2 border border-[#444] rounded text-[10px] text-gray-400 hover:text-white" >Max</button>
                         </div>
                         <button onclick="market.sellFromInput('fish')" id="btn-trade-fish" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-amber-900/20 transition-colors">Продать</button>
                     </div>
-                    <div class="panel p-2 rounded flex flex-col items-center text-center border-yellow-900/30 bg-yellow-900/10">
+                    <div class="p-2 rounded flex flex-col items-center text-center border-yellow-900/30" >
                         <i class="fas fa-wheat-awn text-[#c8aa6e] mb-1"></i>
                         <div class="text-xs text-[#e0e0e0]">Пшеница</div>
                         <div class="text-[10px] text-[#a0a0a0] mb-1"><span id="price-wheat">15</span> <i class="fas fa-coins"></i></div>
                         <div class="text-[10px] text-blue-300 mb-1">У вас: <span id="market-count-wheat">0</span></div>
                         <div class="flex gap-1 w-full mb-1">
                             <input id="trade-input-wheat" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#333] text-center text-[10px] text-white rounded p-0 outline-none focus:border-[#c8aa6e]">
-                            <button onclick="market.setMax('wheat')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
+                            <button onclick="market.setMax('wheat')" class="w-auto px-2 border border-[#444] rounded text-[10px] text-gray-400 hover:text-white" >Max</button>
                         </div>
                         <button onclick="market.sellFromInput('wheat')" id="btn-trade-wheat" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-amber-900/20 transition-colors">Продать</button>
                     </div>
-                    <div class="panel p-2 rounded flex flex-col items-center text-center border-gray-700/30 bg-gray-700/10">
+                    <div class="p-2 rounded flex flex-col items-center text-center border-gray-700/30" >
                         <i class="fas fa-cube text-[#c8aa6e] mb-1"></i>
                         <div class="text-xs text-[#e0e0e0]">Руда</div>
                         <div class="text-[10px] text-[#a0a0a0] mb-1"><span id="price-ore">40</span> <i class="fas fa-coins"></i></div>
                         <div class="text-[10px] text-blue-300 mb-1">У вас: <span id="market-count-ore">0</span></div>
                         <div class="flex gap-1 w-full mb-1">
                             <input id="trade-input-ore" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#333] text-center text-[10px] text-white rounded p-0 outline-none focus:border-[#c8aa6e]">
-                            <button onclick="market.setMax('ore')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
+                            <button onclick="market.setMax('ore')" class="w-auto px-2 border border-[#444] rounded text-[10px] text-gray-400 hover:text-white" >Max</button>
                         </div>
                         <button onclick="market.sellFromInput('ore')" id="btn-trade-ore" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-amber-900/20 transition-colors">Продать</button>
                     </div>
-                    <div class="panel p-2 rounded flex flex-col items-center text-center border-red-900/30 bg-red-900/10">
+                    <div class="p-2 rounded flex flex-col items-center text-center border-red-900/30" >
                         <i class="fas fa-scroll text-[#c8aa6e] mb-1"></i>
                         <div class="text-xs text-[#e0e0e0]">Кожа</div>
                         <div class="text-[10px] text-[#a0a0a0] mb-1"><span id="price-leather">100</span> <i class="fas fa-coins"></i></div>
                         <div class="text-[10px] text-blue-300 mb-1">У вас: <span id="market-count-leather">0</span></div>
                         <div class="flex gap-1 w-full mb-1">
                             <input id="trade-input-leather" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#333] text-center text-[10px] text-white rounded p-0 outline-none focus:border-[#c8aa6e]">
-                            <button onclick="market.setMax('leather')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
+                            <button onclick="market.setMax('leather')" class="w-auto px-2 border border-[#444] rounded text-[10px] text-gray-400 hover:text-white" >Max</button>
                         </div>
                         <button onclick="market.sellFromInput('leather')" id="btn-trade-leather" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-amber-900/20 transition-colors">Продать</button>
                     </div>
-                    <div class="panel p-2 rounded flex flex-col items-center text-center border-amber-900/30 bg-amber-900/10">
+                    <div class="p-2 rounded flex flex-col items-center text-center border-amber-900/30" >
                         <i class="fas fa-tree text-[#c8aa6e] mb-1"></i>
                         <div class="text-xs text-[#e0e0e0]">Палки</div>
                         <div class="text-[10px] text-[#a0a0a0] mb-1"><span id="price-wood">5</span> <i class="fas fa-coins"></i></div>
                         <div class="text-[10px] text-blue-300 mb-1">У вас: <span id="market-count-wood">0</span></div>
                         <div class="flex gap-1 w-full mb-1">
                             <input id="trade-input-wood" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#333] text-center text-[10px] text-white rounded p-0 outline-none focus:border-[#c8aa6e]">
-                            <button onclick="market.setMax('wood')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
+                            <button onclick="market.setMax('wood')" class="w-auto px-2 border border-[#444] rounded text-[10px] text-gray-400 hover:text-white" >Max</button>
                         </div>
                         <button onclick="market.sellFromInput('wood')" id="btn-trade-wood" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-amber-900/20 transition-colors">Продать</button>
                     </div>
-                    <div class="panel p-2 rounded flex flex-col items-center text-center border-gray-600/30 bg-gray-600/10">
+                    <div class="p-2 rounded flex flex-col items-center text-center border-gray-600/30" >
                         <i class="fas fa-shapes text-gray-400 mb-1"></i>
                         <div class="text-xs text-[#e0e0e0]">Камни</div>
                         <div class="text-[10px] text-[#a0a0a0] mb-1"><span id="price-stone">5</span> <i class="fas fa-coins"></i></div>
                         <div class="text-[10px] text-blue-300 mb-1">У вас: <span id="market-count-stone">0</span></div>
                         <div class="flex gap-1 w-full mb-1">
                             <input id="trade-input-stone" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#333] text-center text-[10px] text-white rounded p-0 outline-none focus:border-[#c8aa6e]">
-                            <button onclick="market.setMax('stone')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
+                            <button onclick="market.setMax('stone')" class="w-auto px-2 border border-[#444] rounded text-[10px] text-gray-400 hover:text-white" >Max</button>
                         </div>
                         <button onclick="market.sellFromInput('stone')" id="btn-trade-stone" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-amber-900/20 transition-colors">Продать</button>
                     </div>
-                    <div class="panel p-2 rounded flex flex-col items-center text-center border-green-900/30 bg-green-900/10">
+                    <div class="p-2 rounded flex flex-col items-center text-center border-green-900/30" >
                         <i class="fas fa-leaf text-green-400 mb-1"></i>
                         <div class="text-xs text-[#e0e0e0]">Травы</div>
                         <div class="text-[10px] text-[#a0a0a0] mb-1"><span id="price-herbs">10</span> <i class="fas fa-coins"></i></div>
                         <div class="text-[10px] text-blue-300 mb-1">У вас: <span id="market-count-herbs">0</span></div>
                         <div class="flex gap-1 w-full mb-1">
                             <input id="trade-input-herbs" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#333] text-center text-[10px] text-white rounded p-0 outline-none focus:border-[#c8aa6e]">
-                            <button onclick="market.setMax('herbs')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
+                            <button onclick="market.setMax('herbs')" class="w-auto px-2 border border-[#444] rounded text-[10px] text-gray-400 hover:text-white" >Max</button>
                         </div>
                         <button onclick="market.sellFromInput('herbs')" id="btn-trade-herbs" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-amber-900/20 transition-colors">Продать</button>
                     </div>
-                    <div class="panel p-2 rounded flex flex-col items-center text-center border-purple-900/30 bg-purple-900/10">
+                    <div class="p-2 rounded flex flex-col items-center text-center border-purple-900/30" >
                         <i class="fas fa-spider text-purple-400 mb-1"></i>
                         <div class="text-xs text-[#e0e0e0]">Грибы</div>
                         <div class="text-[10px] text-[#a0a0a0] mb-1"><span id="price-mushrooms">25</span> <i class="fas fa-coins"></i></div>
                         <div class="text-[10px] text-blue-300 mb-1">У вас: <span id="market-count-mushrooms">0</span></div>
                         <div class="flex gap-1 w-full mb-1">
                             <input id="trade-input-mushrooms" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#333] text-center text-[10px] text-white rounded p-0 outline-none focus:border-[#c8aa6e]">
-                            <button onclick="market.setMax('mushrooms')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
+                            <button onclick="market.setMax('mushrooms')" class="w-auto px-2 border border-[#444] rounded text-[10px] text-gray-400 hover:text-white" >Max</button>
                         </div>
                         <button onclick="market.sellFromInput('mushrooms')" id="btn-trade-mushrooms" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-amber-900/20 transition-colors">Продать</button>
                     </div>
@@ -3292,7 +3312,7 @@
 
         <!-- VIEW: LIVESTOCK TRADER -->
         <section id="view-livestock-trader" class="hidden space-y-4">
-            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-emerald-950/80 via-[#1a1a1d] to-[#0f0f10]">
+            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-black/30 backdrop-blur-sm">
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(16,185,129,0.18),transparent_60%)]"></div>
                 <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent"></div>
                 <div class="absolute top-4 left-4">
@@ -3343,7 +3363,7 @@
                             </div>
                             <div class="text-sm text-yellow-400 font-bold">4,000 <i class="fas fa-coins"></i></div>
                         </div>
-                        <button onclick="livestock.buyAnimal('rabbit')" class="btn-medieval w-full py-1.5 rounded text-[10px]">Купить</button>
+                        <button onclick="livestock.buyAnimal('rabbit')" class="w-full py-1.5 rounded text-[10px] text-emerald-300 border border-emerald-700/40 hover:bg-emerald-900/30 transition-all" >Купить</button>
                     </div>
 
                     <div class="market-item-card border rounded p-3">
@@ -3357,7 +3377,7 @@
                             </div>
                             <div class="text-sm text-yellow-400 font-bold">5,000 <i class="fas fa-coins"></i></div>
                         </div>
-                        <button onclick="livestock.buyAnimal('chicken')" class="btn-medieval w-full py-1.5 rounded text-[10px]">Купить</button>
+                        <button onclick="livestock.buyAnimal('chicken')" class="w-full py-1.5 rounded text-[10px] text-emerald-300 border border-emerald-700/40 hover:bg-emerald-900/30 transition-all" >Купить</button>
                     </div>
 
                     <div class="market-item-card border rounded p-3">
@@ -3371,7 +3391,7 @@
                             </div>
                             <div class="text-sm text-yellow-400 font-bold">10,000 <i class="fas fa-coins"></i></div>
                         </div>
-                        <button onclick="livestock.buyAnimal('pig')" class="btn-medieval w-full py-1.5 rounded text-[10px]">Купить</button>
+                        <button onclick="livestock.buyAnimal('pig')" class="w-full py-1.5 rounded text-[10px] text-emerald-300 border border-emerald-700/40 hover:bg-emerald-900/30 transition-all" >Купить</button>
                     </div>
 
                     <div class="market-item-card border rounded p-3">
@@ -3385,7 +3405,7 @@
                             </div>
                             <div class="text-sm text-yellow-400 font-bold">50,000 <i class="fas fa-coins"></i></div>
                         </div>
-                        <button onclick="livestock.buyAnimal('cow')" class="btn-medieval w-full py-1.5 rounded text-[10px]">Купить</button>
+                        <button onclick="livestock.buyAnimal('cow')" class="w-full py-1.5 rounded text-[10px] text-emerald-300 border border-emerald-700/40 hover:bg-emerald-900/30 transition-all" >Купить</button>
                     </div>
 
                     <!-- Horses Section -->
@@ -3404,7 +3424,7 @@
                                 </div>
                                 <div class="text-sm text-yellow-400 font-bold">150,000 <i class="fas fa-coins"></i></div>
                             </div>
-                            <button onclick="livestock.buyHorse('arabian')" class="btn-medieval w-full py-1.5 rounded text-[10px]">Купить</button>
+                            <button onclick="livestock.buyHorse('arabian')" class="w-full py-1.5 rounded text-[10px] text-emerald-300 border border-emerald-700/40 hover:bg-emerald-900/30 transition-all" >Купить</button>
                         </div>
 
                         <!-- Thoroughbred -->
@@ -3419,7 +3439,7 @@
                                 </div>
                                 <div class="text-sm text-yellow-400 font-bold">120,000 <i class="fas fa-coins"></i></div>
                             </div>
-                            <button onclick="livestock.buyHorse('thoroughbred')" class="btn-medieval w-full py-1.5 rounded text-[10px]">Купить</button>
+                            <button onclick="livestock.buyHorse('thoroughbred')" class="w-full py-1.5 rounded text-[10px] text-emerald-300 border border-emerald-700/40 hover:bg-emerald-900/30 transition-all" >Купить</button>
                         </div>
 
                         <!-- Draft -->
@@ -3434,7 +3454,7 @@
                                 </div>
                                 <div class="text-sm text-yellow-400 font-bold">80,000 <i class="fas fa-coins"></i></div>
                             </div>
-                            <button onclick="livestock.buyHorse('draft')" class="btn-medieval w-full py-1.5 rounded text-[10px]">Купить</button>
+                            <button onclick="livestock.buyHorse('draft')" class="w-full py-1.5 rounded text-[10px] text-emerald-300 border border-emerald-700/40 hover:bg-emerald-900/30 transition-all" >Купить</button>
                         </div>
                         
                          <!-- Pony -->
@@ -3449,7 +3469,7 @@
                                 </div>
                                 <div class="text-sm text-yellow-400 font-bold">30,000 <i class="fas fa-coins"></i></div>
                             </div>
-                            <button onclick="livestock.buyHorse('pony')" class="btn-medieval w-full py-1.5 rounded text-[10px]">Купить</button>
+                            <button onclick="livestock.buyHorse('pony')" class="w-full py-1.5 rounded text-[10px] text-emerald-300 border border-emerald-700/40 hover:bg-emerald-900/30 transition-all" >Купить</button>
                         </div>
 
                         <!-- Mustang -->
@@ -3464,7 +3484,7 @@
                                 </div>
                                 <div class="text-sm text-yellow-400 font-bold">90,000 <i class="fas fa-coins"></i></div>
                             </div>
-                            <button onclick="livestock.buyHorse('mustang')" class="btn-medieval w-full py-1.5 rounded text-[10px]">Купить</button>
+                            <button onclick="livestock.buyHorse('mustang')" class="w-full py-1.5 rounded text-[10px] text-emerald-300 border border-emerald-700/40 hover:bg-emerald-900/30 transition-all" >Купить</button>
                         </div>
 
                         <!-- Warhorse -->
@@ -3479,7 +3499,7 @@
                                 </div>
                                 <div class="text-sm text-yellow-400 font-bold">250,000 <i class="fas fa-coins"></i></div>
                             </div>
-                            <button onclick="livestock.buyHorse('warhorse')" class="btn-medieval w-full py-1.5 rounded text-[10px]">Купить</button>
+                            <button onclick="livestock.buyHorse('warhorse')" class="w-full py-1.5 rounded text-[10px] text-emerald-300 border border-emerald-700/40 hover:bg-emerald-900/30 transition-all" >Купить</button>
                         </div>
                     </div>
                 </div>
@@ -3487,9 +3507,9 @@
                 <div class="space-y-3">
                     <h3 class="text-xs text-[#777] uppercase border-b border-[#333] pb-1">Корм</h3>
                     <div class="grid grid-cols-1 gap-2">
-                        <button onclick="livestock.buyFeed('feed')" class="panel p-3 rounded bg-black/20 border border-[#333] text-center">
+                        <button onclick="livestock.buyFeed('feed')" class="p-3 rounded text-center border border-emerald-700/40 hover:bg-emerald-900/30 transition-all" >
                             <i class="fas fa-carrot text-orange-300 text-2xl"></i>
-                            <div class="text-sm text-[#e0e0e0] mt-2 font-bold">Корм</div>
+                            <div class="text-sm text-emerald-300 mt-2 font-bold">Корм</div>
                             <div class="text-xs text-yellow-500 mt-1">20 <i class="fas fa-coins"></i></div>
                         </button>
                     </div>
@@ -3500,7 +3520,7 @@
 
         <!-- VIEW: VILLAGE -->
         <section id="view-village" class="hidden space-y-4">
-            <div class="loc-hero h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-[#0b2b17]/85 via-[#1a1a1d] to-[#0f0f10]" data-loc="village" style="--hero-img: none;">
+            <div class="loc-hero h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-black/30 backdrop-blur-sm" data-loc="village" style="--hero-img: none;">
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(0,128,0,0.25),transparent_60%)]"></div>
                 <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#008000]/60 to-transparent"></div>
                 <div class="absolute top-4 left-4">
@@ -3615,12 +3635,10 @@
             </div>
 
             <!-- Sage's House -->
-            <div class="panel p-4 rounded-lg border-indigo-500/40 space-y-3 relative overflow-hidden" style="background: linear-gradient(to bottom right, rgba(99, 102, 241, 0.15), rgba(26, 26, 29, 1), rgba(15, 15, 16, 1)), url('https://i.postimg.cc/KYjjDTKd/IMG-4607.jpg'); background-size: cover; background-position: center; background-blend-mode: overlay;">
-                <!-- Overlay -->
-                <div class="absolute inset-0 z-0 pointer-events-none">
-                    <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80"></div>
-                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(99,102,241,0.2),transparent_60%)]"></div>
-                </div>
+            <div class="p-4 rounded-lg border-indigo-500/40 space-y-3 relative" style="background: url('https://i.postimg.cc/KYjjDTKd/IMG-4607.jpg'); background-size: cover; background-position: center; box-shadow: inset 0 0 0 2000px rgba(0,0,0,0.75), 0 4px 6px rgba(0,0,0,0.3);">
+                <!-- Additional overlay for gradient effect -->
+                <div class="absolute inset-0 z-0 pointer-events-none" style="background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.5)); border-radius: 0.5rem;"></div>
+                <div class="absolute inset-0 z-0 pointer-events-none" style="background: radial-gradient(circle at 30% 30%, rgba(99,102,241,0.2), transparent 60%); border-radius: 0.5rem;"></div>
                 
                 <div class="relative z-10 flex items-center justify-between border-b border-indigo-500/30 pb-3">
                     <div class="flex items-center gap-3">
@@ -3697,18 +3715,16 @@
             </div>
 
             <!-- Fresh Bread Stall -->
-            <div class="panel rounded-lg p-4 space-y-3 relative overflow-hidden border border-amber-700/40" style="background: linear-gradient(to bottom right, rgba(120, 53, 15, 0.3), rgba(26, 26, 29, 1), rgba(15, 15, 16, 1)), url('https://i.postimg.cc/6QJnHYXF/IMG-4600.jpg'); background-size: cover; background-position: center; background-blend-mode: overlay;">
-                <!-- Overlay -->
-                <div class="absolute inset-0 z-0 pointer-events-none">
-                    <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80"></div>
-                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(217,119,6,0.2),transparent_60%)]"></div>
-                </div>
+            <div class="rounded-lg p-4 space-y-3 relative border border-amber-700/40" style="background: url('https://i.postimg.cc/6QJnHYXF/IMG-4600.jpg'); background-size: cover; background-position: center; box-shadow: inset 0 0 0 2000px rgba(0,0,0,0.7), 0 4px 6px rgba(0,0,0,0.3);">
+                <!-- Additional overlay for gradient effect -->
+                <div class="absolute inset-0 z-0 pointer-events-none" style="background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.4)); border-radius: 0.5rem;"></div>
+                <div class="absolute inset-0 z-0 pointer-events-none" style="background: radial-gradient(circle at 30% 30%, rgba(217,119,6,0.2), transparent 60%); border-radius: 0.5rem;"></div>
                 
                 <div class="relative z-10 flex items-center justify-between">
                     <h3 class="medieval-font text-lg text-amber-300"><i class="fas fa-bread-slice mr-2"></i>Ларёк со свежим хлебом</h3>
                 </div>
                 
-                <div class="relative z-10 panel p-3 rounded bg-amber-900/20 border border-amber-700/40 backdrop-blur-sm">
+                <div class="relative z-10 p-3 rounded bg-amber-900/20 border border-amber-700/40 backdrop-blur-sm">
                     <div class="flex items-center justify-between mb-2">
                         <div class="flex items-center gap-3">
                             <i class="fas fa-bread-slice text-4xl text-amber-400"></i>
@@ -3721,7 +3737,7 @@
                     <div class="flex items-center gap-2 mb-3 text-sm">
                         <span class="text-yellow-500">Цена: 20 <i class="fas fa-coins"></i></span>
                     </div>
-                    <button onclick="village.buyBread(event)" class="w-full py-2 rounded text-sm border border-amber-700/40 bg-black/30 text-amber-300 hover:bg-amber-900/20 backdrop-blur-sm">
+                    <button onclick="village.buyBread(event)" class="w-full py-2 rounded text-sm text-amber-300 border border-amber-700/40 hover:bg-amber-900/30 transition-all" >
                         Купить хлеб
                     </button>
                 </div>
@@ -3729,7 +3745,7 @@
 
             <!-- Livestock Farm (Unlocks at Level 10) -->
             <div class="mt-4">
-                <button id="livestock-farm-button" onclick="livestockFarm.tryOpen()" class="panel w-full p-4 rounded-lg flex items-center justify-between group transition-colors bg-gradient-to-br from-gray-900/20 via-[#1a1a1d] to-[#0f0f10] opacity-60">
+                <button id="livestock-farm-button" onclick="livestockFarm.tryOpen()" class="panel w-full p-4 rounded-lg flex items-center justify-between group transition-colors bg-black/30 backdrop-blur-sm opacity-60">
                     <div class="flex items-center gap-4">
                         <div id="livestock-farm-icon" class="w-14 h-14 rounded-full bg-gradient-to-br from-gray-800/60 to-gray-950 border-2 border-gray-600/60 flex items-center justify-center shadow-[0_0_15px_rgba(107,114,128,0.2)]">
                             <i class="fas fa-cow text-gray-500 text-2xl"></i>
@@ -3749,7 +3765,7 @@
 
         <!-- VIEW: LIVESTOCK FARM -->
         <section id="view-livestock-farm" class="hidden space-y-4">
-            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-green-950/80 via-[#1a1a1d] to-[#0f0f10]">
+            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-black/30 backdrop-blur-sm">
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(34,197,94,0.2),transparent_60%)]"></div>
                 <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-green-500/50 to-transparent"></div>
                 <div class="absolute top-4 left-4">
@@ -3862,7 +3878,7 @@
 
         <!-- VIEW: TRAINING CAMP -->
         <section id="view-training-camp" class="hidden space-y-4">
-            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-red-950/80 via-[#1a1a1d] to-[#0f0f10]">
+            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-black/30 backdrop-blur-sm">
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(220,38,38,0.2),transparent_60%)]"></div>
                 <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-red-600/50 to-transparent"></div>
                 <div class="absolute top-4 left-4">
@@ -3906,7 +3922,7 @@
 
         <!-- VIEW: MILITARY FORTRESS -->
         <section id="view-military-fortress" class="hidden space-y-4">
-            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-slate-950/80 via-[#1a1a1d] to-[#0f0f10]">
+            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-black/30 backdrop-blur-sm">
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(148,163,184,0.15),transparent_60%)]"></div>
                 <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-slate-500/50 to-transparent"></div>
                 <div class="absolute top-4 left-4">
@@ -3951,7 +3967,7 @@
 
         <!-- VIEW: ROYAL CASTLE -->
         <section id="view-royal-castle" class="hidden space-y-4">
-            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-indigo-950/80 via-[#1a1a1d] to-[#0f0f10]">
+            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-black/30 backdrop-blur-sm">
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(99,102,241,0.2),transparent_60%)]"></div>
                 <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent"></div>
                 <div class="absolute top-4 left-4">
@@ -3991,7 +4007,7 @@
 
         <!-- VIEW: POOR DISTRICT -->
         <section id="view-poor-district" class="hidden space-y-4">
-            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-stone-900/80 via-[#1a1a1d] to-[#0f0f10]">
+            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-black/30 backdrop-blur-sm">
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(120,113,108,0.15),transparent_60%)]"></div>
                 <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-stone-600/50 to-transparent"></div>
                 <div class="absolute top-4 left-4">
@@ -4013,8 +4029,12 @@
                 </div>
 
                 <!-- Дом Артура -->
-                <div class="panel p-4 rounded-lg border-[#c8aa6e]/40 bg-gradient-to-br from-[#2a2520]/80 via-[#1a1a1d] to-[#0f0f10] space-y-3">
-                    <div class="flex items-center justify-between border-b border-[#333] pb-3">
+                <div class="p-4 rounded-lg border-[#c8aa6e]/40 space-y-3 relative shadow-lg" style="background: url('https://i.postimg.cc/fkQt0tH5/IMG-4621.jpg'); background-size: cover; background-position: center; box-shadow: inset 0 0 0 2000px rgba(0,0,0,0.75), 0 4px 6px rgba(0,0,0,0.3);">
+                    <!-- Additional overlay for gradient effect -->
+                    <div class="absolute inset-0 z-0 pointer-events-none" style="background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.5)); border-radius: 0.5rem;"></div>
+                    <div class="absolute inset-0 z-0 pointer-events-none" style="background: radial-gradient(circle at 30% 30%, rgba(200,170,110,0.2), transparent 60%); border-radius: 0.5rem;"></div>
+                    
+                    <div class="relative z-10 flex items-center justify-between border-b border-[#333] pb-3">
                         <div class="flex items-center gap-3">
                             <div class="w-12 h-12 rounded-full border-2 border-[#c8aa6e] bg-[#222] flex items-center justify-center shadow-[0_0_10px_rgba(200,170,110,0.3)]">
                                 <i class="fas fa-user-tie text-[#c8aa6e] text-lg"></i>
@@ -4030,7 +4050,7 @@
                     </div>
 
                     <!-- Arthur's Shop -->
-                    <div class="space-y-2">
+                    <div class="relative z-10 space-y-2">
                         <h4 class="text-xs text-[#c8aa6e] uppercase tracking-wider font-bold">Зелья Артура</h4>
                         
                         <!-- XP Potion -->
@@ -4121,29 +4141,29 @@
                 </div>
 
                 <!-- Ларёк со свежим хлебом -->
-                <div class="panel rounded-lg p-4 space-y-3 relative overflow-hidden border border-amber-700/40" style="background: linear-gradient(to bottom right, rgba(120, 53, 15, 0.3), rgba(26, 26, 29, 1), rgba(15, 15, 16, 1)), url('https://i.postimg.cc/6QJnHYXF/IMG-4600.jpg'); background-size: cover; background-position: center; background-blend-mode: overlay;">
-                    <!-- Overlay -->
-                    <div class="absolute inset-0 z-0 pointer-events-none">
-                        <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80"></div>
-                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(217,119,6,0.2),transparent_60%)]"></div>
-                    </div>
+                <div class="rounded-lg p-4 space-y-3 relative border border-amber-700/40" style="background: url('https://i.postimg.cc/6QJnHYXF/IMG-4600.jpg'); background-size: cover; background-position: center; box-shadow: inset 0 0 0 2000px rgba(0,0,0,0.7), 0 4px 6px rgba(0,0,0,0.3);">
+                    <!-- Additional overlay for gradient effect -->
+                    <div class="absolute inset-0 z-0 pointer-events-none" style="background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.4)); border-radius: 0.5rem;"></div>
+                    <div class="absolute inset-0 z-0 pointer-events-none" style="background: radial-gradient(circle at 30% 30%, rgba(217,119,6,0.2), transparent 60%); border-radius: 0.5rem;"></div>
+                    
                     <div class="relative z-10 flex items-center justify-between">
-                        <h3 class="text-sm text-amber-300 font-bold"><i class="fas fa-bread-slice mr-2"></i>Ларёк со свежим хлебом</h3>
+                        <h3 class="medieval-font text-lg text-amber-300"><i class="fas fa-bread-slice mr-2"></i>Ларёк со свежим хлебом</h3>
                     </div>
-                    <div class="relative z-10 panel p-3 rounded bg-amber-900/20 border border-amber-700/40 backdrop-blur-sm">
+                    
+                    <div class="relative z-10 p-3 rounded bg-amber-900/20 border border-amber-700/40 backdrop-blur-sm">
                         <div class="flex items-center justify-between mb-2">
                             <div class="flex items-center gap-3">
-                                <i class="fas fa-bread-slice text-3xl text-amber-400"></i>
+                                <i class="fas fa-bread-slice text-4xl text-amber-400"></i>
                                 <div>
                                     <div class="text-base text-[#e0e0e0] font-bold medieval-font">Свежий хлеб</div>
                                     <div class="text-[10px] text-gray-400">Восстанавливает 20% голода</div>
                                 </div>
                             </div>
                         </div>
-                        <div class="flex items-center gap-2 text-sm">
+                        <div class="flex items-center gap-2 mb-3 text-sm">
                             <span class="text-yellow-500">Цена: 20 <i class="fas fa-coins"></i></span>
                         </div>
-                        <button onclick="poorDistrict.buyBread(event)" class="btn-ghost w-full py-2 rounded text-sm hover:bg-amber-900/20">
+                        <button onclick="poorDistrict.buyBread(event)" class="w-full py-2 rounded text-sm text-amber-300 border border-amber-700/40 hover:bg-amber-900/30 transition-all" >
                             Купить хлеб
                         </button>
                     </div>
@@ -4194,7 +4214,7 @@
 
         <!-- VIEW: NOBLE QUARTER -->
         <section id="view-noble-quarter" class="hidden space-y-4">
-            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-yellow-950/80 via-[#1a1a1d] to-[#0f0f10]">
+            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-black/30 backdrop-blur-sm">
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(234,179,8,0.2),transparent_60%)]"></div>
                 <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent"></div>
                 <div class="absolute top-4 left-4">
@@ -4271,7 +4291,7 @@
 
         <!-- VIEW: KNIGHT TOURNAMENT -->
         <section id="view-knight-tournament" class="hidden space-y-4">
-            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-amber-950/80 via-[#1a1a1d] to-[#0f0f10]">
+            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-black/30 backdrop-blur-sm">
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(217,119,6,0.2),transparent_60%)]"></div>
                 <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent"></div>
                 <div class="absolute top-4 left-4">
@@ -4293,7 +4313,7 @@
                 </div>
 
                 <!-- Tournament Master -->
-                <div class="panel p-4 rounded-lg border-amber-900/40 bg-gradient-to-br from-amber-950/60 via-[#1a1a1d] to-[#0f0f10] space-y-3">
+                <div class="panel p-4 rounded-lg border-amber-900/40 bg-black/30 backdrop-blur-sm space-y-3">
                     <div class="flex items-center justify-between border-b border-amber-900/30 pb-3">
                         <div class="flex items-center gap-3">
                             <div class="w-12 h-12 rounded-full border-2 border-amber-600 bg-[#222] flex items-center justify-center shadow-[0_0_10px_rgba(217,119,6,0.3)]">
@@ -4304,7 +4324,7 @@
                                 <div class="text-[10px] text-amber-400/60">Организатор состязаний</div>
                             </div>
                         </div>
-                        <button onclick="ui.showFloatText(this, 'Скоро...', '#c8aa6e')" class="btn-medieval px-4 py-2 rounded text-xs">
+                        <button onclick="dialogue.start('tournamentmaster')" class="btn-medieval px-4 py-2 rounded text-xs">
                             Говорить
                         </button>
                     </div>
@@ -4427,7 +4447,7 @@
 
         <!-- VIEW: REFUGEE CAMP -->
         <section id="view-refugee-camp" class="hidden space-y-4">
-            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-slate-900/80 via-[#1a1a1d] to-[#0f0f10]">
+            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-black/30 backdrop-blur-sm">
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(100,116,139,0.15),transparent_60%)]"></div>
                 <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-slate-600/50 to-transparent"></div>
                 <div class="absolute top-4 left-4">
@@ -4467,7 +4487,7 @@
 
         <!-- VIEW: REFUGEE CAMP -->
         <section id="view-refugee-camp" class="hidden space-y-4">
-            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-slate-900/80 via-[#1a1a1d] to-[#0f0f10]">
+            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-black/30 backdrop-blur-sm">
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(100,116,139,0.15),transparent_60%)]"></div>
                 <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-slate-600/50 to-transparent"></div>
                 <div class="absolute top-4 left-4">
@@ -4508,7 +4528,7 @@
         <!-- VIEW: QUESTS -->
         <section id="view-quests" class="hidden space-y-4">
             <!-- Quests Header -->
-            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-amber-950/80 via-[#1a1a1d] to-[#0f0f10]">
+            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-black/30 backdrop-blur-sm">
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(217,119,6,0.15),transparent_60%)]"></div>
                 <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent"></div>
                 <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-4">
@@ -5785,6 +5805,83 @@
                         ]
                     }
                 }
+            },
+            tournamentmaster: {
+                name: "Мастер Турниров",
+                role: "Организатор состязаний",
+                icon: "fa-crown",
+                dialogue: {
+                    root: function() {
+                        if (!gameState.npcStates) gameState.npcStates = {};
+                        if (!gameState.npcStates.tournamentMasterMet) {
+                            gameState.npcStates.tournamentMasterMet = true;
+                            game.save();
+                            return "first_meet";
+                        }
+                        return "regular";
+                    },
+                    first_meet: {
+                        text: "Приветствую тебя, воин! Я — Мастер Турниров, организатор величайших состязаний в этом королевстве. Здесь собираются самые отважные бойцы, чтобы доказать свою доблесть на арене!",
+                        options: [
+                            { text: "Что это за турниры?", next: "about_tournaments" },
+                            { text: "Как мне принять участие?", next: "how_to_join" },
+                            { text: "Прощай", next: "exit" }
+                        ]
+                    },
+                    regular: {
+                        text: "О, снова ты! Готов испытать свою удачу на арене? Или пришёл просто посмотреть, как сражаются настоящие воины?",
+                        options: [
+                            { text: "Расскажи о турнирах", next: "about_tournaments" },
+                            { text: "Какие награды?", next: "rewards" },
+                            { text: "Есть ли правила?", next: "rules" },
+                            { text: "До встречи", next: "exit" }
+                        ]
+                    },
+                    about_tournaments: {
+                        text: "Наши турниры — это не просто бои. Это испытание силы, ловкости и духа! Мы проводим состязания для воинов разных уровней. Новички могут начать с простых поединков, а опытные бойцы сражаются за королевские награды!",
+                        options: [
+                            { text: "Звучит заманчиво! Что нужно для участия?", next: "how_to_join" },
+                            { text: "А какие награды?", next: "rewards" },
+                            { text: "Интересно, вернусь позже", next: "exit" }
+                        ]
+                    },
+                    how_to_join: {
+                        text: "Чтобы участвовать, тебе нужно соответствовать требованиям турнира: определённый уровень и экипировка. Новичкам достаточно 5-го уровня, а для турнира воинов нужен 10-й уровень и хорошее оружие!",
+                        options: [
+                            { text: "Понятно. А как проходят бои?", next: "rules" },
+                            { text: "Какие награды ждут победителей?", next: "rewards" },
+                            { text: "Спасибо за информацию", next: "exit" }
+                        ]
+                    },
+                    rewards: {
+                        text: "Ха! Награды — вот что привлекает всех! Победители получают золото, редкое оружие, доспехи и, конечно же, славу! Чем выше турнир, тем ценнее награды. Некоторые чемпионы получают даже королевские благословения!",
+                        options: [
+                            { text: "Впечатляет! Расскажи о правилах", next: "rules" },
+                            { text: "Как мне начать?", next: "how_to_join" },
+                            { text: "Я обязательно вернусь", next: "exit" }
+                        ]
+                    },
+                    rules: {
+                        text: "Правила просты: честный бой, никакого колдовства и отравленных клинков. Зрители любят зрелище, но безопасность бойцов — превыше всего. Смертельные исходы редки, но случаются. Ты должен быть готов ко всему!",
+                        options: [
+                            { text: "Я готов сражаться!", next: "ready" },
+                            { text: "Мне нужно ещё подготовиться", next: "not_ready" },
+                            { text: "Спасибо за объяснение", next: "exit" }
+                        ]
+                    },
+                    ready: {
+                        text: "Вот это дух! Но турниры сейчас в разработке. Скоро арена откроется, и ты сможешь доказать свою доблесть! Готовься, воин — великие сражения ждут тебя!",
+                        options: [
+                            { text: "Буду ждать!", next: "exit" }
+                        ]
+                    },
+                    not_ready: {
+                        text: "Мудрое решение. Тренируйся, собирай снаряжение, повышай уровень. Арена не прощает слабых. Когда будешь готов — возвращайся!",
+                        options: [
+                            { text: "Я вернусь сильнее", next: "exit" }
+                        ]
+                    }
+                }
             }
         };
 
@@ -5810,7 +5907,8 @@
                 'hank': 'https://i.postimg.cc/jjVk70L0/IMG-4615.png',
                 'sage': 'https://i.postimg.cc/8PjyXPvd/IMG-4616.png',
                 'eldar': 'https://i.postimg.cc/8PjyXPvd/IMG-4616.png',
-                'ben': '',
+                'ben': 'https://i.postimg.cc/vTr8kPhR/IMG-4620.png',
+                'tournamentmaster': 'https://i.postimg.cc/50vfQPDr/IMG-4619.png',
                 'elara': '',
                 'gorn': '',
                 'alex': '',
@@ -5872,6 +5970,8 @@
                     gradientColors = "linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #3b82f6 100%)"; // Blue
                 } else if(npcId === 'thomas') {
                     gradientColors = "linear-gradient(135deg, #64748b 0%, #475569 50%, #64748b 100%)"; // Slate Gray
+                } else if(npcId === 'tournamentmaster') {
+                    gradientColors = "linear-gradient(135deg, #d97706 0%, #f59e0b 50%, #d97706 100%)"; // Tournament Gold
                 }
                 
                 bgGradient.style.background = gradientColors;
@@ -6988,15 +7088,15 @@
             },
 
             getWeightCapacity: function() {
-                const base = 50;
+                const base = 100; // Стандартный инвентарь 100кг
                 const bagLevel = gameState.bagLevel || 0;
                 if (bagLevel === 0) {
                     return base;
                 } else if (bagLevel === 1) {
-                    return 100; // Улучшенный рюкзак дает 100кг
+                    return 200; // Улучшенный рюкзак дает 200кг
                 } else {
                     // Для дальнейших улучшений можно добавить логику
-                    return 100 + (bagLevel - 1) * 50;
+                    return 200 + (bagLevel - 1) * 100;
                 }
             },
 
@@ -8417,7 +8517,7 @@
                 
                 if (gameState.level >= 10) {
                     // Unlocked state - green style like bulletin board
-                    button.className = 'panel w-full p-4 rounded-lg flex items-center justify-between group hover:border-green-500 transition-colors bg-gradient-to-br from-green-900/20 via-[#1a1a1d] to-[#0f0f10]';
+                    button.className = 'panel w-full p-4 rounded-lg flex items-center justify-between group hover:border-green-500 transition-colors bg-black/30 backdrop-blur-sm';
                     icon.className = 'w-14 h-14 rounded-full bg-gradient-to-br from-green-900/60 to-green-950 border-2 border-green-500/60 flex items-center justify-center shadow-[0_0_15px_rgba(34,197,94,0.3)]';
                     icon.querySelector('i').className = 'fas fa-cow text-green-400 text-2xl';
                     title.className = 'text-base font-bold text-green-300 medieval-font';
@@ -8425,7 +8525,7 @@
                     status.innerHTML = '<i class="fas fa-chevron-right text-gray-500 group-hover:text-green-500 text-xl"></i>';
                 } else {
                     // Locked state - gray with lock
-                    button.className = 'panel w-full p-4 rounded-lg flex items-center justify-between group transition-colors bg-gradient-to-br from-gray-900/20 via-[#1a1a1d] to-[#0f0f10] opacity-60';
+                    button.className = 'panel w-full p-4 rounded-lg flex items-center justify-between group transition-colors bg-black/30 backdrop-blur-sm opacity-60';
                     icon.className = 'w-14 h-14 rounded-full bg-gradient-to-br from-gray-800/60 to-gray-950 border-2 border-gray-600/60 flex items-center justify-center shadow-[0_0_15px_rgba(107,114,128,0.2)]';
                     icon.querySelector('i').className = 'fas fa-cow text-gray-500 text-2xl';
                     title.className = 'text-base font-bold text-gray-400 medieval-font';
@@ -8840,7 +8940,8 @@
                 food: [
                     { id: 'bread', title: 'Хлеб', req: { wheat: 3 }, produce: { key: 'bread', count: 1 } }
                 ],
-                tools: []
+                tools: [],
+                other: []
             },
             toggleMode: function() {
                 const invUI = document.getElementById('ui-inventory');
@@ -8896,6 +8997,7 @@
                     if (cat === 'charms') return owned[d.id];
                     if (cat === 'food') return owned['food'];
                     if (cat === 'tools') return owned['bag'];
+                    if (cat === 'other') return owned[d.id];
                     return false;
                 });
                 if (filtered.length === 0) {
@@ -9208,7 +9310,7 @@
                             <div class="text-[10px] text-blue-300 mb-1">У вас: <span id="market-count-${item}">0</span></div>
                             <div class="flex gap-1 w-full mb-1">
                                 <input id="trade-input-${item}" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#333] text-center text-[10px] text-white rounded p-0 outline-none focus:border-[#c8aa6e]">
-                                <button onclick="market.setMax('${item}')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
+                                <button onclick="market.setMax('${item}')" class="w-auto px-2 border border-[#444] rounded text-[10px] text-gray-400 hover:text-white" >Max</button>
                             </div>
                             <button onclick="market.sellFromInput('${item}')" id="btn-trade-${item}" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-amber-900/20 transition-colors">Продать</button>
                         `;
@@ -9717,15 +9819,21 @@
         };
 
         const itemModal = {
+            currentItem: null, // Сохраняем текущий предмет для выбрасывания
+            
             open: function(item) {
                 const modal = document.getElementById('modal-item');
                 if (!modal) return;
+
+                // Сохраняем ссылку на текущий предмет
+                this.currentItem = item;
 
                 const iconEl = document.getElementById('item-modal-icon');
                 const nameEl = document.getElementById('item-modal-name');
                 const descEl = document.getElementById('item-modal-desc');
                 const weightEl = document.getElementById('item-modal-weight');
                 const countEl = document.getElementById('item-modal-count');
+                const discardBtn = document.getElementById('btn-discard-item');
 
                 iconEl.className = 'w-16 h-16 flex items-center justify-center text-[#c8aa6e] mx-auto';
                 iconEl.innerHTML = ui.getIconHtml(item.icon, 'w-10 h-10');
@@ -9736,10 +9844,14 @@
                 if (item.kind === 'tool') {
                     countEl.innerText = `Уровень: ${item.level}`;
                     weightEl.innerText = `${(item.weight || 0).toFixed(1)} кг`;
+                    // Инструменты нельзя выбросить
+                    discardBtn.style.display = 'none';
                 } else {
                     const totalW = (item.weight || 0) * (item.count || 0);
                     countEl.innerText = `Количество: ${item.count}`;
                     weightEl.innerText = `${(item.weight || 0).toFixed(1)} кг/шт • ${(totalW).toFixed(1)} кг всего`;
+                    // Ресурсы можно выбросить
+                    discardBtn.style.display = 'block';
                 }
 
                 modal.classList.add('open');
@@ -9748,6 +9860,57 @@
             close: function() {
                 const modal = document.getElementById('modal-item');
                 if (modal) modal.classList.remove('open');
+                this.currentItem = null;
+            },
+
+            discardItem: function() {
+                if (!this.currentItem) return;
+
+                const item = this.currentItem;
+                
+                // Подтверждение выбрасывания
+                if (!confirm(`Вы уверены, что хотите выбросить ${item.name} (${item.count} шт.)?`)) {
+                    return;
+                }
+
+                // Проверяем тип предмета
+                if (item.kind === 'resource') {
+                    // Ресурсы хранятся напрямую в gameState
+                    if (gameState[item.key] !== undefined) {
+                        gameState[item.key] = 0; // Обнуляем количество ресурса
+                        game.save();
+                        ui.updateStats();
+                        inventory.render(); // Обновляем отображение инвентаря
+                        
+                        // Показываем уведомление
+                        ui.showFloatText(document.body, `${item.name} выброшен`, "#ff5555");
+                        
+                        // Закрываем модальное окно
+                        this.close();
+                    } else {
+                        ui.showFloatText(document.body, `Ресурс не найден`, "#ff5555");
+                    }
+                } else {
+                    // Для других предметов (зелья, обереги и т.д.) ищем в inventory
+                    const index = gameState.inventory.findIndex(invItem => 
+                        invItem.key === item.key && invItem.kind === item.kind
+                    );
+
+                    if (index !== -1) {
+                        gameState.inventory.splice(index, 1);
+                        game.save();
+                        ui.updateStats();
+                        inventory.render(); // Обновляем отображение инвентаря
+                        
+                        // Показываем уведомление
+                        ui.showFloatText(document.body, `${item.name} выброшен`, "#ff5555");
+                        
+                        // Закрываем модальное окно
+                        this.close();
+                    } else {
+                        ui.showFloatText(document.body, `Предмет не найден в инвентаре`, "#ff5555");
+                    }
+                }
             },
 
             getDescriptionForTool: function(key) {
@@ -10366,6 +10529,16 @@
                 game.init();
                 router.switchTab('map');
                 disease.startTick();
+                
+                // Добавляем обработчик для кнопки "Выбросить"
+                const discardBtn = document.getElementById('btn-discard-item');
+                if (discardBtn) {
+                    discardBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        itemModal.discardItem();
+                    });
+                }
+                
                 document.addEventListener('visibilitychange', () => {
                     if (!document.hidden) {
                         game.checkUnconscious();
