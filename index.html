@@ -115,27 +115,6 @@
             pointer-events: none;
         }
         
-        .quest-card {
-            background: rgba(0,0,0,0.3);
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(200,170,110,0.3);
-            transition: all 0.3s ease;
-        }
-        .quest-card:hover {
-            background: rgba(0,0,0,0.4);
-            border-color: rgba(200,170,110,0.5);
-        }
-        .recipe-card {
-            background: rgba(0,0,0,0.3);
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(200,170,110,0.3);
-            transition: all 0.3s ease;
-        }
-        .recipe-card:hover {
-            background: rgba(0,0,0,0.4);
-            border-color: rgba(200,170,110,0.5);
-        }
-
         /* Tab Styles */
         .sub-tab {
             white-space: nowrap;
@@ -220,56 +199,173 @@
             pointer-events: auto;
         }
         .modal-content {
-            background: var(--bg-panel);
+            background: linear-gradient(135deg, 
+                rgba(0, 0, 0, 0.95) 0%, 
+                rgba(20, 20, 25, 0.95) 50%, 
+                rgba(0, 0, 0, 0.95) 100%);
+            backdrop-filter: blur(12px);
             border: 1px solid var(--accent-gold);
             width: 90%;
             max-width: 320px;
             transform: scale(0.9);
             transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 0 20px rgba(200, 170, 110, 0.2);
+            box-shadow: 0 0 30px rgba(200, 170, 110, 0.3);
         }
         .modal-overlay.open .modal-content {
             transform: scale(1);
         }
 
-        /* Job Button Styles - Similar to location cards */
+        /* Job Button Enhanced */
         .job-button {
-            background: rgba(26, 26, 29, 0.7);
-            backdrop-filter: blur(10px);
+            background: linear-gradient(135deg, 
+                rgba(0, 0, 0, 0.5) 0%, 
+                rgba(20, 20, 25, 0.6) 50%, 
+                rgba(0, 0, 0, 0.5) 100%);
+            backdrop-filter: blur(8px);
             border: 1px solid rgba(200, 170, 110, 0.3);
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .job-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(200, 170, 110, 0.15), 
+                transparent);
+            transition: left 0.6s ease;
         }
         
         .job-button:hover {
-            background: rgba(26, 26, 29, 0.85);
+            background: linear-gradient(135deg, 
+                rgba(10, 10, 15, 0.6) 0%, 
+                rgba(30, 30, 35, 0.7) 50%, 
+                rgba(10, 10, 15, 0.6) 100%);
             border-color: rgba(200, 170, 110, 0.5);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(200, 170, 110, 0.2);
+            box-shadow: 0 6px 16px rgba(200, 170, 110, 0.25);
+        }
+        
+        .job-button:hover::before {
+            left: 100%;
         }
         
         .job-button:active {
             transform: translateY(0);
-            background: rgba(200, 170, 110, 0.2);
+            background: linear-gradient(135deg, 
+                rgba(200, 170, 110, 0.2) 0%, 
+                rgba(200, 170, 110, 0.3) 50%, 
+                rgba(200, 170, 110, 0.2) 100%);
         }
         
         .job-button:disabled {
-            background: rgba(26, 26, 29, 0.4);
+            background: linear-gradient(135deg, 
+                rgba(26, 26, 29, 0.3) 0%, 
+                rgba(42, 42, 46, 0.3) 50%, 
+                rgba(26, 26, 29, 0.3) 100%);
             border-color: rgba(85, 85, 85, 0.3);
             opacity: 0.5;
         }
         
-        /* Quest Card Gradient Styles */
-        .quest-card {
+        /* Universal Card Styles - Beautiful Gradients */
+        .quest-card,
+        .recipe-card,
+        .market-item-card {
             background: linear-gradient(135deg, 
-                rgba(26, 26, 29, 0.9) 0%, 
-                rgba(42, 42, 46, 0.8) 50%, 
-                rgba(26, 26, 29, 0.9) 100%);
-            border: 1px solid rgba(200, 170, 110, 0.4);
+                rgba(0, 0, 0, 0.5) 0%, 
+                rgba(20, 20, 25, 0.6) 50%, 
+                rgba(0, 0, 0, 0.5) 100%);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(200, 170, 110, 0.3);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .quest-card::before,
+        .recipe-card::before,
+        .market-item-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(200, 170, 110, 0.15), 
+                transparent);
+            transition: left 0.6s ease;
+        }
+        
+        .quest-card:hover::before,
+        .recipe-card:hover::before,
+        .market-item-card:hover::before {
+            left: 100%;
+        }
+        
+        .quest-card:hover,
+        .recipe-card:hover,
+        .market-item-card:hover {
+            background: linear-gradient(135deg, 
+                rgba(10, 10, 15, 0.6) 0%, 
+                rgba(30, 30, 35, 0.7) 50%, 
+                rgba(10, 10, 15, 0.6) 100%);
+            border-color: rgba(200, 170, 110, 0.5);
+            box-shadow: 0 6px 16px rgba(200, 170, 110, 0.25);
+            transform: translateY(-2px);
+        }
+
+        /* Job Button Enhanced */
+
+        /* Gem Price Color */
+        .gem-price {
+            color: #34d399 !important;
+        }
+        
+        /* Resource Cards - Beautiful gradient style */
+        .resource-card {
+            background: linear-gradient(135deg, 
+                rgba(0, 0, 0, 0.5) 0%, 
+                rgba(20, 20, 25, 0.6) 50%, 
+                rgba(0, 0, 0, 0.5) 100%);
+            backdrop-filter: blur(8px);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .resource-card:hover {
+            background: linear-gradient(135deg, 
+                rgba(10, 10, 15, 0.6) 0%, 
+                rgba(30, 30, 35, 0.7) 50%, 
+                rgba(10, 10, 15, 0.6) 100%);
+            box-shadow: 0 6px 16px rgba(200, 170, 110, 0.25);
+            transform: translateY(-2px);
+        }
+        
+        /* NPC Cards - Enhanced with gradient */
+        .npc-card {
+            background: linear-gradient(135deg, 
+                rgba(0, 0, 0, 0.6) 0%, 
+                rgba(25, 25, 30, 0.7) 50%, 
+                rgba(0, 0, 0, 0.6) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(200, 170, 110, 0.3);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
             position: relative;
             overflow: hidden;
         }
         
-        .quest-card::before {
+        .npc-card::before {
             content: '';
             position: absolute;
             top: 0;
@@ -280,35 +376,20 @@
                 transparent, 
                 rgba(200, 170, 110, 0.1), 
                 transparent);
-            transition: left 0.5s;
+            transition: left 0.6s ease;
         }
         
-        .quest-card:hover::before {
+        .npc-card:hover::before {
             left: 100%;
         }
         
-        .quest-card:hover {
-            border-color: rgba(200, 170, 110, 0.6);
-            box-shadow: 0 4px 16px rgba(200, 170, 110, 0.15);
-        }
-
-        /* Market Item Card - Gradient Style */
-        .market-item-card {
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(200, 170, 110, 0.3);
-            transition: all 0.3s ease;
-        }
-        
-        .market-item-card:hover {
-            background: rgba(0, 0, 0, 0.4);
+        .npc-card:hover {
+            background: linear-gradient(135deg, 
+                rgba(15, 15, 20, 0.7) 0%, 
+                rgba(35, 35, 40, 0.8) 50%, 
+                rgba(15, 15, 20, 0.7) 100%);
             border-color: rgba(200, 170, 110, 0.5);
-            box-shadow: 0 4px 12px rgba(200, 170, 110, 0.2);
-        }
-
-        /* Gem Price Color */
-        .gem-price {
-            color: #34d399 !important;
+            box-shadow: 0 6px 16px rgba(200, 170, 110, 0.3);
         }
 
         /* Developer Panel Styles */
@@ -863,7 +944,10 @@
                 </div>
             </div>
 
-            <button id="btn-discard-item" class="w-full py-2 rounded font-bold mt-4 border border-red-700/40 bg-red-900/20 text-red-400 hover:bg-red-900/30 transition-all backdrop-blur-sm" style="display: none;">
+            <button id="btn-sell-item" class="w-full py-2 rounded font-bold mt-4 border border-yellow-700/40 bg-yellow-900/20 text-yellow-400 hover:bg-yellow-900/30 transition-all backdrop-blur-sm" style="display: none;">
+                <i class="fas fa-coins mr-2"></i>Продать за <span id="sell-price">0</span> <i class="fas fa-coins text-xs"></i>
+            </button>
+            <button id="btn-discard-item" class="w-full py-2 rounded font-bold mt-2 border border-red-700/40 bg-red-900/20 text-red-400 hover:bg-red-900/30 transition-all backdrop-blur-sm" style="display: none;">
                 <i class="fas fa-trash mr-2"></i>Выбросить
             </button>
             <button onclick="itemModal.close()" class="btn-medieval w-full py-2 rounded font-bold mt-2">Закрыть</button>
@@ -1093,6 +1177,88 @@
                     <div class="h-2 bg-[#000] border border-[#333] rounded-full overflow-hidden relative">
                         <div id="hunger-bar" class="h-full bg-amber-500 w-full transition-all duration-300"></div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Equipment Slots -->
+            <div class="panel rounded p-4 relative overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-br from-amber-900/5 via-transparent to-purple-900/5 pointer-events-none"></div>
+                <h3 class="medieval-font text-sm text-[#c8aa6e] mb-4 text-center relative z-10">Экипировка</h3>
+                
+                <div class="flex gap-3 relative z-10">
+                    <!-- Left: ALL Equipment buttons -->
+                    <div class="flex-1 space-y-2">
+                        <!-- Armor Slot -->
+                        <div id="slot-armor" onclick="equipment.openSlot('armor')" class="cursor-pointer rounded-lg border-2 border-blue-600/40 backdrop-blur-sm p-3 flex items-center gap-3 hover:border-blue-500/80 hover:shadow-lg hover:shadow-blue-500/20 transition-all relative overflow-hidden group" style="background: linear-gradient(135deg, rgba(30, 58, 138, 0.15) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(30, 58, 138, 0.15) 100%);">
+                            <div class="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div class="w-12 h-12 rounded-full border-2 border-blue-500/40 flex items-center justify-center flex-shrink-0 relative z-10" style="background: linear-gradient(135deg, rgba(30, 58, 138, 0.3), rgba(0, 0, 0, 0.5));">
+                                <i class="fas fa-shield-halved text-blue-400 text-xl drop-shadow-lg"></i>
+                            </div>
+                            <div class="flex-1 relative z-10">
+                                <div class="text-sm text-blue-300 font-bold medieval-font">Броня</div>
+                                <div class="text-[10px] text-blue-400/70">Не экипирована</div>
+                            </div>
+                            <i class="fas fa-chevron-right text-blue-500/50 group-hover:text-blue-400/80 transition-colors relative z-10"></i>
+                        </div>
+                        
+                        <!-- Sword Slot -->
+                        <div id="slot-sword" onclick="equipment.openSlot('sword')" class="cursor-pointer rounded-lg border-2 border-red-600/40 backdrop-blur-sm p-3 flex items-center gap-3 hover:border-red-500/80 hover:shadow-lg hover:shadow-red-500/20 transition-all relative overflow-hidden group" style="background: linear-gradient(135deg, rgba(153, 27, 27, 0.15) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(153, 27, 27, 0.15) 100%);">
+                            <div class="absolute inset-0 bg-gradient-to-r from-red-600/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div class="w-12 h-12 rounded-full border-2 border-red-500/40 flex items-center justify-center flex-shrink-0 relative z-10" style="background: linear-gradient(135deg, rgba(153, 27, 27, 0.3), rgba(0, 0, 0, 0.5));">
+                                <i class="fas fa-khanda text-red-400 text-xl drop-shadow-lg"></i>
+                            </div>
+                            <div class="flex-1 relative z-10">
+                                <div class="text-sm text-red-300 font-bold medieval-font">Меч</div>
+                                <div class="text-[10px] text-red-400/70">Не экипирован</div>
+                            </div>
+                            <i class="fas fa-chevron-right text-red-500/50 group-hover:text-red-400/80 transition-colors relative z-10"></i>
+                        </div>
+                        
+                        <!-- Clothes Slot -->
+                        <div id="slot-clothes" onclick="equipment.openSlot('clothes')" class="cursor-pointer rounded-lg border-2 border-green-600/40 backdrop-blur-sm p-3 flex items-center gap-3 hover:border-green-500/80 hover:shadow-lg hover:shadow-green-500/20 transition-all relative overflow-hidden group" style="background: linear-gradient(135deg, rgba(22, 101, 52, 0.15) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(22, 101, 52, 0.15) 100%);">
+                            <div class="absolute inset-0 bg-gradient-to-r from-green-600/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div class="w-12 h-12 rounded-full border-2 border-green-500/40 flex items-center justify-center flex-shrink-0 relative z-10" style="background: linear-gradient(135deg, rgba(22, 101, 52, 0.3), rgba(0, 0, 0, 0.5));">
+                                <i class="fas fa-shirt text-green-400 text-xl drop-shadow-lg"></i>
+                            </div>
+                            <div class="flex-1 relative z-10">
+                                <div class="text-sm text-green-300 font-bold medieval-font">Одежда</div>
+                                <div class="text-[10px] text-green-400/70">Не экипирована</div>
+                            </div>
+                            <i class="fas fa-chevron-right text-green-500/50 group-hover:text-green-400/80 transition-colors relative z-10"></i>
+                        </div>
+                        
+                        <!-- Saddle Slot -->
+                        <div id="slot-saddle" onclick="equipment.openSlot('saddle')" class="cursor-pointer rounded-lg border-2 border-purple-600/40 backdrop-blur-sm p-3 flex items-center gap-3 hover:border-purple-500/80 hover:shadow-lg hover:shadow-purple-500/20 transition-all relative overflow-hidden group" style="background: linear-gradient(135deg, rgba(107, 33, 168, 0.15) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(107, 33, 168, 0.15) 100%);">
+                            <div class="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div class="w-12 h-12 rounded-full border-2 border-purple-500/40 flex items-center justify-center flex-shrink-0 relative z-10" style="background: linear-gradient(135deg, rgba(107, 33, 168, 0.3), rgba(0, 0, 0, 0.5));">
+                                <i class="fas fa-horse-head text-purple-400 text-xl drop-shadow-lg"></i>
+                            </div>
+                            <div class="flex-1 relative z-10">
+                                <div class="text-sm text-purple-300 font-bold medieval-font">Седло</div>
+                                <div class="text-[10px] text-purple-400/70">Не экипировано</div>
+                            </div>
+                            <i class="fas fa-chevron-right text-purple-500/50 group-hover:text-purple-400/80 transition-colors relative z-10"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Right: Character Display -->
+                    <div class="flex-shrink-0" style="width: 160px;">
+                        <div class="w-full rounded-lg border-2 border-amber-600/40 backdrop-blur-sm overflow-hidden relative hover:border-amber-500/60 transition-all" style="height: 100%; background: linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(20, 20, 25, 0.7) 50%, rgba(0, 0, 0, 0.6) 100%);">
+                            <img src="https://i.postimg.cc/RF2Bf1CP/IMG-4647.png" alt="Персонаж" class="w-full h-full object-cover object-center opacity-90">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20"></div>
+                            <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(200,170,110,0.15),transparent_70%)]"></div>
+                            <div class="absolute bottom-0 left-0 right-0 p-2 text-center">
+                                <div class="text-xs text-amber-300 font-bold medieval-font drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">Странник</div>
+                                <div class="text-[9px] text-amber-500/90 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Уровень 1</div>
+                            </div>
+                            <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent"></div>
+                            <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center text-[10px] text-gray-500 mt-3 relative z-10">
+                    Экипировка влияет на характеристики и защиту персонажа
                 </div>
             </div>
 
@@ -2136,6 +2302,26 @@
                             Взять заказ
                         </button>
                     </div>
+
+                    <!-- Quest 4: Lily's Lost Book -->
+                    <div id="lily-book-quest" class="hidden market-item-card border rounded p-3">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="flex gap-3">
+                                <i class="fas fa-book text-pink-400 text-lg mt-1"></i>
+                                <div>
+                                    <div class="text-sm font-bold text-pink-200">Найдена книга</div>
+                                    <div class="text-[10px] text-[#777]">Нашел роскошную книгу. Верну за вознаграждение.</div>
+                                    <div class="text-[10px] text-gray-500 mt-1">Награда: 100 золота</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xs text-yellow-500 font-bold">100 <i class="fas fa-coins"></i></div>
+                            </div>
+                        </div>
+                        <button onclick="bulletin.takeLilyBook()" class="w-full py-1.5 rounded text-[10px] border border-pink-700/40 bg-black/30 text-pink-300 hover:bg-pink-900/20 backdrop-blur-sm">
+                            Забрать книгу
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Community Notices -->
@@ -2180,9 +2366,9 @@
             <!-- Tailor NPC -->
             <div class="panel p-4 rounded-lg border-pink-500/40 bg-black/30 backdrop-blur-sm mb-4">
                 <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-full border border-pink-500 bg-[#222] flex items-center justify-center">
-                        <i class="fas fa-scissors text-pink-400"></i>
-                    </div>
+                    <div class="w-12 h-12 rounded-full border-2 border-purple-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(124,58,237,0.3), rgba(0,0,0,0.5));">
+                            <img src="https://i.postimg.cc/50MPG1q6/IMG-4667.png" alt="Питер" class="w-full h-full object-cover object-top">
+                        </div>
                     <div>
                         <div class="text-base text-[#e0e0e0] font-bold medieval-font">Портной Питер</div>
                         <div class="text-[10px] text-[#a0a0a0]">Портной</div>
@@ -2270,9 +2456,9 @@
             <!-- Shoemaker NPC -->
             <div class="panel p-4 rounded-lg border-amber-500/40 bg-black/30 backdrop-blur-sm mb-4">
                 <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-full border border-amber-500 bg-[#222] flex items-center justify-center">
-                        <i class="fas fa-shoe-prints text-amber-400"></i>
-                    </div>
+                    <div class="w-12 h-12 rounded-full border-2 border-amber-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(146,64,14,0.3), rgba(0,0,0,0.5));">
+                            <img src="https://i.postimg.cc/brymyT5Z/IMG-4668.png" alt="Лорен" class="w-full h-full object-cover object-top">
+                        </div>
                     <div>
                         <div class="text-base text-[#e0e0e0] font-bold medieval-font">Сапожник Лорен</div>
                         <div class="text-[10px] text-[#a0a0a0]">Мастер обуви</div>
@@ -2368,9 +2554,9 @@
             <!-- Book House NPC -->
             <div class="panel p-4 rounded-lg border-blue-500/40 bg-black/30 backdrop-blur-sm mb-4">
                 <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-full border border-pink-500 bg-[#222] flex items-center justify-center">
-                        <i class="fas fa-feather text-pink-400 text-lg"></i>
-                    </div>
+                    <div class="w-12 h-12 rounded-full border-2 border-pink-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(236,72,153,0.3), rgba(0,0,0,0.5));">
+                            <img src="https://i.postimg.cc/yxdCDXtp/image-Picsart-Background-Remover.png" alt="Лили" class="w-full h-full object-cover object-top">
+                        </div>
                     <div>
                         <div class="text-base text-[#e0e0e0] font-bold medieval-font">Лили</div>
                         <div class="text-[10px] text-[#a0a0a0]">Хранительница знаний</div>
@@ -2480,8 +2666,8 @@
             <div class="panel p-4 rounded-lg border-red-500/40 bg-black/30 backdrop-blur-sm mb-4">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-full border-2 border-red-500 bg-[#222] flex items-center justify-center shadow-[0_0_10px_rgba(239,68,68,0.3)]">
-                            <i class="fas fa-plus text-red-500 text-2xl"></i>
+                        <div class="w-12 h-12 rounded-full border-2 border-red-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(239,68,68,0.3), rgba(0,0,0,0.5));">
+                            <img src="https://i.postimg.cc/65gZWBmZ/IMG-4614.png" alt="Мариус" class="w-full h-full object-cover object-top">
                         </div>
                         <div>
                             <div class="text-base text-[#e0e0e0] font-bold medieval-font">Мариус</div>
@@ -2587,8 +2773,8 @@
             <div class="panel p-4 rounded-lg border-yellow-900/40 bg-black/30 backdrop-blur-sm mb-4">
                 <div class="flex items-center justify-between border-b border-[#333] pb-3 mb-3">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-full border-2 border-yellow-500 bg-[#222] flex items-center justify-center shadow-[0_0_10px_rgba(234,179,8,0.3)]">
-                            <i class="fas fa-user-tie text-yellow-400 text-lg"></i>
+                        <div class="w-12 h-12 rounded-full border-2 border-yellow-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(234,179,8,0.3), rgba(0,0,0,0.5));">
+                            <img src="https://i.postimg.cc/jjVk70L0/IMG-4615.png" alt="Ханк" class="w-full h-full object-cover object-top">
                         </div>
                         <div>
                             <div class="text-base text-[#e0e0e0] font-bold medieval-font">Хэнк</div>
@@ -2694,9 +2880,9 @@
             <!-- Tavern NPC -->
             <div class="panel p-4 rounded-lg border-orange-500/40 bg-black/30 backdrop-blur-sm mb-4">
                 <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-full border-2 border-orange-500 bg-[#222] flex items-center justify-center shadow-[0_0_10px_rgba(249,115,22,0.3)]">
-                        <i class="fas fa-wine-glass text-orange-400 text-lg"></i>
-                    </div>
+                    <div class="w-12 h-12 rounded-full border-2 border-orange-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(249,115,22,0.3), rgba(0,0,0,0.5));">
+                            <img src="https://i.postimg.cc/vTr8kPhR/IMG-4620.png" alt="Бен" class="w-full h-full object-cover object-top">
+                        </div>
                     <div>
                         <div class="text-base text-[#e0e0e0] font-bold medieval-font">Старый Бен</div>
                         <div class="text-[10px] text-[#a0a0a0]">Трактирщик</div>
@@ -3217,7 +3403,7 @@
                 </div>
 
                 <div id="market-trade-grid" class="grid grid-cols-2 gap-3">
-                    <div class="p-2 rounded flex flex-col items-center text-center border-blue-900/30" >
+                    <div class="resource-card p-2 rounded flex flex-col items-center text-center border-blue-900/30">
                         <i class="fas fa-fish text-[#c8aa6e] mb-1"></i>
                         <div class="text-xs text-[#e0e0e0]">Рыба</div>
                         <div class="text-[10px] text-[#a0a0a0] mb-1"><span id="price-fish">5</span> <i class="fas fa-coins"></i></div>
@@ -3228,7 +3414,7 @@
                         </div>
                         <button onclick="market.sellFromInput('fish')" id="btn-trade-fish" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-amber-900/20 transition-colors">Продать</button>
                     </div>
-                    <div class="p-2 rounded flex flex-col items-center text-center border-yellow-900/30" >
+                    <div class="resource-card p-2 rounded flex flex-col items-center text-center border-yellow-900/30">
                         <i class="fas fa-wheat-awn text-[#c8aa6e] mb-1"></i>
                         <div class="text-xs text-[#e0e0e0]">Пшеница</div>
                         <div class="text-[10px] text-[#a0a0a0] mb-1"><span id="price-wheat">15</span> <i class="fas fa-coins"></i></div>
@@ -3239,7 +3425,7 @@
                         </div>
                         <button onclick="market.sellFromInput('wheat')" id="btn-trade-wheat" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-amber-900/20 transition-colors">Продать</button>
                     </div>
-                    <div class="p-2 rounded flex flex-col items-center text-center border-gray-700/30" >
+                    <div class="resource-card p-2 rounded flex flex-col items-center text-center border-gray-700/30">
                         <i class="fas fa-cube text-[#c8aa6e] mb-1"></i>
                         <div class="text-xs text-[#e0e0e0]">Руда</div>
                         <div class="text-[10px] text-[#a0a0a0] mb-1"><span id="price-ore">40</span> <i class="fas fa-coins"></i></div>
@@ -3250,7 +3436,7 @@
                         </div>
                         <button onclick="market.sellFromInput('ore')" id="btn-trade-ore" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-amber-900/20 transition-colors">Продать</button>
                     </div>
-                    <div class="p-2 rounded flex flex-col items-center text-center border-red-900/30" >
+                    <div class="resource-card p-2 rounded flex flex-col items-center text-center border-red-900/30">
                         <i class="fas fa-scroll text-[#c8aa6e] mb-1"></i>
                         <div class="text-xs text-[#e0e0e0]">Кожа</div>
                         <div class="text-[10px] text-[#a0a0a0] mb-1"><span id="price-leather">100</span> <i class="fas fa-coins"></i></div>
@@ -3261,7 +3447,7 @@
                         </div>
                         <button onclick="market.sellFromInput('leather')" id="btn-trade-leather" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-amber-900/20 transition-colors">Продать</button>
                     </div>
-                    <div class="p-2 rounded flex flex-col items-center text-center border-amber-900/30" >
+                    <div class="resource-card p-2 rounded flex flex-col items-center text-center border-amber-900/30">
                         <i class="fas fa-tree text-[#c8aa6e] mb-1"></i>
                         <div class="text-xs text-[#e0e0e0]">Палки</div>
                         <div class="text-[10px] text-[#a0a0a0] mb-1"><span id="price-wood">5</span> <i class="fas fa-coins"></i></div>
@@ -3272,7 +3458,7 @@
                         </div>
                         <button onclick="market.sellFromInput('wood')" id="btn-trade-wood" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-amber-900/20 transition-colors">Продать</button>
                     </div>
-                    <div class="p-2 rounded flex flex-col items-center text-center border-gray-600/30" >
+                    <div class="resource-card p-2 rounded flex flex-col items-center text-center border-gray-600/30">
                         <i class="fas fa-shapes text-gray-400 mb-1"></i>
                         <div class="text-xs text-[#e0e0e0]">Камни</div>
                         <div class="text-[10px] text-[#a0a0a0] mb-1"><span id="price-stone">5</span> <i class="fas fa-coins"></i></div>
@@ -3283,7 +3469,7 @@
                         </div>
                         <button onclick="market.sellFromInput('stone')" id="btn-trade-stone" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-amber-900/20 transition-colors">Продать</button>
                     </div>
-                    <div class="p-2 rounded flex flex-col items-center text-center border-green-900/30" >
+                    <div class="resource-card p-2 rounded flex flex-col items-center text-center border-green-900/30">
                         <i class="fas fa-leaf text-green-400 mb-1"></i>
                         <div class="text-xs text-[#e0e0e0]">Травы</div>
                         <div class="text-[10px] text-[#a0a0a0] mb-1"><span id="price-herbs">10</span> <i class="fas fa-coins"></i></div>
@@ -3294,7 +3480,7 @@
                         </div>
                         <button onclick="market.sellFromInput('herbs')" id="btn-trade-herbs" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-amber-900/20 transition-colors">Продать</button>
                     </div>
-                    <div class="p-2 rounded flex flex-col items-center text-center border-purple-900/30" >
+                    <div class="resource-card p-2 rounded flex flex-col items-center text-center border-purple-900/30">
                         <i class="fas fa-spider text-purple-400 mb-1"></i>
                         <div class="text-xs text-[#e0e0e0]">Грибы</div>
                         <div class="text-[10px] text-[#a0a0a0] mb-1"><span id="price-mushrooms">25</span> <i class="fas fa-coins"></i></div>
@@ -3331,15 +3517,15 @@
             <div class="panel rounded-lg p-4 space-y-4">
                 <div class="panel p-3 rounded flex items-center justify-between border-emerald-900/30 bg-emerald-900/10">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-full border border-emerald-500 bg-[#222] flex items-center justify-center">
-                            <i class="fas fa-hat-cowboy text-emerald-400"></i>
+                        <div class="w-12 h-12 rounded-full border-2 border-emerald-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(22,101,52,0.3), rgba(0,0,0,0.5));">
+                            <img src="https://i.postimg.cc/tgFkFwQ1/IMG-4670.png" alt="Хью" class="w-full h-full object-cover object-top">
                         </div>
                         <div>
                             <div class="text-base text-[#e0e0e0] font-bold medieval-font">Фермер Хью</div>
                             <div class="text-[10px] text-[#a0a0a0]">Торговец скотом</div>
                         </div>
                     </div>
-                    <button onclick="ui.showFloatText(this, 'Кормлю людей... и зверей', '#34d399')" class="btn-medieval px-4 py-1.5 rounded text-xs">
+                    <button onclick="dialogue.start('hugh')" class="btn-medieval px-4 py-1.5 rounded text-xs">
                         Говорить
                     </button>
                 </div>
@@ -3642,8 +3828,8 @@
                 
                 <div class="relative z-10 flex items-center justify-between border-b border-indigo-500/30 pb-3">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-full border-2 border-indigo-500 bg-[#222] flex items-center justify-center shadow-[0_0_10px_rgba(99,102,241,0.3)]">
-                            <i class="fas fa-hat-wizard text-indigo-400 text-lg"></i>
+                        <div class="w-12 h-12 rounded-full border-2 border-indigo-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(99,102,241,0.3), rgba(0,0,0,0.5));">
+                            <img src="https://i.postimg.cc/8PjyXPvd/IMG-4616.png" alt="Мудрец" class="w-full h-full object-cover object-top">
                         </div>
                         <div>
                             <div class="text-base text-[#e0e0e0] font-bold medieval-font">Мудрец Эльдар</div>
@@ -3900,8 +4086,8 @@
                  <!-- John NPC -->
                 <div class="panel p-3 rounded flex items-center justify-between border-red-900/30 bg-red-900/10 text-left">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full border border-red-500 bg-[#222] flex items-center justify-center">
-                            <i class="fas fa-user-shield text-red-400"></i>
+                        <div class="w-10 h-10 rounded-full border-2 border-red-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(239,68,68,0.3), rgba(0,0,0,0.5));">
+                            <img src="https://i.postimg.cc/fRy8FW0W/IMG-4613.png" alt="Джон" class="w-full h-full object-cover object-top">
                         </div>
                         <div>
                             <div class="text-base text-[#e0e0e0] font-bold medieval-font">Рыцарь Джон</div>
@@ -3986,8 +4172,8 @@
             <div class="panel rounded-lg p-4 space-y-4">
                 <div class="flex items-center justify-between p-3 bg-purple-900/10 rounded border border-purple-900/30">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full border border-purple-500 bg-[#222] flex items-center justify-center">
-                            <i class="fas fa-shield text-purple-400"></i>
+                        <div class="w-10 h-10 rounded-full border-2 border-purple-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(190,18,60,0.3), rgba(0,0,0,0.5));">
+                            <img src="https://i.postimg.cc/FsKTwTc6/IMG-4669.png" alt="Стражник" class="w-full h-full object-cover object-top">
                         </div>
                         <div>
                             <div class="text-base text-[#e0e0e0] font-bold medieval-font">Стражник</div>
@@ -4036,8 +4222,8 @@
                     
                     <div class="relative z-10 flex items-center justify-between border-b border-[#333] pb-3">
                         <div class="flex items-center gap-3">
-                            <div class="w-12 h-12 rounded-full border-2 border-[#c8aa6e] bg-[#222] flex items-center justify-center shadow-[0_0_10px_rgba(200,170,110,0.3)]">
-                                <i class="fas fa-user-tie text-[#c8aa6e] text-lg"></i>
+                            <div class="w-12 h-12 rounded-full border-2 border-[#c8aa6e]/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(200,170,110,0.3), rgba(0,0,0,0.5));">
+                                <img src="https://i.postimg.cc/Y9Yn3XLD/IMG-4611.png" alt="Артур" class="w-full h-full object-cover object-top">
                             </div>
                             <div>
                                 <div class="text-base text-[#e0e0e0] font-bold medieval-font">Артур</div>
@@ -4236,15 +4422,15 @@
                 </div>
                 <div class="panel p-3 rounded flex items-center justify-between border-yellow-900/30 bg-yellow-900/10">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full border border-yellow-500 bg-[#222] flex items-center justify-center">
-                            <i class="fas fa-user-tie text-yellow-400"></i>
+                        <div class="w-12 h-12 rounded-full border-2 border-yellow-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(180,83,9,0.3), rgba(0,0,0,0.5));">
+                            <img src="https://i.postimg.cc/5y4CYk1g/IMG-4664.png" alt="Леонард" class="w-full h-full object-cover object-top">
                         </div>
                         <div>
-                            <div class="text-base text-[#e0e0e0] font-bold medieval-font">Советник</div>
-                            <div class="text-[10px] text-[#a0a0a0]">Дворянин</div>
+                            <div class="text-base text-[#e0e0e0] font-bold medieval-font">Леонард</div>
+                            <div class="text-[10px] text-[#a0a0a0]">Советник квартала</div>
                         </div>
                     </div>
-                    <button class="btn-medieval px-4 py-1.5 rounded text-xs" onclick="ui.showFloatText(this, 'Скоро...', '#c8aa6e')">Говорить</button>
+                    <button class="btn-medieval px-4 py-1.5 rounded text-xs" onclick="dialogue.start('leonard')">Говорить</button>
                 </div>
 
                 <!-- Noble House Section -->
@@ -4286,6 +4472,79 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Lily's House Button -->
+                <div class="mt-4">
+                    <button onclick="router.navigate('lily-house')" class="panel w-full p-0 rounded-lg overflow-hidden group hover:border-pink-500 transition-all relative h-20">
+                        <div class="absolute inset-0 bg-gradient-to-b from-pink-900/30 via-purple-900/20 to-black/60"></div>
+                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(236,72,153,0.2),transparent_60%)]"></div>
+                        <div class="absolute inset-0 flex items-center justify-between p-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-pink-900/60 to-pink-950 border-2 border-pink-500/60 flex items-center justify-center shadow-[0_0_10px_rgba(236,72,153,0.3)]">
+                                    <i class="fas fa-heart text-pink-400"></i>
+                                </div>
+                                <div class="text-left">
+                                    <div class="text-sm font-bold text-pink-300 medieval-font">Дом Лили</div>
+                                    <div class="text-[10px] text-pink-400/70">Особняк дворянки</div>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-500 group-hover:text-pink-500"></i>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: LILY'S HOUSE -->
+        <section id="view-lily-house" class="hidden space-y-4">
+            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-black/30 backdrop-blur-sm">
+                <div class="absolute inset-0 bg-gradient-to-b from-pink-900/30 via-purple-900/20 to-black/60"></div>
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(236,72,153,0.25),transparent_60%)]"></div>
+                <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-pink-500/50 to-transparent"></div>
+                <div class="absolute top-4 left-4">
+                    <button onclick="router.navigate('noble-quarter')" class="w-8 h-8 rounded border border-pink-900/50 bg-black/30 flex items-center justify-center text-pink-400 hover:bg-pink-900/30 transition-colors">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                </div>
+                <div class="absolute top-1/2 left-16 -translate-y-1/2 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-pink-900/60 to-pink-950 flex items-center justify-center border-2 border-pink-500/60 shadow-[0_0_15px_rgba(236,72,153,0.35)]">
+                        <i class="fas fa-heart text-pink-400 text-lg"></i>
+                    </div>
+                    <h2 class="medieval-font text-2xl text-pink-300 drop-shadow-md">Дом Лили</h2>
+                </div>
+            </div>
+
+            <div class="panel rounded-lg p-4 space-y-4">
+                <div class="text-center text-xs text-pink-400/70 bg-black/20 border border-pink-900/30 rounded p-3">
+                    Изящный особняк, утопающий в розах. В окнах мерцает теплый свет свечей.
+                </div>
+
+                <!-- Lily NPC -->
+                <div class="panel p-3 rounded flex items-center justify-between border-pink-900/30">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-full border-2 border-pink-500 bg-gradient-to-br from-pink-900/60 to-pink-950 flex items-center justify-center shadow-[0_0_10px_rgba(236,72,153,0.3)]">
+                            <i class="fas fa-user-crown text-pink-400 text-lg"></i>
+                        </div>
+                        <div>
+                            <div class="text-base text-pink-200 font-bold medieval-font">Лили</div>
+                            <div class="text-[10px] text-pink-400/70">Дворянка</div>
+                        </div>
+                    </div>
+                    <button onclick="dialogue.start('lily_home')" class="btn-medieval px-4 py-2 rounded text-xs border-pink-500 text-pink-300">
+                        Поговорить
+                    </button>
+                </div>
+
+                <!-- Quest Status -->
+                <div id="lily-quest-status" class="hidden panel p-3 rounded border-pink-900/30 bg-pink-900/10">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i class="fas fa-book text-pink-400"></i>
+                        <div class="text-sm text-pink-200 font-bold">Любимая книга Лили</div>
+                    </div>
+                    <div class="text-[10px] text-pink-400/70">
+                        Лили потеряла свою любимую книгу где-то в городе. Может быть, кто-то нашел её и повесил объявление?
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -4316,8 +4575,8 @@
                 <div class="panel p-4 rounded-lg border-amber-900/40 bg-black/30 backdrop-blur-sm space-y-3">
                     <div class="flex items-center justify-between border-b border-amber-900/30 pb-3">
                         <div class="flex items-center gap-3">
-                            <div class="w-12 h-12 rounded-full border-2 border-amber-600 bg-[#222] flex items-center justify-center shadow-[0_0_10px_rgba(217,119,6,0.3)]">
-                                <i class="fas fa-crown text-amber-500 text-lg"></i>
+                            <div class="w-12 h-12 rounded-full border-2 border-amber-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(217,119,6,0.3), rgba(0,0,0,0.5));">
+                                <img src="https://i.postimg.cc/50vfQPDr/IMG-4619.png" alt="Мастер турниров" class="w-full h-full object-cover object-top">
                             </div>
                             <div>
                                 <div class="text-base text-amber-200 font-bold medieval-font">Мастер Турниров</div>
@@ -4747,6 +5006,14 @@
             pickaxe: 3.5,
             crossbow: 2.8,
             sword: 3.0
+        };
+        
+        const TOOL_BASE_PRICES = {
+            rod: 50,
+            sickle: 500,
+            pickaxe: 2000,
+            crossbow: 5000,
+            sword: 1000
         };
 
         const SHOES_WEIGHTS = {
@@ -5882,6 +6149,366 @@
                         ]
                     }
                 }
+            },
+            hugh: {
+                name: "Хью",
+                role: "Торговец скотом",
+                icon: "fa-hat-cowboy",
+                dialogue: {
+                    root: function() {
+                        if (!gameState.npcStates) gameState.npcStates = {};
+                        if (!gameState.npcStates.hugh_met) {
+                            gameState.npcStates.hugh_met = true;
+                            game.save();
+                            return "first_meet";
+                        }
+                        if (gameState.horse) return "has_horse";
+                        return "regular";
+                    },
+                    first_meet: {
+                        text: "*Широкоплечий мужчина в потёртой шляпе оборачивается от загона и вытирает руки на грубую ткань штанов* — О! Новое лицо. *Он широко улыбается и протягивает загрубевшую руку* — Хью меня зовут. Я тут всем заведую — от кролика до боевого коня. Если тебе нужна скотина или конь — ты пришёл куда нужно.",
+                        options: [
+                            { text: "Какие животные у тебя есть?", next: "about_animals" },
+                            { text: "Расскажи про лошадей.", next: "about_horses" },
+                            { text: "Чем питаются твои животные?", next: "about_feed" }
+                        ]
+                    },
+                    about_animals: {
+                        text: "*Хью развёртывается и указывает на загоны рукой* — Вот смотри. Кролики — самые простые, быстро размножаются. Куры несут яйца каждый день, если кормить. Свиньи — настоящая гирька, когда вырастет — мяса будет на зиму. А коровы... *Он поцокает языком* — Коровы дают молоко. Ценная штука, скажу тебе.",
+                        options: [
+                            { text: "А как их купить?", next: "how_buy" },
+                            { text: "Расскажи про лошадей.", next: "about_horses" },
+                            { text: "Понял, спасибо.", next: "exit" }
+                        ]
+                    },
+                    about_horses: {
+                        text: "*Хью гордно стукает ладонью по деревянному столбу загона* — О, лошади — это отдельный разговор! У меня есть Пони — самая дешёвая, для начала пойдёт. Тяжеловоз — для грузов, крепкий как камень. Мустанг — дикая душа, но характер ещё тот. *Его глаза загораются* — А есть Арабский скакун и Чистокровная — настоящие красавицы. И Боевой конь — для настоящих воин.",
+                        options: [
+                            { text: "Какую лучше купить первой?", next: "horse_advice" },
+                            { text: "А как купить лошадь?", next: "how_buy" },
+                            { text: "Понял, спасибо.", next: "exit" }
+                        ]
+                    },
+                    horse_advice: {
+                        text: "*Хью почесывает подбородок и щурится* — Смотри на кошелёк и на то, что тебе нужно. Если только начинаешь — бери Пони. Тридцать тысяч, и уже ты верхом. Тяжеловоз неплох для грузов — сто кило на спине несёт. *Он понижает голос* — А если хочешь душе — Арабский скакун. Когда сядешь на него — поймёшь, о чём я.",
+                        options: [
+                            { text: "Спасибо за совет!", next: "exit" },
+                            { text: "А как купить?", next: "how_buy" }
+                        ]
+                    },
+                    how_buy: {
+                        text: "*Хью поднимает палец* — Есть одна загвоздка. Чтобы купить животное или коня — тебе нужен дом с загоном. Без загона куда их деть? *Он пожимает плечами* — Купи себе домик сначала, а потом заходи. Я тут каждый день. Никуда не денусь.",
+                        options: [
+                            { text: "Понял. Куплю дом.", next: "exit" },
+                            { text: "У меня уже есть дом.", next: "exit" }
+                        ]
+                    },
+                    about_feed: {
+                        text: "*Хью берёт горсть зерна из мешка и показывает ладонь* — Корм — это основа всего. Без кормления животное болеет и не даёт продукции. Корм стоит двадцать монет за порцию. *Он серьёзно смотрит* — Забудешь кормить — животные начнут болеть. Куры перестанут нести яйца. Коровы — давать молоко. Понимаешь?",
+                        options: [
+                            { text: "Понял, буду кормить.", next: "exit" },
+                            { text: "Что ещё нужно знать?", next: "care_tips" }
+                        ]
+                    },
+                    care_tips: {
+                        text: "*Хью загибает пальцы* — Раз — кормить. Каждый день. Два — не забивай загон, иначе будут драться. Три — куры несут яйца только если накормлены. *Задумывается и чуть улыбается* — Ну а ещё... уважай животных. Они чувствуют, когда тебе на них плевать. Поверь мне — за годы работы навидался всего.",
+                        options: [
+                            { text: "Спасибо, Хью.", next: "exit" }
+                        ]
+                    },
+                    has_horse: function() {
+                        if (!gameState.npcStates.hugh_saw_horse) {
+                            gameState.npcStates.hugh_saw_horse = true;
+                            game.save();
+                            return "saw_horse";
+                        }
+                        return "regular_with_horse";
+                    },
+                    saw_horse: {
+                        text: "*Хью бросает взгляд за твою спину и его лицо светлеет* — О-о! Ты уже разбогател! Смотри-ка какой конь! *Он цокает языком с уважением* — Молодец. Теперь у тебя есть скорость. И седло, надеюсь, купил? Без седла на коне — одно мучение для обоих.",
+                        options: [
+                            { text: "Конь мне очень нравится!", next: "exit" },
+                            { text: "А что ещё можно купить?", next: "about_animals" }
+                        ]
+                    },
+                    regular_with_horse: {
+                        text: "*Хью кивает тебе с привычной улыбкой* — О, снова ты. Как твой конь? Ничего не болеет? *Оглядывает загоны* — Если нужно что-то — я тут.",
+                        options: [
+                            { text: "Расскажи ещё про животных.", next: "about_animals" },
+                            { text: "Нет, всё хорошо.", next: "exit" }
+                        ]
+                    },
+                    regular: {
+                        text: "*Хью стоит у загона и поправляет шляпу* — О, ты! Снова заходишь. *Широко улыбается* — Чем могу помочь? Скотина, лошади, корм — всё тут.",
+                        options: [
+                            { text: "Расскажи про животных.", next: "about_animals" },
+                            { text: "Расскажи про лошадей.", next: "about_horses" },
+                            { text: "Просто смотрю.", next: "exit" }
+                        ]
+                    }
+                }
+            },
+            leonard: {
+                name: "Леонард",
+                icon: "fa-user-tie",
+                dialogue: {
+                    root: function() {
+                        if (!gameState.npcStates) gameState.npcStates = {};
+                        if (gameState.npcStates.leonard_quest_done) return "after_quest";
+                        if (gameState.npcStates.leonard_quest_active) return "quest_active";
+                        if (!gameState.npcStates.leonard_met) {
+                            gameState.npcStates.leonard_met = true;
+                            game.save();
+                            return "first_meet";
+                        }
+                        return "regular";
+                    },
+                    first_meet: {
+                        text: "*Леонард оборачивается и измеряет тебя взглядом с головы до ног. Его губы чуть кривятся в полуулыбке* — Хм. Новичок. Я таких вижу каждый день. Большинство уходят с хвостом между ногами. *Он складывает руки на груди* — Меня зовут Леонард. Я — Советник этого квартала. И единственный, кто может решить кое-какие проблемы... если попросить правильно.",
+                        options: [
+                            { text: "Какие проблемы ты решаешь?", next: "what_do" },
+                            { text: "Впечатляет. Я новый в этих краях.", next: "new_here" },
+                            { text: "Мне нужна твоя помощь.", next: "need_help" }
+                        ]
+                    },
+                    what_do: {
+                        text: "*Леонард усмехается и поправляет манжету* — О, многие вещи. Вопросы земли. Связи между родами. Разрешения на торговлю. *Он наклоняется чуть ближе, снижая голос* — И кое-что менее публичное. Дворянский квартал — место, где умеющий договариваться может получить многое.",
+                        options: [
+                            { text: "Звучит как предложение.", next: "offer_hint" },
+                            { text: "Мне многое ещё не понятно.", next: "new_here" }
+                        ]
+                    },
+                    new_here: {
+                        text: "*Леонард кивает, его взгляд становится чуть теплее* — Все когда-то были новичками. Даже я. *Он окидывает взгляд окрестности* — Дворянский квартал — место, где живут те, кто чего-то добился. Но добиться чего-то здесь нужны связи. А связи — моя специальность.",
+                        options: [
+                            { text: "Как мне обзавестись связями?", next: "offer_hint" },
+                            { text: "Спасибо за информацию.", next: "exit" }
+                        ]
+                    },
+                    need_help: {
+                        text: "*Леонард поднимает бровь и смотрит тебе в глаза* — Помощь? *Пауза* Многие просят. Немногие могут отдать взамен. *Он чуть склоняет голову* — Скажи, что ты можешь предложить. Или просто докажи, что ты не из тех, кто только берёт.",
+                        options: [
+                            { text: "Я готов выполнить любое задание.", next: "quest_offer" },
+                            { text: "Что тебе нужно?", next: "quest_offer" }
+                        ]
+                    },
+                    offer_hint: {
+                        text: "*Леонард задумчиво постукивает пальцами* — Связи строятся на услугах. Кто полезен — того помнят. *Он бросает на тебя быстрый взгляд* — У меня есть одно дело. Небольшое, но деликатное. Если справишься — ты попадёшь в мой список. А из моего списка открываются двери.",
+                        options: [
+                            { text: "Я готов. Говори.", next: "quest_offer" },
+                            { text: "Что за дело?", next: "quest_offer" }
+                        ]
+                    },
+                    quest_offer: {
+                        text: "*Леонард понижает голос и чуть наклоняется* — Один из торговцев на рынке — некий Марк — крысит золото из общей кассы квартала. Немного, но достаточно, чтобы заметить. Мне нужны доказательства. *Он достаёт сложенную бумагу* — Адрес его склада. Тихо, незаметно. Найдёшь что-нибудь — принеси мне. Без глупостей.",
+                        options: [
+                            { text: "Понял. Я справлюсь.", action: "leonard_accept_quest", next: "quest_accepted" },
+                            { text: "Мне нужно подумать.", next: "quest_think" }
+                        ]
+                    },
+                    quest_think: {
+                        text: "*Леонард пожимает плечами* — Время не терпит, но я не тороплю. *Через плечо* — Только не тяни. Марк нервный. Если почуит, что кто-то копается в его делах...",
+                        options: [
+                            { text: "Ладно, я возьмусь.", action: "leonard_accept_quest", next: "quest_accepted" },
+                            { text: "Я вернусь позже.", next: "exit" }
+                        ]
+                    },
+                    quest_accepted: {
+                        text: "*Леонард кивает, и на его лице появляется тень уважения* — Хорошо. Склад Марка — юго-восточный угол рынка, красная крыша. Приходи тихо. Когда найдёшь бумаги — сюда, ко мне. *Он протягивает руку* — Добро пожаловать в большую игру.",
+                        options: [
+                            { text: "До встречи, Леонард.", next: "exit" }
+                        ]
+                    },
+                    quest_active: {
+                        text: "*Леонард бросает быстрый взгляд за твою спину* — Ты быстро вернулся. *Пауза* Как дела со складом Марка? Нашёл что-нибудь?",
+                        options: [
+                            { text: "Я ещё не нашёл доказательств.", next: "quest_wait" },
+                            { text: "Дай мне ещё время.", next: "quest_wait" }
+                        ]
+                    },
+                    quest_wait: {
+                        text: "*Леонард морщит лоб* — Не затягивай. Марк — нервный человек. Если почуит, что кто-то копается в его делах... *Многозначительно замолкает*. Поторопись. Тебе нужно собрать 10 монет с гербом Марка — они где-то на его складе.",
+                        options: [
+                            { text: "Я найду их. Скоро.", next: "exit" }
+                        ]
+                    },
+                    after_quest: function() {
+                        if (!gameState.npcStates.leonard_thanked) {
+                            gameState.npcStates.leonard_thanked = true;
+                            game.save();
+                            return "reward";
+                        }
+                        return "after_thanked";
+                    },
+                    reward: {
+                        text: "*Леонард берёт бумаги и быстро просматривает их. Его глаза чуть расширяются* — Вот это да. Марк даже не подозревал. *Складывает документы* — Ты оправдал доверие. *Достаёт кошелёк* — 200 золота. И кое-что ещё — теперь ты можешь закупаться в лавке элиты. Добро пожаловать.",
+                        options: [
+                            { text: "Спасибо, Леонард.", next: "exit" }
+                        ]
+                    },
+                    after_thanked: {
+                        text: "*Леонард откинется назад* — Приятно иметь дело с надёжными людьми. *Смотрит на тебя* — Если появится новое дело — я дам знать. А пока пользуйся привилегиями.",
+                        options: [
+                            { text: "Что за привилегии?", next: "privileges" },
+                            { text: "До встречи, Леонард.", next: "exit" }
+                        ]
+                    },
+                    privileges: {
+                        text: "*Леонард улыбается — редко, но искренне* — Лавка элиты открыта только для тех, кому я доверяю. Кожа высшего сорта, редкие материалы для крафта. *Наклоняет голову* — Заслуженно.",
+                        options: [
+                            { text: "Благодарю тебя.", next: "exit" }
+                        ]
+                    },
+                    regular: {
+                        text: "*Леонард кивает мимоходом* — О, ты снова здесь. *Не останавливается, пролистывая записи* — Если есть дело — говори.",
+                        options: [
+                            { text: "У меня есть вопрос.", next: "regular_question" },
+                            { text: "Просто проходил мимо.", next: "exit" }
+                        ]
+                    },
+                    regular_question: {
+                        text: "*Леонард поднимает взгляд и терпеливо ждёт* — Слушаю.",
+                        options: [
+                            { text: "Как устроен этот квартал?", next: "about_district" },
+                            { text: "Кто здесь живёт?", next: "about_nobles" },
+                            { text: "Ладно, ничего страшного.", next: "exit" }
+                        ]
+                    },
+                    about_district: {
+                        text: "*Леонард оставляет бумаги* — Дворянский квартал — сердце власти. Каждый особняк принадлежит роду с историей. *Указывает вдаль* — Золотые ворота ведут к замку. Здесь живут те, кому подчиняются другие. И каждый хочет ещё больше.",
+                        options: [
+                            { text: "Понял.", next: "exit" }
+                        ]
+                    },
+                    about_nobles: {
+                        text: "*Леонард задумывается* — Дворяне — непростые люди. Каждый с амбициями. Кто-то строит дом, кто-то ищет союзников. *Снижает голос* — И все следят друг за другом. Здесь слова имеют вес. Будь осторожен, с кем говоришь.",
+                        options: [
+                            { text: "Буду иметь в виду.", next: "exit" }
+                        ]
+                    }
+                }
+            },
+            lily_home: {
+                name: "Лили",
+                role: "Дворянка",
+                icon: "fa-user-crown",
+                dialogue: {
+                    root: function() {
+                        // Если книга возвращена
+                        if (gameState.npcStates && gameState.npcStates.lilyBookReturned) {
+                            return "after_book";
+                        }
+                        // Если книга в инвентаре
+                        if (gameState.lilyBook) {
+                            return "has_book";
+                        }
+                        // Если задание активно
+                        if (gameState.npcStates && gameState.npcStates.lilyQuestActive) {
+                            return "quest_active";
+                        }
+                        // Первая встреча
+                        if (!gameState.npcStates || !gameState.npcStates.lilyHomeMet) {
+                            if (!gameState.npcStates) gameState.npcStates = {};
+                            gameState.npcStates.lilyHomeMet = true;
+                            game.save();
+                            return "first_meet";
+                        }
+                        return "regular";
+                    },
+                    first_meet: {
+                        text: "О, это ты! — *Лили улыбается, её глаза сверкают* — Я так рада, что ты пришёл. Проходи, не стесняйся! *Она игриво наклоняет голову* Мой дом — твой дом.",
+                        options: [
+                            { text: "Ты очень гостеприимна", next: "flirt_1" },
+                            { text: "У тебя красивый дом", next: "about_house" },
+                            { text: "Как твои дела?", next: "how_are_you" }
+                        ]
+                    },
+                    flirt_1: {
+                        text: "*Лили подходит ближе, её аромат духов окутывает тебя* — Только для особенных людей. *Она касается твоей руки* А ты... особенный. Знаешь, я давно хотела тебя о чём-то попросить...",
+                        options: [
+                            { text: "О чём?", next: "quest_reveal" },
+                            { text: "*Улыбнуться* Я весь внимание", next: "quest_reveal" }
+                        ]
+                    },
+                    about_house: {
+                        text: "*Лили оглядывается вокруг* — Спасибо! Но знаешь... даже в таком прекрасном доме чего-то не хватает. *Она вздыхает* Я потеряла нечто очень дорогое моему сердцу...",
+                        options: [
+                            { text: "Что ты потеряла?", next: "quest_reveal" }
+                        ]
+                    },
+                    how_are_you: {
+                        text: "*Лили грустно улыбается* — Если честно... не очень. Я потеряла свою самую любимую книгу. Это было последнее, что осталось от моей матери... *Её глаза увлажняются*",
+                        options: [
+                            { text: "Может, я помогу найти её?", next: "quest_reveal" },
+                            { text: "Мне очень жаль", next: "quest_reveal" }
+                        ]
+                    },
+                    quest_reveal: {
+                        text: "*Лили берёт тебя за руки* — Ты бы... правда помог мне? Это была книга со стихами, в кожаном переплёте с золотым тиснением. Я потеряла её где-то в городе... *Она смотрит тебе в глаза* Если ты найдёшь её... я буду так тебе благодарна...",
+                        options: [
+                            { text: "Я обязательно найду её для тебя", action: "accept_lily_quest", next: "quest_accepted" },
+                            { text: "Я постараюсь", action: "accept_lily_quest", next: "quest_accepted" }
+                        ]
+                    },
+                    quest_accepted: {
+                        text: "*Лили обнимает тебя* — Спасибо! Ты не представляешь, как это для меня важно! *Она нежно целует тебя в щёку* Я буду ждать тебя...",
+                        options: [
+                            { text: "Я вернусь с книгой", next: "exit" }
+                        ]
+                    },
+                    quest_active: {
+                        text: "*Лили с надеждой смотрит на тебя* — Ты нашёл мою книгу? Я так волнуюсь...",
+                        options: [
+                            { text: "Ещё ищу", next: "still_searching" },
+                            { text: "Я не забыл о твоей просьбе", next: "exit" }
+                        ]
+                    },
+                    still_searching: {
+                        text: "*Лили нежно гладит твою руку* — Я знаю, что ты найдёшь её. Я верю в тебя... *Она смотрит на тебя с обожанием*",
+                        options: [
+                            { text: "Я не подведу тебя", next: "exit" }
+                        ]
+                    },
+                    has_book: {
+                        text: "*Лили видит книгу в твоих руках, её глаза расширяются* — Это она! Моя книга! О боже, ты нашёл её! *Она хватает книгу и прижимает к груди, слёзы радости блестят в её глазах*",
+                        options: [
+                            { text: "Я рад, что смог помочь", action: "return_book", next: "book_returned" }
+                        ]
+                    },
+                    book_returned: {
+                        text: "*Лили ставит книгу на стол и подходит к тебе очень близко* — Ты не просто вернул мне книгу... ты вернул мне частичку моей души. *Она обнимает тебя и нежно целует в губы* Спасибо... спасибо тебе... *Её щёки розовеют* Теперь ты всегда можешь приходить ко мне...",
+                        options: [
+                            { text: "Я обязательно приду", next: "exit" }
+                        ]
+                    },
+                    after_book: {
+                        text: "*Лили светится от счастья* — Ты вернулся ко мне! *Она обнимает тебя* Каждый раз, когда я открываю эту книгу, я думаю о тебе... *Она краснеет*",
+                        options: [
+                            { text: "Я тоже думаю о тебе", next: "romance_continue" },
+                            { text: "Как ты?", next: "casual_chat" },
+                            { text: "Просто зашёл навестить", next: "exit" }
+                        ]
+                    },
+                    romance_continue: {
+                        text: "*Лили нежно целует тебя* — Ты такой... особенный. С тобой я чувствую себя в безопасности. *Она прижимается к тебе* Останься со мной немного...",
+                        options: [
+                            { text: "С удовольствием", next: "exit" }
+                        ]
+                    },
+                    casual_chat: {
+                        text: "Я читаю стихи и думаю о прекрасном. А ещё... я думаю о тебе. *Она игриво улыбается* Ты стал для меня очень важным человеком.",
+                        options: [
+                            { text: "Ты тоже важна для меня", next: "exit" }
+                        ]
+                    },
+                    regular: {
+                        text: "Привет! Заходи, я всегда рада видеть тебя. *Она улыбается*",
+                        options: [
+                            { text: "Как дела?", next: "how_are_you" },
+                            { text: "Просто зашёл поздороваться", next: "exit" }
+                        ]
+                    }
+                }
             }
         };
 
@@ -5909,9 +6536,15 @@
                 'eldar': 'https://i.postimg.cc/8PjyXPvd/IMG-4616.png',
                 'ben': 'https://i.postimg.cc/vTr8kPhR/IMG-4620.png',
                 'tournamentmaster': 'https://i.postimg.cc/50vfQPDr/IMG-4619.png',
+                'leonard': 'https://i.postimg.cc/5y4CYk1g/IMG-4664.png',
+                'hugh': 'https://i.postimg.cc/tgFkFwQ1/IMG-4670.png',
+                'alex': 'https://i.postimg.cc/tCDLx1dM/IMG-4665.png',
+                'oldman_port': 'https://i.postimg.cc/ncVWpF8k/IMG-4666.png',
+                'peter': 'https://i.postimg.cc/50MPG1q6/IMG-4667.png',
+                'shoemaker': 'https://i.postimg.cc/brymyT5Z/IMG-4668.png',
+                'castle_guard': 'https://i.postimg.cc/FsKTwTc6/IMG-4669.png',
                 'elara': '',
                 'gorn': '',
-                'alex': '',
                 'thomas': ''
             },
             
@@ -5972,6 +6605,18 @@
                     gradientColors = "linear-gradient(135deg, #64748b 0%, #475569 50%, #64748b 100%)"; // Slate Gray
                 } else if(npcId === 'tournamentmaster') {
                     gradientColors = "linear-gradient(135deg, #d97706 0%, #f59e0b 50%, #d97706 100%)"; // Tournament Gold
+                } else if(npcId === 'leonard') {
+                    gradientColors = "linear-gradient(135deg, #b45309 0%, #d97706 50%, #92400e 100%)"; // Dark Noble Gold
+                } else if(npcId === 'hugh') {
+                    gradientColors = "linear-gradient(135deg, #166534 0%, #15803d 50%, #14532d 100%)"; // Emerald Farm
+                } else if(npcId === 'oldman_port') {
+                    gradientColors = "linear-gradient(135deg, #0369a1 0%, #0284c7 50%, #075985 100%)"; // Ocean Blue
+                } else if(npcId === 'peter') {
+                    gradientColors = "linear-gradient(135deg, #7c3aed 0%, #a78bfa 50%, #6d28d9 100%)"; // Tailor Violet
+                } else if(npcId === 'shoemaker') {
+                    gradientColors = "linear-gradient(135deg, #92400e 0%, #b45309 50%, #78350f 100%)"; // Leather Brown
+                } else if(npcId === 'castle_guard') {
+                    gradientColors = "linear-gradient(135deg, #be123c 0%, #e11d48 50%, #9f1239 100%)"; // Royal Crimson
                 }
                 
                 bgGradient.style.background = gradientColors;
@@ -6165,6 +6810,12 @@
                     ui.updateLocations();
                     ui.showFloatText(document.body, "Лагерь беженцев открыт", "#fbbf24");
                 }
+                if (action === 'leonard_accept_quest') {
+                    if (!gameState.npcStates) gameState.npcStates = {};
+                    gameState.npcStates.leonard_quest_active = true;
+                    game.save();
+                    ui.showFloatText(document.body, "Новое задание: Склад Марка", "#fbbf24");
+                }
                 if (action === 'try_cure') {
                     village.cureMeasles();
                 }
@@ -6227,6 +6878,32 @@
                         game.save();
                         ui.updateStats();
                         ui.showFloatText(document.body, "+10 Изумрудов!", "#34d399");
+                    }
+                }
+                if (action === 'accept_lily_quest') {
+                    if (!gameState.npcStates) gameState.npcStates = {};
+                    gameState.npcStates.lilyQuestActive = true;
+                    game.save();
+                    // Показываем задание на доске объявлений
+                    const questEl = document.getElementById('lily-book-quest');
+                    if (questEl) questEl.classList.remove('hidden');
+                    // Показываем статус квеста
+                    const statusEl = document.getElementById('lily-quest-status');
+                    if (statusEl) statusEl.classList.remove('hidden');
+                }
+                if (action === 'return_book') {
+                    if (gameState.lilyBook) {
+                        gameState.lilyBook = false;
+                        gameState.npcStates.lilyBookReturned = true;
+                        gameState.npcStates.lilyQuestActive = false;
+                        game.addReputation(5, document.body);
+                        game.save();
+                        ui.updateStats();
+                        inventory.render();
+                        ui.showFloatText(document.body, "+5 Репутация 💕", "#ec4899");
+                        // Скрываем статус квеста
+                        const statusEl = document.getElementById('lily-quest-status');
+                        if (statusEl) statusEl.classList.add('hidden');
                     }
                 }
                 if (action === 'beggar_give_10') {
@@ -8756,6 +9433,37 @@
                         quest.reward
                     );
                 }
+            },
+            
+            takeLilyBook: function() {
+                // Проверяем что квест активен
+                if (!gameState.npcStates || !gameState.npcStates.lilyQuestActive) {
+                    ui.showFloatText(event.target, "Что это за книга?", "#777");
+                    return;
+                }
+                
+                // Проверяем что уже не взяли
+                if (gameState.lilyBook) {
+                    ui.showFloatText(event.target, "Уже есть", "#777");
+                    return;
+                }
+                
+                // Забираем 100 золота и даем книгу
+                if (gameState.gold < 100) {
+                    ui.showFloatText(event.target, "Нужно 100 золота", "#ff5555");
+                    return;
+                }
+                
+                gameState.gold -= 100;
+                gameState.lilyBook = true;
+                game.save();
+                ui.updateStats();
+                
+                // Скрываем задание
+                const questEl = document.getElementById('lily-book-quest');
+                if (questEl) questEl.classList.add('hidden');
+                
+                ui.showFloatText(event.target, "Книга получена! Отнеси её Лили", "#ec4899");
             }
         };
 
@@ -9090,6 +9798,8 @@
                         const state = gameState.tools[key];
                         if (state && state.owned) {
                             const db = TOOLS_DB[key];
+                            const basePrice = TOOL_BASE_PRICES[key] || 0;
+                            const buyPrice = basePrice + (state.level - 1) * basePrice; // Цена растет с уровнем
                             items.push({
                                 kind: 'tool',
                                 key,
@@ -9098,7 +9808,8 @@
                                 level: state.level,
                                 count: 1,
                                 weight: TOOL_WEIGHTS[key] || 0,
-                                desc: itemModal.getDescriptionForTool(key)
+                                desc: itemModal.getDescriptionForTool(key),
+                                buyPrice: buyPrice
                             });
                         }
                     });
@@ -9834,6 +10545,8 @@
                 const weightEl = document.getElementById('item-modal-weight');
                 const countEl = document.getElementById('item-modal-count');
                 const discardBtn = document.getElementById('btn-discard-item');
+                const sellBtn = document.getElementById('btn-sell-item');
+                const sellPriceSpan = document.getElementById('sell-price');
 
                 iconEl.className = 'w-16 h-16 flex items-center justify-center text-[#c8aa6e] mx-auto';
                 iconEl.innerHTML = ui.getIconHtml(item.icon, 'w-10 h-10');
@@ -9841,16 +10554,32 @@
                 nameEl.innerText = item.name;
                 descEl.innerText = item.desc || '—';
 
-                if (item.kind === 'tool') {
+                // Скрываем обе кнопки по умолчанию
+                discardBtn.style.display = 'none';
+                sellBtn.style.display = 'none';
+
+                if (item.kind === 'tool' || item.kind === 'sword' || item.kind === 'armor') {
+                    // Инструменты, мечи и броню можно продать за полцены
                     countEl.innerText = `Уровень: ${item.level}`;
                     weightEl.innerText = `${(item.weight || 0).toFixed(1)} кг`;
-                    // Инструменты нельзя выбросить
-                    discardBtn.style.display = 'none';
-                } else {
+                    
+                    // Вычисляем цену продажи (половина от цены покупки)
+                    const sellPrice = Math.floor((item.buyPrice || 0) / 2);
+                    if (sellPrice > 0) {
+                        sellPriceSpan.innerText = sellPrice;
+                        sellBtn.style.display = 'block';
+                    }
+                } else if (item.kind === 'resource') {
                     const totalW = (item.weight || 0) * (item.count || 0);
                     countEl.innerText = `Количество: ${item.count}`;
                     weightEl.innerText = `${(item.weight || 0).toFixed(1)} кг/шт • ${(totalW).toFixed(1)} кг всего`;
-                    // Ресурсы можно выбросить
+                    // Ресурсы можно выбросить но не продать
+                    discardBtn.style.display = 'block';
+                } else {
+                    // Зелья, обереги и прочее
+                    const totalW = (item.weight || 0) * (item.count || 0);
+                    countEl.innerText = `Количество: ${item.count}`;
+                    weightEl.innerText = `${(item.weight || 0).toFixed(1)} кг/шт • ${(totalW).toFixed(1)} кг всего`;
                     discardBtn.style.display = 'block';
                 }
 
@@ -9946,6 +10675,49 @@
                     cloth: 'Ткань — основа одежды и сумок. Хорошо продаётся на рынке.'
                 };
                 return map[key] || 'Ресурс.';
+            },
+
+            sellItem: function() {
+                if (!this.currentItem) return;
+
+                const item = this.currentItem;
+                
+                // Проверяем что это инструмент, меч или броня
+                if (item.kind !== 'tool' && item.kind !== 'sword' && item.kind !== 'armor') {
+                    ui.showFloatText(document.body, "Этот предмет нельзя продать", "#ff5555");
+                    return;
+                }
+
+                // Вычисляем цену продажи (половина от цены покупки)
+                const sellPrice = Math.floor((item.buyPrice || 0) / 2);
+                
+                if (sellPrice <= 0) {
+                    ui.showFloatText(document.body, "Этот предмет ничего не стоит", "#ff5555");
+                    return;
+                }
+
+                // Подтверждение продажи
+                if (!confirm(`Продать ${item.name} за ${sellPrice} золота?`)) {
+                    return;
+                }
+
+                // Находим и удаляем предмет из инвентаря
+                const index = gameState.inventory.findIndex(invItem => 
+                    invItem.key === item.key && invItem.kind === item.kind
+                );
+
+                if (index !== -1) {
+                    gameState.inventory.splice(index, 1);
+                    gameState.gold += sellPrice;
+                    game.save();
+                    ui.updateStats();
+                    inventory.render();
+                    
+                    ui.showFloatText(document.body, `+${sellPrice} золота`, "#fbbf24");
+                    this.close();
+                } else {
+                    ui.showFloatText(document.body, "Предмет не найден", "#ff5555");
+                }
             }
         };
 
@@ -9985,7 +10757,7 @@
                 const locationScreens = ['jobs', 'town-square', 'tavern', 'treasury', 'dark-forest', 
                     'training-camp', 'military-fortress', 'village', 'healer', 'bookhouse', 
                     'royal-castle', 'poor-district', 'noble-quarter', 'refugee-camp', 
-                    'tailor', 'shoemaker', 'livestock-trader', 'bulletin'];
+                    'tailor', 'shoemaker', 'livestock-trader', 'bulletin', 'lily-house'];
                 
                 if (locationScreens.includes(screenId)) {
                     game.trackAction();
@@ -10025,6 +10797,8 @@
                 if (shoemakerView) shoemakerView.classList.add('hidden');
                 const livestockView = document.getElementById('view-livestock-trader');
                 if (livestockView) livestockView.classList.add('hidden');
+                const lilyHouseView = document.getElementById('view-lily-house');
+                if (lilyHouseView) lilyHouseView.classList.add('hidden');
                 
                 const target = document.getElementById(`view-${screenId}`);
                 if (target) target.classList.remove('hidden');
@@ -10536,6 +11310,15 @@
                     discardBtn.addEventListener('click', function(e) {
                         e.stopPropagation();
                         itemModal.discardItem();
+                    });
+                }
+                
+                // Добавляем обработчик для кнопки "Продать"
+                const sellBtn = document.getElementById('btn-sell-item');
+                if (sellBtn) {
+                    sellBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        itemModal.sellItem();
                     });
                 }
                 
