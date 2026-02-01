@@ -709,7 +709,7 @@
 
             <div class="flex items-center gap-4 mb-4">
                 <div class="w-14 h-14 rounded-full border-2 border-[#c8aa6e] bg-[#222] flex items-center justify-center overflow-hidden">
-                    <i class="fas fa-user-tie text-2xl text-gray-300"></i>
+                    <img src="https://i.postimg.cc/Y9Yn3XLD/IMG-4611.png" alt="Артур" class="w-full h-full object-cover object-top">
                 </div>
                 <div>
                     <h2 class="medieval-font text-xl text-[#c8aa6e] leading-tight">Артур</h2>
@@ -751,7 +751,8 @@
             </div>
 
             <h2 class="medieval-font text-2xl text-[#c8aa6e] mb-1 tracking-widest">УРОВЕНЬ ПОВЫШЕН</h2>
-            <div id="levelup-new-level" class="text-5xl font-bold text-white mb-5 medieval-font drop-shadow-md">2</div>
+            <div id="levelup-new-level" class="text-5xl font-bold text-white mb-1 medieval-font drop-shadow-md">2</div>
+            <div id="levelup-new-title" class="text-sm text-[#c8aa6e]/80 font-serif italic mb-4">Странник</div>
 
             <div class="space-y-3 mb-6">
                 <div class="bg-[#111]/80 border border-[#333] rounded p-3 flex items-center justify-between backdrop-blur-sm">
@@ -1284,8 +1285,8 @@
                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20"></div>
                             <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(200,170,110,0.15),transparent_70%)]"></div>
                             <div class="absolute bottom-0 left-0 right-0 p-2 text-center">
-                                <div class="text-xs text-amber-300 font-bold medieval-font drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">Странник</div>
-                                <div class="text-[9px] text-amber-500/90 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Уровень 1</div>
+                                <div class="text-xs text-amber-300 font-bold medieval-font drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]" id="char-panel-title">Странник</div>
+                                <div class="text-[9px] text-amber-500/90 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" id="char-panel-level">Уровень 1</div>
                             </div>
                             <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent"></div>
                             <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent"></div>
@@ -3310,7 +3311,7 @@
                     </div>
                     <div class="market-buy-area">
                         <button onclick="market.buySword('metal')" class="btn-ghost px-3 py-1.5 text-xs rounded">
-                            200 <i class="far fa-gem text-[10px]"></i>
+                            200 <i class="far fa-gem text-[10px] gem-price"></i>
                         </button>
                     </div>
                 </div>
@@ -3328,7 +3329,7 @@
                     </div>
                     <div class="market-buy-area">
                         <button onclick="market.buySword('steel')" class="btn-ghost px-3 py-1.5 text-xs rounded">
-                            500 <i class="far fa-gem text-[10px]"></i>
+                            500 <i class="far fa-gem text-[10px] gem-price"></i>
                         </button>
                     </div>
                 </div>
@@ -3346,7 +3347,7 @@
                     </div>
                     <div class="market-buy-area">
                         <button onclick="market.buySword('silver')" class="btn-ghost px-3 py-1.5 text-xs rounded border-[#c8aa6e]">
-                            1,500 <i class="far fa-gem text-[10px]"></i>
+                            1,500 <i class="far fa-gem text-[10px] gem-price"></i>
                         </button>
                     </div>
                 </div>
@@ -3403,7 +3404,7 @@
                     </div>
                     <div class="market-buy-area">
                         <button onclick="market.buyArmor('chainmail')" class="btn-ghost px-3 py-1.5 text-xs rounded">
-                            200 <i class="far fa-gem text-[10px]"></i>
+                            200 <i class="far fa-gem text-[10px] gem-price"></i>
                         </button>
                     </div>
                 </div>
@@ -3421,7 +3422,7 @@
                     </div>
                     <div class="market-buy-area">
                         <button onclick="market.buyArmor('iron')" class="btn-ghost px-3 py-1.5 text-xs rounded">
-                            600 <i class="far fa-gem text-[10px]"></i>
+                            600 <i class="far fa-gem text-[10px] gem-price"></i>
                         </button>
                     </div>
                 </div>
@@ -3439,7 +3440,7 @@
                     </div>
                     <div class="market-buy-area">
                         <button onclick="market.buyArmor('silver_master')" class="btn-ghost px-3 py-1.5 text-xs rounded border-[#c8aa6e]">
-                            1,200 <i class="far fa-gem text-[10px]"></i>
+                            1,200 <i class="far fa-gem text-[10px] gem-price"></i>
                         </button>
                     </div>
                 </div>
@@ -4534,7 +4535,7 @@
                 </div>
 
                 <!-- Lily's House Button -->
-                <div class="mt-4">
+                <div class="mt-4" id="lily-house-btn-wrap" style="display:none;">
                     <button onclick="router.navigate('lily-house')" class="panel w-full p-0 rounded-lg overflow-hidden group hover:border-pink-500 transition-all relative h-20">
                         <div class="absolute inset-0 bg-gradient-to-b from-pink-900/30 via-purple-900/20 to-black/60"></div>
                         <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(236,72,153,0.2),transparent_60%)]"></div>
@@ -4622,7 +4623,7 @@
                         <div class="text-sm text-pink-200 font-bold">Любимая книга Лили</div>
                     </div>
                     <div class="text-[10px] text-pink-400/70">
-                        Лили потеряла свою любимую книгу где-то в городе. Может быть, кто-то нашел её и повесил объявление?
+                        Лили потеряла свою любимую книгу где-то в городе. Попробуй её найти.
                     </div>
                 </div>
             </div>
@@ -5060,7 +5061,7 @@
                         <div class="grid grid-cols-2 gap-3 mb-3">
                             <div>
                                 <label class="block text-xs text-gray-400 mb-1">⚔️ Уровень</label>
-                                <input type="number" id="dev-edit-level" class="dev-stat-input" min="1" max="100">
+                                <input type="number" id="dev-edit-level" class="dev-stat-input" min="1" max="60">
                             </div>
                             <div>
                                 <label class="block text-xs text-gray-400 mb-1">✨ Опыт</label>
@@ -6880,7 +6881,8 @@
                 const optsContainer = document.getElementById('npc-options');
                 optsContainer.innerHTML = '';
                 
-                node.options.forEach((opt, index) => {
+                const options = typeof node.options === 'function' ? node.options() : node.options;
+                options.forEach((opt, index) => {
                     const btn = document.createElement('button');
                     btn.className = "w-full text-left p-3.5 rounded-lg relative overflow-hidden border transition-all group";
                     
@@ -7271,42 +7273,103 @@
 
             generateDailyQuests: function() {
                 const newQuests = [];
-                for (let i = 0; i < 3; i++) {
-                    newQuests.push(this.createRandomQuest(i));
-                }
+                const tiers = [
+                    { pool: this.questPool.easy,   reward: 2, xp: 50  },
+                    { pool: this.questPool.medium, reward: 5, xp: 100 },
+                    { pool: this.questPool.hard,   reward: 8, xp: 200 }
+                ];
+                const usedKeys = [];
+                tiers.forEach((tier, i) => {
+                    let attempts = 0;
+                    let picked = null;
+                    while (attempts < 50) {
+                        const candidate = tier.pool[Math.floor(Math.random() * tier.pool.length)];
+                        const key = candidate.type + '_' + candidate.target;
+                        if (!usedKeys.includes(key)) {
+                            picked = candidate;
+                            usedKeys.push(key);
+                            break;
+                        }
+                        attempts++;
+                    }
+                    if (!picked) picked = tier.pool[Math.floor(Math.random() * tier.pool.length)];
+                    const goal = picked.goalRange[0] + Math.floor(Math.random() * (picked.goalRange[1] - picked.goalRange[0] + 1));
+                    newQuests.push({
+                        id: Date.now() + i,
+                        text: picked.textFn(goal),
+                        type: picked.type,
+                        target: picked.target,
+                        goal: goal,
+                        current: 0,
+                        reward: tier.reward,
+                        xp: tier.xp,
+                        claimed: false
+                    });
+                });
                 gameState.activeQuests = newQuests;
                 gameState.lastQuestGenTime = Date.now();
                 game.save();
             },
 
-            createRandomQuest: function(index) {
-                const types = [
-                    { type: 'sell', target: 'fish', text: 'Продать рыбу', baseGoal: 20, reward: 2 },
-                    { type: 'sell', target: 'wheat', text: 'Продать пшеницу', baseGoal: 30, reward: 3 },
-                    { type: 'sell', target: 'ore', text: 'Продать руду', baseGoal: 50, reward: 5 },
-                    { type: 'sell', target: 'leather', text: 'Продать кожу', baseGoal: 5, reward: 8 },
-                    { type: 'upgrade', target: 'rod', text: 'Улучшить удочку', baseGoal: 1, reward: 10 },
-                    { type: 'upgrade', target: 'sickle', text: 'Улучшить серп', baseGoal: 1, reward: 8 },
-                    { type: 'upgrade', target: 'pickaxe', text: 'Улучшить кирку', baseGoal: 1, reward: 9 },
-                    { type: 'work', target: 'port', text: 'Работать в порту', baseGoal: 20, reward: 2 },
-                    { type: 'work', target: 'mine', text: 'Работать в шахте', baseGoal: 10, reward: 4 }
-                ];
-
-                const template = types[Math.floor(Math.random() * types.length)];
-
-                const goal = Math.max(1, Math.floor(template.baseGoal * (1 + Math.random())));
-                const reward = Math.max(2, Math.floor(template.reward * (1 + Math.random())));
-
-                return {
-                    id: Date.now() + index,
-                    text: `${template.text}`,
-                    type: template.type,
-                    target: template.target,
-                    goal: goal,
-                    current: 0,
-                    reward: reward,
-                    claimed: false
-                };
+            questPool: {
+                easy: [
+                    { type:'gather', target:'fish',      goalRange:[3,6],   textFn: g => `Поймать ${g} рыбы` },
+                    { type:'gather', target:'wood',      goalRange:[4,7],   textFn: g => `Собрать ${g} палок` },
+                    { type:'gather', target:'stone',     goalRange:[3,6],   textFn: g => `Собрать ${g} камней` },
+                    { type:'gather', target:'herbs',     goalRange:[3,5],   textFn: g => `Сорвать ${g} трав` },
+                    { type:'gather', target:'mushrooms', goalRange:[2,4],   textFn: g => `Найти ${g} гриба` },
+                    { type:'sell',   target:'fish',      goalRange:[3,6],   textFn: g => `Продать ${g} рыбы` },
+                    { type:'sell',   target:'wood',      goalRange:[3,5],   textFn: g => `Продать ${g} палок` },
+                    { type:'sell',   target:'herbs',     goalRange:[2,4],   textFn: g => `Продать ${g} трав` },
+                    { type:'work',   target:'port',      goalRange:[3,5],   textFn: g => `Заработать в порту ${g} раз` },
+                    { type:'work',   target:'field',     goalRange:[2,4],   textFn: g => `Поработать на поле ${g} раза` },
+                    { type:'gather', target:'wheat',     goalRange:[3,5],   textFn: g => `Собрать ${g} пшеницы` },
+                    { type:'sell',   target:'stone',     goalRange:[3,5],   textFn: g => `Продать ${g} камней` },
+                ],
+                medium: [
+                    { type:'gather', target:'fish',      goalRange:[8,14],  textFn: g => `Поймать ${g} рыбы` },
+                    { type:'gather', target:'wood',      goalRange:[10,16], textFn: g => `Собрать ${g} палок` },
+                    { type:'gather', target:'stone',     goalRange:[8,14],  textFn: g => `Добыть ${g} камней` },
+                    { type:'gather', target:'herbs',     goalRange:[6,10],  textFn: g => `Собрать ${g} трав` },
+                    { type:'gather', target:'mushrooms', goalRange:[5,8],   textFn: g => `Найти ${g} грибов` },
+                    { type:'gather', target:'wheat',     goalRange:[8,14],  textFn: g => `Собрать ${g} пшеницы` },
+                    { type:'sell',   target:'fish',      goalRange:[8,14],  textFn: g => `Продать ${g} рыбы на рынке` },
+                    { type:'sell',   target:'wheat',     goalRange:[6,12],  textFn: g => `Продать ${g} пшеницы` },
+                    { type:'sell',   target:'wood',      goalRange:[8,12],  textFn: g => `Продать ${g} палок` },
+                    { type:'sell',   target:'herbs',     goalRange:[5,9],   textFn: g => `Продать ${g} трав` },
+                    { type:'sell',   target:'stone',     goalRange:[6,10],  textFn: g => `Продать ${g} камней` },
+                    { type:'work',   target:'port',      goalRange:[8,14],  textFn: g => `Работать в порту ${g} раз` },
+                    { type:'work',   target:'field',     goalRange:[6,10],  textFn: g => `Работать на поле ${g} раз` },
+                    { type:'work',   target:'mine',      goalRange:[4,7],   textFn: g => `Работать в руднике ${g} раз` },
+                    { type:'upgrade', target:'rod',      goalRange:[1,1],   textFn: g => `Улучшить удочку` },
+                    { type:'upgrade', target:'sickle',   goalRange:[1,1],   textFn: g => `Улучшить серп` },
+                ],
+                hard: [
+                    { type:'gather', target:'fish',      goalRange:[18,28], textFn: g => `Поймать ${g} рыбы` },
+                    { type:'gather', target:'wood',      goalRange:[20,30], textFn: g => `Собрать ${g} палок` },
+                    { type:'gather', target:'stone',     goalRange:[16,24], textFn: g => `Добыть ${g} камней` },
+                    { type:'gather', target:'herbs',     goalRange:[12,18], textFn: g => `Собрать ${g} трав` },
+                    { type:'gather', target:'mushrooms', goalRange:[8,14],  textFn: g => `Найти ${g} грибов` },
+                    { type:'gather', target:'wheat',     goalRange:[16,24], textFn: g => `Собрать ${g} пшеницы` },
+                    { type:'gather', target:'ore',       goalRange:[6,10],  textFn: g => `Добыть ${g} руды` },
+                    { type:'gather', target:'leather',   goalRange:[3,5],   textFn: g => `Добыть ${g} кожи` },
+                    { type:'sell',   target:'fish',      goalRange:[18,28], textFn: g => `Продать ${g} рыбы` },
+                    { type:'sell',   target:'wheat',     goalRange:[16,24], textFn: g => `Продать ${g} пшеницы` },
+                    { type:'sell',   target:'ore',       goalRange:[6,10],  textFn: g => `Продать ${g} руды` },
+                    { type:'sell',   target:'leather',   goalRange:[3,5],   textFn: g => `Продать ${g} кожи` },
+                    { type:'sell',   target:'wood',      goalRange:[16,24], textFn: g => `Продать ${g} палок` },
+                    { type:'sell',   target:'stone',     goalRange:[14,20], textFn: g => `Продать ${g} камней` },
+                    { type:'sell',   target:'herbs',     goalRange:[10,16], textFn: g => `Продать ${g} трав` },
+                    { type:'sell',   target:'mushrooms', goalRange:[6,10],  textFn: g => `Продать ${g} грибов` },
+                    { type:'work',   target:'port',      goalRange:[16,24], textFn: g => `Работать в порту ${g} раз` },
+                    { type:'work',   target:'field',     goalRange:[12,18], textFn: g => `Работать на поле ${g} раз` },
+                    { type:'work',   target:'mine',      goalRange:[8,14],  textFn: g => `Работать в руднике ${g} раз` },
+                    { type:'work',   target:'hunter',    goalRange:[4,7],   textFn: g => `Выйти на охоту ${g} раз` },
+                    { type:'upgrade', target:'rod',      goalRange:[1,1],   textFn: g => `Улучшить удочку` },
+                    { type:'upgrade', target:'sickle',   goalRange:[1,1],   textFn: g => `Улучшить серп` },
+                    { type:'upgrade', target:'pickaxe',  goalRange:[1,1],   textFn: g => `Улучшить кирку` },
+                    { type:'upgrade', target:'crossbow', goalRange:[1,1],   textFn: g => `Улучшить арбалет` },
+                ],
             },
 
             onEvent: function(eventType, target, amount) {
@@ -7353,9 +7416,10 @@
                 if (q && !q.claimed && q.current >= q.goal) {
                     q.claimed = true;
                     gameState.emeralds += q.reward;
+                    if (q.xp) game.addXp(q.xp);
                     game.save();
                     ui.updateStats();
-                    ui.showFloatText(event.target, `+${q.reward} Изумрудов`, "#34d399");
+                    ui.showFloatText(event.target, `+${q.reward} <i class="far fa-gem" style="color:#34d399"></i>  +${q.xp || 0} XP`, "#34d399");
                     this.render();
                 }
             },
@@ -7437,8 +7501,11 @@
                                     <div class="text-base text-[#e0e0e0] font-bold medieval-font">${q.text}</div>
                                     <div class="text-xs text-[#a0a0a0]">${q.current} / ${q.goal}</div>
                                 </div>
-                                <div class="text-xs gem-price font-bold border border-emerald-900 bg-emerald-900/20 px-2 py-1 rounded">
-                                    +${q.reward} <i class="far fa-gem gem-price"></i>
+                                <div class="flex flex-col items-end gap-0.5">
+                                    <div class="text-[10px] gem-price font-bold border border-emerald-900 bg-emerald-900/20 px-2 py-0.5 rounded">
+                                        +${q.reward} <i class="far fa-gem gem-price"></i>
+                                    </div>
+                                    <div class="text-[9px] text-blue-400 font-bold">+${q.xp || 0} XP</div>
                                 </div>
                             </div>
                             <div class="w-full h-1.5 bg-[#000] rounded-full overflow-hidden border border-[#333]">
@@ -7636,7 +7703,20 @@
             },
 
             calculateNextLevel: function() {
-                gameState.xpToNextLevel = gameState.level * 100;
+                if (gameState.level >= 60) {
+                    gameState.xpToNextLevel = Infinity;
+                } else {
+                    gameState.xpToNextLevel = Math.floor(gameState.level * (gameState.level + 1) / 2 * 100);
+                }
+            },
+
+            getLevelTitle: function(level) {
+                if (level < 10) return 'Странник';
+                if (level < 20) return 'Городской житель';
+                if (level < 30) return 'Уважаемый человек';
+                if (level < 40) return 'Элита города';
+                if (level < 50) return 'Знаменитый рыцарь';
+                return 'Королевский рыцарь';
             },
 
             addXp: function(amount) {
@@ -7654,6 +7734,7 @@
             },
 
             levelUp: function() {
+                if (gameState.level >= 60) return;
                 gameState.xp -= gameState.xpToNextLevel;
                 gameState.level++;
 
@@ -7679,6 +7760,7 @@
                 if (!modal) return;
 
                 document.getElementById('levelup-new-level').innerText = gameState.level;
+                document.getElementById('levelup-new-title').innerText = game.getLevelTitle(gameState.level);
                 document.getElementById('levelup-gold').innerText = goldReward;
 
                 let msg = "Ваш путь продолжается. Откройте вкладку Герой и улучшайте навыки.";
@@ -10500,6 +10582,12 @@
                 document.getElementById('emerald-display').innerText = gameState.emeralds;
                 document.getElementById('char-level').innerText = gameState.level;
 
+                // Update character panel under portrait
+                const charPanelTitle = document.getElementById('char-panel-title');
+                if (charPanelTitle) charPanelTitle.innerText = game.getLevelTitle(gameState.level);
+                const charPanelLevel = document.getElementById('char-panel-level');
+                if (charPanelLevel) charPanelLevel.innerText = `Уровень ${gameState.level}`;
+
                 const playerIdEl = document.getElementById('player-id');
                 if (playerIdEl) playerIdEl.innerText = gameState.playerId || "—";
                 const playerNameEl = document.getElementById('player-name');
@@ -11489,6 +11577,10 @@
                         router.navigate('map');
                         ui.showFloatText(document.body, "Нужна одежда крестьянина", "#fbbf24");
                         return;
+                    }
+                    const lilyWrap = document.getElementById('lily-house-btn-wrap');
+                    if (lilyWrap) {
+                        lilyWrap.style.display = (gameState.npcStates && gameState.npcStates.lili_invited) ? 'block' : 'none';
                     }
                     quests.onEvent('visit', 'noble-quarter', 1);
                     // Trigger quest completion if active
