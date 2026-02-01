@@ -685,6 +685,14 @@
             <path fill="currentColor" d="M433.592,100.102c-5.541,0-10.039,4.496-10.039,10.029V292.1c0,5.531,4.497,10.039,10.039,10.039c5.531,0,10.039-4.508,10.039-10.039V110.141C443.63,104.599,439.124,100.102,433.592,100.102z"/>
             <path fill="currentColor" d="M432.227,81.39c5.531,0,10.027-4.506,10.027-10.039c0-5.541-4.496-10.039-10.027-10.039c-5.542,0-10.039,4.497-10.039,10.039C422.188,76.883,426.684,81.39,432.227,81.39z"/>
         </symbol>
+        <!-- Sword (Solid) -->
+        <!-- Shield (armor) icon -->
+        <symbol id="icon-armor-generic" viewBox="0 0 512 512">
+            <path fill="currentColor" d="M256 0c4.6 0 9.2 1 13.4 2.9L457.7 82.8c22 9.3 38.4 31 38.3 57.2c-.5 99.2-41.3 280.7-213.7 363.2c-16.7 8-36.1 8-52.8 0C57.3 420.7 16.5 239.2 16 140c-.1-26.2 16.3-47.9 38.3-57.2L242.7 2.9C246.8 1 251.4 0 256 0zm0 66.8V444.8C394 378 431.1 230.1 432 141.4L256 66.8z"/>
+        </symbol>
+        <symbol id="icon-sword-generic" viewBox="0 0 512.001 512.001">
+            <path fill="currentColor" d="M507.606,4.394c-3.339-3.339-8.055-4.909-12.728-4.243L346.387,21.364c-3.688,0.527-7.047,2.406-9.425,5.273 L139.321,264.938c-16.353-7.263-36.394-4.357-50.074,9.323l-21.213,21.213c-5.854,5.854-5.857,15.356,0,21.213l31.82,31.82 l-48.64,48.64H45c-24.813,0-45,20.187-45,45V467c0,24.813,20.187,45,45,45h24.853c24.813,0,45-20.187,45-45v-6.213l48.639-48.64 l31.82,31.82c5.854,5.854,15.356,5.857,21.213,0l21.212-21.213c13.638-13.638,16.611-33.666,9.323-50.075l238.302-197.641 c2.866-2.378,4.746-5.737,5.273-9.425L511.85,17.121C512.517,12.447,510.945,7.732,507.606,4.394z M84.853,467 c0,8.271-6.729,15-15,15H45c-8.271,0-15-6.729-15-15v-24.853c0-8.271,6.729-15,15-15h6.213l33.64,33.64V467z M99.853,433.36 L78.64,412.147l42.426-42.426l21.213,21.213L99.853,433.36z M216.525,401.54l-10.606,10.606L99.853,306.081l10.607-10.606 c5.863-5.863,15.349-5.863,21.213,0l84.853,84.853C222.388,386.191,222.388,395.677,216.525,401.54z M461.757,155.642 L228.075,349.451l-22.156-22.157l174.408-174.408c5.858-5.858,5.858-15.355,0-21.213c-5.857-5.858-15.355-5.858-21.213,0 L184.706,306.081l-22.156-22.156L356.358,50.244l122.964-17.566L461.757,155.642z"/>
+        </symbol>
         <!-- Mushroom (Solid) -->
         <symbol id="icon-mushroom" viewBox="0 0 330.18 330.18">
             <g>
@@ -923,6 +931,28 @@
         </div>
     </div>
 
+    </div>
+
+    <!-- Reputation Change Notification Modal -->
+    <div id="modal-rep-change" class="modal-overlay" style="pointer-events:none; z-index:1050;">
+        <div id="rep-change-card" class="modal-content rounded-lg p-5 text-center relative overflow-hidden" style="max-width:320px; transform:scale(0.85); opacity:0; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease; pointer-events:none;">
+            <div id="rep-change-topbar" class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#34d399] to-transparent"></div>
+            <div class="relative mb-2">
+                <i id="rep-change-icon" class="fas fa-shield-halved text-3xl text-[#34d399] drop-shadow-[0_0_10px_rgba(52,211,153,0.6)]"></i>
+            </div>
+            <h2 class="medieval-font text-lg text-[#c8aa6e] mb-1">Репутация</h2>
+            <div id="rep-change-amount" class="text-2xl font-bold text-[#34d399] medieval-font mb-2">+5</div>
+            <div class="flex items-center justify-center gap-3 mb-1">
+                <span id="rep-change-from" class="text-xs text-[#a0a0a0]">было: 0</span>
+                <span class="text-[#555]">→</span>
+                <span id="rep-change-to" class="text-xs text-[#c8aa6e] font-bold">стало: 5</span>
+            </div>
+            <div class="w-full bg-[#222] rounded-full h-1.5 mt-2 overflow-hidden">
+                <div id="rep-change-bar" class="h-full rounded-full transition-all duration-500" style="width:5%; background:#34d399;"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- Item Info Modal -->
     <div id="modal-item" class="modal-overlay" onclick="itemModal.close()">
         <div class="modal-content rounded-lg p-6 text-center relative overflow-hidden" onclick="event.stopPropagation()">
@@ -944,8 +974,14 @@
                 </div>
             </div>
 
-            <button id="btn-sell-item" class="w-full py-2 rounded font-bold mt-4 border border-yellow-700/40 bg-yellow-900/20 text-yellow-400 hover:bg-yellow-900/30 transition-all backdrop-blur-sm" style="display: none;">
-                <i class="fas fa-coins mr-2"></i>Продать за <span id="sell-price">0</span> <i class="fas fa-coins text-xs"></i>
+            <button id="btn-equip-item" class="w-full py-2 rounded font-bold mt-4 border border-green-700/40 bg-green-900/20 text-green-400 hover:bg-green-900/30 transition-all backdrop-blur-sm" style="display: none;">
+                <i class="fas fa-hand-sparkles mr-2"></i>Экипировать
+            </button>
+            <button id="btn-unequip-item" class="w-full py-2 rounded font-bold mt-2 border border-orange-700/40 bg-orange-900/20 text-orange-400 hover:bg-orange-900/30 transition-all backdrop-blur-sm" style="display: none;">
+                <i class="fas fa-hand mr-2"></i>Снять экипировку
+            </button>
+            <button id="btn-sell-item" class="w-full py-2 rounded font-bold mt-2 border border-yellow-700/40 bg-yellow-900/20 text-yellow-400 hover:bg-yellow-900/30 transition-all backdrop-blur-sm" style="display: none;">
+                <i class="fas fa-coins mr-2"></i>Продать за <span id="sell-price">0</span>
             </button>
             <button id="btn-discard-item" class="w-full py-2 rounded font-bold mt-2 border border-red-700/40 bg-red-900/20 text-red-400 hover:bg-red-900/30 transition-all backdrop-blur-sm" style="display: none;">
                 <i class="fas fa-trash mr-2"></i>Выбросить
@@ -1195,8 +1231,8 @@
                                 <i class="fas fa-shield-halved text-blue-400 text-xl drop-shadow-lg"></i>
                             </div>
                             <div class="flex-1 relative z-10">
-                                <div class="text-sm text-blue-300 font-bold medieval-font">Броня</div>
-                                <div class="text-[10px] text-blue-400/70">Не экипирована</div>
+                                <div class="text-sm text-blue-300 font-bold medieval-font slot-item-name">Броня</div>
+                                <div class="text-[10px] text-blue-400/70 slot-item-sub">Не экипирована</div>
                             </div>
                             <i class="fas fa-chevron-right text-blue-500/50 group-hover:text-blue-400/80 transition-colors relative z-10"></i>
                         </div>
@@ -1204,12 +1240,12 @@
                         <!-- Sword Slot -->
                         <div id="slot-sword" onclick="equipment.openSlot('sword')" class="cursor-pointer rounded-lg border-2 border-red-600/40 backdrop-blur-sm p-3 flex items-center gap-3 hover:border-red-500/80 hover:shadow-lg hover:shadow-red-500/20 transition-all relative overflow-hidden group" style="background: linear-gradient(135deg, rgba(153, 27, 27, 0.15) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(153, 27, 27, 0.15) 100%);">
                             <div class="absolute inset-0 bg-gradient-to-r from-red-600/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                            <div class="w-12 h-12 rounded-full border-2 border-red-500/40 flex items-center justify-center flex-shrink-0 relative z-10" style="background: linear-gradient(135deg, rgba(153, 27, 27, 0.3), rgba(0, 0, 0, 0.5));">
+                            <div class="w-12 h-12 rounded-full border-2 border-red-500/40 flex items-center justify-center flex-shrink-0 relative z-10 slot-icon-wrap" style="background: linear-gradient(135deg, rgba(153, 27, 27, 0.3), rgba(0, 0, 0, 0.5));">
                                 <i class="fas fa-khanda text-red-400 text-xl drop-shadow-lg"></i>
                             </div>
                             <div class="flex-1 relative z-10">
-                                <div class="text-sm text-red-300 font-bold medieval-font">Меч</div>
-                                <div class="text-[10px] text-red-400/70">Не экипирован</div>
+                                <div class="text-sm text-red-300 font-bold medieval-font slot-item-name">Меч</div>
+                                <div class="text-[10px] text-red-400/70 slot-item-sub">Не экипирован</div>
                             </div>
                             <i class="fas fa-chevron-right text-red-500/50 group-hover:text-red-400/80 transition-colors relative z-10"></i>
                         </div>
@@ -1263,10 +1299,14 @@
             </div>
 
             <!-- Stats Grid -->
-            <div class="grid grid-cols-3 gap-3">
+            <div class="grid grid-cols-2 gap-3">
                 <div class="panel p-3 rounded text-center">
                     <div class="text-[10px] text-[#a0a0a0] uppercase tracking-widest">Урон</div>
                     <div id="stat-damage" class="text-lg font-bold text-[#c8aa6e]">0</div>
+                </div>
+                <div class="panel p-3 rounded text-center">
+                    <div class="text-[10px] text-[#a0a0a0] uppercase tracking-widest">Броня</div>
+                    <div id="stat-armor" class="text-lg font-bold text-[#c8aa6e]">0</div>
                 </div>
                 <div class="panel p-3 rounded text-center">
                     <div class="text-[10px] text-[#a0a0a0] uppercase tracking-widest">Ловкость</div>
@@ -3222,166 +3262,186 @@
             <!-- Content: Weapons (Swords) -->
             <div id="market-weapons" class="hidden space-y-3">
                 <!-- Wooden Sword -->
-                <div class="market-item-card p-3 rounded flex items-center justify-between">
+                <div class="market-item-card p-3 rounded flex items-center justify-between" data-sword="wooden">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-800/60 to-amber-950 border-2 border-amber-600/60 flex items-center justify-center shadow-[0_0_10px_rgba(217,119,6,0.3)]">
-                            <i class="fas fa-splotch text-2xl"></i>
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-gray-700/60 to-gray-900 border-2 border-gray-500/60 flex items-center justify-center shadow-[0_0_10px_rgba(136,136,136,0.3)]">
+                            <svg class="w-6 h-6" viewBox="0 0 512.001 512.001" style="fill: #888888;"><use href="#icon-sword-generic"></use></svg>
                         </div>
                         <div>
                             <div class="text-[#e0e0e0] font-serif">Деревянный меч</div>
                             <div class="text-xs text-[#a0a0a0]">Урон: +5</div>
                         </div>
                     </div>
-                    <button onclick="market.buySword('wooden')" class="btn-ghost px-3 py-1.5 text-xs rounded">
-                        5,000 <i class="fas fa-coins text-[10px]"></i>
-                    </button>
+                    <div class="market-buy-area">
+                        <button onclick="market.buySword('wooden')" class="btn-ghost px-3 py-1.5 text-xs rounded">
+                            5,000 <i class="fas fa-coins text-[10px]"></i>
+                        </button>
+                    </div>
                 </div>
                 
                 <!-- Stone Sword -->
-                <div class="market-item-card p-3 rounded flex items-center justify-between">
+                <div class="market-item-card p-3 rounded flex items-center justify-between" data-sword="stone">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-gray-700/60 to-gray-900 border-2 border-gray-500/60 flex items-center justify-center shadow-[0_0_10px_rgba(107,114,128,0.3)]">
-                            <i class="fas fa-monument text-2xl"></i>
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-700/40 to-blue-950 border-2 border-blue-500/60 flex items-center justify-center shadow-[0_0_10px_rgba(108,159,255,0.3)]">
+                            <svg class="w-6 h-6" viewBox="0 0 512.001 512.001" style="fill: #6c9fff;"><use href="#icon-sword-generic"></use></svg>
                         </div>
                         <div>
                             <div class="text-[#e0e0e0] font-serif">Каменный меч</div>
                             <div class="text-xs text-[#a0a0a0]">Урон: +15</div>
                         </div>
                     </div>
-                    <button onclick="market.buySword('stone')" class="btn-ghost px-3 py-1.5 text-xs rounded">
-                        15,000 <i class="fas fa-coins text-[10px]"></i>
-                    </button>
+                    <div class="market-buy-area">
+                        <button onclick="market.buySword('stone')" class="btn-ghost px-3 py-1.5 text-xs rounded">
+                            15,000 <i class="fas fa-coins text-[10px]"></i>
+                        </button>
+                    </div>
                 </div>
                 
                 <!-- Metal Sword -->
-                <div class="market-item-card p-3 rounded flex items-center justify-between">
+                <div class="market-item-card p-3 rounded flex items-center justify-between" data-sword="metal">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-800/60 to-blue-950 border-2 border-blue-500/60 flex items-center justify-center shadow-[0_0_10px_rgba(59,130,246,0.3)]">
-                            <i class="fas fa-khanda text-2xl"></i>
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-pink-700/40 to-pink-950 border-2 border-pink-500/60 flex items-center justify-center shadow-[0_0_10px_rgba(232,123,168,0.3)]">
+                            <svg class="w-6 h-6" viewBox="0 0 512.001 512.001" style="fill: #e87ba8;"><use href="#icon-sword-generic"></use></svg>
                         </div>
                         <div>
                             <div class="text-[#e0e0e0] font-serif">Металлический меч</div>
                             <div class="text-xs text-[#a0a0a0]">Урон: +25</div>
                         </div>
                     </div>
-                    <button onclick="market.buySword('metal')" class="btn-ghost px-3 py-1.5 text-xs rounded">
-                        200 <i class="far fa-gem text-[10px]"></i>
-                    </button>
+                    <div class="market-buy-area">
+                        <button onclick="market.buySword('metal')" class="btn-ghost px-3 py-1.5 text-xs rounded">
+                            200 <i class="far fa-gem text-[10px]"></i>
+                        </button>
+                    </div>
                 </div>
                 
                 <!-- Steel Sword -->
-                <div class="market-item-card p-3 rounded flex items-center justify-between">
+                <div class="market-item-card p-3 rounded flex items-center justify-between" data-sword="steel">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-800/60 to-cyan-950 border-2 border-cyan-500/60 flex items-center justify-center shadow-[0_0_10px_rgba(6,182,212,0.3)]">
-                            <i class="fas fa-sword text-2xl"></i>
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-red-700/40 to-red-950 border-2 border-red-500/60 flex items-center justify-center shadow-[0_0_10px_rgba(239,68,68,0.3)]">
+                            <svg class="w-6 h-6" viewBox="0 0 512.001 512.001" style="fill: #ef4444;"><use href="#icon-sword-generic"></use></svg>
                         </div>
                         <div>
                             <div class="text-[#e0e0e0] font-serif">Стальной меч</div>
                             <div class="text-xs text-[#a0a0a0]">Урон: +40</div>
                         </div>
                     </div>
-                    <button onclick="market.buySword('steel')" class="btn-ghost px-3 py-1.5 text-xs rounded">
-                        500 <i class="far fa-gem text-[10px]"></i>
-                    </button>
+                    <div class="market-buy-area">
+                        <button onclick="market.buySword('steel')" class="btn-ghost px-3 py-1.5 text-xs rounded">
+                            500 <i class="far fa-gem text-[10px]"></i>
+                        </button>
+                    </div>
                 </div>
                 
                 <!-- Silver Master Sword -->
-                <div class="panel p-3 rounded flex items-center justify-between border-purple-900/50 bg-purple-900/10">
+                <div class="panel p-3 rounded flex items-center justify-between border-yellow-900/50 bg-yellow-900/10" data-sword="silver">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-800/60 to-purple-950 border-2 border-purple-400/80 flex items-center justify-center shadow-[0_0_15px_rgba(168,85,247,0.4)]">
-                            <i class="fas fa-wand-magic-sparkles text-2xl"></i>
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-700/60 to-yellow-950 border-2 border-yellow-400/80 flex items-center justify-center shadow-[0_0_15px_rgba(200,170,110,0.4)]">
+                            <svg class="w-6 h-6" viewBox="0 0 512.001 512.001" style="fill: #c8aa6e;"><use href="#icon-sword-generic"></use></svg>
                         </div>
                         <div>
-                            <div class="text-purple-200 font-serif">Серебряный меч мастера</div>
-                            <div class="text-xs text-purple-400">Урон: +60</div>
+                            <div class="text-[#c8aa6e] font-serif">Серебряный меч мастера</div>
+                            <div class="text-xs text-[#c8aa6e]/70">Урон: +60</div>
                         </div>
                     </div>
-                    <button onclick="market.buySword('silver')" class="btn-ghost px-3 py-1.5 text-xs rounded border-purple-500">
-                        1,500 <i class="far fa-gem text-[10px]"></i>
-                    </button>
+                    <div class="market-buy-area">
+                        <button onclick="market.buySword('silver')" class="btn-ghost px-3 py-1.5 text-xs rounded border-[#c8aa6e]">
+                            1,500 <i class="far fa-gem text-[10px]"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
 
             <!-- Content: Armor -->
             <div id="market-armor" class="hidden space-y-3">
                 <!-- Leather Armor -->
-                <div class="market-item-card p-3 rounded flex items-center justify-between">
+                <div class="market-item-card p-3 rounded flex items-center justify-between" data-armor="leather">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-800/60 to-amber-950 border-2 border-amber-600/60 flex items-center justify-center shadow-[0_0_10px_rgba(217,119,6,0.3)]">
-                            <i class="fas fa-vest text-2xl"></i>
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-gray-700/60 to-gray-900 border-2 border-gray-500/60 flex items-center justify-center shadow-[0_0_10px_rgba(136,136,136,0.3)]">
+                            <svg class="w-6 h-6" viewBox="0 0 512 512" style="fill: #888888;"><use href="#icon-armor-generic"></use></svg>
                         </div>
                         <div>
                             <div class="text-[#e0e0e0] font-serif">Кожаная броня</div>
                             <div class="text-xs text-[#a0a0a0]">Броня: +5</div>
                         </div>
                     </div>
-                    <button onclick="market.buyArmor('leather')" class="btn-ghost px-3 py-1.5 text-xs rounded">
-                        10,000 <i class="fas fa-coins text-[10px]"></i>
-                    </button>
+                    <div class="market-buy-area">
+                        <button onclick="market.buyArmor('leather')" class="btn-ghost px-3 py-1.5 text-xs rounded">
+                            10,000 <i class="fas fa-coins text-[10px]"></i>
+                        </button>
+                    </div>
                 </div>
                 
                 <!-- Improved Leather -->
-                <div class="market-item-card p-3 rounded flex items-center justify-between">
+                <div class="market-item-card p-3 rounded flex items-center justify-between" data-armor="improved">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 bg-[#222] border border-[#333] rounded flex items-center justify-center text-amber-600">
-                            <i class="fas fa-vest-patches text-2xl"></i>
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-700/40 to-blue-950 border-2 border-blue-500/60 flex items-center justify-center shadow-[0_0_10px_rgba(108,159,255,0.3)]">
+                            <svg class="w-6 h-6" viewBox="0 0 512 512" style="fill: #6c9fff;"><use href="#icon-armor-generic"></use></svg>
                         </div>
                         <div>
                             <div class="text-[#e0e0e0] font-serif">Улучшенная кожаная броня</div>
                             <div class="text-xs text-[#a0a0a0]">Броня: +15</div>
                         </div>
                     </div>
-                    <button onclick="market.buyArmor('improved')" class="btn-ghost px-3 py-1.5 text-xs rounded">
-                        30,000 <i class="fas fa-coins text-[10px]"></i>
-                    </button>
+                    <div class="market-buy-area">
+                        <button onclick="market.buyArmor('improved')" class="btn-ghost px-3 py-1.5 text-xs rounded">
+                            30,000 <i class="fas fa-coins text-[10px]"></i>
+                        </button>
+                    </div>
                 </div>
                 
                 <!-- Chainmail -->
-                <div class="market-item-card p-3 rounded flex items-center justify-between">
+                <div class="market-item-card p-3 rounded flex items-center justify-between" data-armor="chainmail">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 bg-[#222] border border-[#333] rounded flex items-center justify-center text-gray-400">
-                            <i class="fas fa-user-shield text-2xl"></i>
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-pink-700/40 to-pink-950 border-2 border-pink-500/60 flex items-center justify-center shadow-[0_0_10px_rgba(232,123,168,0.3)]">
+                            <svg class="w-6 h-6" viewBox="0 0 512 512" style="fill: #e87ba8;"><use href="#icon-armor-generic"></use></svg>
                         </div>
                         <div>
                             <div class="text-[#e0e0e0] font-serif">Кольчужная броня</div>
                             <div class="text-xs text-[#a0a0a0]">Броня: +25</div>
                         </div>
                     </div>
-                    <button onclick="market.buyArmor('chainmail')" class="btn-ghost px-3 py-1.5 text-xs rounded">
-                        200 <i class="far fa-gem text-[10px]"></i>
-                    </button>
+                    <div class="market-buy-area">
+                        <button onclick="market.buyArmor('chainmail')" class="btn-ghost px-3 py-1.5 text-xs rounded">
+                            200 <i class="far fa-gem text-[10px]"></i>
+                        </button>
+                    </div>
                 </div>
                 
                 <!-- Iron Armor -->
-                <div class="market-item-card p-3 rounded flex items-center justify-between">
+                <div class="market-item-card p-3 rounded flex items-center justify-between" data-armor="iron">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 bg-[#222] border border-[#333] rounded flex items-center justify-center text-blue-300">
-                            <i class="fas fa-shield text-2xl"></i>
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-red-700/40 to-red-950 border-2 border-red-500/60 flex items-center justify-center shadow-[0_0_10px_rgba(239,68,68,0.3)]">
+                            <svg class="w-6 h-6" viewBox="0 0 512 512" style="fill: #ef4444;"><use href="#icon-armor-generic"></use></svg>
                         </div>
                         <div>
                             <div class="text-[#e0e0e0] font-serif">Железная броня</div>
                             <div class="text-xs text-[#a0a0a0]">Броня: +40</div>
                         </div>
                     </div>
-                    <button onclick="market.buyArmor('iron')" class="btn-ghost px-3 py-1.5 text-xs rounded">
-                        600 <i class="far fa-gem text-[10px]"></i>
-                    </button>
+                    <div class="market-buy-area">
+                        <button onclick="market.buyArmor('iron')" class="btn-ghost px-3 py-1.5 text-xs rounded">
+                            600 <i class="far fa-gem text-[10px]"></i>
+                        </button>
+                    </div>
                 </div>
                 
                 <!-- Silver Master Armor -->
-                <div class="panel p-3 rounded flex items-center justify-between border-purple-900/50 bg-purple-900/10">
+                <div class="panel p-3 rounded flex items-center justify-between border-yellow-900/50 bg-yellow-900/10" data-armor="silver_master">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-800/60 to-purple-950 border-2 border-purple-400/80 flex items-center justify-center shadow-[0_0_15px_rgba(168,85,247,0.4)]">
-                            <i class="fas fa-shield-halved text-2xl"></i>
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-700/60 to-yellow-950 border-2 border-yellow-400/80 flex items-center justify-center shadow-[0_0_15px_rgba(200,170,110,0.4)]">
+                            <svg class="w-6 h-6" viewBox="0 0 512 512" style="fill: #c8aa6e;"><use href="#icon-armor-generic"></use></svg>
                         </div>
                         <div>
-                            <div class="text-purple-200 font-serif">Серебряная броня мастера</div>
-                            <div class="text-xs text-purple-400">Броня: +60</div>
+                            <div class="text-[#c8aa6e] font-serif">Серебряная броня мастера</div>
+                            <div class="text-xs text-[#c8aa6e]/70">Броня: +60</div>
                         </div>
                     </div>
-                    <button onclick="market.buyArmor('silver_master')" class="btn-ghost px-3 py-1.5 text-xs rounded border-purple-500">
-                        1,200 <i class="far fa-gem text-[10px]"></i>
-                    </button>
+                    <div class="market-buy-area">
+                        <button onclick="market.buyArmor('silver_master')" class="btn-ghost px-3 py-1.5 text-xs rounded border-[#c8aa6e]">
+                            1,200 <i class="far fa-gem text-[10px]"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -4492,6 +4552,26 @@
                         </div>
                     </button>
                 </div>
+
+                <!-- Guest House Button -->
+                <div class="mt-4">
+                    <button onclick="router.navigate('guest-house')" class="panel w-full p-0 rounded-lg overflow-hidden group hover:border-purple-500 transition-all relative h-20">
+                        <div class="absolute inset-0 bg-gradient-to-b from-purple-900/30 via-indigo-900/20 to-black/60"></div>
+                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(168,85,247,0.2),transparent_60%)]"></div>
+                        <div class="absolute inset-0 flex items-center justify-between p-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-900/60 to-purple-950 border-2 border-purple-500/60 flex items-center justify-center shadow-[0_0_10px_rgba(168,85,247,0.3)]">
+                                    <i class="fas fa-wine-glass-alt text-purple-400"></i>
+                                </div>
+                                <div class="text-left">
+                                    <div class="text-sm font-bold text-purple-300 medieval-font">Гостевой Дом</div>
+                                    <div class="text-[10px] text-purple-400/70">Элитный отдых</div>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-500 group-hover:text-purple-500"></i>
+                        </div>
+                    </button>
+                </div>
             </div>
         </section>
 
@@ -4543,6 +4623,99 @@
                     </div>
                     <div class="text-[10px] text-pink-400/70">
                         Лили потеряла свою любимую книгу где-то в городе. Может быть, кто-то нашел её и повесил объявление?
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: GUEST HOUSE -->
+        <section id="view-guest-house" class="hidden space-y-4">
+            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-black/30 backdrop-blur-sm">
+                <div class="absolute inset-0 bg-gradient-to-b from-purple-900/30 via-indigo-900/20 to-black/60"></div>
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(168,85,247,0.2),transparent_60%)]"></div>
+                <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-purple-500/50 to-transparent"></div>
+                <div class="absolute top-4 left-4">
+                    <button onclick="router.navigate('noble-quarter')" class="w-8 h-8 rounded border border-purple-900/50 bg-black/30 flex items-center justify-center text-purple-400 hover:bg-purple-900/30 transition-colors">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                </div>
+                <div class="absolute top-1/2 left-16 -translate-y-1/2 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-900/60 to-purple-950 flex items-center justify-center border-2 border-purple-500/60 shadow-[0_0_15px_rgba(168,85,247,0.35)]">
+                        <i class="fas fa-wine-glass-alt text-purple-400 text-lg"></i>
+                    </div>
+                    <h2 class="medieval-font text-2xl text-purple-300 drop-shadow-md">Гостевой Дом</h2>
+                </div>
+            </div>
+
+            <div class="panel rounded-lg p-4 space-y-4">
+                <div class="text-center text-xs text-purple-400/70 bg-black/20 border border-purple-900/30 rounded p-3">
+                    Место, где знать отдыхает от интриг. Лучшее вино, изысканные блюда и азартные игры.
+                </div>
+
+                <!-- Sarah NPC -->
+                <div class="panel p-3 rounded flex items-center justify-between border-purple-900/30">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-full border-2 border-purple-500 bg-gradient-to-br from-purple-900/60 to-purple-950 flex items-center justify-center shadow-[0_0_10px_rgba(168,85,247,0.3)] overflow-hidden">
+                            <img src="https://i.postimg.cc/fWcmXfxm/IMG-4671.png" alt="Сара" class="w-full h-full object-cover object-top">
+                        </div>
+                        <div>
+                            <div class="text-base text-purple-200 font-bold medieval-font">Сара</div>
+                            <div class="text-[10px] text-purple-400/70">Дочь владельца</div>
+                        </div>
+                    </div>
+                    <button onclick="dialogue.start('sarah')" class="btn-medieval px-4 py-2 rounded text-xs border-purple-500 text-purple-300">
+                        Поговорить
+                    </button>
+                </div>
+
+                <!-- High-End Food -->
+                <div class="panel rounded p-4 space-y-3 border-purple-900/30">
+                    <h3 class="medieval-font text-lg text-purple-300">Изысканная Кухня</h3>
+                    <p class="text-xs text-[#a0a0a0]">Восстанавливает 100 HP и 100 сытости.</p>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="locations.guestHouseEat('meatpie')" class="panel p-2 rounded flex flex-col items-center bg-[#222] border border-[#333] hover:border-purple-500 transition-colors group">
+                            <i class="fas fa-bread-slice text-amber-600 text-2xl mb-2 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-xs text-[#e0e0e0] font-bold">Пирог с Мясом</span>
+                            <span class="text-[10px] text-yellow-500 mt-1">1000 <i class="fas fa-coins"></i></span>
+                        </button>
+                        <button onclick="locations.guestHouseEat('julienne')" class="panel p-2 rounded flex flex-col items-center bg-[#222] border border-[#333] hover:border-purple-500 transition-colors group">
+                            <i class="fas fa-bowl-food text-yellow-200 text-2xl mb-2 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-xs text-[#e0e0e0] font-bold">Жульен</span>
+                            <span class="text-[10px] text-yellow-500 mt-1">1000 <i class="fas fa-coins"></i></span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- High Stakes Card Game -->
+                <div class="panel rounded-lg p-4 relative overflow-hidden border-purple-900/30 bg-black/30 backdrop-blur-sm">
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-between mb-2">
+                            <div>
+                                <h3 class="medieval-font text-lg text-purple-300">Игра в Карты</h3>
+                                <p class="text-[10px] text-[#a0a0a0]">Высокие ставки для настоящих господ.</p>
+                            </div>
+                            <div class="text-[10px] text-yellow-500 uppercase tracking-wider font-bold">5000 <i class="fas fa-coins"></i></div>
+                        </div>
+                        
+                        <div id="card-game-area" class="hidden space-y-3 mb-3">
+                             <div class="flex justify-between items-center bg-black/40 p-2 rounded border border-purple-900/30">
+                                <div class="text-center">
+                                    <div class="text-[10px] text-gray-400">Вы</div>
+                                    <div id="player-card" class="text-xl font-bold text-white">?</div>
+                                </div>
+                                <div class="text-xs text-purple-400 font-bold">VS</div>
+                                <div class="text-center">
+                                    <div class="text-[10px] text-gray-400">Сара</div>
+                                    <div id="sarah-card" class="text-xl font-bold text-white">?</div>
+                                </div>
+                            </div>
+                            <div id="card-game-result" class="text-center text-xs font-bold min-h-[16px]"></div>
+                        </div>
+
+                        <button id="btn-play-cards" onclick="locations.guestHousePlayCards()" class="w-full py-2 rounded font-bold border border-purple-700/40 bg-black/30 text-purple-300 hover:bg-purple-900/20 backdrop-blur-sm transition-all">
+                            Сделать ставку (5000)
+                        </button>
                     </div>
                 </div>
             </div>
@@ -4927,19 +5100,19 @@
         };
 
         const SWORDS_DB = {
-            wooden: { id: 'wooden', name: 'Деревянный меч', cost: 5000, costType: 'gold', damage: 5, icon: 'fa-splotch' },
-            stone: { id: 'stone', name: 'Каменный меч', cost: 15000, costType: 'gold', damage: 15, icon: 'fa-monument' },
-            metal: { id: 'metal', name: 'Металлический меч', cost: 200, costType: 'emeralds', damage: 25, icon: 'fa-khanda' },
-            steel: { id: 'steel', name: 'Стальной меч', cost: 500, costType: 'emeralds', damage: 40, icon: 'fa-sword' },
-            silver: { id: 'silver', name: 'Серебряный меч мастера', cost: 1500, costType: 'emeralds', damage: 60, icon: 'fa-wand-magic-sparkles' }
+            wooden: { id: 'wooden', name: 'Деревянный меч', cost: 5000, costType: 'gold', damage: 5, icon: 'icon-sword-generic', color: '#888888', rarity: 'common' },
+            stone: { id: 'stone', name: 'Каменный меч', cost: 15000, costType: 'gold', damage: 15, icon: 'icon-sword-generic', color: '#6c9fff', rarity: 'uncommon' },
+            metal: { id: 'metal', name: 'Металлический меч', cost: 200, costType: 'emeralds', damage: 25, icon: 'icon-sword-generic', color: '#e87ba8', rarity: 'rare' },
+            steel: { id: 'steel', name: 'Стальной меч', cost: 500, costType: 'emeralds', damage: 40, icon: 'icon-sword-generic', color: '#ef4444', rarity: 'epic' },
+            silver: { id: 'silver', name: 'Серебряный меч мастера', cost: 1500, costType: 'emeralds', damage: 60, icon: 'icon-sword-generic', color: '#c8aa6e', rarity: 'legendary' }
         };
 
         const ARMOR_DB = {
-            leather: { id: 'leather', name: 'Кожаная броня', cost: 10000, costType: 'gold', armor: 5, icon: 'fa-vest' },
-            improved: { id: 'improved', name: 'Улучшенная кожаная броня', cost: 30000, costType: 'gold', armor: 15, icon: 'fa-vest-patches' },
-            chainmail: { id: 'chainmail', name: 'Кольчужная броня', cost: 200, costType: 'emeralds', armor: 25, icon: 'fa-user-shield' },
-            iron: { id: 'iron', name: 'Железная броня', cost: 600, costType: 'emeralds', armor: 40, icon: 'fa-shield' },
-            silver_master: { id: 'silver_master', name: 'Серебряная броня мастера', cost: 1200, costType: 'emeralds', armor: 60, icon: 'fa-shield-halved' }
+            leather: { id: 'leather', name: 'Кожаная броня', cost: 10000, costType: 'gold', armor: 5, icon: 'icon-armor-generic', color: '#888888' },
+            improved: { id: 'improved', name: 'Улучшенная кожаная броня', cost: 30000, costType: 'gold', armor: 15, icon: 'icon-armor-generic', color: '#6c9fff' },
+            chainmail: { id: 'chainmail', name: 'Кольчужная броня', cost: 200, costType: 'emeralds', armor: 25, icon: 'icon-armor-generic', color: '#e87ba8' },
+            iron: { id: 'iron', name: 'Железная броня', cost: 600, costType: 'emeralds', armor: 40, icon: 'icon-armor-generic', color: '#ef4444' },
+            silver_master: { id: 'silver_master', name: 'Серебряная броня мастера', cost: 1200, costType: 'emeralds', armor: 60, icon: 'icon-armor-generic', color: '#c8aa6e' }
         };
 
         const JOBS_DB = {
@@ -5062,6 +5235,10 @@
             feed: 0,
             
             inventory: [],
+            ownedSwords: [],
+            ownedArmor: [],
+            equippedSword: null,
+            equippedArmor: null,
             bagLevel: 0,
             // Tools State: owns boolean, current level
             tools: {
@@ -5302,6 +5479,47 @@
                         options: [
                             { text: "Я зайду позже", next: "exit" },
                             { text: "До встречи", next: "exit" }
+                        ]
+                    }
+                }
+            },
+            sarah: {
+                name: "Сара",
+                role: "Дочь владельца",
+                icon: "fa-wine-glass-alt",
+                dialogue: {
+                    root: {
+                        text: "Добро пожаловать в Гостевой Дом. Здесь отдыхают лучшие люди города. Чего ты хочешь?",
+                        options: [
+                            { text: "Расскажи об этом месте", next: "about" },
+                            { text: "Ты здесь работаешь?", next: "flirt_start" },
+                            { text: "Я просто смотрю", next: "exit" }
+                        ]
+                    },
+                    about: {
+                        text: "Отец создал это место для элиты. Вино из лучших погребов, еда, достойная королей. И, конечно, карты. Если у тебя есть золото — тебе здесь рады.",
+                        options: [
+                            { text: "Звучит дорого", next: "root" }
+                        ]
+                    },
+                    flirt_start: {
+                        text: "Я помогаю отцу. И присматриваю за гостями. Некоторые... требуют особого внимания.",
+                        options: [
+                            { text: "Я требую внимания?", next: "flirt_1" },
+                            { text: "Понятно", next: "root" }
+                        ]
+                    },
+                    flirt_1: {
+                        text: "Может быть. Ты выглядишь интереснее, чем наши обычные напыщенные лорды. Но не думай, что я так проста.",
+                        options: [
+                            { text: "Я люблю сложные задачи", next: "flirt_2" },
+                            { text: "Не буду мешать", next: "exit" }
+                        ]
+                    },
+                    flirt_2: {
+                        text: "Хм. Дерзкий. Мне это нравится. Заходи чаще, может быть, я угощу тебя вином за счет заведения. Когда-нибудь.",
+                        options: [
+                            { text: "Ловлю на слове", next: "exit" }
                         ]
                     }
                 }
@@ -6543,7 +6761,9 @@
                 'peter': 'https://i.postimg.cc/50MPG1q6/IMG-4667.png',
                 'shoemaker': 'https://i.postimg.cc/brymyT5Z/IMG-4668.png',
                 'castle_guard': 'https://i.postimg.cc/FsKTwTc6/IMG-4669.png',
+                'noble_guard': 'https://i.postimg.cc/QdvqgMK8/image-Picsart-Background-Remover-(8).png',
                 'elara': '',
+                'sarah': 'https://i.postimg.cc/fWcmXfxm/IMG-4671.png',
                 'gorn': '',
                 'thomas': ''
             },
@@ -6609,6 +6829,8 @@
                     gradientColors = "linear-gradient(135deg, #b45309 0%, #d97706 50%, #92400e 100%)"; // Dark Noble Gold
                 } else if(npcId === 'hugh') {
                     gradientColors = "linear-gradient(135deg, #166534 0%, #15803d 50%, #14532d 100%)"; // Emerald Farm
+                } else if(npcId === 'sarah') {
+                    gradientColors = "linear-gradient(135deg, #a855f7 0%, #7c3aed 50%, #a855f7 100%)";
                 } else if(npcId === 'oldman_port') {
                     gradientColors = "linear-gradient(135deg, #0369a1 0%, #0284c7 50%, #075985 100%)"; // Ocean Blue
                 } else if(npcId === 'peter') {
@@ -6617,6 +6839,8 @@
                     gradientColors = "linear-gradient(135deg, #92400e 0%, #b45309 50%, #78350f 100%)"; // Leather Brown
                 } else if(npcId === 'castle_guard') {
                     gradientColors = "linear-gradient(135deg, #be123c 0%, #e11d48 50%, #9f1239 100%)"; // Royal Crimson
+                } else if(npcId === 'noble_guard') {
+                    gradientColors = "linear-gradient(135deg, #1e3a5f 0%, #2d5a8e 50%, #1a2f4a 100%)"; // Palace Steel Blue
                 }
                 
                 bgGradient.style.background = gradientColors;
@@ -7363,6 +7587,31 @@
                     const parsed = JSON.parse(save);
                     Object.assign(gameState, parsed);
                     if(!gameState.activeQuests) gameState.activeQuests = [];
+                    if(!gameState.ownedSwords) gameState.ownedSwords = [];
+                    if(!gameState.ownedArmor) gameState.ownedArmor = [];
+
+                    // Migration: if old save had currentSword but no ownedSwords populated
+                    if (gameState.currentSword && gameState.ownedSwords.length === 0) {
+                        gameState.ownedSwords = [gameState.currentSword];
+                    }
+                    if (gameState.currentArmor && gameState.ownedArmor.length === 0) {
+                        gameState.ownedArmor = [gameState.currentArmor];
+                    }
+                    // Migration: if equippedSword not set but currentSword exists and is owned
+                    if (gameState.equippedSword === undefined || gameState.equippedSword === null) {
+                        if (gameState.currentSword && gameState.ownedSwords.includes(gameState.currentSword)) {
+                            gameState.equippedSword = gameState.currentSword;
+                        } else {
+                            gameState.equippedSword = null;
+                        }
+                    }
+                    if (gameState.equippedArmor === undefined || gameState.equippedArmor === null) {
+                        if (gameState.currentArmor && gameState.ownedArmor.includes(gameState.currentArmor)) {
+                            gameState.equippedArmor = gameState.currentArmor;
+                        } else {
+                            gameState.equippedArmor = null;
+                        }
+                    }
                 }
             },
             
@@ -7402,20 +7651,6 @@
                 }
                 this.save();
                 ui.updateStats();
-            },
-
-            addReputation: function(amount, sourceElement = null) {
-                const prev = gameState.reputation || 0;
-                const next = Math.max(0, Math.min(100, prev + amount));
-                if (next === prev) return;
-                gameState.reputation = next;
-                this.save();
-                ui.updateStats();
-                if (sourceElement) {
-                    const sign = amount > 0 ? '+' : '';
-                    const color = amount > 0 ? '#34d399' : '#ef4444';
-                    ui.showFloatText(sourceElement, `${sign}${amount} Репутации`, color);
-                }
             },
 
             levelUp: function() {
@@ -7494,17 +7729,62 @@
                 const prev = gameState.reputation || 0;
                 const next = Math.max(0, Math.min(100, prev + amount));
                 if (next === prev) return;
+                const actualChange = next - prev;
                 gameState.reputation = next;
                 this.save();
                 ui.updateStats();
+
+                // Show floating text as before
                 if (sourceElement) {
-                    const sign = amount > 0 ? '+' : '';
-                    const color = amount > 0 ? '#34d399' : '#ef4444';
-                    ui.showFloatText(sourceElement, `${sign}${amount} Репутации`, color);
+                    const sign = actualChange > 0 ? '+' : '';
+                    const color = actualChange > 0 ? '#34d399' : '#ef4444';
+                    ui.showFloatText(sourceElement, `${sign}${actualChange} Репутации`, color);
                 }
+
+                // Show reputation change modal popup
+                this.showRepChangeModal(prev, next, actualChange);
             },
 
-            knockOut: function() {
+            _repChangeTimeout: null,
+            showRepChangeModal: function(prev, next, change) {
+                const modal = document.getElementById('modal-rep-change');
+                const card = document.getElementById('rep-change-card');
+                const amountEl = document.getElementById('rep-change-amount');
+                const fromEl = document.getElementById('rep-change-from');
+                const toEl = document.getElementById('rep-change-to');
+                const barEl = document.getElementById('rep-change-bar');
+                const iconEl = document.getElementById('rep-change-icon');
+                const topbar = document.getElementById('rep-change-topbar');
+                if (!modal || !card) return;
+
+                const isUp = change > 0;
+                const color = isUp ? '#34d399' : '#ef4444';
+                const sign = isUp ? '+' : '';
+
+                amountEl.innerText = `${sign}${change}`;
+                amountEl.style.color = color;
+                fromEl.innerText = `было: ${prev}`;
+                toEl.innerText = `стало: ${next}`;
+                iconEl.style.color = color;
+                iconEl.style.filter = `drop-shadow(0 0 10px ${color}66)`;
+                topbar.style.background = `linear-gradient(to right, transparent, ${color}, transparent)`;
+                barEl.style.width = `${next}%`;
+                barEl.style.background = isUp ? 'linear-gradient(to right, #34d399, #10b981)' : 'linear-gradient(to right, #ef4444, #dc2626)';
+
+                // Cancel previous timeout if modal already open
+                if (this._repChangeTimeout) clearTimeout(this._repChangeTimeout);
+
+                // Show
+                modal.classList.add('open');
+                setTimeout(() => { card.style.transform = 'scale(1)'; card.style.opacity = '1'; }, 30);
+
+                // Auto-hide after 2.2s
+                this._repChangeTimeout = setTimeout(() => {
+                    card.style.transform = 'scale(0.85)';
+                    card.style.opacity = '0';
+                    setTimeout(() => { modal.classList.remove('open'); }, 320);
+                }, 2200);
+            }, function() {
                 if (gameState.unconsciousUntil && gameState.unconsciousUntil > Date.now()) return;
                 gameState.hp = 0;
                 gameState.unconsciousUntil = Date.now() + 10 * 60 * 1000;
@@ -7889,6 +8169,83 @@
 
         // --- LOCATIONS CONTROLLER ---
         const locations = {
+            guestHouseEat: function(type) {
+                if (gameState.gold < 1000) {
+                    ui.showFloatText(event.target, "Не хватает золота!", "#ef4444");
+                    return;
+                }
+                gameState.gold -= 1000;
+                gameState.hp = gameState.maxHp;
+                gameState.hunger = gameState.maxHunger;
+                game.save();
+                ui.updateStats();
+                
+                const dishName = type === 'meatpie' ? "Пирог с Мясом" : "Жульен";
+                ui.showFloatText(event.target, `${dishName} съеден!`, "#34d399");
+                ui.showFloatText(document.getElementById('stat-gold'), "-1000", "#ef4444");
+            },
+
+            guestHousePlayCards: function() {
+                const btn = document.getElementById('btn-play-cards');
+                const gameArea = document.getElementById('card-game-area');
+                const playerCardEl = document.getElementById('player-card');
+                const sarahCardEl = document.getElementById('sarah-card');
+                const resultEl = document.getElementById('card-game-result');
+
+                if (gameState.gold < 5000) {
+                    ui.showFloatText(btn, "Нужно 5000 золота!", "#ef4444");
+                    return;
+                }
+
+                gameState.gold -= 5000;
+                game.save();
+                ui.updateStats();
+                ui.showFloatText(document.getElementById('stat-gold'), "-5000", "#ef4444");
+
+                gameArea.classList.remove('hidden');
+                playerCardEl.innerText = "...";
+                sarahCardEl.innerText = "...";
+                resultEl.innerText = "Раздача...";
+                resultEl.className = "text-center text-xs font-bold text-gray-400";
+                btn.disabled = true;
+
+                setTimeout(() => {
+                    const playerVal = Math.floor(Math.random() * 13) + 2; // 2-14 (Ace high)
+                    const sarahVal = Math.floor(Math.random() * 13) + 2;
+                    
+                    const getCardName = (val) => {
+                        if (val <= 10) return val;
+                        if (val === 11) return "J";
+                        if (val === 12) return "Q";
+                        if (val === 13) return "K";
+                        if (val === 14) return "A";
+                        return val;
+                    };
+
+                    playerCardEl.innerText = getCardName(playerVal);
+                    sarahCardEl.innerText = getCardName(sarahVal);
+
+                    if (playerVal > sarahVal) {
+                        const win = 10000;
+                        gameState.gold += win;
+                        resultEl.innerText = "ПОБЕДА! +10,000";
+                        resultEl.className = "text-center text-xs font-bold text-green-400";
+                        ui.showFloatText(btn, "+10,000!", "#34d399");
+                    } else if (playerVal < sarahVal) {
+                        resultEl.innerText = "Поражение...";
+                        resultEl.className = "text-center text-xs font-bold text-red-400";
+                    } else {
+                        gameState.gold += 5000;
+                        resultEl.innerText = "Ничья. Возврат.";
+                        resultEl.className = "text-center text-xs font-bold text-yellow-400";
+                        ui.showFloatText(btn, "+5,000", "#fbbf24");
+                    }
+                    
+                    game.save();
+                    ui.updateStats();
+                    btn.disabled = false;
+                }, 1000);
+            },
             beg: function(event) {
                 // Check for Knight John encounter (random chance or first time after some progress)
                 // Let's make it trigger if player has > 10 gold total earned or simply not met yet
@@ -8430,8 +8787,10 @@
                     this.renderTools();
                 } else if (cat === 'weapons') {
                     document.getElementById('market-weapons').classList.remove('hidden');
+                    this.renderWeapons();
                 } else if (cat === 'armor') {
                     document.getElementById('market-armor').classList.remove('hidden');
+                    this.renderArmor();
                 } else if (cat === 'horses') {
                     document.getElementById('market-placeholder').classList.remove('hidden');
                 }
@@ -8560,8 +8919,9 @@
                 const sword = SWORDS_DB[swordId];
                 if (!sword) return;
 
-                // Check if already have this sword
-                if (gameState.currentSword === swordId) {
+                // Check if already owned
+                if (!gameState.ownedSwords) gameState.ownedSwords = [];
+                if (gameState.ownedSwords.includes(swordId)) {
                     ui.showFloatText(event.target, "Уже куплено!", "#777");
                     return;
                 }
@@ -8581,19 +8941,23 @@
                     gameState.emeralds -= sword.cost;
                 }
 
+                gameState.ownedSwords.push(swordId);
+                // Legacy compat
                 gameState.currentSword = swordId;
-                gameState.damage = sword.damage;
                 game.save();
                 ui.updateStats();
-                ui.showFloatText(event.target, `${sword.name} куплен!`, "#34d399");
+                inventory.render();
+                ui.showFloatText(event.target, `${sword.name} куплен! Экипируйте в инвентаре.`, "#34d399");
+                market.renderWeapons();
             },
 
             buyArmor: function(armorId) {
                 const armor = ARMOR_DB[armorId];
                 if (!armor) return;
 
-                // Check if already have this armor
-                if (gameState.currentArmor === armorId) {
+                // Check if already owned
+                if (!gameState.ownedArmor) gameState.ownedArmor = [];
+                if (gameState.ownedArmor.includes(armorId)) {
                     ui.showFloatText(event.target, "Уже куплено!", "#777");
                     return;
                 }
@@ -8613,11 +8977,38 @@
                     gameState.emeralds -= armor.cost;
                 }
 
+                gameState.ownedArmor.push(armorId);
+                // Legacy compat
                 gameState.currentArmor = armorId;
-                gameState.armor = armor.armor;
                 game.save();
                 ui.updateStats();
-                ui.showFloatText(event.target, `${armor.name} куплена!`, "#34d399");
+                inventory.render();
+                ui.showFloatText(event.target, `${armor.name} куплена! Экипируйте в инвентаре.`, "#34d399");
+                market.renderArmor();
+            },
+
+            renderWeapons: function() {
+                if (!gameState.ownedSwords) gameState.ownedSwords = [];
+                document.querySelectorAll('#market-weapons [data-sword]').forEach(card => {
+                    const id = card.dataset.sword;
+                    const area = card.querySelector('.market-buy-area');
+                    if (!area) return;
+                    if (gameState.ownedSwords.includes(id)) {
+                        area.innerHTML = '<span class="text-xs text-[#6c9fff] font-serif italic">Куплено</span>';
+                    }
+                });
+            },
+
+            renderArmor: function() {
+                if (!gameState.ownedArmor) gameState.ownedArmor = [];
+                document.querySelectorAll('#market-armor [data-armor]').forEach(card => {
+                    const id = card.dataset.armor;
+                    const area = card.querySelector('.market-buy-area');
+                    if (!area) return;
+                    if (gameState.ownedArmor.includes(id)) {
+                        area.innerHTML = '<span class="text-xs text-[#6c9fff] font-serif italic">Куплено</span>';
+                    }
+                });
             },
 
             ensureWeightCapacity: function(extraWeight) {
@@ -9816,24 +10207,58 @@
                 }
 
                 if (this.currentCategory === 'combat') {
-                    // Объединенная категория для мечей и брони
-                    // Показываем мечи
-                    const swordKey = 'sword';
-                    const swordState = gameState.tools && gameState.tools[swordKey];
-                    if (swordState && swordState.owned) {
-                        const db = TOOLS_DB[swordKey];
+                    // Мечи — все купленные
+                    if (!gameState.ownedSwords) gameState.ownedSwords = [];
+                    gameState.ownedSwords.forEach(swordId => {
+                        const sw = SWORDS_DB[swordId];
+                        if (!sw) return;
+                        const isEquipped = gameState.equippedSword === swordId;
+                        const sellGold = sw.costType === 'gold' ? Math.floor(sw.cost / 2) : 0;
+                        const sellEmerald = sw.costType === 'emeralds' ? Math.floor(sw.cost / 2) : 0;
                         items.push({
-                            kind: 'tool',
-                            key: swordKey,
-                            name: db.name,
-                            icon: db.icon,
-                            level: swordState.level,
+                            kind: 'combat_sword',
+                            key: swordId,
+                            name: sw.name,
+                            icon: sw.icon,
+                            color: sw.color,
+                            level: 1,
                             count: 1,
-                            weight: TOOL_WEIGHTS[swordKey] || 0,
-                            desc: itemModal.getDescriptionForTool(swordKey)
+                            weight: 2.5,
+                            isEquipped: isEquipped,
+                            desc: `Урон: ${sw.damage}.${isEquipped ? ' Экипирован.' : ''}`,
+                            damage: sw.damage,
+                            sellGold: sellGold,
+                            sellEmerald: sellEmerald,
+                            costType: sw.costType,
+                            cost: sw.cost
                         });
-                    }
-                    // Здесь можно добавить броню в будущем
+                    });
+                    // Броня — все купленные
+                    if (!gameState.ownedArmor) gameState.ownedArmor = [];
+                    gameState.ownedArmor.forEach(armorId => {
+                        const ar = ARMOR_DB[armorId];
+                        if (!ar) return;
+                        const isEquipped = gameState.equippedArmor === armorId;
+                        const sellGold = ar.costType === 'gold' ? Math.floor(ar.cost / 2) : 0;
+                        const sellEmerald = ar.costType === 'emeralds' ? Math.floor(ar.cost / 2) : 0;
+                        items.push({
+                            kind: 'combat_armor',
+                            key: armorId,
+                            name: ar.name,
+                            icon: ar.icon,
+                            color: ar.color,
+                            level: 1,
+                            count: 1,
+                            weight: 4.0,
+                            isEquipped: isEquipped,
+                            desc: `Защита: ${ar.armor}.${isEquipped ? ' Экипирована.' : ''}`,
+                            armorVal: ar.armor,
+                            sellGold: sellGold,
+                            sellEmerald: sellEmerald,
+                            costType: ar.costType,
+                            cost: ar.cost
+                        });
+                    });
                 }
 
                 if (this.currentCategory === 'weapons') {
@@ -9893,15 +10318,50 @@
 
                 items.forEach(item => {
                     const el = document.createElement('div');
-                    el.className = 'inv-item aspect-square bg-[#1a1a1d] border border-[#c8aa6e] rounded flex flex-col items-center justify-center relative p-1';
+                    let borderColor = 'border-[#c8aa6e]';
+                    let iconColor = 'text-[#c8aa6e]';
+                    if (item.kind === 'combat_sword') { borderColor = 'border-red-700'; iconColor = 'text-red-400'; }
+                    if (item.kind === 'combat_armor') { borderColor = 'border-blue-700'; iconColor = 'text-blue-400'; }
+                    // Equipped items get a gold glow border
+                    if (item.isEquipped) { borderColor = 'border-[#c8aa6e]'; }
+                    el.className = `inv-item aspect-square bg-[#1a1a1d] border ${borderColor} rounded flex flex-col items-center justify-center relative p-1`;
+                    if (item.isEquipped) {
+                        el.style.boxShadow = '0 0 8px rgba(200,170,110,0.5)';
+                    }
 
-                    const iconHtml = ui.getIconHtml(item.icon, 'text-xl mb-1 w-6 h-6 text-[#c8aa6e]');
+                    let iconHtml;
+                    if (item.kind === 'combat_sword' && item.color) {
+                        iconHtml = `<svg class="icon-svg-fill text-xl mb-1 w-6 h-6" viewBox="0 0 512.001 512.001" style="color: ${item.color};"><use href="#icon-sword-generic"></use></svg>`;
+                    } else if (item.kind === 'combat_armor' && item.color) {
+                        iconHtml = `<svg class="icon-svg-fill text-xl mb-1 w-6 h-6" viewBox="0 0 512 512" style="color: ${item.color};"><use href="#icon-armor-generic"></use></svg>`;
+                    } else {
+                        iconHtml = ui.getIconHtml(item.icon, `text-xl mb-1 w-6 h-6 ${iconColor}`);
+                    }
+
+                    let badge = '';
+                    if (item.kind === 'tool') {
+                        badge = `<span class="absolute top-0 right-1 text-[8px] text-white font-bold">${item.level}</span>`;
+                    } else if (item.kind === 'combat_sword') {
+                        const dmgVal = item.damage || (item.desc.match(/Урон: (\d+)/)?.[1] || '');
+                        badge = `<span class="absolute top-0 right-1 text-[8px] text-red-300 font-bold">⚔${dmgVal}</span>`;
+                    } else if (item.kind === 'combat_armor') {
+                        const arVal = item.armorVal || (item.desc.match(/Защита: (\d+)/)?.[1] || '');
+                        badge = `<span class="absolute top-0 right-1 text-[8px] text-blue-300 font-bold">🛡${arVal}</span>`;
+                    } else {
+                        badge = `<span class="absolute top-0 right-1 text-[8px] text-white font-bold">${item.count}</span>`;
+                    }
+
+                    // Equipped marker at bottom-left
+                    let equippedBadge = '';
+                    if (item.isEquipped) {
+                        equippedBadge = `<span class="absolute bottom-0 left-0.5 text-[7px] text-[#c8aa6e] font-bold uppercase tracking-tight">✓ Экип.</span>`;
+                    }
 
                     el.innerHTML = `
                         ${iconHtml}
                         <span class="text-[8px] uppercase text-center leading-tight text-gray-400">${item.name}</span>
-                        ${item.kind === 'tool' ? `<span class="absolute top-0 right-1 text-[8px] text-white font-bold">${item.level}</span>` : ''}
-                        ${item.kind !== 'tool' ? `<span class="absolute top-0 right-1 text-[8px] text-white font-bold">${item.count}</span>` : ''}
+                        ${badge}
+                        ${equippedBadge}
                     `;
                     el.onclick = () => itemModal.open(item);
                     grid.appendChild(el);
@@ -9934,6 +10394,7 @@
                     else if (iconName === 'icon-pickaxe') viewBox = '0 0 512 512';
                     else if (iconName === 'icon-leather') viewBox = '0 0 467.473 467.473';
                     else if (iconName === 'icon-cloth') viewBox = '0 0 512.001 512.001';
+                    else if (iconName === 'icon-sword-generic') viewBox = '0 0 512.001 512.001';
                     
                     return `<svg class="icon-svg-fill ${extraClasses}" viewBox="${viewBox}"><use href="#${iconName}"></use></svg>`;
                 }
@@ -10075,6 +10536,20 @@
                 const hungerText = document.getElementById('hunger-text');
                 if (hungerBar) hungerBar.style.width = `${hungerPercent}%`;
                 if (hungerText) hungerText.innerText = `${gameState.hunger} / ${gameState.maxHunger}`;
+                
+                // Update Damage and Armor stats based on equipped items
+                const equippedDamage = gameState.equippedSword && SWORDS_DB[gameState.equippedSword] ? SWORDS_DB[gameState.equippedSword].damage : 0;
+                const equippedArmor = gameState.equippedArmor && ARMOR_DB[gameState.equippedArmor] ? ARMOR_DB[gameState.equippedArmor].armor : 0;
+                const statDamageEl = document.getElementById('stat-damage');
+                if (statDamageEl) statDamageEl.innerText = equippedDamage;
+                const statArmorEl = document.getElementById('stat-armor');
+                if (statArmorEl) statArmorEl.innerText = equippedArmor;
+                // Also keep gameState in sync for combat
+                gameState.damage = equippedDamage;
+                gameState.armor = equippedArmor;
+
+                // Update Equipment Slots UI
+                equipment.updateUI();
                 
                 ui.updateMarketCounts();
 
@@ -10529,6 +11004,128 @@
             }
         };
 
+        // --- EQUIPMENT SYSTEM ---
+        const equipment = {
+            equipSword: function(swordId) {
+                if (!gameState.ownedSwords || !gameState.ownedSwords.includes(swordId)) return;
+                gameState.equippedSword = swordId;
+                game.save();
+                ui.updateStats();
+                inventory.render();
+                ui.showFloatText(document.body, `⚔ ${SWORDS_DB[swordId].name} экипирован!`, "#34d399");
+            },
+            unequipSword: function() {
+                if (!gameState.equippedSword) return;
+                const name = SWORDS_DB[gameState.equippedSword]?.name || 'Меч';
+                gameState.equippedSword = null;
+                game.save();
+                ui.updateStats();
+                inventory.render();
+                ui.showFloatText(document.body, `${name} снят`, "#a0a0a0");
+            },
+            equipArmor: function(armorId) {
+                if (!gameState.ownedArmor || !gameState.ownedArmor.includes(armorId)) return;
+                gameState.equippedArmor = armorId;
+                game.save();
+                ui.updateStats();
+                inventory.render();
+                ui.showFloatText(document.body, `🛡 ${ARMOR_DB[armorId].name} экипирована!`, "#34d399");
+            },
+            unequipArmor: function() {
+                if (!gameState.equippedArmor) return;
+                const name = ARMOR_DB[gameState.equippedArmor]?.name || 'Броня';
+                gameState.equippedArmor = null;
+                game.save();
+                ui.updateStats();
+                inventory.render();
+                ui.showFloatText(document.body, `${name} снята`, "#a0a0a0");
+            },
+            sellSword: function(swordId) {
+                const sw = SWORDS_DB[swordId];
+                if (!sw) return;
+                // Can't sell equipped item
+                if (gameState.equippedSword === swordId) {
+                    ui.showFloatText(document.body, "Сначала снимите экипировку", "#ff5555");
+                    return;
+                }
+                const sellGold = sw.costType === 'gold' ? Math.floor(sw.cost / 2) : 0;
+                const sellEmerald = sw.costType === 'emeralds' ? Math.floor(sw.cost / 2) : 0;
+                const priceText = sellGold > 0 ? `${sellGold} золота` : `${sellEmerald} изумрудов`;
+                if (!confirm(`Продать ${sw.name} за ${priceText}?`)) return;
+                gameState.ownedSwords = gameState.ownedSwords.filter(id => id !== swordId);
+                if (sellGold > 0) gameState.gold += sellGold;
+                if (sellEmerald > 0) gameState.emeralds += sellEmerald;
+                game.save();
+                ui.updateStats();
+                inventory.render();
+                ui.showFloatText(document.body, `+${priceText}`, "#fbbf24");
+                itemModal.close();
+            },
+            sellArmor: function(armorId) {
+                const ar = ARMOR_DB[armorId];
+                if (!ar) return;
+                if (gameState.equippedArmor === armorId) {
+                    ui.showFloatText(document.body, "Сначала снимите экипировку", "#ff5555");
+                    return;
+                }
+                const sellGold = ar.costType === 'gold' ? Math.floor(ar.cost / 2) : 0;
+                const sellEmerald = ar.costType === 'emeralds' ? Math.floor(ar.cost / 2) : 0;
+                const priceText = sellGold > 0 ? `${sellGold} золота` : `${sellEmerald} изумрудов`;
+                if (!confirm(`Продать ${ar.name} за ${priceText}?`)) return;
+                gameState.ownedArmor = gameState.ownedArmor.filter(id => id !== armorId);
+                if (sellGold > 0) gameState.gold += sellGold;
+                if (sellEmerald > 0) gameState.emeralds += sellEmerald;
+                game.save();
+                ui.updateStats();
+                inventory.render();
+                ui.showFloatText(document.body, `+${priceText}`, "#fbbf24");
+                itemModal.close();
+            },
+            openSlot: function(type) {
+                // Navigate to character > inventory > combat tab
+                router.switchTab('character');
+                ui.switchCharTab('inventory');
+                inventory.switchCategory('combat');
+            },
+            updateUI: function() {
+                // Update Sword slot display
+                const swordSlot = document.getElementById('slot-sword');
+                if (swordSlot) {
+                    const sw = gameState.equippedSword ? SWORDS_DB[gameState.equippedSword] : null;
+                    const nameEl = swordSlot.querySelector('.slot-item-name');
+                    const subEl = swordSlot.querySelector('.slot-item-sub');
+                    const iconEl = swordSlot.querySelector('.slot-icon-wrap');
+                    if (sw) {
+                        if (nameEl) nameEl.innerText = sw.name;
+                        if (subEl) subEl.innerText = `Урон: ${sw.damage}`;
+                        if (iconEl) {
+                            iconEl.innerHTML = `<svg class="w-6 h-6" viewBox="0 0 512.001 512.001" style="fill: ${sw.color};"><use href="#icon-sword-generic"></use></svg>`;
+                        }
+                    } else {
+                        if (nameEl) nameEl.innerText = 'Меч';
+                        if (subEl) subEl.innerText = 'Не экипирован';
+                        if (iconEl) {
+                            iconEl.innerHTML = `<i class="fas fa-khanda text-red-400 text-xl drop-shadow-lg"></i>`;
+                        }
+                    }
+                }
+                // Update Armor slot display
+                const armorSlot = document.getElementById('slot-armor');
+                if (armorSlot) {
+                    const ar = gameState.equippedArmor ? ARMOR_DB[gameState.equippedArmor] : null;
+                    const nameEl = armorSlot.querySelector('.slot-item-name');
+                    const subEl = armorSlot.querySelector('.slot-item-sub');
+                    if (ar) {
+                        if (nameEl) nameEl.innerText = ar.name;
+                        if (subEl) subEl.innerText = `Защита: ${ar.armor}`;
+                    } else {
+                        if (nameEl) nameEl.innerText = 'Броня';
+                        if (subEl) subEl.innerText = 'Не экипирована';
+                    }
+                }
+            }
+        };
+
         const itemModal = {
             currentItem: null, // Сохраняем текущий предмет для выбрасывания
             
@@ -10547,36 +11144,103 @@
                 const discardBtn = document.getElementById('btn-discard-item');
                 const sellBtn = document.getElementById('btn-sell-item');
                 const sellPriceSpan = document.getElementById('sell-price');
+                const equipBtn = document.getElementById('btn-equip-item');
+                const unequipBtn = document.getElementById('btn-unequip-item');
 
                 iconEl.className = 'w-16 h-16 flex items-center justify-center text-[#c8aa6e] mx-auto';
-                iconEl.innerHTML = ui.getIconHtml(item.icon, 'w-10 h-10');
 
-                nameEl.innerText = item.name;
-                descEl.innerText = item.desc || '—';
-
-                // Скрываем обе кнопки по умолчанию
+                // Скрываем все кнопки
                 discardBtn.style.display = 'none';
                 sellBtn.style.display = 'none';
+                if (equipBtn) equipBtn.style.display = 'none';
+                if (unequipBtn) unequipBtn.style.display = 'none';
 
-                if (item.kind === 'tool' || item.kind === 'sword' || item.kind === 'armor') {
-                    // Инструменты, мечи и броню можно продать за полцены
+                if (item.kind === 'combat_sword') {
+                    // Colored sword icon in modal
+                    iconEl.innerHTML = `<svg class="w-10 h-10" viewBox="0 0 512.001 512.001" style="fill: ${item.color || '#c8aa6e'};"><use href="#icon-sword-generic"></use></svg>`;
+                    nameEl.innerText = item.name;
+                    descEl.innerText = item.desc || '—';
+                    countEl.innerText = `Урон: ${item.damage}`;
+                    weightEl.innerText = `${(item.weight || 2.5).toFixed(1)} кг`;
+
+                    // Sell button
+                    const sellGold = item.sellGold || 0;
+                    const sellEmerald = item.sellEmerald || 0;
+                    if (sellGold > 0 || sellEmerald > 0) {
+                        const priceText = sellGold > 0 ? `${sellGold} <i class="fas fa-coins text-xs"></i>` : `${sellEmerald} <i class="far fa-gem text-xs text-emerald-400"></i>`;
+                        sellPriceSpan.innerHTML = priceText;
+                        sellBtn.style.display = 'block';
+                        sellBtn.onclick = () => equipment.sellSword(item.key);
+                    }
+
+                    // Equip / Unequip
+                    if (item.isEquipped) {
+                        if (unequipBtn) {
+                            unequipBtn.style.display = 'block';
+                            unequipBtn.onclick = () => { equipment.unequipSword(); itemModal.close(); };
+                        }
+                    } else {
+                        if (equipBtn) {
+                            equipBtn.style.display = 'block';
+                            equipBtn.onclick = () => { equipment.equipSword(item.key); itemModal.close(); };
+                        }
+                    }
+                } else if (item.kind === 'combat_armor') {
+                    iconEl.innerHTML = item.color
+                        ? `<svg class="w-10 h-10" viewBox="0 0 512 512" style="fill: ${item.color};"><use href="#icon-armor-generic"></use></svg>`
+                        : ui.getIconHtml(item.icon, 'w-10 h-10 text-blue-400');
+                    nameEl.innerText = item.name;
+                    descEl.innerText = item.desc || '—';
+                    countEl.innerText = `Защита: ${item.armorVal}`;
+                    weightEl.innerText = `${(item.weight || 4.0).toFixed(1)} кг`;
+
+                    // Sell button
+                    const sellGold = item.sellGold || 0;
+                    const sellEmerald = item.sellEmerald || 0;
+                    if (sellGold > 0 || sellEmerald > 0) {
+                        const priceText = sellGold > 0 ? `${sellGold} <i class="fas fa-coins text-xs"></i>` : `${sellEmerald} <i class="far fa-gem text-xs text-emerald-400"></i>`;
+                        sellPriceSpan.innerHTML = priceText;
+                        sellBtn.style.display = 'block';
+                        sellBtn.onclick = () => equipment.sellArmor(item.key);
+                    }
+
+                    // Equip / Unequip
+                    if (item.isEquipped) {
+                        if (unequipBtn) {
+                            unequipBtn.style.display = 'block';
+                            unequipBtn.onclick = () => { equipment.unequipArmor(); itemModal.close(); };
+                        }
+                    } else {
+                        if (equipBtn) {
+                            equipBtn.style.display = 'block';
+                            equipBtn.onclick = () => { equipment.equipArmor(item.key); itemModal.close(); };
+                        }
+                    }
+                } else if (item.kind === 'tool' || item.kind === 'sword' || item.kind === 'armor') {
+                    iconEl.innerHTML = ui.getIconHtml(item.icon, 'w-10 h-10');
+                    nameEl.innerText = item.name;
+                    descEl.innerText = item.desc || '—';
                     countEl.innerText = `Уровень: ${item.level}`;
                     weightEl.innerText = `${(item.weight || 0).toFixed(1)} кг`;
                     
-                    // Вычисляем цену продажи (половина от цены покупки)
                     const sellPrice = Math.floor((item.buyPrice || 0) / 2);
                     if (sellPrice > 0) {
                         sellPriceSpan.innerText = sellPrice;
                         sellBtn.style.display = 'block';
+                        sellBtn.onclick = () => itemModal.sellItem();
                     }
                 } else if (item.kind === 'resource') {
+                    iconEl.innerHTML = ui.getIconHtml(item.icon, 'w-10 h-10');
+                    nameEl.innerText = item.name;
+                    descEl.innerText = item.desc || '—';
                     const totalW = (item.weight || 0) * (item.count || 0);
                     countEl.innerText = `Количество: ${item.count}`;
                     weightEl.innerText = `${(item.weight || 0).toFixed(1)} кг/шт • ${(totalW).toFixed(1)} кг всего`;
-                    // Ресурсы можно выбросить но не продать
                     discardBtn.style.display = 'block';
                 } else {
-                    // Зелья, обереги и прочее
+                    iconEl.innerHTML = ui.getIconHtml(item.icon || 'fa-question', 'w-10 h-10');
+                    nameEl.innerText = item.name;
+                    descEl.innerText = item.desc || '—';
                     const totalW = (item.weight || 0) * (item.count || 0);
                     countEl.innerText = `Количество: ${item.count}`;
                     weightEl.innerText = `${(item.weight || 0).toFixed(1)} кг/шт • ${(totalW).toFixed(1)} кг всего`;
@@ -11313,14 +11977,7 @@
                     });
                 }
                 
-                // Добавляем обработчик для кнопки "Продать"
-                const sellBtn = document.getElementById('btn-sell-item');
-                if (sellBtn) {
-                    sellBtn.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        itemModal.sellItem();
-                    });
-                }
+                // Sell button onclick is set dynamically in itemModal.open per item type
                 
                 document.addEventListener('visibilitychange', () => {
                     if (!document.hidden) {
