@@ -1147,7 +1147,508 @@
         </div>
     </div>
 
+    <!-- Blackjack Modal -->
+    <div id="modal-blackjack" class="modal-overlay">
+        <div class="modal-content rounded-xl p-0 relative overflow-hidden text-left flex flex-col max-h-[90vh] max-w-2xl shadow-2xl" style="background: linear-gradient(135deg, rgba(26,26,29,0.98), rgba(42,42,46,0.98)); width: 95%; max-width: 600px;">
+            <!-- Header -->
+            <div class="relative h-16 overflow-hidden border-b border-purple-900/30">
+                <div class="absolute inset-0 bg-gradient-to-r from-purple-900/20 via-purple-700/20 to-purple-900/20"></div>
+                <div class="relative z-10 h-full flex items-center justify-between px-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-600/30 to-purple-900/30 flex items-center justify-center border-2 border-purple-500/50">
+                            <i class="fas fa-cards text-purple-400 text-lg"></i>
+                        </div>
+                        <div>
+                            <h2 class="medieval-font text-xl text-purple-300">Блэкджек</h2>
+                            <p class="text-[10px] text-purple-400/70">Карточная игра высоких ставок</p>
+                        </div>
+                    </div>
+                    <button onclick="blackjack.close()" class="w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm border border-white/10 flex items-center justify-center text-white/70 hover:text-white hover:bg-black/60 transition-all">
+                        <i class="fas fa-times text-sm"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Game Area -->
+            <div class="p-6 space-y-4 overflow-y-auto" style="max-height: calc(90vh - 16rem);">
+                <!-- Dealer Section -->
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-red-600/30 to-red-900/30 flex items-center justify-center border border-red-500/50">
+                                <i class="fas fa-user-tie text-red-400 text-sm"></i>
+                            </div>
+                            <span class="text-sm text-red-300 medieval-font">Дилер</span>
+                        </div>
+                        <div class="text-sm">
+                            <span class="text-gray-400">Очки: </span>
+                            <span id="dealer-score" class="text-red-300 font-bold">0</span>
+                        </div>
+                    </div>
+                    <div id="dealer-cards" class="flex gap-2 min-h-[120px] p-3 rounded-lg bg-black/30 border border-red-900/30 items-center justify-center flex-wrap">
+                        <!-- Dealer cards will be added here -->
+                    </div>
+                </div>
+
+                <!-- Player Section -->
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-green-600/30 to-green-900/30 flex items-center justify-center border border-green-500/50">
+                                <i class="fas fa-user text-green-400 text-sm"></i>
+                            </div>
+                            <span class="text-sm text-green-300 medieval-font">Вы</span>
+                        </div>
+                        <div class="text-sm">
+                            <span class="text-gray-400">Очки: </span>
+                            <span id="player-score" class="text-green-300 font-bold">0</span>
+                        </div>
+                    </div>
+                    <div id="player-cards" class="flex gap-2 min-h-[120px] p-3 rounded-lg bg-black/30 border border-green-900/30 items-center justify-center flex-wrap">
+                        <!-- Player cards will be added here -->
+                    </div>
+                </div>
+
+                <!-- Game Message -->
+                <div id="game-message" class="text-center py-3 px-4 rounded-lg bg-purple-900/20 border border-purple-700/30 min-h-[60px] flex items-center justify-center">
+                    <p class="text-sm text-purple-300 medieval-font">Сделайте ставку, чтобы начать игру</p>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="p-6 pt-4 border-t border-purple-900/30 space-y-3" style="background: linear-gradient(to top, rgba(15,15,16,0.8), transparent);">
+                <!-- Bet Controls -->
+                <div id="bet-controls" class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-400">Ваша ставка:</span>
+                        <div class="flex items-center gap-2">
+                            <span id="current-bet" class="text-xl font-bold text-yellow-400 medieval-font">2000</span>
+                            <i class="fas fa-coins text-yellow-500"></i>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-4 gap-2">
+                        <button onclick="blackjack.setBet(2000, event)" class="bet-btn py-2 rounded text-xs border border-purple-700/40 bg-black/30 text-purple-300 hover:bg-purple-900/20 transition-all">2000</button>
+                        <button onclick="blackjack.setBet(5000, event)" class="bet-btn py-2 rounded text-xs border border-purple-700/40 bg-black/30 text-purple-300 hover:bg-purple-900/20 transition-all">5000</button>
+                        <button onclick="blackjack.setBet(10000, event)" class="bet-btn py-2 rounded text-xs border border-purple-700/40 bg-black/30 text-purple-300 hover:bg-purple-900/20 transition-all">10000</button>
+                        <button onclick="blackjack.setBet(25000, event)" class="bet-btn py-2 rounded text-xs border border-purple-700/40 bg-black/30 text-purple-300 hover:bg-purple-900/20 transition-all">25000</button>
+                    </div>
+                    <button onclick="blackjack.startGame()" class="w-full py-3 rounded font-bold border-2 border-purple-500/50 bg-gradient-to-r from-purple-900/40 to-purple-700/40 text-purple-200 hover:from-purple-800/50 hover:to-purple-600/50 transition-all medieval-font text-sm">
+                        <i class="fas fa-play mr-2"></i>Начать игру
+                    </button>
+                </div>
+
+                <!-- Game Controls -->
+                <div id="game-controls" class="hidden space-y-2">
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="blackjack.hit()" id="btn-hit" class="py-3 rounded font-bold border-2 border-green-500/50 bg-gradient-to-r from-green-900/40 to-green-700/40 text-green-200 hover:from-green-800/50 hover:to-green-600/50 transition-all medieval-font text-sm">
+                            <i class="fas fa-plus mr-2"></i>Взять карту
+                        </button>
+                        <button onclick="blackjack.stand()" id="btn-stand" class="py-3 rounded font-bold border-2 border-yellow-500/50 bg-gradient-to-r from-yellow-900/40 to-yellow-700/40 text-yellow-200 hover:from-yellow-800/50 hover:to-yellow-600/50 transition-all medieval-font text-sm">
+                            <i class="fas fa-hand-paper mr-2"></i>Хватит
+                        </button>
+                    </div>
+                    <button onclick="blackjack.resetGame()" class="w-full py-2 rounded font-bold border border-gray-700/40 bg-black/30 text-gray-400 hover:bg-gray-900/20 transition-all text-xs">
+                        <i class="fas fa-redo mr-2"></i>Новая игра
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tournament Battle Modal -->
+    <div id="modal-tournament-battle" class="modal-overlay">
+        <div class="modal-content rounded-xl p-0 relative overflow-hidden text-left flex flex-col max-h-[90vh] shadow-2xl" style="background: linear-gradient(135deg, rgba(26,26,29,0.98), rgba(42,42,46,0.98)); width: 95%; max-width: 700px;">
+            <!-- Battle Header -->
+            <div class="relative h-24 overflow-hidden border-b border-amber-900/30">
+                <div class="absolute inset-0 bg-gradient-to-r from-amber-900/30 via-red-900/30 to-amber-900/30"></div>
+                <div class="absolute inset-0" style="background-image: url('https://i.postimg.cc/s2cXkKrW/IMG-4610.jpg'); background-size: cover; background-position: center; opacity: 0.15;"></div>
+                
+                <div class="relative z-10 h-full flex flex-col justify-center px-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="medieval-font text-2xl text-amber-300 drop-shadow-lg" id="battle-title">Турнирный Поединок</h2>
+                            <p class="text-xs text-amber-400/70" id="battle-subtitle">Раунд 1 из 3</p>
+                        </div>
+                        <button onclick="tournamentBattle.forfeit()" class="w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm border border-red-500/30 flex items-center justify-center text-red-400 hover:text-red-300 hover:bg-red-900/30 transition-all">
+                            <i class="fas fa-times text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Decorative swords -->
+                <div class="absolute top-2 left-1/2 -translate-x-1/2 flex gap-2 opacity-20">
+                    <i class="fas fa-sword text-amber-400 text-xs rotate-45"></i>
+                    <i class="fas fa-sword text-amber-400 text-xs -rotate-45"></i>
+                </div>
+            </div>
+
+            <!-- Battle Arena -->
+            <div class="p-4 space-y-3 overflow-y-auto" style="max-height: calc(90vh - 20rem);">
+                <!-- Opponent Info -->
+                <div class="relative rounded-lg p-4 border border-red-900/40 overflow-hidden" style="background: linear-gradient(135deg, rgba(127, 29, 29, 0.2), rgba(69, 10, 10, 0.3));">
+                    <div class="absolute top-0 right-0 w-32 h-32 opacity-10">
+                        <i class="fas fa-skull text-red-500 text-8xl"></i>
+                    </div>
+                    
+                    <div class="relative z-10 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-full border-2 border-red-500/50 flex items-center justify-center bg-gradient-to-br from-red-900/40 to-black/60">
+                                    <i id="opponent-icon" class="fas fa-user-ninja text-red-400 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 id="opponent-name" class="text-lg font-bold text-red-300 medieval-font">Противник</h3>
+                                    <p id="opponent-tactic" class="text-xs text-red-400/70">Тактика: Агрессивная</p>
+                                </div>
+                            </div>
+                            <div id="opponent-stamina-indicator" class="flex gap-1">
+                                <!-- Stamina dots will be added here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Opponent Stats Bar -->
+                        <div class="space-y-1.5">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-red-300">❤️ Здоровье</span>
+                                <span id="opponent-hp-text" class="text-red-200 font-bold">100/100</span>
+                            </div>
+                            <div class="h-3 bg-black/50 rounded-full overflow-hidden border border-red-900/50">
+                                <div id="opponent-hp-bar" class="h-full bg-gradient-to-r from-red-600 to-red-500 transition-all duration-500" style="width: 100%;"></div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-2 mt-2">
+                                <div class="text-xs text-center p-1.5 bg-black/30 rounded border border-red-900/30">
+                                    <div class="text-red-400/60">⚔️ Урон</div>
+                                    <div id="opponent-damage" class="text-red-300 font-bold">15</div>
+                                </div>
+                                <div class="text-xs text-center p-1.5 bg-black/30 rounded border border-red-900/30">
+                                    <div class="text-red-400/60">🛡️ Броня</div>
+                                    <div id="opponent-armor" class="text-red-300 font-bold">10</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Opponent Status Effects -->
+                        <div id="opponent-effects" class="flex gap-1 flex-wrap min-h-[20px]">
+                            <!-- Status effects will appear here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Battle Log -->
+                <div class="rounded-lg p-3 bg-black/40 border border-amber-900/30 min-h-[80px] max-h-[120px] overflow-y-auto" id="battle-log">
+                    <div class="space-y-1 text-xs">
+                        <p class="text-amber-400/70 italic">⚔️ Поединок начинается...</p>
+                    </div>
+                </div>
+
+                <!-- Player Info -->
+                <div class="relative rounded-lg p-4 border border-green-900/40 overflow-hidden" style="background: linear-gradient(135deg, rgba(22, 101, 52, 0.2), rgba(20, 83, 45, 0.3));">
+                    <div class="absolute top-0 left-0 w-32 h-32 opacity-10">
+                        <i class="fas fa-shield text-green-500 text-8xl"></i>
+                    </div>
+                    
+                    <div class="relative z-10 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-full border-2 border-green-500/50 flex items-center justify-center bg-gradient-to-br from-green-900/40 to-black/60">
+                                    <i class="fas fa-user-shield text-green-400 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 id="player-battle-name" class="text-lg font-bold text-green-300 medieval-font">Вы</h3>
+                                    <p class="text-xs text-green-400/70">Рыцарь</p>
+                                </div>
+                            </div>
+                            <div id="player-stamina-indicator" class="flex gap-1">
+                                <!-- Stamina dots will be added here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Player Stats Bar -->
+                        <div class="space-y-1.5">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-green-300">❤️ Здоровье</span>
+                                <span id="player-hp-text" class="text-green-200 font-bold">100/100</span>
+                            </div>
+                            <div class="h-3 bg-black/50 rounded-full overflow-hidden border border-green-900/50">
+                                <div id="player-hp-bar" class="h-full bg-gradient-to-r from-green-600 to-green-500 transition-all duration-500" style="width: 100%;"></div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-2 mt-2">
+                                <div class="text-xs text-center p-1.5 bg-black/30 rounded border border-green-900/30">
+                                    <div class="text-green-400/60">⚔️ Урон</div>
+                                    <div id="player-damage" class="text-green-300 font-bold">10</div>
+                                </div>
+                                <div class="text-xs text-center p-1.5 bg-black/30 rounded border border-green-900/30">
+                                    <div class="text-green-400/60">🛡️ Броня</div>
+                                    <div id="player-armor" class="text-green-300 font-bold">5</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Player Status Effects -->
+                        <div id="player-effects" class="flex gap-1 flex-wrap min-h-[20px]">
+                            <!-- Status effects will appear here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Battle Actions -->
+            <div class="p-4 pt-3 border-t border-amber-900/30 space-y-2" style="background: linear-gradient(to top, rgba(15,15,16,0.9), transparent);">
+                <div id="battle-actions" class="grid grid-cols-2 gap-2">
+                    <!-- Quick Strike -->
+                    <button onclick="tournamentBattle.playerAction('quick_strike')" class="battle-action-btn p-3 rounded-lg border-2 transition-all group" data-stamina="1">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-sm font-bold text-yellow-300 medieval-font">⚡ Быстрая атака</span>
+                            <span class="stamina-cost text-xs text-yellow-500">💧1</span>
+                        </div>
+                        <p class="text-xs text-gray-400 leading-tight">Быстрый удар. Средний урон, низкий шанс блока врага.</p>
+                    </button>
+                    
+                    <!-- Power Strike -->
+                    <button onclick="tournamentBattle.playerAction('power_strike')" class="battle-action-btn p-3 rounded-lg border-2 transition-all group" data-stamina="2">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-sm font-bold text-red-300 medieval-font">💥 Мощная атака</span>
+                            <span class="stamina-cost text-xs text-red-500">💧2</span>
+                        </div>
+                        <p class="text-xs text-gray-400 leading-tight">Сильный удар. Высокий урон, но можно пропустить контратаку.</p>
+                    </button>
+                    
+                    <!-- Defend -->
+                    <button onclick="tournamentBattle.playerAction('defend')" class="battle-action-btn p-3 rounded-lg border-2 transition-all group" data-stamina="1">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-sm font-bold text-blue-300 medieval-font">🛡️ Защита</span>
+                            <span class="stamina-cost text-xs text-blue-500">💧1</span>
+                        </div>
+                        <p class="text-xs text-gray-400 leading-tight">Блок щитом. Снижает урон на 80% и восстанавливает 1 выносливость.</p>
+                    </button>
+                    
+                    <!-- Counter -->
+                    <button onclick="tournamentBattle.playerAction('counter')" class="battle-action-btn p-3 rounded-lg border-2 transition-all group" data-stamina="2">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-sm font-bold text-purple-300 medieval-font">🎯 Контратака</span>
+                            <span class="stamina-cost text-xs text-purple-500">💧2</span>
+                        </div>
+                        <p class="text-xs text-gray-400 leading-tight">Парирование и ответный удар. Если враг атакует - наносите двойной урон!</p>
+                    </button>
+                </div>
+                
+                <div class="text-center text-xs text-amber-400/70 italic" id="battle-hint">
+                    💡 Изучите тактику противника и выбирайте действия мудро!
+                </div>
+            </div>
+        </div>
+    </div>
+
     <style>
+        /* Tournament Battle Styles */
+        .battle-action-btn {
+            background: linear-gradient(135deg, rgba(42,42,46,0.6), rgba(26,26,29,0.8));
+            border-color: rgba(200,170,110,0.3);
+        }
+        
+        .battle-action-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, rgba(200,170,110,0.2), rgba(42,42,46,0.8));
+            border-color: rgba(200,170,110,0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(200,170,110,0.3);
+        }
+        
+        .battle-action-btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+        
+        .battle-action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            border-color: rgba(100,100,100,0.3);
+        }
+        
+        .status-effect {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+            border: 1px solid;
+        }
+        
+        .status-effect.buff {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: rgba(34, 197, 94, 0.4);
+            color: #86efac;
+        }
+        
+        .status-effect.debuff {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.4);
+            color: #fca5a5;
+        }
+        
+        .stamina-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(59, 130, 246, 0.3);
+            border: 1px solid rgba(59, 130, 246, 0.5);
+            transition: all 0.3s;
+        }
+        
+        .stamina-dot.active {
+            background: rgba(59, 130, 246, 0.9);
+            border-color: #3b82f6;
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
+        }
+        
+        @keyframes damageShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .damage-shake {
+            animation: damageShake 0.3s ease-in-out;
+        }
+        
+        @keyframes healPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .heal-pulse {
+            animation: healPulse 0.5s ease-in-out;
+        }
+        
+        #battle-log {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(200,170,110,0.5) rgba(0,0,0,0.3);
+        }
+        
+        #battle-log::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        #battle-log::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.3);
+        }
+        
+        #battle-log::-webkit-scrollbar-thumb {
+            background: rgba(200,170,110,0.5);
+            border-radius: 2px;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .bj-card {
+            width: 70px;
+            height: 100px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px;
+            font-weight: bold;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+            animation: cardDeal 0.4s ease-out;
+        }
+        
+        .bj-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+        }
+        
+        .bj-card.red {
+            background: linear-gradient(135deg, #fef3f3, #fde8e8);
+            border: 2px solid #dc2626;
+            color: #dc2626;
+        }
+        
+        .bj-card.black {
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            border: 2px solid #1f2937;
+            color: #1f2937;
+        }
+        
+        .bj-card.back {
+            background: linear-gradient(135deg, #581c87, #6b21a8, #7c3aed);
+            border: 2px solid #a855f7;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .bj-card.back::before {
+            content: '';
+            position: absolute;
+            inset: 8px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 4px;
+        }
+        
+        .bj-card.back::after {
+            content: '♠♥♣♦';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            color: rgba(255,255,255,0.2);
+            letter-spacing: 2px;
+        }
+        
+        .bj-card-rank {
+            font-size: 20px;
+            line-height: 1;
+        }
+        
+        .bj-card-suit {
+            font-size: 32px;
+            line-height: 1;
+        }
+        
+        .bj-card-corner {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            font-size: 12px;
+            opacity: 0.6;
+        }
+        
+        @keyframes cardDeal {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) rotateX(90deg);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) rotateX(0);
+            }
+        }
+        
+        @keyframes pulseGlow {
+            0%, 100% {
+                box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(168, 85, 247, 0.8);
+            }
+        }
+        
+        .bet-btn.active {
+            background: rgba(168, 85, 247, 0.3) !important;
+            border-color: #a855f7 !important;
+            color: #e9d5ff !important;
+        }
+        
         @keyframes gradientShift {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
@@ -4867,29 +5368,13 @@
                     <div class="relative z-10">
                         <div class="flex items-center justify-between mb-2">
                             <div>
-                                <h3 class="medieval-font text-lg text-purple-300">Игра в Карты</h3>
-                                <p class="text-[10px] text-[#a0a0a0]">Высокие ставки для настоящих господ.</p>
+                                <h3 class="medieval-font text-lg text-purple-300">Блэкджек</h3>
+                                <p class="text-[10px] text-[#a0a0a0]">Классическая карточная игра. Ставки от 2000 до 25000 золота.</p>
                             </div>
-                            <div class="text-[10px] text-yellow-500 uppercase tracking-wider font-bold">5000 <i class="fas fa-coins"></i></div>
                         </div>
                         
-                        <div id="card-game-area" class="hidden space-y-3 mb-3">
-                             <div class="flex justify-between items-center bg-black/40 p-2 rounded border border-purple-900/30">
-                                <div class="text-center">
-                                    <div class="text-[10px] text-gray-400">Вы</div>
-                                    <div id="player-card" class="text-xl font-bold text-white">?</div>
-                                </div>
-                                <div class="text-xs text-purple-400 font-bold">VS</div>
-                                <div class="text-center">
-                                    <div class="text-[10px] text-gray-400">Сара</div>
-                                    <div id="sarah-card" class="text-xl font-bold text-white">?</div>
-                                </div>
-                            </div>
-                            <div id="card-game-result" class="text-center text-xs font-bold min-h-[16px]"></div>
-                        </div>
-
                         <button id="btn-play-cards" onclick="locations.guestHousePlayCards()" class="w-full py-2 rounded font-bold border border-purple-700/40 bg-black/30 text-purple-300 hover:bg-purple-900/20 backdrop-blur-sm transition-all">
-                            Сделать ставку (5000)
+                            <i class="fas fa-cards mr-2"></i>Играть в Блэкджек
                         </button>
                     </div>
                 </div>
@@ -4955,40 +5440,40 @@
                                         </div>
                                     </div>
                                 </div>
-                                <button onclick="ui.showFloatText(this, 'Скоро...', '#10b981')" class="btn-medieval w-full py-2 rounded text-xs">
+                                <button onclick="tournamentBattle.startTournament('beginner')" class="btn-medieval w-full py-2 rounded text-xs">
                                     <i class="fas fa-swords mr-2"></i> Участвовать
                                 </button>
                             </div>
 
                             <!-- Warrior Tournament -->
-                            <div class="border border-blue-900/50 rounded p-3 bg-blue-900/10 opacity-50">
+                            <div class="border border-blue-900/50 rounded p-3 bg-blue-900/10">
                                 <div class="flex items-center justify-between mb-2">
                                     <div class="flex items-center gap-3">
                                         <i class="fas fa-sword text-blue-400 text-xl"></i>
                                         <div>
                                             <div class="text-sm font-bold text-blue-300">Турнир Воинов</div>
-                                            <div class="text-[10px] text-gray-400">Требуется: Ур. 10 | Награда: 150 золота</div>
+                                            <div class="text-[10px] text-gray-400">Требуется: Ур. 10 | Награда: 1500 золота</div>
                                         </div>
                                     </div>
                                 </div>
-                                <button disabled class="btn-medieval w-full py-2 rounded text-xs flex items-center justify-center gap-2">
-                                    <i class="fas fa-lock text-xs"></i> Закрыто
+                                <button onclick="tournamentBattle.startTournament('warrior')" class="btn-medieval w-full py-2 rounded text-xs">
+                                    <i class="fas fa-swords mr-2"></i> Участвовать
                                 </button>
                             </div>
 
                             <!-- Champion Tournament -->
-                            <div class="border border-red-900/50 rounded p-3 bg-red-900/10 opacity-50">
+                            <div class="border border-red-900/50 rounded p-3 bg-red-900/10">
                                 <div class="flex items-center justify-between mb-2">
                                     <div class="flex items-center gap-3">
                                         <i class="fas fa-trophy text-red-400 text-xl"></i>
                                         <div>
                                             <div class="text-sm font-bold text-red-300">Турнир Чемпионов</div>
-                                            <div class="text-[10px] text-gray-400">Требуется: Ур. 20 | Награда: 500 золота + Титул</div>
+                                            <div class="text-[10px] text-gray-400">Требуется: Ур. 20 | Награда: 5000 золота</div>
                                         </div>
                                     </div>
                                 </div>
-                                <button disabled class="btn-medieval w-full py-2 rounded text-xs flex items-center justify-center gap-2">
-                                    <i class="fas fa-lock text-xs"></i> Закрыто
+                                <button onclick="tournamentBattle.startTournament('champion')" class="btn-medieval w-full py-2 rounded text-xs">
+                                    <i class="fas fa-swords mr-2"></i> Участвовать
                                 </button>
                             </div>
                         </div>
@@ -7049,7 +7534,7 @@
                 'eigan': '',
                 'gorn': '',
                 'thomas': '',
-                'sage': 'https://i.postimg.cc/8PjyXPvd/IMG-4616.png'
+                'sage': 'https://i.postimg.cc/P5BFss9w/IMG-4562.jpg'
             },
             
             start: function(npcId) {
@@ -7539,6 +8024,1037 @@
             completeQuest: function(id) {
                 // We rely on quests.claimStory logic but triggered manually without button
                 quests.claimStory(id, true);
+            }
+        };
+
+        // --- BLACKJACK GAME CONTROLLER ---
+        const blackjack = {
+            deck: [],
+            playerHand: [],
+            dealerHand: [],
+            currentBet: 2000,
+            gameInProgress: false,
+            dealerRevealed: false,
+            
+            suits: ['♠', '♥', '♣', '♦'],
+            ranks: ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'],
+            
+            open: function() {
+                document.getElementById('modal-blackjack').classList.add('open');
+                this.resetGame();
+            },
+            
+            close: function() {
+                document.getElementById('modal-blackjack').classList.remove('open');
+            },
+            
+            setBet: function(amount, event) {
+                if (this.gameInProgress) return;
+                
+                this.currentBet = amount;
+                document.getElementById('current-bet').textContent = amount;
+                
+                // Update active bet button
+                document.querySelectorAll('.bet-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                if (event && event.target) {
+                    event.target.classList.add('active');
+                }
+            },
+            
+            createDeck: function() {
+                this.deck = [];
+                for (let suit of this.suits) {
+                    for (let rank of this.ranks) {
+                        this.deck.push({ rank, suit });
+                    }
+                }
+                // Shuffle deck
+                for (let i = this.deck.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [this.deck[i], this.deck[j]] = [this.deck[j], this.deck[i]];
+                }
+            },
+            
+            getCardValue: function(card) {
+                if (card.rank === 'A') return 11;
+                if (['J', 'Q', 'K'].includes(card.rank)) return 10;
+                return parseInt(card.rank);
+            },
+            
+            calculateScore: function(hand) {
+                let score = 0;
+                let aces = 0;
+                
+                for (let card of hand) {
+                    let value = this.getCardValue(card);
+                    if (value === 11) aces++;
+                    score += value;
+                }
+                
+                // Adjust for aces
+                while (score > 21 && aces > 0) {
+                    score -= 10;
+                    aces--;
+                }
+                
+                return score;
+            },
+            
+            createCardElement: function(card, hidden = false) {
+                const cardDiv = document.createElement('div');
+                
+                if (hidden) {
+                    cardDiv.className = 'bj-card back';
+                } else {
+                    const isRed = card.suit === '♥' || card.suit === '♦';
+                    cardDiv.className = `bj-card ${isRed ? 'red' : 'black'}`;
+                    
+                    const rankTop = document.createElement('div');
+                    rankTop.className = 'bj-card-rank';
+                    rankTop.textContent = card.rank;
+                    
+                    const suitMiddle = document.createElement('div');
+                    suitMiddle.className = 'bj-card-suit';
+                    suitMiddle.textContent = card.suit;
+                    
+                    const rankBottom = document.createElement('div');
+                    rankBottom.className = 'bj-card-corner';
+                    rankBottom.textContent = card.rank + card.suit;
+                    
+                    cardDiv.appendChild(rankTop);
+                    cardDiv.appendChild(suitMiddle);
+                    cardDiv.appendChild(rankBottom);
+                }
+                
+                return cardDiv;
+            },
+            
+            updateDisplay: function() {
+                try {
+                    console.log('Blackjack: updateDisplay called');
+                    
+                    const playerCardsEl = document.getElementById('player-cards');
+                    const dealerCardsEl = document.getElementById('dealer-cards');
+                    
+                    console.log('Blackjack: Elements found:', !!playerCardsEl, !!dealerCardsEl);
+                    
+                    if (!playerCardsEl || !dealerCardsEl) {
+                        console.error('Blackjack: Card elements not found!');
+                        return;
+                    }
+                    
+                    // Clear existing cards
+                    playerCardsEl.innerHTML = '';
+                    dealerCardsEl.innerHTML = '';
+                    
+                    console.log('Blackjack: Cleared elements');
+                    
+                    // Display player cards
+                    this.playerHand.forEach((card, index) => {
+                        console.log('Blackjack: Adding player card', index, card);
+                        playerCardsEl.appendChild(this.createCardElement(card));
+                    });
+                    
+                    // Display dealer cards
+                    this.dealerHand.forEach((card, index) => {
+                        const hidden = !this.dealerRevealed && index === 1;
+                        console.log('Blackjack: Adding dealer card', index, card, 'hidden:', hidden);
+                        dealerCardsEl.appendChild(this.createCardElement(card, hidden));
+                    });
+                    
+                    // Update scores
+                    const playerScore = this.calculateScore(this.playerHand);
+                    document.getElementById('player-score').textContent = playerScore;
+                    
+                    if (this.dealerRevealed) {
+                        const dealerScore = this.calculateScore(this.dealerHand);
+                        document.getElementById('dealer-score').textContent = dealerScore;
+                    } else {
+                        const firstCardValue = this.getCardValue(this.dealerHand[0]);
+                        document.getElementById('dealer-score').textContent = firstCardValue + ' + ?';
+                    }
+                    
+                    console.log('Blackjack: Display updated successfully');
+                } catch (error) {
+                    console.error('Blackjack error in updateDisplay:', error);
+                }
+            },
+            
+            showMessage: function(message, color = '#a78bfa') {
+                const messageEl = document.getElementById('game-message');
+                messageEl.innerHTML = `<p class="text-sm medieval-font" style="color: ${color};">${message}</p>`;
+            },
+            
+            startGame: function() {
+                try {
+                    console.log('Blackjack: Starting game...');
+                    
+                    if (gameState.gold < this.currentBet) {
+                        this.showMessage('❌ Недостаточно золота для ставки!', '#ef4444');
+                        return;
+                    }
+                    
+                    console.log('Blackjack: Gold check passed');
+                    
+                    // Deduct bet
+                    gameState.gold -= this.currentBet;
+                    game.save();
+                    ui.updateStats();
+                    
+                    console.log('Blackjack: Bet deducted');
+                    
+                    // Initialize game
+                    this.gameInProgress = true;
+                    this.dealerRevealed = false;
+                    this.createDeck();
+                    
+                    console.log('Blackjack: Deck created, size:', this.deck.length);
+                    
+                    this.playerHand = [];
+                    this.dealerHand = [];
+                    
+                    // Deal initial cards
+                    this.playerHand.push(this.deck.pop());
+                    this.dealerHand.push(this.deck.pop());
+                    this.playerHand.push(this.deck.pop());
+                    this.dealerHand.push(this.deck.pop());
+                    
+                    console.log('Blackjack: Cards dealt. Player:', this.playerHand.length, 'Dealer:', this.dealerHand.length);
+                    
+                    this.updateDisplay();
+                    
+                    console.log('Blackjack: Display updated');
+                    
+                    this.showMessage('🎲 Игра началась! Возьмите карту или остановитесь.', '#a78bfa');
+                    
+                    // Switch controls
+                    document.getElementById('bet-controls').classList.add('hidden');
+                    document.getElementById('game-controls').classList.remove('hidden');
+                    
+                    console.log('Blackjack: Controls switched');
+                    
+                    // Check for blackjack
+                    if (this.calculateScore(this.playerHand) === 21) {
+                        setTimeout(() => this.checkWinner(), 500);
+                    }
+                    
+                    console.log('Blackjack: Game started successfully');
+                } catch (error) {
+                    console.error('Blackjack error in startGame:', error);
+                    this.showMessage('❌ Ошибка при запуске игры: ' + error.message, '#ef4444');
+                    // Return bet
+                    gameState.gold += this.currentBet;
+                    game.save();
+                    ui.updateStats();
+                }
+            },
+            
+            hit: function() {
+                if (!this.gameInProgress || this.dealerRevealed) return;
+                
+                this.playerHand.push(this.deck.pop());
+                this.updateDisplay();
+                
+                const playerScore = this.calculateScore(this.playerHand);
+                
+                if (playerScore > 21) {
+                    this.showMessage('💥 Перебор! Вы проиграли.', '#ef4444');
+                    this.endGame(false);
+                } else if (playerScore === 21) {
+                    this.stand();
+                }
+            },
+            
+            stand: function() {
+                if (!this.gameInProgress || this.dealerRevealed) return;
+                
+                this.dealerRevealed = true;
+                this.showMessage('🎴 Дилер открывает карты...', '#fbbf24');
+                
+                setTimeout(() => {
+                    this.dealerPlay();
+                }, 800);
+            },
+            
+            dealerPlay: function() {
+                let dealerScore = this.calculateScore(this.dealerHand);
+                
+                const dealStep = () => {
+                    if (dealerScore < 17) {
+                        this.dealerHand.push(this.deck.pop());
+                        this.updateDisplay();
+                        dealerScore = this.calculateScore(this.dealerHand);
+                        
+                        setTimeout(dealStep, 800);
+                    } else {
+                        setTimeout(() => this.checkWinner(), 500);
+                    }
+                };
+                
+                this.updateDisplay();
+                setTimeout(dealStep, 800);
+            },
+            
+            checkWinner: function() {
+                const playerScore = this.calculateScore(this.playerHand);
+                const dealerScore = this.calculateScore(this.dealerHand);
+                
+                this.dealerRevealed = true;
+                this.updateDisplay();
+                
+                let message = '';
+                let color = '';
+                let winAmount = 0;
+                
+                if (playerScore > 21) {
+                    message = `💥 Перебор! Вы проиграли ${this.currentBet} золота.`;
+                    color = '#ef4444';
+                } else if (dealerScore > 21) {
+                    message = `🎉 У дилера перебор! Вы выиграли ${this.currentBet} золота!`;
+                    color = '#34d399';
+                    winAmount = this.currentBet * 2;
+                } else if (playerScore > dealerScore) {
+                    message = `🎉 Победа! Вы выиграли ${this.currentBet} золота!`;
+                    color = '#34d399';
+                    winAmount = this.currentBet * 2;
+                } else if (playerScore < dealerScore) {
+                    message = `😔 Поражение. Вы проиграли ${this.currentBet} золота.`;
+                    color = '#ef4444';
+                } else {
+                    message = `🤝 Ничья! Ставка ${this.currentBet} золота возвращена.`;
+                    color = '#fbbf24';
+                    winAmount = this.currentBet;
+                }
+                
+                // Add winnings
+                if (winAmount > 0) {
+                    gameState.gold += winAmount;
+                    game.save();
+                    ui.updateStats();
+                }
+                
+                this.showMessage(message, color);
+                this.endGame(winAmount > this.currentBet);
+            },
+            
+            endGame: function(won) {
+                this.gameInProgress = false;
+                document.getElementById('btn-hit').disabled = true;
+                document.getElementById('btn-stand').disabled = true;
+                
+                setTimeout(() => {
+                    document.getElementById('btn-hit').disabled = false;
+                    document.getElementById('btn-stand').disabled = false;
+                }, 1000);
+            },
+            
+            resetGame: function() {
+                this.playerHand = [];
+                this.dealerHand = [];
+                this.gameInProgress = false;
+                this.dealerRevealed = false;
+                
+                document.getElementById('player-cards').innerHTML = '<p class="text-gray-500 text-sm">Ожидание...</p>';
+                document.getElementById('dealer-cards').innerHTML = '<p class="text-gray-500 text-sm">Ожидание...</p>';
+                document.getElementById('player-score').textContent = '0';
+                document.getElementById('dealer-score').textContent = '0';
+                
+                this.showMessage('💰 Сделайте ставку, чтобы начать игру', '#a78bfa');
+                
+                document.getElementById('bet-controls').classList.remove('hidden');
+                document.getElementById('game-controls').classList.add('hidden');
+            }
+        };
+
+        // --- TOURNAMENT BATTLE SYSTEM ---
+        const tournamentBattle = {
+            // Battle state
+            player: null,
+            opponent: null,
+            currentRound: 1,
+            maxRounds: 3,
+            tournamentTier: 'beginner', // beginner, warrior, champion
+            battleActive: false,
+            playerTurn: true,
+            
+            // Opponent database with different tactics
+            opponents: {
+                beginner: [
+                    {
+                        name: 'Оруженосец Томас',
+                        icon: 'fa-user',
+                        hp: 80,
+                        damage: 12,
+                        armor: 5,
+                        tactic: 'balanced',
+                        personality: 'Молодой воин, все еще изучающий основы.',
+                        aggression: 0.5
+                    },
+                    {
+                        name: 'Фермер Уильям',
+                        icon: 'fa-user-cowboy',
+                        hp: 70,
+                        damage: 15,
+                        armor: 3,
+                        tactic: 'aggressive',
+                        personality: 'Сильный, но неопытный боец.',
+                        aggression: 0.7
+                    },
+                    {
+                        name: 'Стражник Роберт',
+                        icon: 'fa-user-shield',
+                        hp: 90,
+                        damage: 10,
+                        armor: 8,
+                        tactic: 'defensive',
+                        personality: 'Осторожный защитник.',
+                        aggression: 0.3
+                    }
+                ],
+                warrior: [
+                    {
+                        name: 'Рыцарь Бернард',
+                        icon: 'fa-chess-knight',
+                        hp: 120,
+                        damage: 18,
+                        armor: 12,
+                        tactic: 'tactical',
+                        personality: 'Опытный воин с продуманной стратегией.',
+                        aggression: 0.5
+                    },
+                    {
+                        name: 'Наемник Виктор',
+                        icon: 'fa-user-ninja',
+                        hp: 100,
+                        damage: 22,
+                        armor: 8,
+                        tactic: 'aggressive',
+                        personality: 'Безжалостный боец, атакующий без остановки.',
+                        aggression: 0.8
+                    },
+                    {
+                        name: 'Капитан Маркус',
+                        icon: 'fa-shield-alt',
+                        hp: 140,
+                        damage: 15,
+                        armor: 15,
+                        tactic: 'counter_focused',
+                        personality: 'Мастер контратак и парирования.',
+                        aggression: 0.4
+                    }
+                ],
+                champion: [
+                    {
+                        name: 'Чемпион Максимус',
+                        icon: 'fa-crown',
+                        hp: 150,
+                        damage: 25,
+                        armor: 18,
+                        tactic: 'adaptive',
+                        personality: 'Легендарный боец, адаптирующийся к вашему стилю.',
+                        aggression: 0.6
+                    },
+                    {
+                        name: 'Темный Рыцарь',
+                        icon: 'fa-skull',
+                        hp: 130,
+                        damage: 30,
+                        armor: 15,
+                        tactic: 'berserker',
+                        personality: 'Яростный воин, жертвующий защитой ради атаки.',
+                        aggression: 0.9
+                    },
+                    {
+                        name: 'Госпожа Изольда',
+                        icon: 'fa-chess-queen',
+                        hp: 140,
+                        damage: 20,
+                        armor: 20,
+                        tactic: 'perfectionist',
+                        personality: 'Совершенная техника боя и расчет.',
+                        aggression: 0.5
+                    }
+                ]
+            },
+            
+            // Start tournament
+            startTournament: function(tier) {
+                // Check requirements
+                const requirements = {
+                    beginner: { level: 5, gold: 0 },
+                    warrior: { level: 10, gold: 0 },
+                    champion: { level: 20, gold: 0 }
+                };
+                
+                const req = requirements[tier];
+                if (gameState.level < req.level) {
+                    ui.showFloatText(document.body, `Требуется ${req.level} уровень!`, '#ef4444');
+                    return;
+                }
+                
+                this.tournamentTier = tier;
+                this.currentRound = 1;
+                this.maxRounds = 3;
+                
+                // Initialize player stats from game state
+                this.player = {
+                    name: gameState.playerName || 'Герой',
+                    maxHp: gameState.maxHp || 100,
+                    hp: gameState.hp || 100,
+                    damage: this.calculatePlayerDamage(),
+                    armor: this.calculatePlayerArmor(),
+                    stamina: 3,
+                    maxStamina: 3,
+                    effects: [],
+                    lastAction: null
+                };
+                
+                this.selectOpponent();
+                this.openBattleModal();
+                this.startRound();
+            },
+            
+            calculatePlayerDamage: function() {
+                // Get damage directly from gameState (already calculated from equipment)
+                return gameState.damage || 10;
+            },
+            
+            calculatePlayerArmor: function() {
+                // Get armor directly from gameState (already calculated from equipment)
+                return gameState.armor || 0;
+            },
+            
+            selectOpponent: function() {
+                const pool = this.opponents[this.tournamentTier];
+                const selected = pool[Math.floor(Math.random() * pool.length)];
+                
+                this.opponent = {
+                    ...selected,
+                    maxHp: selected.hp,
+                    stamina: 3,
+                    maxStamina: 3,
+                    effects: [],
+                    lastAction: null,
+                    actionPattern: [] // For tracking AI behavior
+                };
+            },
+            
+            openBattleModal: function() {
+                document.getElementById('modal-tournament-battle').classList.add('open');
+                this.updateUI();
+            },
+            
+            closeBattleModal: function() {
+                document.getElementById('modal-tournament-battle').classList.remove('open');
+                this.battleActive = false;
+            },
+            
+            startRound: function() {
+                this.battleActive = true;
+                this.playerTurn = true;
+                
+                // Reset stamina for new round
+                if (this.currentRound > 1) {
+                    this.player.stamina = this.player.maxStamina;
+                    this.opponent.stamina = this.opponent.maxStamina;
+                }
+                
+                this.addLog(`⚔️ Раунд ${this.currentRound} начинается!`, 'amber');
+                this.addLog(`💭 ${this.opponent.personality}`, 'gray');
+                
+                this.updateUI();
+                this.enableActions();
+            },
+            
+            // Player action handler
+            playerAction: function(actionType) {
+                if (!this.battleActive || !this.playerTurn) return;
+                
+                const actions = {
+                    quick_strike: { name: 'Быструю атаку', stamina: 1 },
+                    power_strike: { name: 'Мощную атаку', stamina: 2 },
+                    defend: { name: 'Защиту', stamina: 1 },
+                    counter: { name: 'Контратаку', stamina: 2 }
+                };
+                
+                const action = actions[actionType];
+                
+                // Check stamina
+                if (this.player.stamina < action.stamina) {
+                    this.addLog('❌ Недостаточно выносливости!', 'red');
+                    return;
+                }
+                
+                this.player.stamina -= action.stamina;
+                this.player.lastAction = actionType;
+                this.playerTurn = false;
+                this.disableActions();
+                
+                console.log('Player action:', actionType, 'Stamina left:', this.player.stamina);
+                
+                this.addLog(`🎯 Вы используете ${action.name}`, 'green');
+                this.updateUI();
+                
+                // Now let opponent act (if they have stamina)
+                setTimeout(() => {
+                    if (this.opponent.stamina > 0) {
+                        this.opponentAction();
+                    } else {
+                        this.addLog(`💤 У противника нет выносливости!`, 'amber');
+                        this.opponent.lastAction = null;
+                    }
+                    
+                    // Resolve combat after both have acted
+                    setTimeout(() => {
+                        this.resolveRound();
+                    }, 600);
+                }, 500);
+            },
+            
+            // AI opponent decision
+            opponentAction: function() {
+                // Check if opponent has any stamina left
+                if (this.opponent.stamina === 0) {
+                    console.log('Opponent has no stamina, skipping action');
+                    return;
+                }
+                
+                console.log('Opponent taking action, stamina:', this.opponent.stamina);
+                
+                const tactic = this.opponent.tactic;
+                let actionType;
+                
+                // AI decision based on tactic and game state
+                const playerLastAction = this.player.lastAction;
+                const opponentHpPercent = this.opponent.hp / this.opponent.maxHp;
+                const playerHpPercent = this.player.hp / this.player.maxHp;
+                
+                if (tactic === 'aggressive') {
+                    // Aggressive: Mostly attacks, rarely defends
+                    if (opponentHpPercent < 0.3 && Math.random() < 0.3) {
+                        actionType = 'defend';
+                    } else if (this.opponent.stamina >= 2 && Math.random() < 0.7) {
+                        actionType = 'power_strike';
+                    } else {
+                        actionType = 'quick_strike';
+                    }
+                } else if (tactic === 'defensive') {
+                    // Defensive: Prioritizes blocking and counters
+                    if (playerLastAction === 'power_strike' && this.opponent.stamina >= 2) {
+                        actionType = 'counter';
+                    } else if (Math.random() < 0.5) {
+                        actionType = 'defend';
+                    } else {
+                        actionType = 'quick_strike';
+                    }
+                } else if (tactic === 'balanced') {
+                    // Balanced: Mix of everything
+                    const rand = Math.random();
+                    if (rand < 0.35) {
+                        actionType = 'quick_strike';
+                    } else if (rand < 0.55 && this.opponent.stamina >= 2) {
+                        actionType = 'power_strike';
+                    } else if (rand < 0.75) {
+                        actionType = 'defend';
+                    } else if (this.opponent.stamina >= 2) {
+                        actionType = 'counter';
+                    } else {
+                        actionType = 'quick_strike';
+                    }
+                } else if (tactic === 'counter_focused') {
+                    // Counter-focused: Waits for player attacks
+                    if (playerLastAction && playerLastAction !== 'defend' && this.opponent.stamina >= 2) {
+                        actionType = Math.random() < 0.6 ? 'counter' : 'defend';
+                    } else {
+                        actionType = Math.random() < 0.5 ? 'defend' : 'quick_strike';
+                    }
+                } else if (tactic === 'tactical') {
+                    // Tactical: Adapts to player's HP and stamina
+                    if (playerHpPercent < 0.4 && this.opponent.stamina >= 2) {
+                        actionType = 'power_strike'; // Finish them!
+                    } else if (opponentHpPercent < 0.5) {
+                        actionType = 'defend'; // Play safe
+                    } else if (playerLastAction === 'power_strike') {
+                        actionType = this.opponent.stamina >= 2 ? 'counter' : 'defend';
+                    } else {
+                        actionType = 'quick_strike';
+                    }
+                } else if (tactic === 'adaptive') {
+                    // Adaptive: Learns from player patterns
+                    const playerPattern = this.player.lastAction;
+                    if (playerPattern === 'power_strike') {
+                        actionType = this.opponent.stamina >= 2 ? 'counter' : 'defend';
+                    } else if (playerPattern === 'quick_strike') {
+                        actionType = Math.random() < 0.6 ? 'power_strike' : 'quick_strike';
+                    } else if (playerPattern === 'defend') {
+                        actionType = this.opponent.stamina >= 2 ? 'power_strike' : 'quick_strike';
+                    } else {
+                        actionType = 'balanced';
+                    }
+                } else if (tactic === 'berserker') {
+                    // Berserker: Always attacks, never defends
+                    actionType = this.opponent.stamina >= 2 && Math.random() < 0.8 ? 'power_strike' : 'quick_strike';
+                } else if (tactic === 'perfectionist') {
+                    // Perfectionist: Optimal play based on situation
+                    if (playerHpPercent < 0.3 && this.opponent.stamina >= 2) {
+                        actionType = 'power_strike';
+                    } else if (opponentHpPercent < 0.3) {
+                        actionType = 'defend';
+                    } else if (playerLastAction === 'power_strike' && this.opponent.stamina >= 2) {
+                        actionType = 'counter';
+                    } else if (this.opponent.stamina === 1) {
+                        actionType = 'quick_strike';
+                    } else {
+                        actionType = Math.random() < 0.5 ? 'power_strike' : 'defend';
+                    }
+                }
+                
+                // Ensure we have enough stamina
+                const staminaCosts = { quick_strike: 1, power_strike: 2, defend: 1, counter: 2 };
+                if (this.opponent.stamina < staminaCosts[actionType]) {
+                    actionType = 'quick_strike'; // Fallback
+                }
+                
+                this.opponent.stamina -= staminaCosts[actionType];
+                this.opponent.lastAction = actionType;
+                
+                const actionNames = {
+                    quick_strike: 'Быструю атаку',
+                    power_strike: 'Мощную атаку',
+                    defend: 'Защиту',
+                    counter: 'Контратаку'
+                };
+                
+                this.addLog(`🗡️ ${this.opponent.name} использует ${actionNames[actionType]}`, 'red');
+            },
+            
+            // Resolve combat round
+            resolveRound: function() {
+                const pAction = this.player.lastAction;
+                const oAction = this.opponent.lastAction;
+                
+                console.log('Resolving round - Player action:', pAction, 'Opponent action:', oAction);
+                
+                let playerDamageDealt = 0;
+                let opponentDamageDealt = 0;
+                
+                // If opponent has no action (no stamina), player attacks freely
+                if (!oAction && pAction && pAction !== 'defend' && pAction !== 'counter') {
+                    if (pAction === 'quick_strike') {
+                        playerDamageDealt = this.calculateDamage(this.player.damage, this.opponent.armor, 1.0);
+                        this.addLog(`⚔️ Беспрепятственный удар!`, 'green');
+                    } else if (pAction === 'power_strike') {
+                        playerDamageDealt = this.calculateDamage(this.player.damage * 1.8, this.opponent.armor, 1.0);
+                        this.addLog(`💥 Сокрушительный удар без защиты!`, 'green');
+                    }
+                }
+                // If player has no action (no stamina), opponent attacks freely
+                else if (!pAction && oAction && oAction !== 'defend' && oAction !== 'counter') {
+                    if (oAction === 'quick_strike') {
+                        opponentDamageDealt = this.calculateDamage(this.opponent.damage, this.player.armor, 1.0);
+                    } else if (oAction === 'power_strike') {
+                        opponentDamageDealt = this.calculateDamage(this.opponent.damage * 1.8, this.player.armor, 1.0);
+                    }
+                }
+                // Both have actions - full combat resolution
+                else if (pAction && oAction) {
+                    // Player attack actions
+                    if (pAction === 'quick_strike') {
+                        if (oAction === 'defend') {
+                            playerDamageDealt = this.calculateDamage(this.player.damage, this.opponent.armor, 0.3);
+                            this.addLog(`⚔️ Ваш удар частично заблокирован щитом`, 'yellow');
+                        } else if (oAction === 'counter') {
+                            opponentDamageDealt = this.calculateDamage(this.opponent.damage * 2, this.player.armor, 1.0);
+                            this.addLog(`💥 Противник парировал и нанес контрудар!`, 'red');
+                        } else {
+                            playerDamageDealt = this.calculateDamage(this.player.damage, this.opponent.armor, 1.0);
+                            this.addLog(`⚔️ Ваш удар достиг цели!`, 'green');
+                        }
+                    } else if (pAction === 'power_strike') {
+                        if (oAction === 'defend') {
+                            playerDamageDealt = this.calculateDamage(this.player.damage * 1.8, this.opponent.armor, 0.5);
+                            this.addLog(`💥 Мощный удар пробил защиту!`, 'green');
+                        } else if (oAction === 'counter') {
+                            opponentDamageDealt = this.calculateDamage(this.opponent.damage * 2.5, this.player.armor, 1.0);
+                            this.addLog(`🎯 Противник идеально парировал мощный удар!`, 'red');
+                        } else {
+                            playerDamageDealt = this.calculateDamage(this.player.damage * 1.8, this.opponent.armor, 1.0);
+                            this.addLog(`💥 Сокрушительный удар!`, 'green');
+                        }
+                    } else if (pAction === 'defend') {
+                        if (this.player.stamina < this.player.maxStamina) {
+                            this.player.stamina = Math.min(this.player.stamina + 1, this.player.maxStamina);
+                            this.addLog(`💧 Вы восстановили 1 выносливость`, 'blue');
+                        }
+                    } else if (pAction === 'counter') {
+                        if (oAction === 'quick_strike' || oAction === 'power_strike') {
+                            const multiplier = oAction === 'power_strike' ? 2.5 : 2.0;
+                            playerDamageDealt = this.calculateDamage(this.player.damage * multiplier, this.opponent.armor, 1.0);
+                            this.addLog(`🎯 Идеальная контратака!`, 'green');
+                        } else {
+                            this.addLog(`❌ Контратака не сработала - противник не атаковал`, 'yellow');
+                        }
+                    }
+                    
+                    // Opponent attack actions (if not already handled)
+                    if (oAction === 'quick_strike' && pAction !== 'counter') {
+                        if (pAction === 'defend') {
+                            opponentDamageDealt = this.calculateDamage(this.opponent.damage, this.player.armor, 0.2);
+                            this.addLog(`🛡️ Вы заблокировали большую часть урона`, 'blue');
+                        } else {
+                            opponentDamageDealt = this.calculateDamage(this.opponent.damage, this.player.armor, 1.0);
+                        }
+                    } else if (oAction === 'power_strike' && pAction !== 'counter') {
+                        if (pAction === 'defend') {
+                            opponentDamageDealt = this.calculateDamage(this.opponent.damage * 1.8, this.player.armor, 0.4);
+                            this.addLog(`🛡️ Защита ослабила мощный удар`, 'blue');
+                        } else {
+                            opponentDamageDealt = this.calculateDamage(this.opponent.damage * 1.8, this.player.armor, 1.0);
+                        }
+                    } else if (oAction === 'defend') {
+                        if (this.opponent.stamina < this.opponent.maxStamina) {
+                            this.opponent.stamina = Math.min(this.opponent.stamina + 1, this.opponent.maxStamina);
+                        }
+                    }
+                }
+                
+                // Apply damage
+                if (playerDamageDealt > 0) {
+                    this.opponent.hp = Math.max(0, this.opponent.hp - playerDamageDealt);
+                    this.addLog(`💔 ${this.opponent.name} получает ${playerDamageDealt} урона`, 'green');
+                    this.animateDamage('opponent');
+                }
+                
+                if (opponentDamageDealt > 0) {
+                    this.player.hp = Math.max(0, this.player.hp - opponentDamageDealt);
+                    this.addLog(`💔 Вы получаете ${opponentDamageDealt} урона`, 'red');
+                    this.animateDamage('player');
+                }
+                
+                this.updateUI();
+                
+                // Check for round end
+                setTimeout(() => {
+                    console.log('Checking round end - Player HP:', this.player.hp, 'Opponent HP:', this.opponent.hp);
+                    console.log('Player stamina:', this.player.stamina, 'Opponent stamina:', this.opponent.stamina);
+                    
+                    if (this.player.hp <= 0 || this.opponent.hp <= 0) {
+                        console.log('Round ending due to HP');
+                        this.endRound();
+                    } else if (this.player.stamina === 0 && this.opponent.stamina === 0) {
+                        console.log('Round ending due to stamina depletion');
+                        this.addLog(`💤 Выносливость исчерпана у обоих!`, 'amber');
+                        setTimeout(() => this.endRound(), 800);
+                    } else {
+                        console.log('Round continues, player turn');
+                        this.playerTurn = true;
+                        this.enableActions();
+                    }
+                }, 1000);
+            },
+            
+            calculateDamage: function(baseDamage, armor, multiplier) {
+                const armorReduction = armor * 0.5;
+                const finalDamage = Math.max(1, Math.round((baseDamage - armorReduction) * multiplier));
+                return finalDamage;
+            },
+            
+            endRound: function() {
+                if (this.player.hp <= 0) {
+                    this.addLog(`💀 Вы проиграли раунд ${this.currentRound}!`, 'red');
+                    this.endTournament(false);
+                } else if (this.opponent.hp <= 0) {
+                    this.addLog(`🏆 Вы выиграли раунд ${this.currentRound}!`, 'green');
+                    
+                    if (this.currentRound >= this.maxRounds) {
+                        this.endTournament(true);
+                    } else {
+                        this.currentRound++;
+                        
+                        // Heal player between rounds
+                        this.player.hp = this.player.maxHp;
+                        this.player.stamina = this.player.maxStamina;
+                        this.addLog(`💚 Ваше здоровье восстановлено!`, 'green');
+                        
+                        setTimeout(() => {
+                            this.selectOpponent();
+                            this.startRound();
+                        }, 2500);
+                    }
+                } else {
+                    // Draw by stamina depletion - judge by HP
+                    if (this.player.hp > this.opponent.hp) {
+                        this.addLog(`🏆 Победа по очкам здоровья!`, 'green');
+                        
+                        if (this.currentRound >= this.maxRounds) {
+                            this.endTournament(true);
+                        } else {
+                            this.currentRound++;
+                            
+                            // Heal player between rounds
+                            this.player.hp = this.player.maxHp;
+                            this.player.stamina = this.player.maxStamina;
+                            this.addLog(`💚 Ваше здоровье восстановлено!`, 'green');
+                            
+                            setTimeout(() => {
+                                this.selectOpponent();
+                                this.startRound();
+                            }, 2500);
+                        }
+                    } else {
+                        this.addLog(`💀 Поражение по очкам здоровья!`, 'red');
+                        this.endTournament(false);
+                    }
+                }
+            },
+            
+            endTournament: function(victory) {
+                this.battleActive = false;
+                this.disableActions();
+                
+                const rewards = {
+                    beginner: { gold: 500, xp: 50 },
+                    warrior: { gold: 1500, xp: 150 },
+                    champion: { gold: 5000, xp: 500 }
+                };
+                
+                if (victory) {
+                    const reward = rewards[this.tournamentTier];
+                    gameState.gold += reward.gold;
+                    gameState.xp += reward.xp;
+                    game.save();
+                    ui.updateStats();
+                    
+                    this.addLog(``, 'amber');
+                    this.addLog(`🎉 ПОБЕДА В ТУРНИРЕ!`, 'green');
+                    this.addLog(`💰 Получено: ${reward.gold} золота`, 'yellow');
+                    this.addLog(`⭐ Получено: ${reward.xp} опыта`, 'yellow');
+                    
+                    // Track tournament wins
+                    if (!gameState.tournamentWins) gameState.tournamentWins = { beginner: 0, warrior: 0, champion: 0 };
+                    gameState.tournamentWins[this.tournamentTier]++;
+                    game.save();
+                    
+                    setTimeout(() => {
+                        this.closeBattleModal();
+                        game.levelCheck();
+                    }, 4000);
+                } else {
+                    this.addLog(``, 'amber');
+                    this.addLog(`💀 ПОРАЖЕНИЕ...`, 'red');
+                    this.addLog(`Тренируйтесь и возвращайтесь!`, 'gray');
+                    
+                    setTimeout(() => {
+                        this.closeBattleModal();
+                    }, 3000);
+                }
+            },
+            
+            forfeit: function() {
+                if (!confirm('Вы уверены, что хотите сдаться? Прогресс не будет сохранен.')) {
+                    return;
+                }
+                
+                this.addLog(`🏳️ Вы сдались...`, 'gray');
+                this.battleActive = false;
+                
+                setTimeout(() => {
+                    this.closeBattleModal();
+                }, 1500);
+            },
+            
+            updateUI: function() {
+                document.getElementById('battle-title').textContent = `Турнир ${this.tournamentTier === 'beginner' ? 'Новичков' : this.tournamentTier === 'warrior' ? 'Воинов' : 'Чемпионов'}`;
+                document.getElementById('battle-subtitle').textContent = `Раунд ${this.currentRound} из ${this.maxRounds}`;
+                
+                document.getElementById('opponent-name').textContent = this.opponent.name;
+                document.getElementById('opponent-tactic').textContent = `Тактика: ${this.getTacticName(this.opponent.tactic)}`;
+                document.getElementById('opponent-icon').className = `fas ${this.opponent.icon} text-red-400 text-xl`;
+                
+                const oppHpPercent = (this.opponent.hp / this.opponent.maxHp) * 100;
+                document.getElementById('opponent-hp-bar').style.width = oppHpPercent + '%';
+                document.getElementById('opponent-hp-text').textContent = `${this.opponent.hp}/${this.opponent.maxHp}`;
+                document.getElementById('opponent-damage').textContent = this.opponent.damage;
+                document.getElementById('opponent-armor').textContent = this.opponent.armor;
+                
+                document.getElementById('player-battle-name').textContent = this.player.name;
+                
+                const playerHpPercent = (this.player.hp / this.player.maxHp) * 100;
+                document.getElementById('player-hp-bar').style.width = playerHpPercent + '%';
+                document.getElementById('player-hp-text').textContent = `${this.player.hp}/${this.player.maxHp}`;
+                document.getElementById('player-damage').textContent = this.player.damage;
+                document.getElementById('player-armor').textContent = this.player.armor;
+                
+                this.updateStaminaIndicator('player', this.player.stamina);
+                this.updateStaminaIndicator('opponent', this.opponent.stamina);
+            },
+            
+            updateStaminaIndicator: function(who, stamina) {
+                const container = document.getElementById(`${who}-stamina-indicator`);
+                container.innerHTML = '';
+                
+                for (let i = 0; i < 3; i++) {
+                    const dot = document.createElement('div');
+                    dot.className = 'stamina-dot' + (i < stamina ? ' active' : '');
+                    container.appendChild(dot);
+                }
+            },
+            
+            getTacticName: function(tactic) {
+                const names = {
+                    aggressive: 'Агрессивная',
+                    defensive: 'Оборонительная',
+                    balanced: 'Сбалансированная',
+                    counter_focused: 'Контратакующая',
+                    tactical: 'Тактическая',
+                    adaptive: 'Адаптивная',
+                    berserker: 'Берсерк',
+                    perfectionist: 'Перфекционист'
+                };
+                return names[tactic] || tactic;
+            },
+            
+            enableActions: function() {
+                document.querySelectorAll('.battle-action-btn').forEach(btn => {
+                    const stamina = parseInt(btn.getAttribute('data-stamina'));
+                    btn.disabled = stamina > this.player.stamina;
+                });
+            },
+            
+            disableActions: function() {
+                document.querySelectorAll('.battle-action-btn').forEach(btn => {
+                    btn.disabled = true;
+                });
+            },
+            
+            addLog: function(message, color = 'white') {
+                const log = document.getElementById('battle-log');
+                const entry = document.createElement('p');
+                
+                const colors = {
+                    green: '#86efac',
+                    red: '#fca5a5',
+                    blue: '#93c5fd',
+                    yellow: '#fde047',
+                    amber: '#fbbf24',
+                    gray: '#9ca3af',
+                    white: '#e5e7eb'
+                };
+                
+                entry.className = 'text-xs';
+                entry.style.color = colors[color] || color;
+                entry.textContent = message;
+                
+                log.appendChild(entry);
+                log.scrollTop = log.scrollHeight;
+            },
+            
+            animateDamage: function(target) {
+                const element = document.querySelector(`#${target}-hp-bar`).parentElement.parentElement;
+                element.classList.add('damage-shake');
+                setTimeout(() => element.classList.remove('damage-shake'), 300);
             }
         };
 
@@ -8681,65 +10197,7 @@
             },
 
             guestHousePlayCards: function() {
-                const btn = document.getElementById('btn-play-cards');
-                const gameArea = document.getElementById('card-game-area');
-                const playerCardEl = document.getElementById('player-card');
-                const sarahCardEl = document.getElementById('sarah-card');
-                const resultEl = document.getElementById('card-game-result');
-
-                if (gameState.gold < 5000) {
-                    ui.showFloatText(btn, "Нужно 5000 золота!", "#ef4444");
-                    return;
-                }
-
-                gameState.gold -= 5000;
-                game.save();
-                ui.updateStats();
-                ui.showFloatText(document.getElementById('stat-gold'), "-5000", "#ef4444");
-
-                gameArea.classList.remove('hidden');
-                playerCardEl.innerText = "...";
-                sarahCardEl.innerText = "...";
-                resultEl.innerText = "Раздача...";
-                resultEl.className = "text-center text-xs font-bold text-gray-400";
-                btn.disabled = true;
-
-                setTimeout(() => {
-                    const playerVal = Math.floor(Math.random() * 13) + 2; // 2-14 (Ace high)
-                    const sarahVal = Math.floor(Math.random() * 13) + 2;
-                    
-                    const getCardName = (val) => {
-                        if (val <= 10) return val;
-                        if (val === 11) return "J";
-                        if (val === 12) return "Q";
-                        if (val === 13) return "K";
-                        if (val === 14) return "A";
-                        return val;
-                    };
-
-                    playerCardEl.innerText = getCardName(playerVal);
-                    sarahCardEl.innerText = getCardName(sarahVal);
-
-                    if (playerVal > sarahVal) {
-                        const win = 10000;
-                        gameState.gold += win;
-                        resultEl.innerText = "ПОБЕДА! +10,000";
-                        resultEl.className = "text-center text-xs font-bold text-green-400";
-                        ui.showFloatText(btn, "+10,000!", "#34d399");
-                    } else if (playerVal < sarahVal) {
-                        resultEl.innerText = "Поражение...";
-                        resultEl.className = "text-center text-xs font-bold text-red-400";
-                    } else {
-                        gameState.gold += 5000;
-                        resultEl.innerText = "Ничья. Возврат.";
-                        resultEl.className = "text-center text-xs font-bold text-yellow-400";
-                        ui.showFloatText(btn, "+5,000", "#fbbf24");
-                    }
-                    
-                    game.save();
-                    ui.updateStats();
-                    btn.disabled = false;
-                }, 1000);
+                blackjack.open();
             },
             beg: function(event) {
                 // Check for Knight John encounter (random chance or first time after some progress)
