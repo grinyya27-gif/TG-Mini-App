@@ -917,6 +917,91 @@
         </div>
     </div>
 
+    <!-- Measles Infection Modal -->
+    <div id="modal-measles-infected" class="modal-overlay">
+        <div class="modal-content rounded-lg p-6 text-center relative overflow-hidden border-red-500">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-red-400 to-transparent"></div>
+            <div class="absolute inset-0 opacity-20 pointer-events-none bg-[radial-gradient(circle_at_top,rgba(239,68,68,0.2),transparent_60%)]"></div>
+            <div class="relative">
+                <div class="w-16 h-16 rounded-full border border-red-500/60 bg-[#111] flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-virus text-3xl text-red-400"></i>
+                </div>
+                <h2 class="medieval-font text-2xl text-red-300 mb-2">Вы заболели корью!</h2>
+                <p class="text-sm text-[#a0a0a0] mb-4">Вы подхватили опасную болезнь в Тёмном лесу!</p>
+                <div class="panel p-3 rounded bg-black/40 border border-red-900/50 mb-4 text-left">
+                    <div class="text-[10px] text-red-400 uppercase tracking-widest mb-2">⚠️ Опасность</div>
+                    <p class="text-xs text-[#e0e0e0] leading-relaxed mb-2">
+                        Теперь вы будете терять <span class="text-red-400 font-bold">-1 ХП каждые 20 секунд</span>.
+                    </p>
+                    <p class="text-xs text-[#a0a0a0] leading-relaxed">
+                        Ходят слухи, что <span class="text-[#c8aa6e] font-semibold">Эльдар из Деревни</span> лечит людей от этой страшной болезни.
+                    </p>
+                </div>
+                <button onclick="ui.dismissMeaslesWarning()" class="btn-medieval w-full py-2 rounded text-xs border-red-500 text-red-300">
+                    Понял
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Escort Work Progress Modal -->
+    <div id="modal-escort-progress" class="modal-overlay">
+        <div class="modal-content rounded-lg p-6 text-center relative overflow-hidden border-red-500" onclick="event.stopPropagation()">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-red-400 to-transparent"></div>
+            <div class="absolute inset-0 opacity-20 pointer-events-none bg-[radial-gradient(circle_at_top,rgba(239,68,68,0.2),transparent_60%)]"></div>
+            <div class="relative">
+                <div class="w-16 h-16 rounded-full border border-red-500/60 bg-[#111] flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-route text-3xl text-red-400"></i>
+                </div>
+                <h2 class="medieval-font text-2xl text-red-300 mb-2">Переправка беженцев</h2>
+                <p class="text-sm text-[#a0a0a0] mb-4">Опасный путь через границу...</p>
+                <div class="panel p-3 rounded bg-black/40 border border-red-900/50 mb-4">
+                    <div id="escort-progress-text" class="text-sm text-[#e0e0e0] leading-relaxed">
+                        Подготовка к переправке...
+                    </div>
+                    <div class="mt-3 progress-container">
+                        <div id="escort-progress-bar" class="progress-fill" style="width: 0%; background: linear-gradient(90deg, #991b1b, #dc2626);"></div>
+                    </div>
+                    <div class="mt-2 text-xs text-gray-500">
+                        <span id="escort-timer">60</span> секунд
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Escort Result Modal -->
+    <div id="modal-escort-result" class="modal-overlay">
+        <div class="modal-content rounded-lg p-6 text-center relative overflow-hidden border-amber-500">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-amber-400 to-transparent"></div>
+            <div class="absolute inset-0 opacity-20 pointer-events-none bg-[radial-gradient(circle_at_top,rgba(245,158,11,0.2),transparent_60%)]"></div>
+            <div class="relative">
+                <div class="w-16 h-16 rounded-full border border-amber-500/60 bg-[#111] flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-check-circle text-3xl text-amber-400"></i>
+                </div>
+                <h2 class="medieval-font text-2xl text-amber-300 mb-2">Переправка завершена</h2>
+                <p class="text-sm text-[#a0a0a0] mb-4">Вы успешно переправили беженцев!</p>
+                <div class="panel p-3 rounded bg-black/40 border border-[#333] mb-4 text-left space-y-2">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-400">Получено:</span>
+                        <span class="text-emerald-400 font-bold" id="escort-result-emeralds">+8 изумрудов</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-400">Репутация:</span>
+                        <span class="text-red-400 font-bold" id="escort-result-rep">-5</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-400">Урон:</span>
+                        <span class="text-red-400 font-bold" id="escort-result-hp">-40 ХП</span>
+                    </div>
+                </div>
+                <button onclick="refugeeCamp.closeResult()" class="btn-medieval w-full py-2 rounded text-xs border-amber-500 text-amber-300">
+                    Понял
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Reputation Info Modal -->
     <div id="modal-reputation" class="modal-overlay">
         <div class="modal-content rounded-lg p-6 text-center relative overflow-hidden">
@@ -1166,8 +1251,8 @@
                     <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#c8aa6e]/30 pointer-events-none"></div>
                     <div class="absolute inset-0 border-4 border-[#c8aa6e]/30 rounded-full pointer-events-none"></div>
                 </div>
-                <h2 class="text-2xl medieval-font text-[#e0e0e0]">Странник</h2>
-                <p class="text-sm text-[#a0a0a0] mb-2">Начинающий искатель приключений</p>
+                <h2 id="hero-title" class="text-2xl medieval-font text-[#e0e0e0]">Странник</h2>
+                <p id="hero-title-desc" class="text-sm text-[#a0a0a0] mb-2">Начинающий искатель приключений</p>
                 <div class="panel rounded p-2 text-center text-[10px] text-[#a0a0a0] w-full max-w-xs mb-2">
                     <div class="flex items-center justify-center gap-2">
                         <span>Имя:</span>
@@ -1374,6 +1459,7 @@
                     <div class="flex items-center gap-2 overflow-x-auto pb-2 mb-2 no-scrollbar">
                         <button onclick="inventory.switchCategory('tools')" id="tab-inv-tools" class="sub-tab active">Инструменты</button>
                         <button onclick="inventory.switchCategory('combat')" id="tab-inv-combat" class="sub-tab">Мечи/Броня</button>
+                        <button onclick="inventory.switchCategory('amulets')" id="tab-inv-amulets" class="sub-tab">Амулеты</button>
                         <button onclick="inventory.switchCategory('potions')" id="tab-inv-potions" class="sub-tab">Зелья</button>
                         <button onclick="inventory.switchCategory('other')" id="tab-inv-other" class="sub-tab">Другое</button>
                     </div>
@@ -1403,7 +1489,7 @@
                             <div id="ui-crafting">
                                 <div class="flex items-center gap-2 overflow-x-auto pb-2 mb-2 no-scrollbar">
                                     <button onclick="crafting.switchCategory('potions')" id="tab-craft-potions" class="sub-tab active">Зелья</button>
-                                    <button onclick="crafting.switchCategory('charms')" id="tab-craft-charms" class="sub-tab">Обереги</button>
+                                    <button onclick="crafting.switchCategory('amulets')" id="tab-craft-amulets" class="sub-tab">Амулеты</button>
                                     <button onclick="crafting.switchCategory('tools')" id="tab-craft-tools" class="sub-tab">Материалы</button>
                                     <button onclick="crafting.switchCategory('food')" id="tab-craft-food" class="sub-tab">Еда</button>
                                     <button onclick="crafting.switchCategory('other')" id="tab-craft-other" class="sub-tab">Другое</button>
@@ -2010,39 +2096,7 @@
             </div>
 
             <!-- The Hunter -->
-            <div id="job-hunter" class="panel rounded-lg p-0 relative overflow-hidden h-48 opacity-50 group">
-                <div class="absolute inset-0 bg-[url('https://i.postimg.cc/52T6Mbsn/IMG-4590.jpg')] bg-cover bg-center opacity-40 group-hover:opacity-50 transition-opacity"></div>
-                <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(239,68,68,0.25),transparent_60%)]"></div>
-                <div class="absolute inset-0 bg-black/30"></div>
-                 <div class="absolute inset-0 p-4 flex flex-col justify-between">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h3 class="medieval-font text-lg text-white drop-shadow-md">Охота</h3>
-                            <p class="text-xs text-gray-300 drop-shadow-md">Добыча шкур в лесу.</p>
-                            <p class="text-xs text-[#c8aa6e] mt-1 drop-shadow-md" id="job-info-hunter">Требуется: Арбалет</p>
-                            <div class="flex items-center gap-1 mt-1">
-                                <i class="fas fa-skull-crossbones text-red-500 text-xs"></i>
-                                <span class="text-xs text-red-500 font-bold drop-shadow-md">ОПАСНО</span>
-                            </div>
-                        </div>
-                        <span class="text-xs bg-red-900/80 text-red-200 px-2 py-0.5 rounded border border-red-800 backdrop-blur-sm">Ур 30</span>
-                    </div>
-                    
-                    <div>
-                        <div class="flex items-center gap-4 mb-3">
-                            <div class="text-sm text-[#e0e0e0] flex items-center gap-1 drop-shadow-md">
-                                <i class="fas fa-scroll"></i> <span id="reward-hunter" class="font-bold">1 Кожа</span>
-                            </div>
-                            <div class="text-sm text-blue-400 flex items-center gap-1 drop-shadow-md">
-                                <i class="fas fa-star"></i> +15 XP
-                            </div>
-                        </div>
-                        <button id="btn-work-hunter" disabled onclick="game.work('hunter', event)" class="job-button w-full py-2 rounded font-bold flex items-center justify-center gap-2 shadow-lg">
-                            <i class="fas fa-lock text-xs"></i> Закрыто
-                        </button>
-                    </div>
-                </div>
-            </div>
+
         </section>
 
         <!-- VIEW: DARK FOREST -->
@@ -2114,21 +2168,141 @@
                     </div>
                     <div class="flex justify-between items-center z-10">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded bg-[#222] flex items-center justify-center text-red-500 border border-purple-900">
+                            <div class="w-10 h-10 rounded bg-[#222] flex items-center justify-center text-purple-500 border border-purple-900">
                                 <i class="fas fa-skull"></i>
                             </div>
                             <div>
-                                <h4 class="font-bold text-sm text-gray-200">Охота на чудовищ</h4>
+                                <h4 class="font-bold text-sm text-gray-200">Охота</h4>
                                 <p class="text-[10px] text-gray-500">Углубиться в чащу леса.</p>
                             </div>
                         </div>
                     </div>
                     <button onclick="locations.forestHunt(event)" class="btn-medieval w-full py-2 rounded text-xs border-red-900 text-red-500 hover:bg-red-900/20 z-10">
-                        Сразиться (-20 HP)
+                        Сразиться (-10 HP)
                     </button>
                     <div class="flex justify-between text-[10px] text-gray-500 px-1 z-10">
-                        <span>Награда: Золото/Предметы</span>
+                        <span>Награда: Кожа/Мясо</span>
                         <span>+20 XP</span>
+                    </div>
+                </div>
+
+                <!-- Hunter's Hut -->
+                <div class="panel p-3 rounded border-amber-900/30 bg-amber-900/10">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full border border-amber-600/60 bg-amber-950/50 flex items-center justify-center">
+                                <i class="fas fa-home text-amber-500"></i>
+                            </div>
+                            <div>
+                                <div class="text-base text-[#e0e0e0] font-bold">Хижина охотника</div>
+                                <div class="text-[10px] text-amber-400">Тайное убежище</div>
+                            </div>
+                        </div>
+                        <button onclick="router.navigate('hunter-hut')" class="btn-medieval px-4 py-1.5 rounded text-xs border-amber-600 text-amber-400">
+                            Войти
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: HUNTER'S HUT -->
+        <section id="view-hunter-hut" class="hidden space-y-4">
+            <div class="loc-hero h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-black/30 backdrop-blur-sm" data-loc="hunter-hut" style="--hero-img: url('https://i.postimg.cc/kGXTFn6F/IMG-4563.jpg');">
+                <div class="absolute inset-0 bg-gradient-to-b from-amber-950/40 via-transparent to-black/60"></div>
+                <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent"></div>
+                <div class="absolute top-4 left-4">
+                    <button onclick="router.navigate('dark-forest')" class="w-8 h-8 rounded border border-amber-900/50 bg-black/30 flex items-center justify-center text-amber-400 hover:bg-amber-900/30 transition-colors">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                </div>
+                <div class="absolute top-1/2 left-16 -translate-y-1/2 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-900/60 to-amber-950 flex items-center justify-center border-2 border-amber-500/60 shadow-[0_0_15px_rgba(245,158,11,0.4)]">
+                        <i class="fas fa-home text-amber-400 text-lg"></i>
+                    </div>
+                    <h2 class="medieval-font text-2xl text-amber-300 drop-shadow-md">Хижина охотника</h2>
+                </div>
+            </div>
+
+            <div class="panel rounded-lg p-4 space-y-4 bg-gradient-to-b from-[#1a1a1d] to-[#1a1208] border-amber-900/30">
+                <div class="text-center">
+                    <p class="text-sm text-[#e0e0e0]">Уютная хижина опытного охотника...</p>
+                    <p class="text-xs text-amber-400">Запах дыма и кожи наполняет воздух.</p>
+                </div>
+
+                <!-- Eigan NPC -->
+                <div class="panel p-4 rounded border-amber-700/50 bg-gradient-to-br from-amber-950/30 to-amber-900/20 relative overflow-hidden">
+                    <div class="absolute -right-8 -bottom-8 text-8xl text-amber-900/10 pointer-events-none">
+                        <i class="fas fa-bow-arrow"></i>
+                    </div>
+                    <div class="flex items-center gap-4 relative z-10">
+                        <div class="w-16 h-16 rounded-full border-2 border-amber-600/60 bg-black/40 flex items-center justify-center overflow-hidden">
+                            <img src="https://i.postimg.cc/mDDy3F2s/image-Picsart-Background-Remover-(7).png" alt="Эйган" class="w-full h-full object-cover">
+                        </div>
+                        <div class="flex-1">
+                            <div class="text-lg text-amber-300 font-bold medieval-font">Эйган</div>
+                            <div class="text-xs text-amber-500/80">Охотник и торговец</div>
+                            <div class="text-[10px] text-gray-500 mt-1">Эксперт по лесным тайнам</div>
+                        </div>
+                        <button onclick="dialogue.start('eigan')" class="btn-medieval px-6 py-2 rounded text-sm border-amber-600 text-amber-400 hover:bg-amber-900/30">
+                            Поговорить
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Amulet Shop -->
+                <div class="panel p-4 rounded border-purple-700/50 bg-gradient-to-br from-purple-950/30 to-purple-900/20">
+                    <div class="flex items-center gap-2 mb-3">
+                        <i class="fas fa-gem text-purple-400"></i>
+                        <h3 class="text-base font-bold text-purple-300 medieval-font">Магические амулеты</h3>
+                    </div>
+                    
+                    <!-- XP Amulet -->
+                    <div class="mb-3 p-3 rounded border border-blue-900/50 bg-blue-950/20">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded bg-blue-950/60 border border-blue-700/50 flex items-center justify-center">
+                                    <i class="fas fa-star text-blue-400"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-bold text-blue-300">Амулет опыта</div>
+                                    <div class="text-[10px] text-blue-400/70">+50% к получаемому опыту</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="text-xs text-emerald-400 flex items-center gap-1">
+                                <i class="far fa-gem"></i>
+                                <span class="font-bold">200 изумрудов</span>
+                            </div>
+                            <button onclick="hunterHut.buyAmulet('xp', event)" class="btn-medieval px-4 py-1.5 rounded text-xs border-blue-700 text-blue-400">
+                                Купить
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Gathering Amulet -->
+                    <div class="p-3 rounded border border-emerald-900/50 bg-emerald-950/20">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded bg-emerald-950/60 border border-emerald-700/50 flex items-center justify-center">
+                                    <i class="fas fa-leaf text-emerald-400"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-bold text-emerald-300">Амулет добычи</div>
+                                    <div class="text-[10px] text-emerald-400/70">+50% к добыче материалов</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="text-xs text-emerald-400 flex items-center gap-1">
+                                <i class="far fa-gem"></i>
+                                <span class="font-bold">400 изумрудов</span>
+                            </div>
+                            <button onclick="hunterHut.buyAmulet('gathering', event)" class="btn-medieval px-4 py-1.5 rounded text-xs border-emerald-700 text-emerald-400">
+                                Купить
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -4901,44 +5075,27 @@
                     Палатки из тряпья, потухшие костры и тихие разговоры о лучшей жизни за границей.
                 </div>
 
-                <div class="panel p-3 rounded flex items-center justify-between border-gray-600/30 bg-gray-800/10">
-                    <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-full border border-gray-500 bg-[#222] flex items-center justify-center">
-                            <i class="fas fa-user-secret text-gray-400"></i>
-                        </div>
-                        <div>
-                            <div class="text-base text-[#e0e0e0] font-bold medieval-font">Томас</div>
-                            <div class="text-[10px] text-[#a0a0a0]">Перевозчик</div>
+                <!-- Escort Work -->
+                <div class="p-3 border border-red-900/50 rounded bg-red-900/10 flex flex-col gap-2">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded bg-[#222] flex items-center justify-center text-red-500 border border-red-900">
+                                <i class="fas fa-route"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm text-gray-200">Переправить беженцев</h4>
+                                <p class="text-[10px] text-gray-500">Опасная работа, требует меч</p>
+                            </div>
                         </div>
                     </div>
-                    <button onclick="dialogue.start('thomas')" class="btn-medieval px-4 py-1.5 rounded text-xs">
-                        Говорить
+                    <button id="btn-escort-refugees" onclick="refugeeCamp.startEscort(event)" class="btn-medieval w-full py-2 rounded text-xs border-red-900 text-red-500 hover:bg-red-900/20">
+                        Переправить (Раз в 3 часа)
                     </button>
-                </div>
-            </div>
-        </section>
-
-        <!-- VIEW: REFUGEE CAMP -->
-        <section id="view-refugee-camp" class="hidden space-y-4">
-            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-black/30 backdrop-blur-sm">
-                <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(100,116,139,0.15),transparent_60%)]"></div>
-                <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-slate-600/50 to-transparent"></div>
-                <div class="absolute top-4 left-4">
-                    <button onclick="router.navigate('map')" class="w-8 h-8 rounded border border-slate-700/50 bg-black/30 flex items-center justify-center text-slate-400 hover:bg-slate-800/30 transition-colors">
-                        <i class="fas fa-arrow-left"></i>
-                    </button>
-                </div>
-                <div class="absolute top-1/2 left-16 -translate-y-1/2 flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-slate-800/60 to-slate-950 flex items-center justify-center border-2 border-slate-600/60 shadow-[0_0_15px_rgba(100,116,139,0.2)]">
-                        <i class="fas fa-campground text-slate-400 text-lg"></i>
+                    <div class="flex justify-between text-[10px] text-gray-500 px-1">
+                        <span class="text-red-400">-5 репутация</span>
+                        <span class="text-emerald-400">+8 изумрудов</span>
                     </div>
-                    <h2 class="medieval-font text-2xl text-slate-300 drop-shadow-md">Лагерь беженцев</h2>
-                </div>
-            </div>
-
-            <div class="panel rounded-lg p-4 space-y-4">
-                <div class="text-center text-xs text-[#777] bg-black/20 border border-[#333] rounded p-3">
-                    Палатки из тряпья, потухшие костры и тихие разговоры о лучшей жизни за границей.
+                    <div id="escort-cooldown" class="text-[10px] text-center text-amber-400 hidden"></div>
                 </div>
 
                 <div class="panel p-3 rounded flex items-center justify-between border-gray-600/30 bg-gray-800/10">
@@ -5096,7 +5253,7 @@
             rod: { id: 'rod', name: 'Удочка', baseCost: 50, icon: 'icon-rod', job: 'port' },
             sickle: { id: 'sickle', name: 'Серп', baseCost: 500, icon: 'icon-sickle', job: 'field' },
             pickaxe: { id: 'pickaxe', name: 'Кирка', baseCost: 2000, icon: 'icon-pickaxe', job: 'mine' },
-            crossbow: { id: 'crossbow', name: 'Арбалет', baseCost: 5000, icon: 'fa-crosshairs', job: 'hunter' },
+            crossbow: { id: 'crossbow', name: 'Арбалет', baseCost: 5000, icon: 'fa-crosshairs', job: null },
             sword: { id: 'sword', name: 'Меч', baseCost: 1000, icon: 'fa-khanda', job: 'guard' }
         };
 
@@ -5120,8 +5277,7 @@
             port: { name: 'Порт', resource: 'fish', price: 5, xp: 1, tool: 'rod', injuryChance: 0.01 },
             loader: { name: 'Грузчик', resource: 'gold', price: 6, xp: 2, tool: null, levelReq: 3, injuryChance: 0.01, requiresAlex: true },
             field: { name: 'Поле', resource: 'wheat', price: 15, xp: 3, tool: 'sickle', levelReq: 5, injuryChance: 0.01 },
-            mine: { name: 'Рудник', resource: 'ore', price: 40, xp: 8, tool: 'pickaxe', levelReq: 15, injuryChance: 0.03 },
-            hunter: { name: 'Охота', resource: 'leather', price: 100, xp: 15, tool: 'crossbow', levelReq: 30, injuryChance: 0.05 }
+            mine: { name: 'Рудник', resource: 'ore', price: 40, xp: 8, tool: 'pickaxe', levelReq: 15, injuryChance: 0.03 }
         };
         
         const RESOURCE_NAMES = {
@@ -6104,6 +6260,131 @@
                     }
                 }
             },
+            eigan: {
+                name: "Эйган",
+                role: "Охотник",
+                icon: "fa-bow-arrow",
+                dialogue: {
+                    root: function() {
+                        if (gameState.npcStates && gameState.npcStates.eiganQuestComplete) {
+                            return "after_quest";
+                        }
+                        if (gameState.npcStates && gameState.npcStates.eiganQuestActive) {
+                            return "quest_active";
+                        }
+                        if (!gameState.npcStates || !gameState.npcStates.eiganMet) {
+                            if (!gameState.npcStates) gameState.npcStates = {};
+                            gameState.npcStates.eiganMet = true;
+                            game.save();
+                            return "first_meet";
+                        }
+                        return "regular";
+                    },
+                    first_meet: {
+                        text: "Приветствую, путник. Я Эйган, охотник этих земель. Ты нашел мою хижину — значит, ты либо смелый, либо отчаянный. Надеюсь, первое.",
+                        options: [
+                            { text: "Расскажи мне о лесе", next: "about_forest" },
+                            { text: "Что ты тут делаешь?", next: "about_hunter" },
+                            { text: "Я просто осматриваюсь", next: "exit" }
+                        ]
+                    },
+                    about_forest: {
+                        text: "Тёмный лес — место опасное, но и богатое. Здесь можно найти редкие травы, грибы, ценную кожу зверей... Но будь осторожен. Лес таит в себе болезни. Корь — самая распространённая из них. Она медленно забирает жизненные силы. Без лечения долго не протянешь.",
+                        options: [
+                            { text: "Как защититься от кори?", next: "about_measles" },
+                            { text: "Какие ещё опасности тут есть?", next: "about_dangers" },
+                            { text: "Понятно, спасибо", next: "regular" }
+                        ]
+                    },
+                    about_measles: {
+                        text: "Корь распространяется через воздух в глубине леса. Шанс невелик, но он есть. Если заболеешь — найди Эльдара в Деревне. Только он умеет лечить эту хворь. А я тут продаю амулеты, которые помогут тебе в путешествиях.",
+                        options: [
+                            { text: "Расскажи про амулеты", next: "about_amulets" },
+                            { text: "Хорошо знать", next: "regular" }
+                        ]
+                    },
+                    about_dangers: {
+                        text: "Помимо кори, в лесу водятся волки, медведи и кое-что похуже... Древние создания, о которых лучше не знать. Если у тебя нет арбалета, не углубляйся слишком далеко. И следи за здоровьем — раненый путник привлекает хищников.",
+                        options: [
+                            { text: "Я буду осторожен", next: "regular" },
+                            { text: "Расскажи про амулеты", next: "about_amulets" }
+                        ]
+                    },
+                    about_hunter: {
+                        text: "Я охочусь здесь больше двадцати лет. Знаю каждую тропу, каждую нору. Лес даёт мне всё необходимое для жизни, а я помогаю путникам вроде тебя. За разумную плату, разумеется.",
+                        options: [
+                            { text: "Что ты можешь предложить?", next: "about_amulets" },
+                            { text: "Есть ли у тебя работа?", next: "quest_offer" },
+                            { text: "Понял", next: "regular" }
+                        ]
+                    },
+                    about_amulets: {
+                        text: "У меня есть два особых амулета. Амулет опыта — усиливает твоё обучение, даёт на 50% больше опыта. А Амулет добычи — помогает находить больше ресурсов при собирательстве. Оба стоят недёшево, но они того стоят.",
+                        options: [
+                            { text: "Я подумаю", next: "regular" },
+                            { text: "У тебя есть задание?", next: "quest_offer" }
+                        ]
+                    },
+                    regular: {
+                        text: "Чем могу помочь, путник?",
+                        options: [
+                            { text: "Расскажи про лес", next: "about_forest" },
+                            { text: "Есть работа?", next: "quest_offer" },
+                            { text: "Я уйду", next: "exit" }
+                        ]
+                    },
+                    quest_offer: {
+                        text: "Есть одно дело. Недавно я видел в лесу старинный тотем — древний артефакт наших предков. Он находится где-то в глубине леса. Если найдёшь его и принесёшь мне, я щедро награжу тебя. Этот тотем имеет для меня особое значение.",
+                        options: [
+                            { text: "Где искать этот тотем?", next: "quest_hint" },
+                            { text: "Я поищу его", action: "start_eigan_quest", next: "quest_accepted" },
+                            { text: "Слишком опасно", next: "regular" }
+                        ]
+                    },
+                    quest_hint: {
+                        text: "Тотем спрятан в самой чаще. Тебе придётся много раз исследовать лес, собирая ресурсы. Рано или поздно наткнёшься на него. Помни — лес открывает свои секреты лишь терпеливым.",
+                        options: [
+                            { text: "Я найду его", action: "start_eigan_quest", next: "quest_accepted" },
+                            { text: "Подумаю", next: "regular" }
+                        ]
+                    },
+                    quest_accepted: {
+                        text: "Отлично! Будь осторожен в лесу. Когда найдёшь тотем, возвращайся ко мне. Удачи, охотник.",
+                        options: [{ text: "Вернусь с тотемом", next: "exit" }]
+                    },
+                    quest_active: {
+                        text: "Нашёл древний тотем? Это старинный деревянный идол с резьбой.",
+                        options: function() {
+                            if (gameState.npcStates && gameState.npcStates.eiganTotemFound) {
+                                return [
+                                    { text: "Да! Вот он!", action: "return_totem", next: "totem_returned" }
+                                ];
+                            }
+                            return [
+                                { text: "Ещё ищу", next: "searching" },
+                                { text: "Пока нет", next: "exit" }
+                            ];
+                        }
+                    },
+                    searching: {
+                        text: "Продолжай искать. Тотем где-то в чаще леса. Собирай ресурсы, исследуй — и ты найдёшь его.",
+                        options: [{ text: "Продолжу поиски", next: "exit" }]
+                    },
+                    totem_returned: {
+                        text: "Это он! Древний тотем моих предков! Ты не представляешь, как много это значит для меня. Вот твоя награда — 15 изумрудов и мой личный амулет удачи. Носи его с гордостью, друг!",
+                        options: [
+                            { text: "Рад был помочь", next: "exit" }
+                        ]
+                    },
+                    after_quest: {
+                        text: "Спасибо тебе ещё раз за тотем. Если нужны амулеты — я всегда к твоим услугам.",
+                        options: [
+                            { text: "Расскажи про лес", next: "about_forest" },
+                            { text: "До встречи", next: "exit" }
+                        ]
+                    }
+                }
+            },
             gambler: {
                 name: "Азартный игрок",
                 role: "Игрок в кости",
@@ -6765,8 +7046,10 @@
                 'noble_guard': 'https://i.postimg.cc/QdvqgMK8/image-Picsart-Background-Remover-(8).png',
                 'elara': '',
                 'sarah': 'https://i.postimg.cc/fWcmXfxm/IMG-4671.png',
+                'eigan': '',
                 'gorn': '',
-                'thomas': ''
+                'thomas': '',
+                'sage': 'https://i.postimg.cc/P5BFss9w/IMG-4562.jpg'
             },
             
             start: function(npcId) {
@@ -6786,10 +7069,13 @@
                     charImg.classList.remove('loaded');
                 };
                 
-                if (this.characterImages[npcId]) {
-                    charImg.src = this.characterImages[npcId];
+                let chosenSrc = '';
+                const mapped = this.characterImages[npcId];
+                const uiImg = document.querySelector(`img[alt="${npc.name}"]`);
+                chosenSrc = mapped || (uiImg && uiImg.src) || '';
+                if (chosenSrc) {
+                    charImg.src = chosenSrc;
                     charImg.classList.remove('loaded');
-                    // Trigger animation after image loads
                     charImg.onload = () => {
                         setTimeout(() => {
                             charImg.classList.add('loaded');
@@ -6818,6 +7104,8 @@
                     gradientColors = "linear-gradient(135deg, #10b981 0%, #059669 50%, #10b981 100%)"; // Healer Green
                 } else if(npcId === 'hank') {
                     gradientColors = "linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #f59e0b 100%)"; // Merchant Amber
+                } else if(npcId === 'sage') {
+                    gradientColors = "linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #6366f1 100%)"; // Sage Indigo
                 } else if(npcId === 'eldar') {
                     gradientColors = "linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #6366f1 100%)"; // Sage Indigo
                 } else if(npcId === 'alex') {
@@ -6832,6 +7120,8 @@
                     gradientColors = "linear-gradient(135deg, #166534 0%, #15803d 50%, #14532d 100%)"; // Emerald Farm
                 } else if(npcId === 'sarah') {
                     gradientColors = "linear-gradient(135deg, #a855f7 0%, #7c3aed 50%, #a855f7 100%)";
+                } else if(npcId === 'eigan') {
+                    gradientColors = "linear-gradient(135deg, #0ea5e9 0%, #1d4ed8 50%, #0ea5e9 100%)";
                 } else if(npcId === 'oldman_port') {
                     gradientColors = "linear-gradient(135deg, #0369a1 0%, #0284c7 50%, #075985 100%)"; // Ocean Blue
                 } else if(npcId === 'peter') {
@@ -7028,6 +7318,33 @@
                 }
                 if (action === 'start_q_sage_1') {
                     this.addQuest('q_sage_1', 'Грибы для Мудреца', 'Собрать 20 грибов для Эльдара.', {type: 'gather', target: 'mushrooms', count: 20}, {gold: 300, xp: 80});
+                }
+                if (action === 'start_eigan_quest') {
+                    if (!gameState.npcStates) gameState.npcStates = {};
+                    gameState.npcStates.eiganQuestActive = true;
+                    game.save();
+                    ui.showFloatText(document.body, "Новый квест: Древний тотем", "#fbbf24");
+                }
+                if (action === 'return_totem') {
+                    if (!gameState.npcStates) gameState.npcStates = {};
+                    gameState.npcStates.eiganQuestActive = false;
+                    gameState.npcStates.eiganQuestComplete = true;
+                    gameState.emeralds += 15;
+                    gameState.xp += 100;
+                    
+                    // Give luck amulet as reward
+                    if (!gameState.amulets) gameState.amulets = {};
+                    gameState.amulets.luck = { owned: true, name: "Амулет удачи", bonus: "+10% к шансу редких находок" };
+                    
+                    game.save();
+                    ui.updateStats();
+                    ui.showFloatText(document.body, "+15 изумрудов", "#10b981");
+                    setTimeout(() => {
+                        ui.showFloatText(document.body, "+100 XP", "#3b82f6");
+                    }, 300);
+                    setTimeout(() => {
+                        ui.showFloatText(document.body, "Получен: Амулет удачи!", "#c084fc");
+                    }, 600);
                 }
                 if (action === 'unlock_refugee') {
                     if (!gameState.npcStates) gameState.npcStates = {};
@@ -7313,38 +7630,90 @@
 
             questPool: {
                 easy: [
+                    // Gather quests (basic resources)
                     { type:'gather', target:'fish',      goalRange:[3,6],   textFn: g => `Поймать ${g} рыбы` },
                     { type:'gather', target:'wood',      goalRange:[4,7],   textFn: g => `Собрать ${g} палок` },
                     { type:'gather', target:'stone',     goalRange:[3,6],   textFn: g => `Собрать ${g} камней` },
                     { type:'gather', target:'herbs',     goalRange:[3,5],   textFn: g => `Сорвать ${g} трав` },
                     { type:'gather', target:'mushrooms', goalRange:[2,4],   textFn: g => `Найти ${g} гриба` },
+                    { type:'gather', target:'wheat',     goalRange:[3,5],   textFn: g => `Собрать ${g} пшеницы` },
+                    
+                    // Sell quests (basic)
                     { type:'sell',   target:'fish',      goalRange:[3,6],   textFn: g => `Продать ${g} рыбы` },
                     { type:'sell',   target:'wood',      goalRange:[3,5],   textFn: g => `Продать ${g} палок` },
                     { type:'sell',   target:'herbs',     goalRange:[2,4],   textFn: g => `Продать ${g} трав` },
+                    { type:'sell',   target:'stone',     goalRange:[3,5],   textFn: g => `Продать ${g} камней` },
+                    { type:'sell',   target:'mushrooms', goalRange:[2,3],   textFn: g => `Продать ${g} гриба торговцу` },
+                    { type:'sell',   target:'wheat',     goalRange:[2,4],   textFn: g => `Продать ${g} пшеницы на рынке` },
+                    
+                    // Work quests (basic jobs)
                     { type:'work',   target:'port',      goalRange:[3,5],   textFn: g => `Заработать в порту ${g} раз` },
                     { type:'work',   target:'field',     goalRange:[2,4],   textFn: g => `Поработать на поле ${g} раза` },
-                    { type:'gather', target:'wheat',     goalRange:[3,5],   textFn: g => `Собрать ${g} пшеницы` },
-                    { type:'sell',   target:'stone',     goalRange:[3,5],   textFn: g => `Продать ${g} камней` },
+                    { type:'work',   target:'port',      goalRange:[4,6],   textFn: g => `Порыбачить в порту ${g} раз` },
+                    { type:'work',   target:'loader',    goalRange:[2,3],   textFn: g => `Разгрузить ${g} повозки` },
+                    
+                    // Mixed simple goals
+                    { type:'gather', target:'fish',      goalRange:[4,7],   textFn: g => `Наловить ${g} рыбы для таверны` },
+                    { type:'gather', target:'herbs',     goalRange:[3,6],   textFn: g => `Собрать ${g} лечебных трав` },
+                    { type:'sell',   target:'fish',      goalRange:[4,6],   textFn: g => `Сбыть ${g} рыбы на площади` },
+                    { type:'work',   target:'field',     goalRange:[3,5],   textFn: g => `Помочь с урожаем ${g} раз` },
+                    // More easy gathering
+                    { type:'gather', target:'wood',      goalRange:[3,6],   textFn: g => `Нарубить ${g} дров` },
+                    { type:'gather', target:'stone',     goalRange:[4,6],   textFn: g => `Накопать ${g} булыжников` },
+                    { type:'gather', target:'mushrooms', goalRange:[3,5],   textFn: g => `Набрать ${g} лесных грибов` },
+                    { type:'sell',   target:'fish',      goalRange:[4,7],   textFn: g => `Реализовать ${g} рыб` },
+                    { type:'sell',   target:'wood',      goalRange:[4,6],   textFn: g => `Сбыть ${g} вязанок дров` },
+                    { type:'work',   target:'port',      goalRange:[4,6],   textFn: g => `Помочь рыбакам ${g} раз` },
+                    { type:'work',   target:'field',     goalRange:[3,5],   textFn: g => `Заработать на жатве ${g} смен` },
+
                 ],
                 medium: [
+                    // Gather quests (moderate amounts)
                     { type:'gather', target:'fish',      goalRange:[8,14],  textFn: g => `Поймать ${g} рыбы` },
                     { type:'gather', target:'wood',      goalRange:[10,16], textFn: g => `Собрать ${g} палок` },
                     { type:'gather', target:'stone',     goalRange:[8,14],  textFn: g => `Добыть ${g} камней` },
                     { type:'gather', target:'herbs',     goalRange:[6,10],  textFn: g => `Собрать ${g} трав` },
                     { type:'gather', target:'mushrooms', goalRange:[5,8],   textFn: g => `Найти ${g} грибов` },
                     { type:'gather', target:'wheat',     goalRange:[8,14],  textFn: g => `Собрать ${g} пшеницы` },
+                    { type:'gather', target:'ore',       goalRange:[3,5],   textFn: g => `Добыть ${g} руды` },
+                    
+                    // Sell quests (moderate)
                     { type:'sell',   target:'fish',      goalRange:[8,14],  textFn: g => `Продать ${g} рыбы на рынке` },
                     { type:'sell',   target:'wheat',     goalRange:[6,12],  textFn: g => `Продать ${g} пшеницы` },
                     { type:'sell',   target:'wood',      goalRange:[8,12],  textFn: g => `Продать ${g} палок` },
-                    { type:'sell',   target:'herbs',     goalRange:[5,9],   textFn: g => `Продать ${g} трав` },
+                    { type:'sell',   target:'herbs',     goalRange:[5,9],   textFn: g => `Продать ${g} трав лекарю` },
                     { type:'sell',   target:'stone',     goalRange:[6,10],  textFn: g => `Продать ${g} камней` },
+                    { type:'sell',   target:'mushrooms', goalRange:[4,7],   textFn: g => `Продать ${g} грибов` },
+                    { type:'sell',   target:'ore',       goalRange:[2,4],   textFn: g => `Продать ${g} руды кузнецу` },
+                    
+                    // Work quests (moderate jobs)
                     { type:'work',   target:'port',      goalRange:[8,14],  textFn: g => `Работать в порту ${g} раз` },
                     { type:'work',   target:'field',     goalRange:[6,10],  textFn: g => `Работать на поле ${g} раз` },
                     { type:'work',   target:'mine',      goalRange:[4,7],   textFn: g => `Работать в руднике ${g} раз` },
+                    { type:'work',   target:'loader',    goalRange:[5,8],   textFn: g => `Разгрузить ${g} партий товара` },
+                    { type:'work',   target:'port',      goalRange:[9,13],  textFn: g => `Порыбачить ${g} раз` },
+                    { type:'work',   target:'mine',      goalRange:[5,8],   textFn: g => `Добыть руду ${g} раз` },
+                    
+                    // Upgrade quests
                     { type:'upgrade', target:'rod',      goalRange:[1,1],   textFn: g => `Улучшить удочку` },
                     { type:'upgrade', target:'sickle',   goalRange:[1,1],   textFn: g => `Улучшить серп` },
+                    { type:'upgrade', target:'pickaxe',  goalRange:[1,1],   textFn: g => `Улучшить кирку` },
+                    
+                    // Mixed medium goals
+                    { type:'gather', target:'fish',      goalRange:[10,15], textFn: g => `Наловить ${g} свежей рыбы` },
+                    { type:'gather', target:'wheat',     goalRange:[9,13],  textFn: g => `Заготовить ${g} пшеницы для мельника` },
+                    { type:'sell',   target:'fish',      goalRange:[10,14], textFn: g => `Поставить ${g} рыбы в таверну` },
+                    { type:'work',   target:'field',     goalRange:[7,11],  textFn: g => `Убрать урожай ${g} раз` },
+                    { type:'gather', target:'stone',     goalRange:[9,13],  textFn: g => `Добыть ${g} камней для стройки` },
+                    // More medium gathering  
+                    { type:'gather', target:'fish',      goalRange:[10,15], textFn: g => `Выловить ${g} хорошей рыбы` },
+                    { type:'gather', target:'stone',     goalRange:[9,15],  textFn: g => `Накопать ${g} крепких камней` },
+                    { type:'sell',   target:'fish',      goalRange:[9,15],  textFn: g => `Сбыть улов (${g} рыб)` },
+                    { type:'work',   target:'port',      goalRange:[9,15],  textFn: g => `Отработать у причала ${g} смен` },
+
                 ],
                 hard: [
+                    // Gather quests (large amounts)
                     { type:'gather', target:'fish',      goalRange:[18,28], textFn: g => `Поймать ${g} рыбы` },
                     { type:'gather', target:'wood',      goalRange:[20,30], textFn: g => `Собрать ${g} палок` },
                     { type:'gather', target:'stone',     goalRange:[16,24], textFn: g => `Добыть ${g} камней` },
@@ -7353,6 +7722,8 @@
                     { type:'gather', target:'wheat',     goalRange:[16,24], textFn: g => `Собрать ${g} пшеницы` },
                     { type:'gather', target:'ore',       goalRange:[6,10],  textFn: g => `Добыть ${g} руды` },
                     { type:'gather', target:'leather',   goalRange:[3,5],   textFn: g => `Добыть ${g} кожи` },
+                    
+                    // Sell quests (large amounts)
                     { type:'sell',   target:'fish',      goalRange:[18,28], textFn: g => `Продать ${g} рыбы` },
                     { type:'sell',   target:'wheat',     goalRange:[16,24], textFn: g => `Продать ${g} пшеницы` },
                     { type:'sell',   target:'ore',       goalRange:[6,10],  textFn: g => `Продать ${g} руды` },
@@ -7361,14 +7732,42 @@
                     { type:'sell',   target:'stone',     goalRange:[14,20], textFn: g => `Продать ${g} камней` },
                     { type:'sell',   target:'herbs',     goalRange:[10,16], textFn: g => `Продать ${g} трав` },
                     { type:'sell',   target:'mushrooms', goalRange:[6,10],  textFn: g => `Продать ${g} грибов` },
+                    
+                    // Work quests (demanding jobs)
                     { type:'work',   target:'port',      goalRange:[16,24], textFn: g => `Работать в порту ${g} раз` },
                     { type:'work',   target:'field',     goalRange:[12,18], textFn: g => `Работать на поле ${g} раз` },
                     { type:'work',   target:'mine',      goalRange:[8,14],  textFn: g => `Работать в руднике ${g} раз` },
-                    { type:'work',   target:'hunter',    goalRange:[4,7],   textFn: g => `Выйти на охоту ${g} раз` },
+
+                    { type:'work',   target:'loader',    goalRange:[10,15], textFn: g => `Разгрузить ${g} партий` },
+                    { type:'work',   target:'port',      goalRange:[17,25], textFn: g => `Порыбачить ${g} раз` },
+                    { type:'work',   target:'mine',      goalRange:[9,15],  textFn: g => `Добыть руду ${g} раз` },
+
+                    
+                    // Upgrade quests
                     { type:'upgrade', target:'rod',      goalRange:[1,1],   textFn: g => `Улучшить удочку` },
                     { type:'upgrade', target:'sickle',   goalRange:[1,1],   textFn: g => `Улучшить серп` },
                     { type:'upgrade', target:'pickaxe',  goalRange:[1,1],   textFn: g => `Улучшить кирку` },
                     { type:'upgrade', target:'crossbow', goalRange:[1,1],   textFn: g => `Улучшить арбалет` },
+                    
+                    // Mixed hard goals
+                    { type:'gather', target:'fish',      goalRange:[20,30], textFn: g => `Выловить ${g} крупной рыбы` },
+                    { type:'gather', target:'wheat',     goalRange:[18,26], textFn: g => `Заготовить ${g} пшеницы на зиму` },
+                    { type:'gather', target:'ore',       goalRange:[7,12],  textFn: g => `Раздобыть ${g} ценной руды` },
+                    { type:'gather', target:'leather',   goalRange:[4,6],   textFn: g => `Добыть ${g} качественной кожи` },
+                    { type:'sell',   target:'fish',      goalRange:[20,28], textFn: g => `Поставить ${g} рыбы на рынок` },
+                    { type:'sell',   target:'wheat',     goalRange:[18,25], textFn: g => `Сбыть ${g} пшеницы торговцам` },
+                    { type:'sell',   target:'ore',       goalRange:[7,11],  textFn: g => `Продать ${g} руды в кузницу` },
+                    { type:'sell',   target:'wood',      goalRange:[18,26], textFn: g => `Продать ${g} дров на площади` },
+                    { type:'work',   target:'field',     goalRange:[14,20], textFn: g => `Убрать весь урожай ${g} раз` },
+                    { type:'work',   target:'mine',      goalRange:[10,16], textFn: g => `Отработать в шахте ${g} смен` },
+
+                    // More hard challenges
+                    { type:'gather', target:'fish',      goalRange:[20,32], textFn: g => `Наловить сеть (${g} рыб)` },
+                    { type:'gather', target:'wood',      goalRange:[22,35], textFn: g => `Заготовить штабель (${g} дров)` },
+                    { type:'sell',   target:'fish',      goalRange:[20,32], textFn: g => `Реализовать улов (${g} рыб)` },
+                    { type:'work',   target:'port',      goalRange:[18,28], textFn: g => `Отработать рыбаком ${g} смен` },
+                    { type:'upgrade', target:'sword',    goalRange:[1,1],   textFn: g => `Заточить клинок меча` },
+
                 ],
             },
 
@@ -7719,10 +8118,24 @@
                 return 'Королевский рыцарь';
             },
 
+            getLevelTitleDescription: function(level) {
+                if (level < 10) return 'Начинающий искатель приключений';
+                if (level < 20) return 'Признанный член городского сообщества';
+                if (level < 30) return 'Влиятельная личность в городе';
+                if (level < 40) return 'Представитель высшего общества';
+                if (level < 50) return 'Легендарный воин королевства';
+                return 'Защитник короны и символ доблести';
+            },
+
             addXp: function(amount) {
                 // Apply XP boost if active
                 if (gameState.activeEffects && gameState.activeEffects.xpBoost && gameState.activeEffects.xpBoost > Date.now()) {
                     amount *= 2;
+                }
+                
+                // Apply XP amulet bonus (+50%)
+                if (gameState.amulets && gameState.amulets.xp && gameState.amulets.xp.owned) {
+                    amount = Math.floor(amount * 1.5);
                 }
                 
                 gameState.xp += amount;
@@ -7775,7 +8188,7 @@
                 } else if (gameState.level === 15) {
                     msg = "Открыт Рудник и Учебный лагерь. Навестите Рыцаря Джона.";
                 } else if (gameState.level === 30) {
-                    msg = "Открыта охота. Самая опасная, но прибыльная работа.";
+
                 }
 
                 document.getElementById('levelup-message').innerText = msg;
@@ -8771,8 +9184,15 @@
                 
                 const gained = {};
                 loot.forEach(item => {
-                    gameState[item] = (gameState[item] || 0) + 1;
-                    gained[item] = (gained[item] || 0) + 1;
+                    let itemCount = 1;
+                    // Apply gathering amulet bonus (+50% more resources)
+                    if (gameState.amulets && gameState.amulets.gathering && gameState.amulets.gathering.owned) {
+                        if (Math.random() < 0.5) {
+                            itemCount = 2; // 50% chance to get double
+                        }
+                    }
+                    gameState[item] = (gameState[item] || 0) + itemCount;
+                    gained[item] = (gained[item] || 0) + itemCount;
                 });
                 
                 let text = "";
@@ -8801,38 +9221,56 @@
                     }, 500);
                 }
                 
+                // SECRET: Eigan's Totem (1% chance, only if quest is active and not found yet)
+                if (gameState.npcStates && gameState.npcStates.eiganQuestActive && 
+                    !gameState.npcStates.eiganTotemFound && Math.random() < 0.01) {
+                    gameState.npcStates.eiganTotemFound = true;
+                    game.save();
+                    setTimeout(() => {
+                        ui.showFloatText(document.body, "🗿 Древний тотем!", "#c8aa6e");
+                        ui.showFloatText(document.body, "Вернитесь к Эйгану!", "#fbbf24");
+                    }, 500);
+                }
+                
                 game.save();
                 ui.updateStats();
             },
 
             forestHunt: function(event) {
+                // Require crossbow
+                if (!gameState.tools || !gameState.tools.crossbow || !gameState.tools.crossbow.owned) {
+                    ui.showFloatText(event.target, "Требуется арбалет", "#ff5555");
+                    return;
+                }
                 if (gameState.hp < 20) {
                     ui.showFloatText(event.target, "Слишком опасно...", "#ff5555");
                     return;
                 }
-                const dmg = Math.floor(20 * game.getHungerDamageMultiplier());
+                const dmg = Math.floor(10 * game.getHungerDamageMultiplier());
                 gameState.hp -= dmg;
                 game.addXp(20);
                 
                 const roll = Math.random();
                 if (roll < 0.2) {
                     // Nothing / Escaped
-                    ui.showFloatText(event.target, "Монстр сбежал...", "#777");
-                } else if (roll < 0.7) {
-                    // Win standard
-                    const gold = Math.floor(Math.random() * 50) + 20;
-                    gameState.gold += gold;
-                    ui.showFloatText(event.target, `Победа! +${gold} Золота`, "#c8aa6e");
-                } else if (roll < 0.9) {
-                    // Win loot
-                    const mushrooms = Math.floor(Math.random() * 5) + 2;
-                    gameState.mushrooms += mushrooms;
-                    ui.showFloatText(event.target, `Трофеи: +${mushrooms} Грибов`, "#a855f7");
+                    ui.showFloatText(event.target, "Зверь сбежал...", "#777");
+                } else if (roll < 0.5) {
+                    // Leather
+                    const leather = Math.floor(Math.random() * 2) + 1;
+                    gameState.leather = (gameState.leather || 0) + leather;
+                    ui.showFloatText(event.target, `+${leather} Кожи`, "#8b4513");
+                } else if (roll < 0.8) {
+                    // Meat
+                    const meat = Math.floor(Math.random() * 3) + 1;
+                    gameState.meat = (gameState.meat || 0) + meat;
+                    ui.showFloatText(event.target, `+${meat} Мяса`, "#ef4444");
                 } else {
-                    // Critical win / Chest
-                    const gold = 100 + Math.floor(Math.random() * 100);
-                    gameState.gold += gold;
-                    ui.showFloatText(event.target, `ЛЕГЕНДАРНО! +${gold} Золота`, "#fbbf24");
+                    // Both
+                    const leather = Math.floor(Math.random() * 2) + 1;
+                    const meat = Math.floor(Math.random() * 2) + 1;
+                    gameState.leather = (gameState.leather || 0) + leather;
+                    gameState.meat = (gameState.meat || 0) + meat;
+                    ui.showFloatText(event.target, `УДАЧА! +${leather} Кожи +${meat} Мяса`, "#fbbf24");
                 }
                 
                 game.save();
@@ -9957,12 +10395,18 @@
             },
             
             tryInfect: function() {
-                // 5% chance to get measles in the forest
-                if (!gameState.hasMeasles && Math.random() < 0.05) {
+                // 1% chance to get measles in the forest
+                if (!gameState.hasMeasles && Math.random() < 0.01) {
                     gameState.hasMeasles = true;
                     gameState.lastMeaslesTick = Date.now();
                     game.save();
-                    ui.showFloatText(document.body, "Вы заразились Корью!", "#ef4444");
+                    
+                    // Show modal window
+                    const modal = document.getElementById('modal-measles-infected');
+                    if (modal) {
+                        modal.classList.add('open');
+                    }
+                    
                     village.updateUI();
                 }
             }
@@ -9976,6 +10420,190 @@
             'pony': { name: 'Пони', price: 30000, speed: 1.0, carry: 10, desc: 'Маленькая лошадка. Недорогая и неприхотливая.', icon: 'fa-horse' },
             'mustang': { name: 'Мустанг', price: 90000, speed: 1.3, carry: 25, desc: 'Дикая и своенравная. Хороша в дальних переходах.', icon: 'fa-wind' },
             'warhorse': { name: 'Боевой конь', price: 250000, speed: 1.2, carry: 40, desc: 'Тренированная для битв. Повышает авторитет.', icon: 'fa-chess-knight' }
+        };
+
+        // --- HUNTER'S HUT CONTROLLER ---
+        const hunterHut = {
+            buyAmulet: function(type, event) {
+                const prices = {
+                    xp: 200,
+                    gathering: 400
+                };
+                
+                const names = {
+                    xp: "Амулет опыта",
+                    gathering: "Амулет добычи"
+                };
+                
+                const bonuses = {
+                    xp: "+50% к получаемому опыту",
+                    gathering: "+50% к добыче материалов"
+                };
+                
+                const price = prices[type];
+                
+                if (!gameState.amulets) gameState.amulets = {};
+                
+                // Check if already owned
+                if (gameState.amulets[type] && gameState.amulets[type].owned) {
+                    ui.showFloatText(event.target, "Уже куплен!", "#ff5555");
+                    return;
+                }
+                
+                // Check emeralds
+                if (gameState.emeralds < price) {
+                    ui.showFloatText(event.target, "Не хватает изумрудов", "#ff5555");
+                    return;
+                }
+                
+                // Purchase
+                gameState.emeralds -= price;
+                gameState.amulets[type] = {
+                    owned: true,
+                    name: names[type],
+                    bonus: bonuses[type]
+                };
+                
+                game.save();
+                ui.updateStats();
+                ui.showFloatText(event.target, `Куплен: ${names[type]}!`, "#10b981");
+                
+                // Update button
+                event.target.textContent = "Куплен";
+                event.target.disabled = true;
+                event.target.classList.add('opacity-50');
+            }
+        };
+
+        // --- REFUGEE CAMP CONTROLLER ---
+        const refugeeCamp = {
+            startEscort: function(event) {
+                // Check if has any sword
+                const hasSword = gameState.ownedSwords && gameState.ownedSwords.length > 0;
+                if (!hasSword) {
+                    ui.showFloatText(event.target, "Требуется меч!", "#ff5555");
+                    return;
+                }
+                
+                // Check cooldown (3 hours = 10800000 ms)
+                const now = Date.now();
+                const cooldown = 3 * 60 * 60 * 1000; // 3 hours
+                if (gameState.lastEscortTime && (now - gameState.lastEscortTime) < cooldown) {
+                    const remaining = cooldown - (now - gameState.lastEscortTime);
+                    const hours = Math.floor(remaining / (60 * 60 * 1000));
+                    const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
+                    ui.showFloatText(event.target, `Подожди ${hours}ч ${minutes}м`, "#ff5555");
+                    return;
+                }
+                
+                // Start escort
+                const modal = document.getElementById('modal-escort-progress');
+                modal.classList.add('open');
+                
+                const progressBar = document.getElementById('escort-progress-bar');
+                const progressText = document.getElementById('escort-progress-text');
+                const timerEl = document.getElementById('escort-timer');
+                
+                const messages = [
+                    "Собираете беженцев...",
+                    "Проверяете документы...",
+                    "Выдвигаетесь в путь...",
+                    "Проходите через лес...",
+                    "Обходите патруль...",
+                    "Почти у границы...",
+                    "Переправка завершается..."
+                ];
+                
+                let progress = 0;
+                let messageIndex = 0;
+                let timeLeft = 60;
+                
+                const interval = setInterval(() => {
+                    progress += 100/60;
+                    timeLeft--;
+                    
+                    progressBar.style.width = `${Math.min(100, progress)}%`;
+                    timerEl.textContent = timeLeft;
+                    
+                    if (timeLeft % 10 === 0 && messageIndex < messages.length) {
+                        progressText.textContent = messages[messageIndex];
+                        messageIndex++;
+                    }
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(interval);
+                        this.completeEscort();
+                    }
+                }, 1000);
+            },
+            
+            completeEscort: function() {
+                // Close progress modal
+                const progressModal = document.getElementById('modal-escort-progress');
+                progressModal.classList.remove('open');
+                
+                // Calculate damage (40-80 HP)
+                const damage = Math.floor(Math.random() * 41) + 40;
+                gameState.hp = Math.max(1, gameState.hp - damage);
+                
+                // Add rewards
+                gameState.emeralds += 8;
+                game.addReputation(-5, document.body);
+                
+                // Set cooldown
+                gameState.lastEscortTime = Date.now();
+                
+                game.save();
+                ui.updateStats();
+                
+                // Show result modal
+                const resultModal = document.getElementById('modal-escort-result');
+                document.getElementById('escort-result-emeralds').textContent = '+8 изумрудов';
+                document.getElementById('escort-result-rep').textContent = '-5';
+                document.getElementById('escort-result-hp').textContent = `-${damage} ХП`;
+                resultModal.classList.add('open');
+                
+                // Update button
+                this.updateCooldownUI();
+            },
+            
+            closeResult: function() {
+                const modal = document.getElementById('modal-escort-result');
+                modal.classList.remove('open');
+            },
+            
+            updateCooldownUI: function() {
+                const btn = document.getElementById('btn-escort-refugees');
+                const cooldownEl = document.getElementById('escort-cooldown');
+                
+                if (!gameState.lastEscortTime) {
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-50');
+                    cooldownEl.classList.add('hidden');
+                    return;
+                }
+                
+                const now = Date.now();
+                const cooldown = 3 * 60 * 60 * 1000; // 3 hours
+                const remaining = cooldown - (now - gameState.lastEscortTime);
+                
+                if (remaining > 0) {
+                    btn.disabled = true;
+                    btn.classList.add('opacity-50');
+                    
+                    const hours = Math.floor(remaining / (60 * 60 * 1000));
+                    const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
+                    cooldownEl.textContent = `Доступно через: ${hours}ч ${minutes}м`;
+                    cooldownEl.classList.remove('hidden');
+                    
+                    // Update every minute
+                    setTimeout(() => this.updateCooldownUI(), 60000);
+                } else {
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-50');
+                    cooldownEl.classList.add('hidden');
+                }
+            }
         };
 
         const livestock = {
@@ -10389,6 +11017,36 @@
                     // Placeholder category (future)
                 }
 
+                if (this.currentCategory === 'amulets') {
+                    if (gameState.amulets) {
+                        Object.keys(gameState.amulets).forEach(key => {
+                            const amulet = gameState.amulets[key];
+                            if (amulet.owned) {
+                                const icons = {
+                                    xp: 'fa-star',
+                                    gathering: 'fa-leaf',
+                                    luck: 'fa-clover'
+                                };
+                                const colors = {
+                                    xp: '#3b82f6',
+                                    gathering: '#10b981',
+                                    luck: '#c084fc'
+                                };
+                                items.push({
+                                    kind: 'amulet',
+                                    key,
+                                    name: amulet.name,
+                                    icon: icons[key] || 'fa-gem',
+                                    color: colors[key] || '#c8aa6e',
+                                    count: 1,
+                                    weight: 0.1,
+                                    desc: amulet.bonus
+                                });
+                            }
+                        });
+                    }
+                }
+
                 return items;
             },
 
@@ -10404,11 +11062,18 @@
                     let iconColor = 'text-[#c8aa6e]';
                     if (item.kind === 'combat_sword') { borderColor = 'border-red-700'; iconColor = 'text-red-400'; }
                     if (item.kind === 'combat_armor') { borderColor = 'border-blue-700'; iconColor = 'text-blue-400'; }
+                    if (item.kind === 'amulet') { 
+                        borderColor = 'border-purple-700'; 
+                        iconColor = 'text-purple-400'; 
+                    }
                     // Equipped items get a gold glow border
                     if (item.isEquipped) { borderColor = 'border-[#c8aa6e]'; }
                     el.className = `inv-item aspect-square bg-[#1a1a1d] border ${borderColor} rounded flex flex-col items-center justify-center relative p-1`;
                     if (item.isEquipped) {
                         el.style.boxShadow = '0 0 8px rgba(200,170,110,0.5)';
+                    }
+                    if (item.kind === 'amulet') {
+                        el.style.boxShadow = `0 0 10px ${item.color}40`;
                     }
 
                     let iconHtml;
@@ -10416,6 +11081,8 @@
                         iconHtml = `<svg class="icon-svg-fill text-xl mb-1 w-6 h-6" viewBox="0 0 512.001 512.001" style="color: ${item.color};"><use href="#icon-sword-generic"></use></svg>`;
                     } else if (item.kind === 'combat_armor' && item.color) {
                         iconHtml = `<svg class="icon-svg-fill text-xl mb-1 w-6 h-6" viewBox="0 0 512 512" style="color: ${item.color};"><use href="#icon-armor-generic"></use></svg>`;
+                    } else if (item.kind === 'amulet' && item.color) {
+                        iconHtml = `<i class="${item.icon} text-xl mb-1" style="color: ${item.color};"></i>`;
                     } else {
                         iconHtml = ui.getIconHtml(item.icon, `text-xl mb-1 w-6 h-6 ${iconColor}`);
                     }
@@ -10587,6 +11254,12 @@
                 if (charPanelTitle) charPanelTitle.innerText = game.getLevelTitle(gameState.level);
                 const charPanelLevel = document.getElementById('char-panel-level');
                 if (charPanelLevel) charPanelLevel.innerText = `Уровень ${gameState.level}`;
+                
+                // Update hero tab title and description
+                const heroTitle = document.getElementById('hero-title');
+                if (heroTitle) heroTitle.innerText = game.getLevelTitle(gameState.level);
+                const heroTitleDesc = document.getElementById('hero-title-desc');
+                if (heroTitleDesc) heroTitleDesc.innerText = game.getLevelTitleDescription(gameState.level);
 
                 const playerIdEl = document.getElementById('player-id');
                 if (playerIdEl) playerIdEl.innerText = gameState.playerId || "—";
@@ -10724,7 +11397,7 @@
                 const mineReward = game.getJobReward('mine');
                 this.updateJobButton('mine', 'pickaxe', 15);
                 document.getElementById('reward-mine').innerText = `${mineReward.gold} Руды`;
-                this.updateJobButton('hunter', 'crossbow', 30);
+
 
                 // Update Skills UI
                 const spEl = document.getElementById('skill-points-display');
@@ -10781,7 +11454,7 @@
                     if(jobId === 'port') { actionName = 'Рыбачить'; icon = 'fa-fish'; }
                     else if(jobId === 'field') { actionName = 'Собрать'; icon = 'fa-seedling'; }
                     else if(jobId === 'mine') { actionName = 'Добывать'; icon = 'fa-hammer'; }
-                    else if(jobId === 'hunter') { actionName = 'Охотиться'; icon = 'fa-crosshairs'; }
+
                     btn.innerHTML = `<i class="fas ${icon} mr-2"></i> ${actionName}`;
                 }
                 if(info) {
@@ -11002,6 +11675,11 @@
 
             dismissHungerWarning: function() {
                 const modal = document.getElementById('modal-hunger');
+                if (modal) modal.classList.remove('open');
+            },
+
+            dismissMeaslesWarning: function() {
+                const modal = document.getElementById('modal-measles-infected');
                 if (modal) modal.classList.remove('open');
             },
 
@@ -11507,7 +12185,7 @@
             navigate: function(screenId) {
                 // Track action for hunger system (only for location changes, not UI tabs)
                 const locationScreens = ['jobs', 'town-square', 'tavern', 'treasury', 'dark-forest', 
-                    'training-camp', 'military-fortress', 'village', 'healer', 'bookhouse', 
+                    'hunter-hut', 'training-camp', 'military-fortress', 'village', 'healer', 'bookhouse', 
                     'royal-castle', 'poor-district', 'noble-quarter', 'refugee-camp', 
                     'tailor', 'shoemaker', 'livestock-trader', 'bulletin', 'lily-house'];
                 
@@ -11523,6 +12201,8 @@
                 if (tavernChest) tavernChest.classList.add('hidden');
                 document.getElementById('view-treasury').classList.add('hidden');
                 document.getElementById('view-dark-forest').classList.add('hidden');
+                const hunterHutView = document.getElementById('view-hunter-hut');
+                if (hunterHutView) hunterHutView.classList.add('hidden');
                 const trainingCamp = document.getElementById('view-training-camp');
                 if (trainingCamp) trainingCamp.classList.add('hidden');
                 const fortressView = document.getElementById('view-military-fortress');
@@ -12022,6 +12702,7 @@
                     'treasury': 'https://i.postimg.cc/hvS5yLws/IMG-4561.jpg',
                     'village': 'https://i.postimg.cc/P5BFss9w/IMG-4562.jpg',
                     'dark-forest': 'https://i.postimg.cc/kGXTFn6F/IMG-4563.jpg',
+                    'hunter-hut': 'https://i.postimg.cc/kGXTFn6F/IMG-4563.jpg',
                     'healer': 'https://i.postimg.cc/rpXgZGRd/IMG-4564.jpg',
                     'noble-quarter': 'https://i.postimg.cc/hv51LVqc/IMG-4565.jpg',
                     'poor-district': 'https://i.postimg.cc/B6hT32bL/IMG-4566.jpg',
@@ -12059,6 +12740,7 @@
                 game.init();
                 router.switchTab('map');
                 disease.startTick();
+                refugeeCamp.updateCooldownUI();
                 
                 // Добавляем обработчик для кнопки "Выбросить"
                 const discardBtn = document.getElementById('btn-discard-item');
