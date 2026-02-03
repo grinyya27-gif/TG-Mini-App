@@ -9729,6 +9729,9 @@
                 await this.load();
                 this.calculateNextLevel();
                 
+                // Ensure playerId matches Telegram/local ID before any UI updates
+                gameState.playerId = String(tgUserId);
+                
                 // Initialize resources if undefined (for backward-compatible saves)
                 Object.keys(RESOURCE_NAMES).forEach(r => {
                     if (gameState[r] === undefined) gameState[r] = 0;
@@ -9767,9 +9770,6 @@
                 if (gameState.hasPoorHouse === undefined) gameState.hasPoorHouse = false;
                 if (gameState.hasNobleHouse === undefined) gameState.hasNobleHouse = false;
                 if (gameState.bagLevel === undefined) gameState.bagLevel = 0;
-                if (!gameState.playerId) {
-                    gameState.playerId = String(tgUserId);
-                }
                 if (!gameState.playerName) {
                     gameState.playerName = "Странник";
                 }
