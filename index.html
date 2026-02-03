@@ -9767,7 +9767,7 @@
                 if (gameState.hasNobleHouse === undefined) gameState.hasNobleHouse = false;
                 if (gameState.bagLevel === undefined) gameState.bagLevel = 0;
                 if (!gameState.playerId) {
-                    gameState.playerId = Math.random().toString(36).slice(2, 10).toUpperCase();
+                    gameState.playerId = String(tgUserId);
                 }
                 if (!gameState.playerName) {
                     gameState.playerName = "Странник";
