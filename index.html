@@ -14694,6 +14694,12 @@
             },
             
             checkSubscription: async function() {
+                // Проверяем, не выполнено ли уже задание
+                if (gameState.channelTaskCompleted) {
+                    this.showError('Вы уже выполнили это задание!');
+                    return;
+                }
+                
                 const checkBtn = document.getElementById('btn-check-channel');
                 if (!checkBtn) return;
                 
@@ -14758,19 +14764,26 @@
                     } else {
                         // User is not subscribed
                         this.showError('Вы не подписаны на канал. Пожалуйста, подпишитесь и попробуйте снова.');
+                        // Re-enable button if not subscribed
+                        checkBtn.disabled = false;
+                        checkBtn.innerHTML = originalText;
                     }
                     
                 } catch (error) {
                     console.error('Error checking subscription:', error);
                     this.showError('Произошла ошибка при проверке подписки. Попробуйте позже.');
-                } finally {
-                    // Re-enable button
+                    // Re-enable button on error
                     checkBtn.disabled = false;
                     checkBtn.innerHTML = originalText;
                 }
             },
             
             completeTask: function() {
+                // Проверка, не выполнено ли уже
+                if (gameState.channelTaskCompleted) {
+                    return;
+                }
+                
                 // Mark task as completed
                 gameState.channelTaskCompleted = true;
                 gameState.channelSubscribed = true;
@@ -14783,7 +14796,11 @@
                 
                 // Update UI
                 ui.update();
-                this.updateUI();
+                
+                // Обновить список заданий, чтобы показать выполненное задание
+                if (typeof quests !== 'undefined' && quests.render) {
+                    quests.render();
+                }
                 
                 // Show success notification
                 ui.showNotification('✅ Задание выполнено! Вы получили 10 изумрудов!', 'success');
