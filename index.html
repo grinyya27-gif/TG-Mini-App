@@ -14681,7 +14681,6 @@
                     buttonsContainer.classList.remove('hidden');
                     statusIcon.innerHTML = '';
                     taskCard.style.opacity = '1';
-                    if (checkBtn) checkBtn.classList.remove('hidden');
                 }
             },
             
@@ -14692,6 +14691,14 @@
                 } else {
                     window.open(this.CHANNEL_URL, '_blank');
                 }
+                
+                // Show "Check Subscription" button after opening channel
+                setTimeout(() => {
+                    const checkBtn = document.getElementById('btn-check-subscription');
+                    if (checkBtn && !gameState.channelTaskCompleted) {
+                        checkBtn.classList.remove('hidden');
+                    }
+                }, 1000);
             },
             
             checkSubscription: async function() {
@@ -14701,8 +14708,11 @@
                     return;
                 }
                 
-                const checkBtn = document.getElementById('btn-check-channel') || document.getElementById('btn-check-subscription');
-                if (!checkBtn) return;
+                const checkBtn = document.getElementById('btn-check-subscription');
+                if (!checkBtn) {
+                    console.error('Button btn-check-subscription not found!');
+                    return;
+                }
                 
                 // Disable button during check
                 checkBtn.disabled = true;
@@ -14729,23 +14739,27 @@
                     console.log('Checking subscription for user:', userId, username);
                     console.log('Cloud Function URL:', this.CLOUD_FUNCTION_URL);
                     
-                    // Реальная проверка через Cloud Function
-                    const ctrl = new AbortController();
-                    const t = setTimeout(() => { try { ctrl.abort('timeout'); } catch(e) {} }, 12000);
-                    const response = await fetch(this.CLOUD_FUNCTION_URL, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            userId: userId,
-                            username: username
-                        }),
-                        signal: ctrl.signal
-                    });
-                    clearTimeout(t);
+                    // Создаем контроллер для таймаута
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 секунд таймаут
                     
-                    console.log('Response status:', response.status);
+                    try {
+                        // Реальная проверка через Cloud Function
+                        const response = await fetch(this.CLOUD_FUNCTION_URL, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                userId: userId,
+                                username: username
+                            }),
+                            signal: controller.signal
+                        });
+                        
+                        clearTimeout(timeoutId);
+                        
+                        console.log('Response status:', response.status);
                     
                     if (!response.ok) {
                         const errorText = await response.text();
@@ -14770,18 +14784,44 @@
                         checkBtn.innerHTML = originalText;
                     }
                     
+                } catch (fetchError) {
+                    clearTimeout(timeoutId);
+                    
+                    if (fetchError.name === 'AbortError') {
+                        throw new Error('Превышено время ожидания ответа от сервера. Попробуйте позже.');
+                    }
+                    throw fetchError;
+                }
+                    
                 } catch (error) {
                     console.error('Error checking subscription:', error);
-                    this.showError('Произошла ошибка при проверке подписки: ' + error.message);
+                    
+                    let errorMessage = 'Произошла ошибка при проверке подписки.';
+                    
+                    if (error.message.includes('Failed to fetch')) {
+                        errorMessage = 'Не удалось подключиться к серверу. Проверьте интернет-соединение.';
+                    } else if (error.message.includes('NetworkError')) {
+                        errorMessage = 'Ошибка сети. Попробуйте позже.';
+                    } else if (error.message) {
+                        errorMessage = error.message;
+                    }
+                    
+                    this.showError(errorMessage);
+                    
                     // Re-enable button on error
-                    checkBtn.disabled = false;
-                    checkBtn.innerHTML = originalText;
+                    if (checkBtn) {
+                        checkBtn.disabled = false;
+                        checkBtn.innerHTML = originalText;
+                    }
                 }
             },
             
             completeTask: function() {
+                console.log('completeTask called');
+                
                 // Проверка, не выполнено ли уже
                 if (gameState.channelTaskCompleted) {
+                    console.log('Task already completed');
                     return;
                 }
                 
@@ -14791,26 +14831,27 @@
                 
                 // Give reward
                 gameState.emeralds += 10;
+                console.log('Emeralds added. New total:', gameState.emeralds);
                 
                 // Save game
                 game.save();
                 
-                // Update UI
+                // Update UI immediately
                 ui.update();
-                
-                // Обновить список заданий, чтобы показать выполненное задание
-                if (typeof quests !== 'undefined' && quests.render) {
-                    quests.render();
-                }
+                this.updateUI();
                 
                 // Show success notification
-                ui.showNotification('✅ Задание выполнено! Вы получили 10 изумрудов!', 'success');
+                if (ui.showNotification) {
+                    ui.showNotification('✅ Задание выполнено! Вы получили 10 изумрудов!', 'success');
+                }
                 
                 // Show floating text
                 const taskCard = document.getElementById('task-channel-sub');
-                if (taskCard) {
-                    ui.floatText('+10', taskCard, 'gem-price');
+                if (taskCard && ui.floatText) {
+                    ui.floatText('+10 💎', taskCard, 'gem-price');
                 }
+                
+                console.log('Task completed successfully!');
             },
             
             showError: function(message) {
