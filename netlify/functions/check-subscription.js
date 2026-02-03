@@ -1,29 +1,28 @@
-// netlify/functions/check-subscription.js
-// Netlify Serverless Function для проверки подписки на Telegram канал
-
-const axios = require('axios');
+// Netlify Function для проверки подписки на Telegram канал
+// Путь: netlify/functions/check-subscription.js
 
 const BOT_TOKEN = '7981866588:AAFULkjvwz3axaFOYqRNXtl27lO1rSaPXyg';
-const CHANNEL_ID = '@MedievalLegacy';
+const CHANNEL_USERNAME = '@MedievalLegacy'; // Используйте @username канала
 
 exports.handler = async (event, context) => {
-    // Разрешаем CORS для всех доменов
+    // Установка CORS заголовков
     const headers = {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Headers': 'Content-Type',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS'
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Content-Type': 'application/json'
     };
 
     // Обработка preflight запроса
     if (event.httpMethod === 'OPTIONS') {
         return {
-            statusCode: 204,
+            statusCode: 200,
             headers,
             body: ''
         };
     }
 
-    // Проверка метода
+    // Проверка метода запроса
     if (event.httpMethod !== 'POST') {
         return {
             statusCode: 405,
@@ -33,89 +32,90 @@ exports.handler = async (event, context) => {
     }
 
     try {
-        // Парсим тело запроса
+        // Парсинг тела запроса
         const { userId, username } = JSON.parse(event.body || '{}');
 
-        // Проверка userId
         if (!userId) {
             return {
                 statusCode: 400,
                 headers,
-                body: JSON.stringify({
-                    subscribed: false,
-                    error: 'User ID is required'
+                body: JSON.stringify({ 
+                    error: 'User ID is required',
+                    subscribed: false 
                 })
             };
         }
 
-        console.log(`Checking subscription for user ${userId} (${username || 'no username'})`);
-
-        // Запрос к Telegram Bot API
-        const response = await axios.get(
-            `https://api.telegram.org/bot${BOT_TOKEN}/getChatMember`,
-            {
-                params: {
-                    chat_id: CHANNEL_ID,
-                    user_id: userId
-                },
-                timeout: 10000
-            }
-        );
-
-        // Проверка статуса подписки
-        const status = response.data.result.status;
-        const subscribed = ['creator', 'administrator', 'member'].includes(status);
-
-        console.log(`User ${userId} status: ${status}, subscribed: ${subscribed}`);
-
-        return {
-            statusCode: 200,
-            headers,
+        // Проверка подписки через Telegram Bot API
+        const apiUrl = `https://api.telegram.org/bot${BOT_TOKEN}/getChatMember`;
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify({
-                subscribed: subscribed,
-                status: status
+                chat_id: CHANNEL_USERNAME,
+                user_id: userId
             })
-        };
+        });
 
-    } catch (error) {
-        console.error('Error:', error.message);
+        const data = await response.json();
 
-        // Обработка ошибок Telegram API
-        if (error.response && error.response.data) {
-            const errorData = error.response.data;
+        // Проверка результата
+        if (data.ok) {
+            const status = data.result.status;
+            // Пользователь подписан, если статус: creator, administrator, member
+            const isSubscribed = ['creator', 'administrator', 'member'].includes(status);
 
-            // Пользователь не найден в канале
-            if (errorData.description && errorData.description.includes('user not found')) {
+            return {
+                statusCode: 200,
+                headers,
+                body: JSON.stringify({
+                    subscribed: isSubscribed,
+                    status: status,
+                    userId: userId,
+                    username: username || 'unknown'
+                })
+            };
+        } else {
+            // Ошибка от Telegram API
+            console.error('Telegram API error:', data);
+            
+            // Если пользователь не найден в канале (kicked или left)
+            if (data.description && (
+                data.description.includes('user not found') || 
+                data.description.includes('USER_NOT_PARTICIPANT')
+            )) {
                 return {
                     statusCode: 200,
                     headers,
                     body: JSON.stringify({
                         subscribed: false,
-                        status: 'not_member'
+                        status: 'not_member',
+                        userId: userId
                     })
                 };
             }
 
-            // Бот не администратор
-            if (errorData.description && errorData.description.includes('not enough rights')) {
-                return {
-                    statusCode: 500,
-                    headers,
-                    body: JSON.stringify({
-                        subscribed: false,
-                        error: 'Bot is not administrator in the channel'
-                    })
-                };
-            }
+            return {
+                statusCode: 500,
+                headers,
+                body: JSON.stringify({
+                    error: 'Telegram API error',
+                    description: data.description,
+                    subscribed: false
+                })
+            };
         }
-
-        // Общая ошибка
+    } catch (error) {
+        console.error('Function error:', error);
         return {
             statusCode: 500,
             headers,
             body: JSON.stringify({
-                subscribed: false,
-                error: error.message
+                error: 'Internal server error',
+                message: error.message,
+                subscribed: false
             })
         };
     }
