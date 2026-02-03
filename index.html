@@ -14725,20 +14725,8 @@
                         throw new Error('Не удалось получить ID пользователя');
                     }
                     
-                    // ВАЖНО: Замените URL на ваш Cloud Function URL
-                    if (!this.CLOUD_FUNCTION_URL || this.CLOUD_FUNCTION_URL === '') {
-                        // Временное решение для тестирования без backend
-                        // В продакшене это нужно ОБЯЗАТЕЛЬНО заменить на реальную проверку
-                        console.warn('Cloud Function URL не настроен! Используется тестовый режим.');
-                        
-                        // Симуляция задержки запроса
-                        await new Promise(resolve => setTimeout(resolve, 1500));
-                        
-                        // ВНИМАНИЕ: Это временная логика для тестирования!
-                        // В реальности проверка ДОЛЖНА быть на сервере!
-                        this.completeTask();
-                        return;
-                    }
+                    console.log('Checking subscription for user:', userId, username);
+                    console.log('Cloud Function URL:', this.CLOUD_FUNCTION_URL);
                     
                     // Реальная проверка через Cloud Function
                     const response = await fetch(this.CLOUD_FUNCTION_URL, {
@@ -14752,17 +14740,25 @@
                         })
                     });
                     
+                    console.log('Response status:', response.status);
+                    
                     if (!response.ok) {
-                        throw new Error('Ошибка при проверке подписки');
+                        const errorText = await response.text();
+                        console.error('Response error:', errorText);
+                        throw new Error('Ошибка при проверке подписки: ' + response.status);
                     }
                     
                     const data = await response.json();
+                    console.log('Response data:', data);
                     
                     if (data.subscribed) {
                         // User is subscribed - complete task
+                        console.log('User is subscribed! Completing task...');
                         this.completeTask();
+                        // Не нужно восстанавливать кнопку - задание выполнено
                     } else {
                         // User is not subscribed
+                        console.log('User is NOT subscribed');
                         this.showError('Вы не подписаны на канал. Пожалуйста, подпишитесь и попробуйте снова.');
                         // Re-enable button if not subscribed
                         checkBtn.disabled = false;
@@ -14771,7 +14767,7 @@
                     
                 } catch (error) {
                     console.error('Error checking subscription:', error);
-                    this.showError('Произошла ошибка при проверке подписки. Попробуйте позже.');
+                    this.showError('Произошла ошибка при проверке подписки: ' + error.message);
                     // Re-enable button on error
                     checkBtn.disabled = false;
                     checkBtn.innerHTML = originalText;
