@@ -620,6 +620,53 @@
             vertical-align: middle;
         }
     </style>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC6aLcnMowI8x2kkauzJl_xaTS4RIWbbao",
+            authDomain: "medieval-legacy.firebaseapp.com",
+            projectId: "medieval-legacy",
+            storageBucket: "medieval-legacy.firebasestorage.app",
+            messagingSenderId: "858324582839",
+            appId: "1:858324582839:web:4ade80dc6f0301ea552832",
+            measurementId: "G-Q420MSR85C"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        
+        // Telegram WebApp initialization
+        let tgUser = null;
+        let tgUserId = null;
+        let tgUsername = null;
+        
+        if (window.Telegram && window.Telegram.WebApp) {
+            const tg = window.Telegram.WebApp;
+            tg.ready();
+            tg.expand();
+            
+            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                tgUser = tg.initDataUnsafe.user;
+                tgUserId = tgUser.id;
+                tgUsername = tgUser.username || tgUser.first_name || 'Player';
+            }
+        }
+        
+        // If not in Telegram, use fallback ID
+        if (!tgUserId) {
+            tgUserId = 'local_' + (localStorage.getItem('fallback_id') || Date.now());
+            if (!localStorage.getItem('fallback_id')) {
+                localStorage.setItem('fallback_id', tgUserId);
+            }
+            tgUsername = 'Local Player';
+        }
+    </script>
+
 </head>
 <body class="h-screen flex flex-col relative" style="overflow: hidden; -webkit-tap-highlight-color: transparent;">
 
@@ -9484,7 +9531,195 @@
                     });
                 }
             }
-        };
+,
+            
+            // Firebase Admin Functions
+            allPlayersData: [],
+            filteredPlayers: [],
+            currentPage: 1,
+            playersPerPage: 10,
+            
+            loadFirebasePlayers: function() {
+                if (typeof db === 'undefined') {
+                    document.getElementById('players-list').innerHTML = '<div class="text-center text-red-400 text-xs py-4">Firebase не подключен</div>';
+                    return;
+                }
+                
+                document.getElementById('players-list').innerHTML = '<div class="text-center text-xs text-gray-500 py-4">Загрузка игроков...</div>';
+                
+                db.collection('players').get()
+                    .then(snapshot => {
+                        this.allPlayersData = [];
+                        snapshot.forEach(doc => {
+                            this.allPlayersData.push({ id: doc.id, ...doc.data() });
+                        });
+                        
+                        this.filteredPlayers = [...this.allPlayersData];
+                        this.sortPlayers('level-desc');
+                        this.updateStatistics();
+                        this.renderTopPlayers();
+                        this.renderPlayers();
+                    })
+                    .catch(err => {
+                        console.error('Error loading players:', err);
+                        document.getElementById('players-list').innerHTML = '<div class="text-center text-red-400 text-xs py-4">Ошибка загрузки: ' + err.message + '</div>';
+                    });
+            },
+            
+            refreshAllPlayers: function() {
+                this.loadFirebasePlayers();
+            },
+            
+            updateStatistics: function() {
+                const total = this.allPlayersData.length;
+                document.getElementById('stat-total-players').innerText = total;
+                
+                const now = Date.now();
+                const oneDayAgo = now - 24 * 60 * 60 * 1000;
+                const activeToday = this.allPlayersData.filter(p => p.lastSeen && p.lastSeen > oneDayAgo).length;
+                document.getElementById('stat-active-today').innerText = activeToday;
+                
+                const avgLevel = total > 0 
+                    ? Math.floor(this.allPlayersData.reduce((sum, p) => sum + (p.level || 1), 0) / total)
+                    : 0;
+                document.getElementById('stat-avg-level').innerText = avgLevel;
+            },
+            
+            filterPlayers: function(searchText) {
+                searchText = searchText.toLowerCase();
+                this.filteredPlayers = this.allPlayersData.filter(p => {
+                    const id = String(p.telegramId || p.id || '').toLowerCase();
+                    const username = String(p.telegramUsername || p.playerName || '').toLowerCase();
+                    return id.includes(searchText) || username.includes(searchText);
+                });
+                this.currentPage = 1;
+                this.renderPlayers();
+            },
+            
+            sortPlayers: function(sortType) {
+                const [field, dir] = sortType.split('-');
+                this.filteredPlayers.sort((a, b) => {
+                    let valA = a[field] || 0;
+                    let valB = b[field] || 0;
+                    
+                    if (dir === 'desc') return valB - valA;
+                    else return valA - valB;
+                });
+                this.currentPage = 1;
+                this.renderPlayers();
+            },
+            
+            renderPlayers: function() {
+                const start = (this.currentPage - 1) * this.playersPerPage;
+                const end = start + this.playersPerPage;
+                const pageData = this.filteredPlayers.slice(start, end);
+                
+                const totalPages = Math.ceil(this.filteredPlayers.length / this.playersPerPage);
+                document.getElementById('current-page').innerText = this.currentPage;
+                document.getElementById('total-pages').innerText = totalPages || 1;
+                
+                document.getElementById('btn-prev-page').disabled = this.currentPage <= 1;
+                document.getElementById('btn-next-page').disabled = this.currentPage >= totalPages;
+                
+                if (pageData.length === 0) {
+                    document.getElementById('players-list').innerHTML = '<div class="text-center text-xs text-gray-500 py-4">Игроки не найдены</div>';
+                    return;
+                }
+                
+                let html = '';
+                pageData.forEach(player => {
+                    const lastSeen = player.lastSeen ? this.formatTimestamp(player.lastSeen) : 'Никогда';
+                    const isOnline = player.lastSeen && (Date.now() - player.lastSeen < 5 * 60 * 1000);
+                    
+                    html += `
+                        <div class="bg-black/30 border border-[#333] rounded p-2 hover:border-[#c8aa6e] transition-colors">
+                            <div class="flex items-center justify-between">
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-2">
+                                        ${isOnline ? '<span class="w-2 h-2 bg-green-400 rounded-full"></span>' : '<span class="w-2 h-2 bg-gray-600 rounded-full"></span>'}
+                                        <span class="text-xs font-bold text-white truncate">@${player.telegramUsername || player.playerName || 'Игрок'}</span>
+                                    </div>
+                                    <div class="text-[10px] text-gray-400">ID: ${player.telegramId || player.id}</div>
+                                </div>
+                                <div class="text-right mr-2">
+                                    <div class="text-xs text-[#c8aa6e]">Ур ${player.level || 1}</div>
+                                    <div class="text-[10px] text-yellow-500">${(player.gold || 0).toLocaleString()} 💰</div>
+                                </div>
+                                <button onclick="devPanel.viewPlayer('${player.id}')" class="text-blue-400 hover:text-blue-300 text-xs px-2">
+                                    📝
+                                </button>
+                            </div>
+                            <div class="text-[9px] text-gray-500 mt-1">Был: ${lastSeen}</div>
+                        </div>
+                    `;
+                });
+                
+                document.getElementById('players-list').innerHTML = html;
+            },
+            
+            renderTopPlayers: function() {
+                const top10 = [...this.allPlayersData]
+                    .sort((a, b) => (b.level || 1) - (a.level || 1))
+                    .slice(0, 10);
+                
+                if (top10.length === 0) {
+                    document.getElementById('top-players-list').innerHTML = '<div class="text-center text-xs text-gray-500 py-2">Нет данных</div>';
+                    return;
+                }
+                
+                let html = '';
+                top10.forEach((player, index) => {
+                    const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}.`;
+                    html += `
+                        <div class="flex items-center justify-between text-xs bg-black/20 rounded px-2 py-1">
+                            <div class="flex items-center gap-2">
+                                <span class="w-6">${medal}</span>
+                                <span class="text-white truncate max-w-[120px]">@${player.telegramUsername || player.playerName || 'Игрок'}</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[#c8aa6e]">Ур ${player.level || 1}</span>
+                                <span class="text-yellow-500">${(player.gold || 0).toLocaleString()}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                document.getElementById('top-players-list').innerHTML = html;
+            },
+            
+            prevPage: function() {
+                if (this.currentPage > 1) {
+                    this.currentPage--;
+                    this.renderPlayers();
+                }
+            },
+            
+            nextPage: function() {
+                const totalPages = Math.ceil(this.filteredPlayers.length / this.playersPerPage);
+                if (this.currentPage < totalPages) {
+                    this.currentPage++;
+                    this.renderPlayers();
+                }
+            },
+            
+            viewPlayer: function(playerId) {
+                const player = this.allPlayersData.find(p => p.id === playerId);
+                if (!player) return;
+                
+                alert(`Игрок: @${player.telegramUsername || player.playerName}\nID: ${player.telegramId}\nУровень: ${player.level}\nЗолото: ${player.gold}\nИзумруды: ${player.emeralds || 0}\n\n(Полное редактирование в разработке)`);
+            },
+            
+            formatTimestamp: function(ts) {
+                const diff = Date.now() - ts;
+                const minutes = Math.floor(diff / 60000);
+                const hours = Math.floor(diff / 3600000);
+                const days = Math.floor(diff / 86400000);
+                
+                if (minutes < 1) return 'Только что';
+                if (minutes < 60) return `${minutes} мин назад`;
+                if (hours < 24) return `${hours} ч назад`;
+                return `${days} дн назад`;
+            }        };
 
         // --- GAME LOGIC ---
         const game = {
@@ -9560,39 +9795,57 @@
             },
 
             save: function() {
+                // Save to localStorage (local backup)
                 localStorage.setItem('medieval_rpg_save_v5', JSON.stringify(gameState));
+                
+                // Save to Firebase (cloud sync)
+                if (typeof db !== 'undefined' && tgUserId) {
+                    const playerData = {
+                        ...gameState,
+                        telegramId: tgUserId,
+                        telegramUsername: tgUsername,
+                        lastSeen: Date.now(),
+                        lastUpdate: new Date().toISOString()
+                    };
+                    
+                    db.collection('players').doc(String(tgUserId)).set(playerData, { merge: true })
+                        .catch(err => console.error('Firebase save error:', err));
+                }
             },
 
             load: function() {
-                const save = localStorage.getItem('medieval_rpg_save_v5');
-                if (save) {
-                    const parsed = JSON.parse(save);
-                    Object.assign(gameState, parsed);
-                    if(!gameState.activeQuests) gameState.activeQuests = [];
-                    if(!gameState.ownedSwords) gameState.ownedSwords = [];
-                    if(!gameState.ownedArmor) gameState.ownedArmor = [];
-
-                    // Migration: if old save had currentSword but no ownedSwords populated
-                    if (gameState.currentSword && gameState.ownedSwords.length === 0) {
-                        gameState.ownedSwords = [gameState.currentSword];
-                    }
-                    if (gameState.currentArmor && gameState.ownedArmor.length === 0) {
-                        gameState.ownedArmor = [gameState.currentArmor];
-                    }
-                    // Migration: if equippedSword not set but currentSword exists and is owned
-                    if (gameState.equippedSword === undefined || gameState.equippedSword === null) {
-                        if (gameState.currentSword && gameState.ownedSwords.includes(gameState.currentSword)) {
-                            gameState.equippedSword = gameState.currentSword;
-                        } else {
-                            gameState.equippedSword = null;
-                        }
-                    }
-                    if (gameState.equippedArmor === undefined || gameState.equippedArmor === null) {
-                        if (gameState.currentArmor && gameState.ownedArmor.includes(gameState.currentArmor)) {
-                            gameState.equippedArmor = gameState.currentArmor;
-                        } else {
-                            gameState.equippedArmor = null;
-                        }
+                // Try to load from Firebase first (cloud)
+                if (typeof db !== 'undefined' && tgUserId) {
+                    db.collection('players').doc(String(tgUserId)).get()
+                        .then(doc => {
+                            if (doc.exists) {
+                                const cloudData = doc.data();
+                                // Merge cloud data with gameState
+                                Object.assign(gameState, cloudData);
+                                console.log('Loaded from Firebase Cloud');
+                            } else {
+                                // No cloud save, try localStorage
+                                this.loadFromLocal();
+                            }
+                        })
+                        .catch(err => {
+                            console.error('Firebase load error:', err);
+                            this.loadFromLocal();
+                        });
+                } else {
+                    this.loadFromLocal();
+                }
+            },
+            
+            loadFromLocal: function() {
+                const saved = localStorage.getItem('medieval_rpg_save_v5');
+                if (saved) {
+                    try {
+                        const data = JSON.parse(saved);
+                        Object.assign(gameState, data);
+                        console.log('Loaded from localStorage');
+                    } catch (e) {
+                        console.error('Load error:', e);
                     }
                 }
             },
