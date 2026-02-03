@@ -9814,26 +9814,70 @@
             },
 
             load: function() {
-                // Try to load from Firebase first (cloud)
+                // First load from localStorage
+                const localSaved = localStorage.getItem('medieval_rpg_save_v5');
+                let localData = null;
+                let localTimestamp = 0;
+                
+                if (localSaved) {
+                    try {
+                        localData = JSON.parse(localSaved);
+                        localTimestamp = localData.lastUpdate ? new Date(localData.lastUpdate).getTime() : 0;
+                    } catch (e) {
+                        console.error('Local load error:', e);
+                    }
+                }
+                
+                // Try to load from Firebase (cloud)
                 if (typeof db !== 'undefined' && tgUserId) {
                     db.collection('players').doc(String(tgUserId)).get()
                         .then(doc => {
                             if (doc.exists) {
                                 const cloudData = doc.data();
-                                // Merge cloud data with gameState
-                                Object.assign(gameState, cloudData);
-                                console.log('Loaded from Firebase Cloud');
+                                const cloudTimestamp = cloudData.lastUpdate ? new Date(cloudData.lastUpdate).getTime() : 0;
+                                
+                                // Compare timestamps
+                                if (cloudTimestamp > localTimestamp) {
+                                    // Cloud is newer - use it
+                                    Object.assign(gameState, cloudData);
+                                    console.log('Loaded from Firebase Cloud (newer)');
+                                    // Update localStorage with cloud data
+                                    localStorage.setItem('medieval_rpg_save_v5', JSON.stringify(cloudData));
+                                } else if (localData) {
+                                    // Local is newer or same - use local
+                                    Object.assign(gameState, localData);
+                                    console.log('Loaded from localStorage (newer or same)');
+                                    // Update Firebase with local data
+                                    this.save();
+                                } else {
+                                    // No local data, use cloud
+                                    Object.assign(gameState, cloudData);
+                                    console.log('Loaded from Firebase Cloud (no local)');
+                                }
                             } else {
-                                // No cloud save, try localStorage
-                                this.loadFromLocal();
+                                // No cloud save, use localStorage
+                                if (localData) {
+                                    Object.assign(gameState, localData);
+                                    console.log('Loaded from localStorage (no cloud)');
+                                } else {
+                                    console.log('No saved data found');
+                                }
                             }
                         })
                         .catch(err => {
                             console.error('Firebase load error:', err);
-                            this.loadFromLocal();
+                            // Fallback to localStorage on error
+                            if (localData) {
+                                Object.assign(gameState, localData);
+                                console.log('Loaded from localStorage (Firebase error)');
+                            }
                         });
                 } else {
-                    this.loadFromLocal();
+                    // No Firebase, use localStorage
+                    if (localData) {
+                        Object.assign(gameState, localData);
+                        console.log('Loaded from localStorage (no Firebase)');
+                    }
                 }
             },
             
