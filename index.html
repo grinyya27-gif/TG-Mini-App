@@ -9504,42 +9504,99 @@
 
                     gameState.storyQuests.forEach(q => {
                         if (q.state === 'claimed') return; // Hide completed/claimed logic for now or move to separate list
-
+                        
                         const progress = Math.min(100, (q.current / q.goals.count) * 100);
                         const isDone = q.current >= q.goals.count;
-
+                        const gemsReward = (q.reward && (q.reward.emeralds || q.reward.gems)) ? (q.reward.emeralds || q.reward.gems) : 0;
+                        const rewardHtml = gemsReward
+                            ? `<div class="text-[10px] text-emerald-400 font-bold">+${gemsReward} <i class="far fa-gem"></i></div>`
+                            : `<div class="text-[10px] text-yellow-500 font-bold">+${q.reward?.gold || 0} <i class="fas fa-coins"></i></div>
+                               <div class="text-[10px] text-blue-400 font-bold">+${q.reward?.xp || 0} XP</div>`;
+                        
                         const el = document.createElement('div');
                         el.className = "quest-card panel p-3 rounded flex flex-col gap-2 border-l-2 border-[#c8aa6e]";
-                        el.innerHTML = `
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <div class="text-sm text-[#c8aa6e] font-bold">${q.title}</div>
-                                    <div class="text-[10px] text-[#a0a0a0] mb-1">${q.desc}</div>
-                                    <div class="text-xs text-[#e0e0e0]">${q.current} / ${q.goals.count}</div>
+                        
+                        if (q.id === 'subscribe_channel') {
+                            el.innerHTML = `
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <div class="text-sm text-[#c8aa6e] font-bold">${q.title}</div>
+                                        <div class="text-[10px] text-[#a0a0a0] mb-1">${q.desc}</div>
+                                        <div class="text-xs text-[#e0e0e0]">${q.current} / ${q.goals.count}</div>
+                                    </div>
+                                    <div class="text-right">
+                                        ${rewardHtml}
+                                    </div>
                                 </div>
-                                <div class="text-right">
-                                     <div class="text-[10px] text-yellow-500 font-bold">+${q.reward.gold} <i class="fas fa-coins"></i></div>
-                                     <div class="text-[10px] text-blue-400 font-bold">+${q.reward.xp} XP</div>
+                                <div class="flex gap-2">
+                                    <a href="https://t.me/MedievalLegacy" target="_blank" rel="noopener" class="btn-medieval px-2 py-1 text-[11px] rounded">Открыть канал</a>
+                                    <button onclick="quests.checkSubscription()" class="btn-medieval px-2 py-1 text-[11px] rounded">Проверить подписку</button>
                                 </div>
-                            </div>
-                            <div class="w-full h-1.5 bg-[#000] rounded-full overflow-hidden border border-[#333]">
-                                <div class="h-full bg-[#c8aa6e] transition-all duration-300" style="width: ${progress}%"></div>
-                            </div>
-                            ${isDone ?
-                                `<button onclick="quests.claimStory('${q.id}')" class="btn-medieval w-full py-1 text-xs rounded mt-1">Завершить</button>` :
-                                ''}
-                        `;
+                                <div class="w-full h-1.5 bg-[#000] rounded-full overflow-hidden border border-[#333]">
+                                    <div class="h-full bg-[#c8aa6e] transition-all duration-300" style="width: ${progress}%"></div>
+                                </div>
+                                ${isDone ?
+                                    `<button onclick="quests.claimStory('${q.id}')" class="btn-medieval w-full py-1 text-xs rounded mt-1">Завершить</button>` :
+                                    ''}
+                            `;
+                        } else {
+                            el.innerHTML = `
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <div class="text-sm text-[#c8aa6e] font-bold">${q.title}</div>
+                                        <div class="text-[10px] text-[#a0a0a0] mb-1">${q.desc}</div>
+                                        <div class="text-xs text-[#e0e0e0]">${q.current} / ${q.goals.count}</div>
+                                    </div>
+                                    <div class="text-right">
+                                        ${rewardHtml}
+                                    </div>
+                                </div>
+                                <div class="w-full h-1.5 bg-[#000] rounded-full overflow-hidden border border-[#333]">
+                                    <div class="h-full bg-[#c8aa6e] transition-all duration-300" style="width: ${progress}%"></div>
+                                </div>
+                                ${isDone ?
+                                    `<button onclick="quests.claimStory('${q.id}')" class="btn-medieval w-full py-1 text-xs rounded mt-1">Завершить</button>` :
+                                    ''}
+                            `;
+                        }
                         list.appendChild(el);
                     });
                 }
             }
 ,
+            checkSubscription: async function() {
+                try {
+                    if (!tgUserId) {
+                        alert('Не удалось определить ваш Telegram ID. Откройте игру через Telegram.');
+                        return;
+                    }
+                    const url = `https://us-central1-medieval-legacy.cloudfunctions.net/checkTelegramSubscription?userId=${encodeURIComponent(String(tgUserId))}&channel=@MedievalLegacy`;
+                    const res = await fetch(url, { method: 'GET' });
+                    if (!res.ok) throw new Error('Сервер недоступен');
+                    const data = await res.json();
+                    
+                    if (data && data.subscribed) {
+                        const q = (gameState.storyQuests || []).find(q => q.id === 'subscribe_channel');
+                        if (q) {
+                            q.current = q.goals.count;
+                            game.save();
+                            ui.updateStats();
+                            this.claimStory('subscribe_channel', true);
+                        }
+                    } else {
+                        alert('Вы не подписались на канал. Подпишитесь и попробуйте снова.');
+                    }
+                } catch (e) {
+                    console.error('Subscription check error:', e);
+                    alert('Ошибка проверки подписки. Попробуйте позже.');
+                }
+            },
+            
             
             // Firebase Admin Functions
             allPlayersData: [],
             filteredPlayers: [],
             currentPage: 1,
-            playersPerPage: 10,
             
             loadFirebasePlayers: function() {
                 if (typeof db === 'undefined') {
@@ -9731,6 +9788,17 @@
                 
                 // Ensure playerId matches Telegram/local ID before any UI updates
                 gameState.playerId = String(tgUserId);
+                
+                // Add one-time subscription quest if not present
+                if (!hasStoryQuest('subscribe_channel')) {
+                    dialogue.addQuest(
+                        'subscribe_channel',
+                        'Подписаться на официальный канал',
+                        'Подпишитесь на канал игры и получите 10 изумрудов',
+                        { type: 'external', target: 'tg_subscribe', count: 1 },
+                        { emeralds: 10 }
+                    );
+                }
                 
                 // Initialize resources if undefined (for backward-compatible saves)
                 Object.keys(RESOURCE_NAMES).forEach(r => {
