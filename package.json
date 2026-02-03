@@ -1,0 +1,9 @@
+{
+  "name": "medieval-legacy-game",
+  "version": "1.0.0",
+  "description": "Medieval Legacy Telegram Game",
+  "main": "index.html",
+  "dependencies": {
+    "axios": "^1.6.0"
+  }
+}
