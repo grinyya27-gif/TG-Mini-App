@@ -1746,9 +1746,8 @@
     
     <div id="loading-screen" class="fixed inset-0 z-50 overflow-hidden">
         <img src="https://s5.iimage.su/s/03/gnibzcbxwV0bKrjzR3V0zXlwLSOkZCZUsu0Db0Ia.jpg" alt="Loading" class="absolute inset-0 w-full h-full object-cover" onerror="this.onerror=null; this.style.display='none';">
-        <div class="absolute inset-0 bg-gradient-to-b from-black/20 via-black/30 to-black/50"></div>
         <div class="absolute bottom-8 left-1/2 -translate-x-1/2 w-4/5 max-w-md">
-            <div class="h-2 rounded-full overflow-hidden border border-[#c8aa6e]/60 bg-black/40">
+            <div class="h-2 rounded-full overflow-hidden border border-[#c8aa6e]/60 bg-black/20">
                 <div id="loading-bar-fill" class="h-full bg-gradient-to-r from-[#8b733d] to-[#c8aa6e] w-0 transition-all duration-150"></div>
             </div>
             <div class="text-center text-xs text-[#c8aa6e]/80 mt-2">Загрузка...</div>
@@ -14098,6 +14097,7 @@
             clickTimer: null,
             currentPlayerId: null,
             allPlayers: {},
+            firebaseEnabled: (typeof db !== 'undefined'),
             
             init: function() {
                 // This will be called when DOM is ready
@@ -14134,9 +14134,29 @@
                 this.currentPlayerId = null;
             },
             
-            loadAllPlayers: function() {
+            loadAllPlayers: async function() {
                 try {
                     this.allPlayers = {};
+                    // Load from Firebase if available
+                    if (this.firebaseEnabled) {
+                        try {
+                            const snap = await db.collection('players').get();
+                            snap.forEach(doc => {
+                                const data = doc.data() || {};
+                                const playerId = data.telegramId || data.id || doc.id;
+                                this.allPlayers[playerId] = {
+                                    ...data,
+                                    telegramId: playerId,
+                                    _docId: doc.id,
+                                    username: data.telegramUsername || data.playerName || data.username || 'Игрок',
+                                    gems: data.gems !== undefined ? data.gems : (data.emeralds !== undefined ? data.emeralds : (data.emerald || 0)),
+                                    lastPlayed: data.lastSeen || data.lastPlayed || 0
+                                };
+                            });
+                        } catch (e) {
+                            console.error('Firebase load error:', e);
+                        }
+                    }
                     
                     // Check if there's a current game save
                     const currentSave = localStorage.getItem('medieval_rpg_save_v5');
@@ -14334,7 +14354,7 @@
                     document.getElementById('dev-edit-id').value = playerData.telegramId || '';
                     document.getElementById('dev-edit-username').value = playerData.username || '';
                     document.getElementById('dev-edit-gold').value = playerData.gold || 0;
-                    document.getElementById('dev-edit-gems').value = playerData.gems || 0;
+                    document.getElementById('dev-edit-gems').value = playerData.gems || playerData.emeralds || 0;
                     document.getElementById('dev-edit-level').value = playerData.level || 1;
                     document.getElementById('dev-edit-xp').value = playerData.xp || 0;
                     document.getElementById('dev-edit-hp').value = playerData.hp || 100;
@@ -14353,7 +14373,7 @@
                 }
             },
             
-            savePlayer: function() {
+            savePlayer: async function() {
                 if (!this.currentPlayerId) return;
                 
                 try {
@@ -14366,6 +14386,7 @@
                     // Update values
                     playerData.gold = parseInt(document.getElementById('dev-edit-gold').value) || 0;
                     playerData.gems = parseInt(document.getElementById('dev-edit-gems').value) || 0;
+                    playerData.emeralds = playerData.gems;
                     playerData.level = parseInt(document.getElementById('dev-edit-level').value) || 1;
                     playerData.xp = parseInt(document.getElementById('dev-edit-xp').value) || 0;
                     playerData.hp = parseInt(document.getElementById('dev-edit-hp').value) || 100;
@@ -14379,6 +14400,25 @@
                     } else {
                         // This is a separate player save
                         localStorage.setItem(`player_${this.currentPlayerId}`, JSON.stringify(playerData));
+                    }
+                    
+                    // Save to Firebase if available
+                    if (this.firebaseEnabled && playerData._docId) {
+                        try {
+                            await db.collection('players').doc(playerData._docId).update({
+                                gold: playerData.gold,
+                                gems: playerData.gems,
+                                emeralds: playerData.emeralds,
+                                level: playerData.level,
+                                xp: playerData.xp,
+                                hp: playerData.hp,
+                                hunger: playerData.hunger,
+                                lastSeen: Date.now()
+                            });
+                        } catch (e) {
+                            console.error('Firebase update error:', e);
+                            alert('⚠️ Не удалось сохранить в Firebase: ' + e.message);
+                        }
                     }
                     
                     // Update in memory
@@ -14423,7 +14463,7 @@
                 }
             },
             
-            deletePlayer: function() {
+            deletePlayer: async function() {
                 if (!this.currentPlayerId) return;
                 
                 const playerData = this.allPlayers[this.currentPlayerId];
@@ -14441,6 +14481,16 @@
                         localStorage.removeItem(`player_${this.currentPlayerId}`);
                     }
                     delete this.allPlayers[this.currentPlayerId];
+                    
+                    // Delete from Firebase if available
+                    if (this.firebaseEnabled && playerData && playerData._docId) {
+                        try {
+                            await db.collection('players').doc(playerData._docId).delete();
+                        } catch (e) {
+                            console.error('Firebase delete error', e);
+                            alert('⚠️ Не удалось удалить в Firebase: ' + e.message);
+                        }
+                    }
                     
                     if (window.UsersStore) {
                         try {
