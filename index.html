@@ -9570,12 +9570,36 @@
                         alert('Не удалось определить ваш Telegram ID. Откройте игру через Telegram.');
                         return;
                     }
+                    
+                    // 1) Try Firebase 'subscriptions' doc written by bot
+                    if (typeof db !== 'undefined') {
+                        try {
+                            const subDoc = await db.collection('subscriptions').doc(String(tgUserId)).get();
+                            if (subDoc.exists) {
+                                const sub = subDoc.data() || {};
+                                if (sub.subscribed || sub.status === 'member' || sub.member === true) {
+                                    const q = (gameState.storyQuests || []).find(q => q.id === 'subscribe_channel');
+                                    if (q) {
+                                        q.current = q.goals.count;
+                                        game.save();
+                                        ui.updateStats();
+                                        this.claimStory('subscribe_channel', true);
+                                        return;
+                                    }
+                                }
+                            }
+                        } catch (e) {
+                            console.warn('Firebase subscription check failed:', e);
+                        }
+                    }
+                    
+                    // 2) Fallback to HTTP Cloud Function check
                     const url = `https://us-central1-medieval-legacy.cloudfunctions.net/checkTelegramSubscription?userId=${encodeURIComponent(String(tgUserId))}&channel=@MedievalLegacy`;
                     const res = await fetch(url, { method: 'GET' });
                     if (!res.ok) throw new Error('Сервер недоступен');
                     const data = await res.json();
                     
-                    if (data && data.subscribed) {
+                    if (data && (data.subscribed === true || data.status === 'member')) {
                         const q = (gameState.storyQuests || []).find(q => q.id === 'subscribe_channel');
                         if (q) {
                             q.current = q.goals.count;
@@ -9588,7 +9612,7 @@
                     }
                 } catch (e) {
                     console.error('Subscription check error:', e);
-                    alert('Ошибка проверки подписки. Попробуйте позже.');
+                    alert('Ошибка проверки подписки. Попробуйте позже. Если вы уже подписались — вернитесь из Telegram и нажмите «Проверить подписку» ещё раз.');
                 }
             },
             
