@@ -6004,7 +6004,9 @@
             rentExpiry: 0,
             introShown: false,
             playerId: null,
-            playerName: "Странник"
+            playerName: "Странник",
+            lastUpdate: null,
+            lastSeen: null
         };
 
         // --- NPC DATABASE ---
@@ -9723,8 +9725,8 @@
 
         // --- GAME LOGIC ---
         const game = {
-            init: function() {
-                this.load();
+            init: async function() {
+                await this.load();
                 this.calculateNextLevel();
                 
                 // Initialize resources if undefined (for backward-compatible saves)
@@ -9795,6 +9797,10 @@
             },
 
             save: function() {
+                // Update timestamp
+                gameState.lastUpdate = new Date().toISOString();
+                gameState.lastSeen = Date.now();
+                
                 // Save to localStorage (local backup)
                 localStorage.setItem('medieval_rpg_save_v5', JSON.stringify(gameState));
                 
@@ -9803,9 +9809,7 @@
                     const playerData = {
                         ...gameState,
                         telegramId: tgUserId,
-                        telegramUsername: tgUsername,
-                        lastSeen: Date.now(),
-                        lastUpdate: new Date().toISOString()
+                        telegramUsername: tgUsername
                     };
                     
                     db.collection('players').doc(String(tgUserId)).set(playerData, { merge: true })
@@ -9813,16 +9817,24 @@
                 }
             },
 
-            load: function() {
+            load: async function() {
+                console.log('=== LOAD STARTED ===');
+                console.log('tgUserId:', tgUserId);
+                console.log('db available:', typeof db !== 'undefined');
+                
                 // First load from localStorage
                 const localSaved = localStorage.getItem('medieval_rpg_save_v5');
                 let localData = null;
                 let localTimestamp = 0;
                 
+                console.log('localStorage data exists:', !!localSaved);
+                
                 if (localSaved) {
                     try {
                         localData = JSON.parse(localSaved);
                         localTimestamp = localData.lastUpdate ? new Date(localData.lastUpdate).getTime() : 0;
+                        console.log('Local data parsed. Level:', localData.level, 'Gold:', localData.gold);
+                        console.log('Local timestamp:', new Date(localTimestamp).toISOString());
                     } catch (e) {
                         console.error('Local load error:', e);
                     }
@@ -9830,55 +9842,64 @@
                 
                 // Try to load from Firebase (cloud)
                 if (typeof db !== 'undefined' && tgUserId) {
-                    db.collection('players').doc(String(tgUserId)).get()
-                        .then(doc => {
-                            if (doc.exists) {
-                                const cloudData = doc.data();
-                                const cloudTimestamp = cloudData.lastUpdate ? new Date(cloudData.lastUpdate).getTime() : 0;
-                                
-                                // Compare timestamps
-                                if (cloudTimestamp > localTimestamp) {
-                                    // Cloud is newer - use it
-                                    Object.assign(gameState, cloudData);
-                                    console.log('Loaded from Firebase Cloud (newer)');
-                                    // Update localStorage with cloud data
-                                    localStorage.setItem('medieval_rpg_save_v5', JSON.stringify(cloudData));
-                                } else if (localData) {
-                                    // Local is newer or same - use local
-                                    Object.assign(gameState, localData);
-                                    console.log('Loaded from localStorage (newer or same)');
-                                    // Update Firebase with local data
-                                    this.save();
-                                } else {
-                                    // No local data, use cloud
-                                    Object.assign(gameState, cloudData);
-                                    console.log('Loaded from Firebase Cloud (no local)');
-                                }
+                    console.log('Attempting Firebase load...');
+                    try {
+                        const doc = await db.collection('players').doc(String(tgUserId)).get();
+                        console.log('Firebase doc exists:', doc.exists);
+                        
+                        if (doc.exists) {
+                            const cloudData = doc.data();
+                            const cloudTimestamp = cloudData.lastUpdate ? new Date(cloudData.lastUpdate).getTime() : 0;
+                            
+                            console.log('Cloud data found. Level:', cloudData.level, 'Gold:', cloudData.gold);
+                            console.log('Cloud timestamp:', new Date(cloudTimestamp).toISOString());
+                            console.log('Comparing: cloud =', cloudTimestamp, 'vs local =', localTimestamp);
+                            
+                            // Compare timestamps
+                            if (cloudTimestamp > localTimestamp) {
+                                // Cloud is newer - use it
+                                Object.assign(gameState, cloudData);
+                                console.log('✅ Using Firebase data (newer). Level:', gameState.level, 'Gold:', gameState.gold);
+                                // Update localStorage with cloud data
+                                localStorage.setItem('medieval_rpg_save_v5', JSON.stringify(cloudData));
+                            } else if (localData) {
+                                // Local is newer or same - use local
+                                Object.assign(gameState, localData);
+                                console.log('✅ Using local data (newer or same). Level:', gameState.level, 'Gold:', gameState.gold);
+                                // Update Firebase with local data
+                                this.save();
                             } else {
-                                // No cloud save, use localStorage
-                                if (localData) {
-                                    Object.assign(gameState, localData);
-                                    console.log('Loaded from localStorage (no cloud)');
-                                } else {
-                                    console.log('No saved data found');
-                                }
+                                // No local data, use cloud
+                                Object.assign(gameState, cloudData);
+                                console.log('✅ Using Firebase data (no local). Level:', gameState.level, 'Gold:', gameState.gold);
                             }
-                        })
-                        .catch(err => {
-                            console.error('Firebase load error:', err);
-                            // Fallback to localStorage on error
+                        } else {
+                            // No cloud save, use localStorage
                             if (localData) {
                                 Object.assign(gameState, localData);
-                                console.log('Loaded from localStorage (Firebase error)');
+                                console.log('✅ Using local data (no cloud). Level:', gameState.level, 'Gold:', gameState.gold);
+                            } else {
+                                console.log('⚠️ No saved data found anywhere');
                             }
-                        });
+                        }
+                    } catch (err) {
+                        console.error('Firebase load error:', err);
+                        // Fallback to localStorage on error
+                        if (localData) {
+                            Object.assign(gameState, localData);
+                            console.log('✅ Using local data (Firebase error). Level:', gameState.level, 'Gold:', gameState.gold);
+                        }
+                    }
                 } else {
                     // No Firebase, use localStorage
                     if (localData) {
                         Object.assign(gameState, localData);
-                        console.log('Loaded from localStorage (no Firebase)');
+                        console.log('✅ Using local data (no Firebase). Level:', gameState.level, 'Gold:', gameState.gold);
                     }
                 }
+                
+                console.log('=== LOAD COMPLETED ===');
+                console.log('Final gameState - Level:', gameState.level, 'Gold:', gameState.gold, 'XP:', gameState.xp);
             },
             
             loadFromLocal: function() {
@@ -14449,7 +14470,7 @@
         
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            const startApp = () => {
+            const startApp = async () => {
                 const HERO_HEADER_IMAGES = {
                     'jobs': 'https://i.postimg.cc/zvrrJHQg/IMG-4559.jpg',
                     'town-square': 'https://i.postimg.cc/BnPztnfV/IMG-4542.jpg',
@@ -14492,7 +14513,7 @@
                     originalLevelUp.call(game);
                     ui.updateLocations();
                 };
-                game.init();
+                await game.init();
                 router.switchTab('map');
                 disease.startTick();
                 refugeeCamp.updateCooldownUI();
