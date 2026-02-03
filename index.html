@@ -9578,12 +9578,11 @@
                                 </div>
                             </div>
                             <div class="flex gap-2 mt-2">
-                                ${!gameState.channelSubscribed ? 
-                                    `<button onclick="channelTask.openChannel()" class="btn-medieval flex-1 py-2 text-xs rounded">
-                                        <i class="fab fa-telegram mr-1"></i> Подписаться
-                                    </button>` : ''}
+                                <button onclick="channelTask.openChannel()" class="btn-medieval flex-1 py-2 text-xs rounded">
+                                    <i class="fab fa-telegram mr-1"></i> Подписаться
+                                </button>
                                 <button id="btn-check-channel" onclick="channelTask.checkSubscription()" 
-                                    class="btn-medieval flex-1 py-2 text-xs rounded ${!gameState.channelSubscribed ? 'opacity-50' : ''}">
+                                    class="btn-medieval flex-1 py-2 text-xs rounded">
                                     <i class="fas fa-check-circle mr-1"></i> Проверить подписку
                                 </button>
                             </div>
@@ -14692,18 +14691,10 @@
                 } else {
                     window.open(this.CHANNEL_URL, '_blank');
                 }
-                
-                // Show "Check Subscription" button after opening channel
-                setTimeout(() => {
-                    const checkBtn = document.getElementById('btn-check-subscription');
-                    if (checkBtn && !gameState.channelTaskCompleted) {
-                        checkBtn.classList.remove('hidden');
-                    }
-                }, 1000);
             },
             
             checkSubscription: async function() {
-                const checkBtn = document.getElementById('btn-check-subscription');
+                const checkBtn = document.getElementById('btn-check-channel');
                 if (!checkBtn) return;
                 
                 // Disable button during check
