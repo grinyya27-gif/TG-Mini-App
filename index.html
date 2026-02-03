@@ -2644,6 +2644,66 @@
             </div>
 
             <!-- The Hunter -->
+            
+            <!-- ONE-TIME TASKS SECTION -->
+            <div class="mt-6">
+                <div class="flex items-center gap-2 mb-3">
+                    <div class="h-px flex-1 bg-gradient-to-r from-transparent via-[#c8aa6e]/30 to-transparent"></div>
+                    <h3 class="medieval-font text-sm text-[#c8aa6e] uppercase tracking-wider">Одноразовые задания</h3>
+                    <div class="h-px flex-1 bg-gradient-to-r from-transparent via-[#c8aa6e]/30 to-transparent"></div>
+                </div>
+                
+                <!-- Channel Subscription Task -->
+                <div id="task-channel-sub" class="panel rounded-lg p-4 relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-cyan-900/20 via-transparent to-purple-900/20"></div>
+                    <div class="relative">
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-600/30 to-purple-600/30 flex items-center justify-center border-2 border-cyan-500/40 shadow-[0_0_15px_rgba(6,182,212,0.3)]">
+                                    <i class="fab fa-telegram text-cyan-400 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="medieval-font text-base text-white">Официальный канал</h3>
+                                    <p class="text-xs text-gray-400">Подпишитесь на канал игры</p>
+                                </div>
+                            </div>
+                            <span id="task-status-icon" class="text-2xl"></span>
+                        </div>
+                        
+                        <div class="bg-black/30 rounded p-3 mb-3 border border-cyan-500/20">
+                            <p class="text-sm text-gray-300 mb-2">
+                                <i class="fas fa-info-circle text-cyan-400 mr-1"></i>
+                                Присоединяйтесь к нашему каналу, чтобы получать новости, обновления и секреты игры!
+                            </p>
+                            <div class="flex items-center gap-2 text-emerald-400 text-sm">
+                                <i class="far fa-gem"></i>
+                                <span class="font-bold">Награда: 10 изумрудов</span>
+                            </div>
+                        </div>
+                        
+                        <div id="task-buttons-container" class="space-y-2">
+                            <!-- Subscribe Button -->
+                            <button id="btn-subscribe-channel" onclick="channelTask.openChannel()" class="btn-medieval w-full py-2.5 rounded font-bold text-sm flex items-center justify-center gap-2">
+                                <i class="fab fa-telegram"></i>
+                                Подписаться на канал
+                            </button>
+                            
+                            <!-- Check Subscription Button (hidden initially) -->
+                            <button id="btn-check-subscription" onclick="channelTask.checkSubscription()" class="btn-ghost w-full py-2.5 rounded font-bold text-sm hidden flex items-center justify-center gap-2">
+                                <i class="fas fa-check-circle"></i>
+                                Проверить подписку
+                            </button>
+                        </div>
+                        
+                        <!-- Completion Message (hidden initially) -->
+                        <div id="task-completed-message" class="hidden bg-emerald-900/30 border border-emerald-500/40 rounded p-3 text-center">
+                            <i class="fas fa-check-circle text-emerald-400 text-2xl mb-2"></i>
+                            <p class="text-emerald-400 font-bold">Задание выполнено!</p>
+                            <p class="text-sm text-gray-400 mt-1">Вы получили 10 изумрудов</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
         </section>
 
@@ -6006,7 +6066,11 @@
             playerId: null,
             playerName: "Странник",
             lastUpdate: null,
-            lastSeen: null
+            lastSeen: null,
+            
+            // Channel Subscription Task
+            channelSubscribed: false,
+            channelTaskCompleted: false
         };
 
         // --- NPC DATABASE ---
@@ -9504,123 +9568,42 @@
 
                     gameState.storyQuests.forEach(q => {
                         if (q.state === 'claimed') return; // Hide completed/claimed logic for now or move to separate list
-                        
+
                         const progress = Math.min(100, (q.current / q.goals.count) * 100);
                         const isDone = q.current >= q.goals.count;
-                        const gemsReward = (q.reward && (q.reward.emeralds || q.reward.gems)) ? (q.reward.emeralds || q.reward.gems) : 0;
-                        const rewardHtml = gemsReward
-                            ? `<div class="text-[10px] text-emerald-400 font-bold">+${gemsReward} <i class="far fa-gem"></i></div>`
-                            : `<div class="text-[10px] text-yellow-500 font-bold">+${q.reward?.gold || 0} <i class="fas fa-coins"></i></div>
-                               <div class="text-[10px] text-blue-400 font-bold">+${q.reward?.xp || 0} XP</div>`;
-                        
+
                         const el = document.createElement('div');
                         el.className = "quest-card panel p-3 rounded flex flex-col gap-2 border-l-2 border-[#c8aa6e]";
-                        
-                        if (q.id === 'subscribe_channel') {
-                            el.innerHTML = `
-                                <div class="flex justify-between items-start">
-                                    <div>
-                                        <div class="text-sm text-[#c8aa6e] font-bold">${q.title}</div>
-                                        <div class="text-[10px] text-[#a0a0a0] mb-1">${q.desc}</div>
-                                        <div class="text-xs text-[#e0e0e0]">${q.current} / ${q.goals.count}</div>
-                                    </div>
-                                    <div class="text-right">
-                                        ${rewardHtml}
-                                    </div>
+                        el.innerHTML = `
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <div class="text-sm text-[#c8aa6e] font-bold">${q.title}</div>
+                                    <div class="text-[10px] text-[#a0a0a0] mb-1">${q.desc}</div>
+                                    <div class="text-xs text-[#e0e0e0]">${q.current} / ${q.goals.count}</div>
                                 </div>
-                                <div class="flex gap-2">
-                                    <a href="https://t.me/MedievalLegacy" target="_blank" rel="noopener" class="btn-medieval px-2 py-1 text-[11px] rounded">Открыть канал</a>
-                                    <button onclick="quests.checkSubscription()" class="btn-medieval px-2 py-1 text-[11px] rounded">Проверить подписку</button>
+                                <div class="text-right">
+                                     <div class="text-[10px] text-yellow-500 font-bold">+${q.reward.gold} <i class="fas fa-coins"></i></div>
+                                     <div class="text-[10px] text-blue-400 font-bold">+${q.reward.xp} XP</div>
                                 </div>
-                                <div class="w-full h-1.5 bg-[#000] rounded-full overflow-hidden border border-[#333]">
-                                    <div class="h-full bg-[#c8aa6e] transition-all duration-300" style="width: ${progress}%"></div>
-                                </div>
-                                ${isDone ?
-                                    `<button onclick="quests.claimStory('${q.id}')" class="btn-medieval w-full py-1 text-xs rounded mt-1">Завершить</button>` :
-                                    ''}
-                            `;
-                        } else {
-                            el.innerHTML = `
-                                <div class="flex justify-between items-start">
-                                    <div>
-                                        <div class="text-sm text-[#c8aa6e] font-bold">${q.title}</div>
-                                        <div class="text-[10px] text-[#a0a0a0] mb-1">${q.desc}</div>
-                                        <div class="text-xs text-[#e0e0e0]">${q.current} / ${q.goals.count}</div>
-                                    </div>
-                                    <div class="text-right">
-                                        ${rewardHtml}
-                                    </div>
-                                </div>
-                                <div class="w-full h-1.5 bg-[#000] rounded-full overflow-hidden border border-[#333]">
-                                    <div class="h-full bg-[#c8aa6e] transition-all duration-300" style="width: ${progress}%"></div>
-                                </div>
-                                ${isDone ?
-                                    `<button onclick="quests.claimStory('${q.id}')" class="btn-medieval w-full py-1 text-xs rounded mt-1">Завершить</button>` :
-                                    ''}
-                            `;
-                        }
+                            </div>
+                            <div class="w-full h-1.5 bg-[#000] rounded-full overflow-hidden border border-[#333]">
+                                <div class="h-full bg-[#c8aa6e] transition-all duration-300" style="width: ${progress}%"></div>
+                            </div>
+                            ${isDone ?
+                                `<button onclick="quests.claimStory('${q.id}')" class="btn-medieval w-full py-1 text-xs rounded mt-1">Завершить</button>` :
+                                ''}
+                        `;
                         list.appendChild(el);
                     });
                 }
             }
 ,
-            checkSubscription: async function() {
-                try {
-                    if (!tgUserId) {
-                        alert('Не удалось определить ваш Telegram ID. Откройте игру через Telegram.');
-                        return;
-                    }
-                    
-                    // 1) Try Firebase 'subscriptions' doc written by bot
-                    if (typeof db !== 'undefined') {
-                        try {
-                            const subDoc = await db.collection('subscriptions').doc(String(tgUserId)).get();
-                            if (subDoc.exists) {
-                                const sub = subDoc.data() || {};
-                                if (sub.subscribed || sub.status === 'member' || sub.member === true) {
-                                    const q = (gameState.storyQuests || []).find(q => q.id === 'subscribe_channel');
-                                    if (q) {
-                                        q.current = q.goals.count;
-                                        game.save();
-                                        ui.updateStats();
-                                        this.claimStory('subscribe_channel', true);
-                                        return;
-                                    }
-                                }
-                            }
-                        } catch (e) {
-                            console.warn('Firebase subscription check failed:', e);
-                        }
-                    }
-                    
-                    // 2) Fallback to HTTP Cloud Function check
-                    const url = `https://us-central1-medieval-legacy.cloudfunctions.net/checkTelegramSubscription?userId=${encodeURIComponent(String(tgUserId))}&channel=@MedievalLegacy`;
-                    const res = await fetch(url, { method: 'GET' });
-                    if (!res.ok) throw new Error('Сервер недоступен');
-                    const data = await res.json();
-                    
-                    if (data && (data.subscribed === true || data.status === 'member')) {
-                        const q = (gameState.storyQuests || []).find(q => q.id === 'subscribe_channel');
-                        if (q) {
-                            q.current = q.goals.count;
-                            game.save();
-                            ui.updateStats();
-                            this.claimStory('subscribe_channel', true);
-                        }
-                    } else {
-                        alert('Вы не подписались на канал. Подпишитесь и попробуйте снова.');
-                    }
-                } catch (e) {
-                    console.error('Subscription check error:', e);
-                    alert('Ошибка проверки подписки. Попробуйте позже. Если вы уже подписались — вернитесь из Telegram и нажмите «Проверить подписку» ещё раз.');
-                }
-            },
-            
             
             // Firebase Admin Functions
             allPlayersData: [],
             filteredPlayers: [],
             currentPage: 1,
+            playersPerPage: 10,
             
             loadFirebasePlayers: function() {
                 if (typeof db === 'undefined') {
@@ -9812,17 +9795,6 @@
                 
                 // Ensure playerId matches Telegram/local ID before any UI updates
                 gameState.playerId = String(tgUserId);
-                
-                // Add one-time subscription quest if not present
-                if (!hasStoryQuest('subscribe_channel')) {
-                    dialogue.addQuest(
-                        'subscribe_channel',
-                        'Подписаться на официальный канал',
-                        'Подпишитесь на канал игры и получите 10 изумрудов',
-                        { type: 'external', target: 'tg_subscribe', count: 1 },
-                        { emeralds: 10 }
-                    );
-                }
                 
                 // Initialize resources if undefined (for backward-compatible saves)
                 Object.keys(RESOURCE_NAMES).forEach(r => {
@@ -14611,6 +14583,164 @@
             }
         };
         
+        // --- CHANNEL SUBSCRIPTION TASK ---
+        const channelTask = {
+            CHANNEL_URL: 'https://t.me/MedievalLegacy',
+            CLOUD_FUNCTION_URL: '', // TODO: Заменить на URL вашей Cloud Function после деплоя
+            
+            init: function() {
+                this.updateUI();
+            },
+            
+            updateUI: function() {
+                const taskCard = document.getElementById('task-channel-sub');
+                const subscribeBtn = document.getElementById('btn-subscribe-channel');
+                const checkBtn = document.getElementById('btn-check-subscription');
+                const completedMsg = document.getElementById('task-completed-message');
+                const statusIcon = document.getElementById('task-status-icon');
+                const buttonsContainer = document.getElementById('task-buttons-container');
+                
+                if (!taskCard) return;
+                
+                if (gameState.channelTaskCompleted) {
+                    // Task completed
+                    buttonsContainer.classList.add('hidden');
+                    completedMsg.classList.remove('hidden');
+                    statusIcon.innerHTML = '<i class="fas fa-check-circle text-emerald-400"></i>';
+                    taskCard.style.opacity = '0.7';
+                } else {
+                    // Task not completed
+                    completedMsg.classList.add('hidden');
+                    buttonsContainer.classList.remove('hidden');
+                    statusIcon.innerHTML = '';
+                    taskCard.style.opacity = '1';
+                }
+            },
+            
+            openChannel: function() {
+                // Open channel in Telegram
+                if (window.Telegram && window.Telegram.WebApp) {
+                    window.Telegram.WebApp.openTelegramLink(this.CHANNEL_URL);
+                } else {
+                    window.open(this.CHANNEL_URL, '_blank');
+                }
+                
+                // Show "Check Subscription" button after opening channel
+                setTimeout(() => {
+                    const checkBtn = document.getElementById('btn-check-subscription');
+                    if (checkBtn && !gameState.channelTaskCompleted) {
+                        checkBtn.classList.remove('hidden');
+                    }
+                }, 1000);
+            },
+            
+            checkSubscription: async function() {
+                const checkBtn = document.getElementById('btn-check-subscription');
+                if (!checkBtn) return;
+                
+                // Disable button during check
+                checkBtn.disabled = true;
+                const originalText = checkBtn.innerHTML;
+                checkBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Проверка...';
+                
+                try {
+                    // Get user ID from Telegram
+                    let userId = null;
+                    let username = null;
+                    
+                    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
+                        const user = window.Telegram.WebApp.initDataUnsafe.user;
+                        if (user) {
+                            userId = user.id;
+                            username = user.username || null;
+                        }
+                    }
+                    
+                    if (!userId) {
+                        throw new Error('Не удалось получить ID пользователя');
+                    }
+                    
+                    // ВАЖНО: Замените URL на ваш Cloud Function URL
+                    if (!this.CLOUD_FUNCTION_URL || this.CLOUD_FUNCTION_URL === '') {
+                        // Временное решение для тестирования без backend
+                        // В продакшене это нужно ОБЯЗАТЕЛЬНО заменить на реальную проверку
+                        console.warn('Cloud Function URL не настроен! Используется тестовый режим.');
+                        
+                        // Симуляция задержки запроса
+                        await new Promise(resolve => setTimeout(resolve, 1500));
+                        
+                        // ВНИМАНИЕ: Это временная логика для тестирования!
+                        // В реальности проверка ДОЛЖНА быть на сервере!
+                        this.completeTask();
+                        return;
+                    }
+                    
+                    // Реальная проверка через Cloud Function
+                    const response = await fetch(this.CLOUD_FUNCTION_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            userId: userId,
+                            username: username
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Ошибка при проверке подписки');
+                    }
+                    
+                    const data = await response.json();
+                    
+                    if (data.subscribed) {
+                        // User is subscribed - complete task
+                        this.completeTask();
+                    } else {
+                        // User is not subscribed
+                        this.showError('Вы не подписаны на канал. Пожалуйста, подпишитесь и попробуйте снова.');
+                    }
+                    
+                } catch (error) {
+                    console.error('Error checking subscription:', error);
+                    this.showError('Произошла ошибка при проверке подписки. Попробуйте позже.');
+                } finally {
+                    // Re-enable button
+                    checkBtn.disabled = false;
+                    checkBtn.innerHTML = originalText;
+                }
+            },
+            
+            completeTask: function() {
+                // Mark task as completed
+                gameState.channelTaskCompleted = true;
+                gameState.channelSubscribed = true;
+                
+                // Give reward
+                gameState.emeralds += 10;
+                
+                // Save game
+                game.save();
+                
+                // Update UI
+                ui.update();
+                this.updateUI();
+                
+                // Show success notification
+                ui.showNotification('✅ Задание выполнено! Вы получили 10 изумрудов!', 'success');
+                
+                // Show floating text
+                const taskCard = document.getElementById('task-channel-sub');
+                if (taskCard) {
+                    ui.floatText('+10', taskCard, 'gem-price');
+                }
+            },
+            
+            showError: function(message) {
+                ui.showNotification(message, 'error');
+            }
+        };
+        
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             const startApp = async () => {
@@ -14660,6 +14790,7 @@
                 router.switchTab('map');
                 disease.startTick();
                 refugeeCamp.updateCooldownUI();
+                channelTask.init(); // Initialize channel subscription task
                 
                 // Добавляем обработчик для кнопки "Выбросить"
                 const discardBtn = document.getElementById('btn-discard-item');
