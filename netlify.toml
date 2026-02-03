@@ -1,19 +1,8 @@
-# Конфигурация Netlify для проекта Medieval Legacy
-
 [build]
-  # Папка с функциями
   functions = "netlify/functions"
-  
-  # Публичная папка (если нужно)
   publish = "."
 
-# Настройки для функций
-[functions]
-  # Директория с Node.js зависимостями
-  node_bundler = "esbuild"
-
-# Редиректы (опционально)
 [[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
+  from = "/*"
+  to = "/index.html"
   status = 200
