@@ -9547,9 +9547,77 @@
                         list.appendChild(el);
                     });
 
+                    // Разделитель между ежедневными заданиями и заданием на подписку
+                    const dividerWrap = document.createElement('div');
+                    dividerWrap.className = "text-center text-[11px] text-[#555] mt-4 mb-3 flex items-center gap-2";
+                    dividerWrap.innerHTML = `
+                        <div class="flex-1 h-px bg-gradient-to-r from-transparent via-[#555] to-transparent"></div>
+                        <span class="text-[10px] uppercase tracking-wider">Особое задание</span>
+                        <div class="flex-1 h-px bg-gradient-to-r from-transparent via-[#555] to-transparent"></div>
+                    `;
+                    list.appendChild(dividerWrap);
+
+                    // Задание на подписку на канал
+                    if (!gameState.channelTaskCompleted) {
+                        const channelTaskEl = document.createElement('div');
+                        channelTaskEl.id = 'task-channel-sub';
+                        channelTaskEl.className = 'quest-card panel p-3 rounded flex flex-col gap-2 border-l-2 border-blue-500';
+                        channelTaskEl.innerHTML = `
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <div class="text-base text-[#e0e0e0] font-bold medieval-font flex items-center gap-2">
+                                        <i class="fab fa-telegram text-blue-400"></i>
+                                        Подпишитесь на канал игры
+                                    </div>
+                                    <div class="text-xs text-[#a0a0a0] mt-1">Узнавайте новости первыми!</div>
+                                </div>
+                                <div class="flex flex-col items-end gap-0.5">
+                                    <div class="text-[10px] gem-price font-bold border border-emerald-900 bg-emerald-900/20 px-2 py-0.5 rounded">
+                                        +10 <i class="far fa-gem gem-price"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex gap-2 mt-2">
+                                ${!gameState.channelSubscribed ? 
+                                    `<button onclick="channelTask.openChannel()" class="btn-medieval flex-1 py-2 text-xs rounded">
+                                        <i class="fab fa-telegram mr-1"></i> Подписаться
+                                    </button>` : ''}
+                                <button id="btn-check-channel" onclick="channelTask.checkSubscription()" 
+                                    class="btn-medieval flex-1 py-2 text-xs rounded ${!gameState.channelSubscribed ? 'opacity-50' : ''}">
+                                    <i class="fas fa-check-circle mr-1"></i> Проверить подписку
+                                </button>
+                            </div>
+                        `;
+                        list.appendChild(channelTaskEl);
+                    } else {
+                        // Показываем выполненное задание
+                        const channelTaskEl = document.createElement('div');
+                        channelTaskEl.className = 'quest-card panel p-3 rounded flex flex-col gap-2 opacity-50 border-l-2 border-green-500';
+                        channelTaskEl.innerHTML = `
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <div class="text-base text-[#e0e0e0] font-bold medieval-font flex items-center gap-2">
+                                        <i class="fab fa-telegram text-blue-400"></i>
+                                        Подпишитесь на канал игры
+                                    </div>
+                                    <div class="text-xs text-[#a0a0a0] mt-1">Узнавайте новости первыми!</div>
+                                </div>
+                                <div class="flex flex-col items-end gap-0.5">
+                                    <div class="text-[10px] gem-price font-bold border border-emerald-900 bg-emerald-900/20 px-2 py-0.5 rounded">
+                                        +10 <i class="far fa-gem gem-price"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-center text-[10px] text-green-500 uppercase mt-2">
+                                <i class="fas fa-check-circle mr-1"></i> Выполнено
+                            </div>
+                        `;
+                        list.appendChild(channelTaskEl);
+                    }
+
                     // Countdown to next reset (00:00 MSK)
                     const timerWrap = document.createElement('div');
-                    timerWrap.className = "text-center text-[11px] text-[#777] mt-2";
+                    timerWrap.className = "text-center text-[11px] text-[#777] mt-4";
                     timerWrap.innerHTML = `До обновления (00:00 МСК): <span id="quest-timer" class="text-[#c8aa6e] font-mono">--:--:--</span>`;
                     list.appendChild(timerWrap);
                     this.updateTimerDisplay();
