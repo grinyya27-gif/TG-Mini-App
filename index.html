@@ -14685,6 +14685,8 @@
             },
             
             openChannel: function() {
+                console.log('Открытие канала:', this.CHANNEL_URL);
+                
                 // Open channel in Telegram
                 if (window.Telegram && window.Telegram.WebApp) {
                     window.Telegram.WebApp.openTelegramLink(this.CHANNEL_URL);
@@ -14692,35 +14694,42 @@
                     window.open(this.CHANNEL_URL, '_blank');
                 }
                 
-                // Show "Check Subscription" button after opening channel
+                // Показываем кнопку проверки через 1 секунду
                 setTimeout(() => {
                     const checkBtn = document.getElementById('btn-check-subscription');
                     if (checkBtn && !gameState.channelTaskCompleted) {
                         checkBtn.classList.remove('hidden');
+                        console.log('✅ Кнопка "Проверить подписку" показана');
                     }
                 }, 1000);
             },
             
             checkSubscription: async function() {
+                console.log('=== START CHECK SUBSCRIPTION ===');
+                
                 // Проверяем, не выполнено ли уже задание
                 if (gameState.channelTaskCompleted) {
-                    this.showError('Вы уже выполнили это задание!');
+                    alert('Вы уже выполнили это задание!');
                     return;
                 }
                 
                 const checkBtn = document.getElementById('btn-check-subscription');
                 if (!checkBtn) {
-                    console.error('Button btn-check-subscription not found!');
+                    console.error('❌ Кнопка не найдена!');
+                    alert('Ошибка: кнопка не найдена');
                     return;
                 }
                 
-                // Disable button during check
+                console.log('✅ Кнопка найдена');
+                
+                // Блокируем кнопку и показываем загрузку
                 checkBtn.disabled = true;
                 const originalText = checkBtn.innerHTML;
                 checkBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Проверка...';
+                console.log('✅ Кнопка обновлена');
                 
                 try {
-                    // Get user ID from Telegram
+                    // Получаем ID пользователя
                     let userId = null;
                     let username = null;
                     
@@ -14732,96 +14741,90 @@
                         }
                     }
                     
+                    console.log('👤 User ID:', userId);
+                    console.log('👤 Username:', username);
+                    
                     if (!userId) {
-                        throw new Error('Не удалось получить ID пользователя');
+                        throw new Error('Не удалось получить ID пользователя из Telegram');
                     }
                     
-                    console.log('Checking subscription for user:', userId, username);
-                    console.log('Cloud Function URL:', this.CLOUD_FUNCTION_URL);
+                    console.log('🌐 URL:', this.CLOUD_FUNCTION_URL);
+                    console.log('📤 Отправка запроса...');
                     
-                    // Создаем контроллер для таймаута
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 секунд таймаут
+                    // Отправляем запрос
+                    const response = await fetch(this.CLOUD_FUNCTION_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            userId: userId,
+                            username: username
+                        })
+                    });
                     
-                    try {
-                        // Реальная проверка через Cloud Function
-                        const response = await fetch(this.CLOUD_FUNCTION_URL, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                userId: userId,
-                                username: username
-                            }),
-                            signal: controller.signal
-                        });
-                        
-                        clearTimeout(timeoutId);
-                        
-                        console.log('Response status:', response.status);
+                    console.log('📥 Получен ответ. Статус:', response.status);
                     
                     if (!response.ok) {
                         const errorText = await response.text();
-                        console.error('Response error:', errorText);
-                        throw new Error('Ошибка при проверке подписки: ' + response.status);
+                        console.error('❌ Ошибка сервера:', errorText);
+                        throw new Error('Сервер вернул ошибку: ' + response.status);
                     }
                     
                     const data = await response.json();
-                    console.log('Response data:', data);
+                    console.log('📦 Данные ответа:', data);
                     
-                    if (data.subscribed) {
-                        // User is subscribed - complete task
-                        console.log('User is subscribed! Completing task...');
-                        this.completeTask();
-                        // Не нужно восстанавливать кнопку - задание выполнено
+                    if (data.subscribed === true) {
+                        console.log('🎉 Пользователь подписан!');
+                        
+                        // Выдаем награду
+                        gameState.channelTaskCompleted = true;
+                        gameState.channelSubscribed = true;
+                        gameState.emeralds += 10;
+                        
+                        console.log('💎 Изумруды добавлены. Новое количество:', gameState.emeralds);
+                        
+                        // Сохраняем
+                        game.save();
+                        console.log('💾 Игра сохранена');
+                        
+                        // Обновляем UI
+                        ui.update();
+                        this.updateUI();
+                        console.log('🎨 UI обновлен');
+                        
+                        // Показываем уведомление
+                        alert('✅ Поздравляем! Вы получили 10 изумрудов!');
+                        
+                        console.log('=== ЗАДАНИЕ ВЫПОЛНЕНО ===');
+                        
                     } else {
-                        // User is not subscribed
-                        console.log('User is NOT subscribed');
-                        this.showError('Вы не подписаны на канал. Пожалуйста, подпишитесь и попробуйте снова.');
-                        // Re-enable button if not subscribed
+                        console.log('❌ Пользователь НЕ подписан');
+                        alert('❌ Вы не подписаны на канал. Пожалуйста, подпишитесь и попробуйте снова.');
+                        
+                        // Разблокируем кнопку
                         checkBtn.disabled = false;
                         checkBtn.innerHTML = originalText;
                     }
-                    
-                } catch (fetchError) {
-                    clearTimeout(timeoutId);
-                    
-                    if (fetchError.name === 'AbortError') {
-                        throw new Error('Превышено время ожидания ответа от сервера. Попробуйте позже.');
-                    }
-                    throw fetchError;
-                }
                     
                 } catch (error) {
-                    console.error('Error checking subscription:', error);
+                    console.error('💥 ОШИБКА:', error);
+                    console.error('Тип ошибки:', error.name);
+                    console.error('Сообщение:', error.message);
                     
-                    let errorMessage = 'Произошла ошибка при проверке подписки.';
+                    alert('Ошибка: ' + error.message);
                     
-                    if (error.message.includes('Failed to fetch')) {
-                        errorMessage = 'Не удалось подключиться к серверу. Проверьте интернет-соединение.';
-                    } else if (error.message.includes('NetworkError')) {
-                        errorMessage = 'Ошибка сети. Попробуйте позже.';
-                    } else if (error.message) {
-                        errorMessage = error.message;
-                    }
-                    
-                    this.showError(errorMessage);
-                    
-                    // Re-enable button on error
-                    if (checkBtn) {
-                        checkBtn.disabled = false;
-                        checkBtn.innerHTML = originalText;
-                    }
+                    // Разблокируем кнопку
+                    checkBtn.disabled = false;
+                    checkBtn.innerHTML = originalText;
                 }
+                
+                console.log('=== END CHECK SUBSCRIPTION ===');
             },
             
             completeTask: function() {
-                console.log('completeTask called');
-                
                 // Проверка, не выполнено ли уже
                 if (gameState.channelTaskCompleted) {
-                    console.log('Task already completed');
                     return;
                 }
                 
@@ -14831,27 +14834,26 @@
                 
                 // Give reward
                 gameState.emeralds += 10;
-                console.log('Emeralds added. New total:', gameState.emeralds);
                 
                 // Save game
                 game.save();
                 
-                // Update UI immediately
+                // Update UI
                 ui.update();
-                this.updateUI();
+                
+                // Обновить список заданий, чтобы показать выполненное задание
+                if (typeof quests !== 'undefined' && quests.render) {
+                    quests.render();
+                }
                 
                 // Show success notification
-                if (ui.showNotification) {
-                    ui.showNotification('✅ Задание выполнено! Вы получили 10 изумрудов!', 'success');
-                }
+                ui.showNotification('✅ Задание выполнено! Вы получили 10 изумрудов!', 'success');
                 
                 // Show floating text
                 const taskCard = document.getElementById('task-channel-sub');
-                if (taskCard && ui.floatText) {
-                    ui.floatText('+10 💎', taskCard, 'gem-price');
+                if (taskCard) {
+                    ui.floatText('+10', taskCard, 'gem-price');
                 }
-                
-                console.log('Task completed successfully!');
             },
             
             showError: function(message) {
