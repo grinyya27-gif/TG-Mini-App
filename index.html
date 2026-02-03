@@ -14681,6 +14681,7 @@
                     buttonsContainer.classList.remove('hidden');
                     statusIcon.innerHTML = '';
                     taskCard.style.opacity = '1';
+                    if (checkBtn) checkBtn.classList.remove('hidden');
                 }
             },
             
@@ -14700,7 +14701,7 @@
                     return;
                 }
                 
-                const checkBtn = document.getElementById('btn-check-channel');
+                const checkBtn = document.getElementById('btn-check-channel') || document.getElementById('btn-check-subscription');
                 if (!checkBtn) return;
                 
                 // Disable button during check
@@ -14729,6 +14730,8 @@
                     console.log('Cloud Function URL:', this.CLOUD_FUNCTION_URL);
                     
                     // Реальная проверка через Cloud Function
+                    const ctrl = new AbortController();
+                    const t = setTimeout(() => { try { ctrl.abort('timeout'); } catch(e) {} }, 12000);
                     const response = await fetch(this.CLOUD_FUNCTION_URL, {
                         method: 'POST',
                         headers: {
@@ -14737,8 +14740,10 @@
                         body: JSON.stringify({
                             userId: userId,
                             username: username
-                        })
+                        }),
+                        signal: ctrl.signal
                     });
+                    clearTimeout(t);
                     
                     console.log('Response status:', response.status);
                     
