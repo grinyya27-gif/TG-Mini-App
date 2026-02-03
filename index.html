@@ -1744,8 +1744,9 @@
         }
     </style>
     
-    <div id="loading-screen" class="fixed inset-0 z-50 overflow-hidden">
+    <div id="loading-screen" class="fixed inset-0 z-50 overflow-hidden bg-[#0f0f10]">
         <img src="https://s5.iimage.su/s/03/gnibzcbxwV0bKrjzR3V0zXlwLSOkZCZUsu0Db0Ia.jpg" alt="Loading" class="absolute inset-0 w-full h-full object-cover" onerror="this.onerror=null; this.style.display='none';">
+        <div class="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/70 via-black/40 to-transparent pointer-events-none"></div>
         <div class="absolute bottom-8 left-1/2 -translate-x-1/2 w-4/5 max-w-md">
             <div class="h-2 rounded-full overflow-hidden border border-[#c8aa6e]/60 bg-black/20">
                 <div id="loading-bar-fill" class="h-full bg-gradient-to-r from-[#8b733d] to-[#c8aa6e] w-0 transition-all duration-150"></div>
@@ -14600,18 +14601,27 @@
                 loadingEl.style.opacity = '1';
                 loadingEl.style.transition = 'opacity 400ms';
                 let p = 0;
+                const appPromise = startApp();
                 const timer = setInterval(() => {
-                    p = Math.min(100, p + 5 + Math.random() * 8);
+                    p = Math.min(90, p + 3 + Math.random() * 6);
                     barEl.style.width = p + '%';
-                    if (p >= 100) {
-                        clearInterval(timer);
+                }, 160);
+                appPromise.then(() => {
+                    clearInterval(timer);
+                    barEl.style.width = '100%';
+                    setTimeout(() => {
                         loadingEl.style.opacity = '0';
                         setTimeout(() => {
                             loadingEl.style.display = 'none';
-                            startApp();
                         }, 420);
-                    }
-                }, 180);
+                    }, 200);
+                }).catch(() => {
+                    clearInterval(timer);
+                    loadingEl.style.opacity = '0';
+                    setTimeout(() => {
+                        loadingEl.style.display = 'none';
+                    }, 420);
+                });
             } else {
                 startApp();
             }
