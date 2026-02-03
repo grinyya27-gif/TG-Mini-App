@@ -5769,8 +5769,8 @@
                         </div>
 
                         <div class="flex gap-2">
-                            <button onclick="devPanel.savePlayer()" class="dev-btn flex-1">💾 Сохранить</button>
-                            <button onclick="devPanel.deletePlayer()" class="dev-btn flex-1" style="background: linear-gradient(to bottom, #dc2626, #991b1b);">🗑️ Удалить</button>
+                            <button id="dev-btn-save" onclick="devPanel.savePlayer(event)" class="dev-btn flex-1">💾 Сохранить</button>
+                            <button id="dev-btn-delete" onclick="devPanel.deletePlayer(event)" class="dev-btn flex-1" style="background: linear-gradient(to bottom, #dc2626, #991b1b);">🗑️ Удалить</button>
                         </div>
                     </div>
                 </div>
@@ -14373,7 +14373,7 @@
                 }
             },
             
-            savePlayer: async function() {
+            savePlayer: async function(evt) {
                 if (!this.currentPlayerId) return;
                 
                 try {
@@ -14433,7 +14433,7 @@
                     }
                     
                     // Show success message
-                    const btn = event.target;
+                    const btn = (evt && evt.target) || document.getElementById('dev-btn-save');
                     const originalText = btn.textContent;
                     btn.textContent = '✅ Сохранено!';
                     btn.style.background = 'linear-gradient(to bottom, #10b981, #059669)';
@@ -14463,7 +14463,7 @@
                 }
             },
             
-            deletePlayer: async function() {
+            deletePlayer: async function(evt) {
                 if (!this.currentPlayerId) return;
                 
                 const playerData = this.allPlayers[this.currentPlayerId];
@@ -14501,7 +14501,7 @@
                     }
                     
                     // Show success message
-                    const btn = event.target;
+                    const btn = (evt && evt.target) || document.getElementById('dev-btn-delete');
                     const originalText = btn.textContent;
                     btn.textContent = '🗑️ Удалено!';
                     
