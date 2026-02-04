@@ -2644,66 +2644,6 @@
             </div>
 
             <!-- The Hunter -->
-            
-            <!-- ONE-TIME TASKS SECTION -->
-            <div class="mt-6">
-                <div class="flex items-center gap-2 mb-3">
-                    <div class="h-px flex-1 bg-gradient-to-r from-transparent via-[#c8aa6e]/30 to-transparent"></div>
-                    <h3 class="medieval-font text-sm text-[#c8aa6e] uppercase tracking-wider">Одноразовые задания</h3>
-                    <div class="h-px flex-1 bg-gradient-to-r from-transparent via-[#c8aa6e]/30 to-transparent"></div>
-                </div>
-                
-                <!-- Channel Subscription Task -->
-                <div id="task-channel-sub" class="panel rounded-lg p-4 relative overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-br from-cyan-900/20 via-transparent to-purple-900/20"></div>
-                    <div class="relative">
-                        <div class="flex items-start justify-between mb-3">
-                            <div class="flex items-center gap-3">
-                                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-600/30 to-purple-600/30 flex items-center justify-center border-2 border-cyan-500/40 shadow-[0_0_15px_rgba(6,182,212,0.3)]">
-                                    <i class="fab fa-telegram text-cyan-400 text-xl"></i>
-                                </div>
-                                <div>
-                                    <h3 class="medieval-font text-base text-white">Официальный канал</h3>
-                                    <p class="text-xs text-gray-400">Подпишитесь на канал игры</p>
-                                </div>
-                            </div>
-                            <span id="task-status-icon" class="text-2xl"></span>
-                        </div>
-                        
-                        <div class="bg-black/30 rounded p-3 mb-3 border border-cyan-500/20">
-                            <p class="text-sm text-gray-300 mb-2">
-                                <i class="fas fa-info-circle text-cyan-400 mr-1"></i>
-                                Присоединяйтесь к нашему каналу, чтобы получать новости, обновления и секреты игры!
-                            </p>
-                            <div class="flex items-center gap-2 text-emerald-400 text-sm">
-                                <i class="far fa-gem"></i>
-                                <span class="font-bold">Награда: 10 изумрудов</span>
-                            </div>
-                        </div>
-                        
-                        <div id="task-buttons-container" class="space-y-2">
-                            <!-- Subscribe Button -->
-                            <button id="btn-subscribe-channel" onclick="channelTask.openChannel()" class="btn-medieval w-full py-2.5 rounded font-bold text-sm flex items-center justify-center gap-2">
-                                <i class="fab fa-telegram"></i>
-                                Подписаться на канал
-                            </button>
-                            
-                            <!-- Check Subscription Button (hidden initially) -->
-                            <button id="btn-check-subscription" onclick="channelTask.checkSubscription()" class="btn-ghost w-full py-2.5 rounded font-bold text-sm hidden flex items-center justify-center gap-2">
-                                <i class="fas fa-check-circle"></i>
-                                Проверить подписку
-                            </button>
-                        </div>
-                        
-                        <!-- Completion Message (hidden initially) -->
-                        <div id="task-completed-message" class="hidden bg-emerald-900/30 border border-emerald-500/40 rounded p-3 text-center">
-                            <i class="fas fa-check-circle text-emerald-400 text-2xl mb-2"></i>
-                            <p class="text-emerald-400 font-bold">Задание выполнено!</p>
-                            <p class="text-sm text-gray-400 mt-1">Вы получили 10 изумрудов</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
         </section>
 
@@ -14713,10 +14653,9 @@
                     return;
                 }
                 
-                const checkBtn = document.getElementById('btn-check-subscription');
+                const checkBtn = document.getElementById('btn-check-channel');
                 if (!checkBtn) {
                     console.error('❌ Кнопка не найдена!');
-                    alert('Ошибка: кнопка не найдена');
                     return;
                 }
                 
@@ -14788,13 +14727,20 @@
                         game.save();
                         console.log('💾 Игра сохранена');
                         
-                        // Обновляем UI
+                        // Обновляем верхнюю панель с изумрудами
                         ui.update();
-                        this.updateUI();
-                        console.log('🎨 UI обновлен');
+                        console.log('🎨 UI верхней панели обновлен');
+                        
+                        // Перерисовываем список заданий
+                        if (typeof quests !== 'undefined' && quests.render) {
+                            quests.render();
+                            console.log('📋 Список заданий обновлен');
+                        }
                         
                         // Показываем уведомление
-                        alert('✅ Поздравляем! Вы получили 10 изумрудов!');
+                        setTimeout(() => {
+                            alert('✅ Поздравляем! Вы получили 10 изумрудов!');
+                        }, 100);
                         
                         console.log('=== ЗАДАНИЕ ВЫПОЛНЕНО ===');
                         
