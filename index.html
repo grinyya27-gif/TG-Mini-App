@@ -215,6 +215,41 @@
             transform: scale(1);
         }
 
+        /* Work mini‑game */
+        .work-game-area {
+            position: relative;
+            height: 120px;
+            border-radius: 0.75rem;
+            background: radial-gradient(circle at top, rgba(56, 189, 248, 0.25), transparent 65%);
+            border: 1px solid #1f2937;
+            overflow: hidden;
+        }
+        .work-game-track {
+            position: relative;
+            height: 12px;
+            border-radius: 9999px;
+            background: #111;
+            overflow: hidden;
+            border: 1px solid #444;
+        }
+        .work-game-zone {
+            position: absolute;
+            left: 40%;
+            width: 20%;
+            top: 0;
+            bottom: 0;
+            background: rgba(248, 250, 133, 0.25);
+        }
+        .work-game-bar {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 12%;
+            border-radius: 9999px;
+            background: linear-gradient(90deg,#3b82f6,#22c55e);
+            box-shadow: 0 0 12px rgba(96,165,250,0.7);
+        }
+
         /* Job Button Enhanced */
         .job-button {
             background: linear-gradient(135deg, 
@@ -824,6 +859,37 @@
         </div>
     </div>
 
+    <!-- Work Mini‑Game Modal -->
+    <div id="modal-work-game" class="modal-overlay">
+        <div class="modal-content rounded-lg p-5 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-sky-400 to-transparent"></div>
+            <div class="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(circle_at_top,rgba(56,189,248,0.4),transparent_60%)]"></div>
+
+            <div class="relative space-y-4">
+                <div>
+                    <h3 id="work-game-title" class="medieval-font text-lg text-sky-300 mb-1">Работа</h3>
+                    <p id="work-game-desc" class="text-xs text-[#a0a0a0]">
+                        Останови индикатор в золотой зоне, чтобы получить материалы.
+                    </p>
+                </div>
+
+                <div id="work-game-area" class="work-game-area bg-gradient-to-br from-sky-950/60 via-slate-900/60 to-slate-950/80 flex items-center justify-center">
+                    <!-- Контент мини‑игры подставляется скриптом -->
+                </div>
+                <p id="work-game-result" class="text-[11px] text-center text-[#a0a0a0] min-h-[16px]"></p>
+
+                <div class="mt-3 space-y-2">
+                    <button id="work-game-button" onclick="game.stopWorkMiniGame()" class="btn-medieval w-full py-2 rounded text-xs font-bold">
+                        Стоп
+                    </button>
+                    <button onclick="game.cancelWorkMiniGame()" class="btn-ghost w-full py-2 rounded text-xs">
+                        Отмена
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Daily Reward Modal -->
     <div id="modal-daily" class="modal-overlay">
         <div class="modal-content rounded-lg p-6 text-center relative overflow-hidden">
@@ -896,6 +962,26 @@
                         Забрать (-5 Реп.)
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inventory Full Modal -->
+    <div id="modal-inventory-full" class="modal-overlay">
+        <div class="modal-content rounded-lg p-6 text-center relative overflow-hidden border-slate-500">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-slate-400 to-transparent"></div>
+            <div class="absolute inset-0 opacity-20 pointer-events-none bg-[radial-gradient(circle_at_top,rgba(148,163,184,0.25),transparent_60%)]"></div>
+            <div class="relative">
+                <div class="w-16 h-16 rounded-full border border-slate-400/70 bg-[#111] flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-box-open text-3xl text-slate-200"></i>
+                </div>
+                <h2 class="medieval-font text-2xl text-slate-200 mb-2">Инвентарь переполнен</h2>
+                <p class="text-sm text-[#a0a0a0] mb-4">
+                    Ваш инвентарь полон. Продайте или выбросьте ненужные предметы, чтобы освободить место.
+                </p>
+                <button onclick="document.getElementById('modal-inventory-full').classList.remove('open')" class="btn-medieval w-full py-2 rounded text-xs font-bold">
+                    Понятно
+                </button>
             </div>
         </div>
     </div>
@@ -2005,11 +2091,11 @@
                     </div>
                     <!-- Inventory Tabs -->
                     <div class="flex items-center gap-2 overflow-x-auto pb-2 mb-2 no-scrollbar">
-                        <button onclick="inventory.switchCategory('tools')" id="tab-inv-tools" class="sub-tab active">Инструменты</button>
+                        <button onclick="inventory.switchCategory('other')" id="tab-inv-other" class="sub-tab active">Материалы</button>
+                        <button onclick="inventory.switchCategory('tools')" id="tab-inv-tools" class="sub-tab">Инструменты</button>
                         <button onclick="inventory.switchCategory('combat')" id="tab-inv-combat" class="sub-tab">Мечи/Броня</button>
                         <button onclick="inventory.switchCategory('amulets')" id="tab-inv-amulets" class="sub-tab">Амулеты</button>
                         <button onclick="inventory.switchCategory('potions')" id="tab-inv-potions" class="sub-tab">Зелья</button>
-                        <button onclick="inventory.switchCategory('other')" id="tab-inv-other" class="sub-tab">Другое</button>
                     </div>
 
                     <div id="inventory-grid" class="grid grid-cols-4 gap-2">
@@ -2617,7 +2703,7 @@
                  <div class="absolute inset-0 p-4 flex flex-col justify-between">
                     <div class="flex justify-between items-start">
                         <div>
-                            <h3 class="medieval-font text-lg text-white drop-shadow-md">Железный рудник</h3>
+                            <h3 class="medieval-font text-lg text-white drop-shadow-md">Шахта</h3>
                             <p class="text-xs text-gray-300 drop-shadow-md">Опасная работа в темноте.</p>
                             <p class="text-xs text-[#c8aa6e] mt-1 drop-shadow-md" id="job-info-mine">Требуется: Кирка</p>
                         </div>
@@ -10288,6 +10374,21 @@
                 ui.showFloatText(document.body, `+${reward} Изумрудов`, "#34d399");
             },
 
+            _workMiniGame: {
+                active: false,
+                jobType: null,
+                anchor: null,
+                interval: null,
+                timeout: null,
+                position: 0,
+                direction: 1,
+                mode: null,
+                success: false,
+                clicks: 0,
+                zoneStart: 40,
+                zoneEnd: 60
+            },
+
             work: function(jobType, event) {
                 if (gameState.hp <= 0 || (gameState.unconsciousUntil && gameState.unconsciousUntil > Date.now())) {
                     ui.showFloatText(event.target, "Вы без сознания", "#ff5555");
@@ -10354,17 +10455,362 @@
                     }
                 }
                 
-                // Injury Chance (custom for loader job - 1%, others - 10%)
+                // Запуск мини‑игры для работы
+                this.startWorkMiniGame(jobType, job, event.target);
+            },
+
+            startWorkMiniGame: function(jobType, job, anchor) {
+                const modal = document.getElementById('modal-work-game');
+                const area = document.getElementById('work-game-area');
+                const resultEl = document.getElementById('work-game-result');
+                const titleEl = document.getElementById('work-game-title');
+                const descEl = document.getElementById('work-game-desc');
+                const buttonEl = document.getElementById('work-game-button');
+                if (!modal || !area || !titleEl || !descEl || !buttonEl) return;
+
+                // Сброс состояния
+                if (this._workMiniGame.interval) {
+                    clearInterval(this._workMiniGame.interval);
+                }
+                if (this._workMiniGame.timeout) {
+                    clearTimeout(this._workMiniGame.timeout);
+                }
+                this._workMiniGame.active = true;
+                this._workMiniGame.jobType = jobType;
+                this._workMiniGame.anchor = anchor;
+                this._workMiniGame.position = 0;
+                this._workMiniGame.direction = 1;
+                this._workMiniGame.mode = this.getWorkMiniGameMode(jobType);
+                this._workMiniGame.success = false;
+                this._workMiniGame.clicks = 0;
+                this._workMiniGame.timeout = null;
+
+                titleEl.textContent = job.name || 'Работа';
+                resultEl.textContent = '';
+                area.innerHTML = '';
+
+                // Настройка под конкретную работу
+                const mode = this._workMiniGame.mode;
+                if (mode === 'fishing') {
+                    descEl.textContent = 'Жди, пока рыба всплывёт, и быстро нажми на неё.';
+                    buttonEl.classList.add('hidden'); // кнопка завершения не нужна
+                    this.setupFishingMiniGame(area);
+                } else if (mode === 'loader') {
+                    descEl.textContent = 'Поймай момент: нажми Стоп, когда тележка в золотой зоне.';
+                    buttonEl.textContent = 'Стоп';
+                    buttonEl.classList.remove('hidden'); // для грузчика нужна кнопка Стоп
+                    this.setupLoaderMiniGame(area);
+                } else if (mode === 'field') {
+                    descEl.textContent = 'Быстро нажимай по снопам, чтобы собрать урожай.';
+                    buttonEl.classList.add('hidden');
+                    this.setupFieldMiniGame(area);
+                } else if (mode === 'mine') {
+                    descEl.textContent = 'Бей по жиле, пока порода не расколется.';
+                    buttonEl.classList.add('hidden');
+                    this.setupMineMiniGame(area);
+                } else {
+                    // запасной вариант — тайминг по шкале
+                    descEl.textContent = 'Поймай момент и останови индикатор в золотой зоне.';
+                    buttonEl.textContent = 'Стоп';
+                    this.setupLoaderMiniGame(area);
+                }
+
+                modal.classList.add('open');
+            },
+
+            getWorkMiniGameMode: function(jobType) {
+                if (jobType === 'port') return 'fishing';
+                if (jobType === 'loader') return 'loader';
+                if (jobType === 'field') return 'field';
+                if (jobType === 'mine') return 'mine';
+                return 'loader';
+            },
+
+            setupLoaderMiniGame: function(area) {
+                const track = document.createElement('div');
+                track.className = 'work-game-track w-full bg-black/80';
+
+                const zone = document.createElement('div');
+                zone.className = 'work-game-zone';
+
+                const bar = document.createElement('div');
+                bar.id = 'work-game-bar';
+                bar.className = 'work-game-bar';
+
+                track.appendChild(zone);
+                track.appendChild(bar);
+                area.appendChild(track);
+
+                const state = this._workMiniGame;
+                // Случайное положение зоны попадания
+                const width = 20; // в процентах
+                const left = 10 + Math.random() * 60; // 10–70%
+                state.zoneStart = left;
+                state.zoneEnd = left + width;
+                zone.style.left = left + '%';
+                zone.style.width = width + '%';
+
+                // Случайное направление движения
+                state.direction = Math.random() < 0.5 ? 1 : -1;
+                state.position = state.direction === 1 ? 0 : 100;
+                bar.style.left = state.position + '%';
+
+                state.interval = setInterval(() => {
+                    if (!state.active) return;
+                    state.position += state.direction * 2.5;
+                    if (state.position >= 100) {
+                        state.position = 100;
+                        state.direction = -1;
+                    } else if (state.position <= 0) {
+                        state.position = 0;
+                        state.direction = 1;
+                    }
+                    bar.style.left = state.position + '%';
+                }, 30);
+            },
+
+            setupFishingMiniGame: function(area) {
+                const water = document.createElement('div');
+                water.className = 'w-full h-full bg-gradient-to-b from-sky-900/80 via-sky-800/70 to-slate-950/90 relative overflow-hidden';
+
+                const hint = document.createElement('div');
+                hint.className = 'absolute top-2 inset-x-0 text-center text-[10px] text-sky-200/80';
+                hint.textContent = 'Подожди всплеска и нажми на рыбу';
+                water.appendChild(hint);
+
+                const fish = document.createElement('button');
+                fish.type = 'button';
+                fish.className = 'absolute w-9 h-6 rounded-full bg-gradient-to-r from-sky-300 to-emerald-300 shadow-lg flex items-center justify-center text-sky-900 text-xs border border-sky-200/70';
+                fish.textContent = '🐟';
+                fish.style.display = 'none';
+
+                water.appendChild(fish);
+                area.appendChild(water);
+
+                const state = this._workMiniGame;
+
+                const showFish = () => {
+                    if (!state.active) return;
+                    const x = 10 + Math.random() * 70;
+                    const y = 30 + Math.random() * 40;
+                    fish.style.left = x + '%';
+                    fish.style.top = y + '%';
+                    fish.style.display = 'flex';
+
+                    setTimeout(() => {
+                        if (!state.active) return;
+                        fish.style.display = 'none';
+                    }, 600);
+                };
+
+                // Появление рыбы с небольшой задержкой
+                state.timeout = setTimeout(() => {
+                    if (!state.active) return;
+                    showFish();
+                }, 700);
+
+                // Дополнительно подкидываем рыбу несколько раз
+                state.interval = setInterval(() => {
+                    showFish();
+                }, 1500);
+
+                fish.addEventListener('click', () => {
+                    if (!state.active) return;
+                    state.success = true;
+                    fish.style.display = 'none';
+                    this.stopWorkMiniGame(true);
+                });
+            },
+
+            setupFieldMiniGame: function(area) {
+                const box = document.createElement('div');
+                box.className = 'w-full h-full bg-gradient-to-b from-amber-900/70 via-amber-800/60 to-stone-950/90 relative overflow-hidden flex flex-col items-center justify-center gap-3';
+
+                const title = document.createElement('div');
+                title.className = 'text-[11px] text-amber-100/80';
+                title.textContent = 'Жми по снопам пшеницы, чтобы наполнить телегу';
+                box.appendChild(title);
+
+                const progressOuter = document.createElement('div');
+                progressOuter.className = 'w-4/5 h-2 rounded-full bg-black/60 border border-amber-700/50 overflow-hidden';
+                const progressInner = document.createElement('div');
+                progressInner.className = 'h-full bg-gradient-to-r from-amber-400 to-lime-300';
+                progressInner.style.width = '0%';
+                progressOuter.appendChild(progressInner);
+                box.appendChild(progressOuter);
+
+                const fields = document.createElement('div');
+                fields.className = 'flex gap-2 mt-1';
+
+                const state = this._workMiniGame;
+                const target = 6;
+
+                const makeSheaf = () => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'w-9 h-9 rounded-full bg-gradient-to-b from-amber-300 to-amber-500 shadow-md flex items-center justify-center text-amber-950 border border-amber-700/70 text-base';
+                    btn.textContent = '🌾';
+                    btn.addEventListener('click', () => {
+                        if (!state.active) return;
+                        state.clicks++;
+                        const pct = Math.min(100, (state.clicks / target) * 100);
+                        progressInner.style.width = pct + '%';
+                        if (state.clicks >= target && !state.success) {
+                            state.success = true;
+                            this.stopWorkMiniGame(true);
+                        }
+                    });
+                    return btn;
+                };
+
+                for (let i = 0; i < 3; i++) {
+                    fields.appendChild(makeSheaf());
+                }
+
+                box.appendChild(fields);
+                area.appendChild(box);
+
+                // Таймер на случай долгой игры
+                state.timeout = setTimeout(() => {
+                    if (!state.active) return;
+                    this.stopWorkMiniGame(state.success);
+                }, 6000);
+            },
+
+            setupMineMiniGame: function(area) {
+                const cave = document.createElement('div');
+                cave.className = 'w-full h-full bg-gradient-to-b from-slate-900/80 via-slate-800/80 to-black/95 relative overflow-hidden flex flex-col items-center justify-center gap-3';
+
+                const title = document.createElement('div');
+                title.className = 'text-[11px] text-slate-200/80';
+                title.textContent = 'Разбей жилу, нажимая по камню';
+                cave.appendChild(title);
+
+                const rock = document.createElement('button');
+                rock.type = 'button';
+                rock.className = 'w-14 h-14 rounded-full bg-gradient-to-br from-slate-500 to-slate-800 shadow-xl flex items-center justify-center text-slate-200 text-lg border border-slate-500/70';
+                rock.innerHTML = '<i class="fas fa-gem"></i>';
+
+                cave.appendChild(rock);
+                area.appendChild(cave);
+
+                const state = this._workMiniGame;
+                const target = 5;
+
+                rock.addEventListener('click', () => {
+                    if (!state.active) return;
+                    state.clicks++;
+                    rock.style.transform = 'scale(0.94)';
+                    setTimeout(() => { rock.style.transform = 'scale(1)'; }, 80);
+
+                    if (state.clicks >= target && !state.success) {
+                        state.success = true;
+                        rock.className = 'w-14 h-14 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 shadow-xl flex items-center justify-center text-emerald-50 text-lg border border-emerald-400/80';
+                        this.stopWorkMiniGame(true);
+                    }
+                });
+
+                state.timeout = setTimeout(() => {
+                    if (!state.active) return;
+                    this.stopWorkMiniGame(state.success);
+                }, 6000);
+            },
+
+            stopWorkMiniGame: function(forceSuccess) {
+                const state = this._workMiniGame;
+                if (!state.active) return;
+                if (state.interval) {
+                    clearInterval(state.interval);
+                    state.interval = null;
+                }
+                if (state.timeout) {
+                    clearTimeout(state.timeout);
+                    state.timeout = null;
+                }
+
+                const jobType = state.jobType;
+                const anchor = state.anchor;
+
+                let success;
+                if (typeof forceSuccess === 'boolean') {
+                    success = forceSuccess;
+                } else if (state.mode === 'loader') {
+                    // Проверяем попадание в динамическую зону
+                    const pos = state.position;
+                    const start = state.zoneStart ?? 40;
+                    const end = state.zoneEnd ?? 60;
+                    success = pos >= start && pos <= end;
+                } else {
+                    success = !!state.success;
+                }
+
+                const modal = document.getElementById('modal-work-game');
+                const resultEl = document.getElementById('work-game-result');
+                if (resultEl) {
+                    resultEl.textContent = success
+                        ? 'Успех! Ты добыл материалы.'
+                        : 'Промах — ничего не удалось добыть.';
+                }
+
+                state.active = false;
+
+                // Завершаем работу: успех даёт награду, промах только тратит действие
+                this.completeWork(jobType, anchor, success);
+
+                // Автоматический запуск следующей попытки, пока модалка открыта
+                if (modal && modal.classList.contains('open')) {
+                    const job = JOBS_DB[jobType];
+                    if (job) {
+                        state.timeout = setTimeout(() => {
+                            // Если модалка всё ещё открыта и новая мини‑игра не запущена вручную
+                            if (modal.classList.contains('open') && !this._workMiniGame.active) {
+                                this.startWorkMiniGame(jobType, job, anchor);
+                            }
+                        }, 600);
+                    }
+                }
+            },
+
+            cancelWorkMiniGame: function() {
+                const state = this._workMiniGame;
+                if (state.interval) {
+                    clearInterval(state.interval);
+                    state.interval = null;
+                }
+                if (state.timeout) {
+                    clearTimeout(state.timeout);
+                    state.timeout = null;
+                }
+                state.active = false;
+                const modal = document.getElementById('modal-work-game');
+                if (modal) modal.classList.remove('open');
+            },
+
+            completeWork: function(jobType, anchor, success) {
+                const job = JOBS_DB[jobType];
+                if (!job) return;
+
+                // Если промах — просто тратим действие (голод) без награды
+                if (!success) {
+                    this.trackAction();
+                    this.save();
+                    ui.updateStats();
+                    return;
+                }
+
+                const toolState = job.tool ? gameState.tools[job.tool] : null;
+
+                // Шанс травмы
                 const injuryChance = job.injuryChance !== undefined ? job.injuryChance : 0.1;
                 if (Math.random() < injuryChance) {
                     let dmg = Math.floor(Math.random() * 7) + 6; // Урон от 6 до 12
-                    // Apply hunger damage multiplier
                     dmg = Math.floor(dmg * this.getHungerDamageMultiplier());
                     gameState.hp = Math.max(0, gameState.hp - dmg);
-                    ui.showFloatText(event.target, `-${dmg} HP (Травма!)`, "#ef4444");
+                    ui.showFloatText(anchor || document.body, `-${dmg} HP (Травма!)`, "#ef4444");
                     ui.updateStats();
+                    this.trackAction();
                     this.save();
-                    return; 
+                    return;
                 }
 
                 let amount = 1;
@@ -10372,51 +10818,47 @@
                     amount += (toolState.level - 1);
                 }
 
-                // Chance for Emerald (only in Mine)
+                // Шанс изумруда в шахте
                 const luckyDrop = (jobType === 'mine') && (Math.random() < 0.005);
                 if (luckyDrop) {
                     gameState.emeralds += 1;
                     setTimeout(() => {
-                        ui.showFloatText(event.target, `+1 ИЗУМРУД!`, "#34d399");
+                        ui.showFloatText(anchor || document.body, `+1 ИЗУМРУД!`, "#34d399");
                     }, 200);
                 }
 
                 this.addXp(job.xp);
 
-                // Handle loader job (gives gold directly)
                 if (jobType === 'loader') {
-                    const goldReward = job.price; // 6 gold
+                    const goldReward = job.price;
                     gameState.gold += goldReward;
-                    ui.showFloatText(event.target, `+${goldReward} Золота`, "#c8aa6e");
+                    ui.showFloatText(anchor || document.body, `+${goldReward} Золота`, "#c8aa6e");
                 } else {
-                    // Add Resource
                     const extraWeight = (RESOURCE_WEIGHTS[job.resource] || 0) * amount;
                     if (!this.hasWeightCapacity(extraWeight)) {
-                        this.showWeightWarning(event.target);
+                        this.showWeightWarning(anchor || document.body);
                         return;
                     }
                     if (gameState[job.resource] === undefined) gameState[job.resource] = 0;
                     gameState[job.resource] += amount;
-                    
+
                     const rName = RESOURCE_NAMES[job.resource].name;
-                    ui.showFloatText(event.target, `+${amount} ${rName}`, "#e0e0e0");
+                    ui.showFloatText(anchor || document.body, `+${amount} ${rName}`, "#e0e0e0");
                 }
-                
-                // Quest Progress
+
+                // Прогресс квестов
                 quests.onEvent('work', jobType, 1);
-                // Also trigger gather event for story quests
                 quests.onEvent('gather', job.resource, amount);
 
-                // Track action for hunger system
                 this.trackAction();
 
                 ui.updateStats();
                 if (window.navigator && window.navigator.vibrate) {
                     window.navigator.vibrate(10);
                 }
-                
+
                 this.save();
-                ui.updateStats(); 
+                ui.updateStats();
                 ui.updateJobs();
             },
 
@@ -10482,6 +10924,10 @@
 
             showWeightWarning: function(anchor) {
                 ui.showFloatText(anchor || document.body, "Рюкзак перегружен", "#ff5555");
+                const modal = document.getElementById('modal-inventory-full');
+                if (modal && !modal.classList.contains('open')) {
+                    modal.classList.add('open');
+                }
             },
 
             activateEffect: function(effectType) {
@@ -12729,7 +13175,7 @@
         };
 
         const inventory = {
-            currentCategory: 'tools',
+            currentCategory: 'other',
             switchCategory: function(cat) {
                 this.currentCategory = cat;
                 document.querySelectorAll('#ui-inventory .sub-tab').forEach(el => el.classList.remove('active'));
