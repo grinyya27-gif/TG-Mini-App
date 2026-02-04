@@ -1172,6 +1172,23 @@
         </div>
     </div>
 
+    <!-- Glory Change Notification Modal -->
+    <div id="modal-glory-change" class="modal-overlay" style="pointer-events:none; z-index:1050;">
+        <div id="glory-change-card" class="modal-content rounded-lg p-5 text-center relative overflow-hidden" style="max-width:320px; transform:scale(0.85); opacity:0; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease; pointer-events:none;">
+            <div id="glory-change-topbar" class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#fbbf24] to-transparent"></div>
+            <div class="relative mb-2">
+                <i id="glory-change-icon" class="fas fa-trophy text-3xl text-[#fbbf24] drop-shadow-[0_0_10px_rgba(251,191,36,0.6)]"></i>
+            </div>
+            <h2 class="medieval-font text-lg text-[#c8aa6e] mb-1">Слава</h2>
+            <div id="glory-change-amount" class="text-2xl font-bold text-[#fbbf24] medieval-font mb-2">+5</div>
+            <div class="flex items-center justify-center gap-3 mb-1">
+                <span class="text-xs text-[#a0a0a0]">Новое значение:</span>
+                <span id="glory-new-value" class="text-xs text-[#c8aa6e] font-bold">5</span>
+            </div>
+            <div id="glory-change-title" class="text-xs text-[#fbbf24] mb-2">Новичок</div>
+        </div>
+    </div>
+
     <!-- Item Info Modal -->
     <div id="modal-item" class="modal-overlay" onclick="itemModal.close()">
         <div class="modal-content rounded-lg p-6 text-center relative overflow-hidden" onclick="event.stopPropagation()">
@@ -2050,6 +2067,18 @@
                     <div id="rep-bar" class="h-full bg-gradient-to-r from-emerald-700 to-[#c8aa6e] w-0 transition-all duration-300"></div>
                 </div>
                 <div id="rep-rank" class="text-[10px] text-[#777] mt-2">Безымянный странник</div>
+            </div>
+            
+            <!-- Glory (New stat) -->
+            <div class="panel rounded p-3">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center gap-2 text-xs text-[#a0a0a0] uppercase tracking-widest">
+                        <i class="fas fa-trophy text-[#c8aa6e]"></i>
+                        Слава
+                    </div>
+                    <div class="text-sm font-bold text-[#c8aa6e]" id="glory-value">0</div>
+                </div>
+                <div id="glory-rank" class="text-[10px] text-[#777] mt-1">Безвестный</div>
             </div>
             
             <!-- Active Effects Display -->
@@ -5556,6 +5585,12 @@
 
                     <!-- Tournament Info -->
                     <div class="space-y-3">
+                        <!-- Cooldown Timer -->
+                        <div id="tournament-cooldown-info" class="hidden bg-amber-900/20 border border-amber-600/40 rounded p-3 text-center">
+                            <div class="text-xs text-amber-300 mb-1">Следующий турнир доступен через:</div>
+                            <div id="tournament-cooldown-timer" class="medieval-font text-lg text-amber-400">00:00:00</div>
+                        </div>
+
                         <div class="text-xs text-amber-300/80 text-center italic">
                             "Докажите свою доблесть на арене! Победители получат золото и славу!"
                         </div>
@@ -5563,49 +5598,55 @@
                         <!-- Tournament Options -->
                         <div class="space-y-2">
                             <!-- Beginner Tournament -->
-                            <div class="border border-green-900/50 rounded p-3 bg-green-900/10">
+                            <div id="tournament-beginner-card" class="border border-green-900/50 rounded p-3 bg-green-900/10">
                                 <div class="flex items-center justify-between mb-2">
                                     <div class="flex items-center gap-3">
                                         <i class="fas fa-shield text-green-400 text-xl"></i>
                                         <div>
                                             <div class="text-sm font-bold text-green-300">Турнир Новичков</div>
-                                            <div class="text-[10px] text-gray-400">Требуется: Ур. 5 | Награда: 50 золота</div>
+                                            <div class="text-[10px] text-gray-400">Требуется: Ур. 1+</div>
+                                            <div class="text-[10px] text-green-400">Победа: 500 золота, +5 славы</div>
+                                            <div class="text-[10px] text-red-400">Поражение: -5 славы</div>
                                         </div>
                                     </div>
                                 </div>
-                                <button onclick="tournamentBattle.startTournament('beginner')" class="btn-medieval w-full py-2 rounded text-xs">
+                                <button id="btn-tournament-beginner" onclick="tournamentBattle.startTournament('beginner')" class="btn-medieval w-full py-2 rounded text-xs">
                                     <i class="fas fa-swords mr-2"></i> Участвовать
                                 </button>
                             </div>
 
                             <!-- Warrior Tournament -->
-                            <div class="border border-blue-900/50 rounded p-3 bg-blue-900/10">
+                            <div id="tournament-warrior-card" class="border border-blue-900/50 rounded p-3 bg-blue-900/10">
                                 <div class="flex items-center justify-between mb-2">
                                     <div class="flex items-center gap-3">
                                         <i class="fas fa-sword text-blue-400 text-xl"></i>
                                         <div>
                                             <div class="text-sm font-bold text-blue-300">Турнир Воинов</div>
-                                            <div class="text-[10px] text-gray-400">Требуется: Ур. 10 | Награда: 1500 золота</div>
+                                            <div class="text-[10px] text-gray-400">Требуется: Ур. 5+</div>
+                                            <div class="text-[10px] text-green-400">Победа: 2000 золота, +10 славы</div>
+                                            <div class="text-[10px] text-red-400">Поражение: -10 славы</div>
                                         </div>
                                     </div>
                                 </div>
-                                <button onclick="tournamentBattle.startTournament('warrior')" class="btn-medieval w-full py-2 rounded text-xs">
+                                <button id="btn-tournament-warrior" onclick="tournamentBattle.startTournament('warrior')" class="btn-medieval w-full py-2 rounded text-xs">
                                     <i class="fas fa-swords mr-2"></i> Участвовать
                                 </button>
                             </div>
 
                             <!-- Champion Tournament -->
-                            <div class="border border-red-900/50 rounded p-3 bg-red-900/10">
+                            <div id="tournament-champion-card" class="border border-red-900/50 rounded p-3 bg-red-900/10">
                                 <div class="flex items-center justify-between mb-2">
                                     <div class="flex items-center gap-3">
                                         <i class="fas fa-trophy text-red-400 text-xl"></i>
                                         <div>
                                             <div class="text-sm font-bold text-red-300">Турнир Чемпионов</div>
-                                            <div class="text-[10px] text-gray-400">Требуется: Ур. 20 | Награда: 5000 золота</div>
+                                            <div class="text-[10px] text-gray-400">Требуется: Ур. 10+</div>
+                                            <div class="text-[10px] text-green-400">Победа: 5000 золота, +15 славы</div>
+                                            <div class="text-[10px] text-red-400">Поражение: -15 славы</div>
                                         </div>
                                     </div>
                                 </div>
-                                <button onclick="tournamentBattle.startTournament('champion')" class="btn-medieval w-full py-2 rounded text-xs">
+                                <button id="btn-tournament-champion" onclick="tournamentBattle.startTournament('champion')" class="btn-medieval w-full py-2 rounded text-xs">
                                     <i class="fas fa-swords mr-2"></i> Участвовать
                                 </button>
                             </div>
@@ -5985,7 +6026,9 @@
             luck: 0,
             agility: 0,
             reputation: 0,
+            glory: 0, // New: Glory stat for tournaments
             craftingLevel: 0,
+            tournamentCooldownUntil: 0, // Cooldown for all tournaments (6 hours)
             clothes: {},
             xpToNextLevel: 100,
             
@@ -8620,11 +8663,18 @@
             
             // Start tournament
             startTournament: function(tier) {
+                // Check cooldown first
+                if (gameState.tournamentCooldownUntil && gameState.tournamentCooldownUntil > Date.now()) {
+                    const remaining = Math.ceil((gameState.tournamentCooldownUntil - Date.now()) / 1000 / 60);
+                    ui.showFloatText(document.body, `Турниры доступны через ${Math.ceil(remaining / 60)} ч ${remaining % 60} мин`, '#ef4444');
+                    return;
+                }
+                
                 // Check requirements
                 const requirements = {
-                    beginner: { level: 5, gold: 0 },
-                    warrior: { level: 10, gold: 0 },
-                    champion: { level: 20, gold: 0 }
+                    beginner: { level: 1, gold: 0 },
+                    warrior: { level: 5, gold: 0 },
+                    champion: { level: 10, gold: 0 }
                 };
                 
                 const req = requirements[tier];
@@ -9054,15 +9104,20 @@
                 this.disableActions();
                 
                 const rewards = {
-                    beginner: { gold: 500, xp: 50 },
-                    warrior: { gold: 1500, xp: 150 },
-                    champion: { gold: 5000, xp: 500 }
+                    beginner: { gold: 500, xp: 50, glory: 5 },
+                    warrior: { gold: 2000, xp: 150, glory: 10 },
+                    champion: { gold: 5000, xp: 500, glory: 15 }
                 };
                 
                 if (victory) {
                     const reward = rewards[this.tournamentTier];
                     gameState.gold += reward.gold;
                     gameState.xp += reward.xp;
+                    gameState.glory = Math.max(0, gameState.glory + reward.glory);
+                    
+                    // Set 6 hour cooldown for all tournaments
+                    gameState.tournamentCooldownUntil = Date.now() + (6 * 60 * 60 * 1000);
+                    
                     game.save();
                     ui.updateStats();
                     
@@ -9070,6 +9125,10 @@
                     this.addLog(`🎉 ПОБЕДА В ТУРНИРЕ!`, 'green');
                     this.addLog(`💰 Получено: ${reward.gold} золота`, 'yellow');
                     this.addLog(`⭐ Получено: ${reward.xp} опыта`, 'yellow');
+                    this.addLog(`🏆 Получено: ${reward.glory} славы`, 'yellow');
+                    
+                    // Show glory modal
+                    ui.showGloryChangeModal(reward.glory, gameState.glory);
                     
                     // Track tournament wins
                     if (!gameState.tournamentWins) gameState.tournamentWins = { beginner: 0, warrior: 0, champion: 0 };
@@ -9081,9 +9140,24 @@
                         game.levelCheck();
                     }, 4000);
                 } else {
+                    const reward = rewards[this.tournamentTier];
+                    
+                    // Lose glory on defeat
+                    gameState.glory = Math.max(0, gameState.glory - reward.glory);
+                    
+                    // Set 6 hour cooldown for all tournaments
+                    gameState.tournamentCooldownUntil = Date.now() + (6 * 60 * 60 * 1000);
+                    
+                    game.save();
+                    ui.updateStats();
+                    
                     this.addLog(``, 'amber');
                     this.addLog(`💀 ПОРАЖЕНИЕ...`, 'red');
+                    this.addLog(`🏆 Потеряно: ${reward.glory} славы`, 'red');
                     this.addLog(`Тренируйтесь и возвращайтесь!`, 'gray');
+                    
+                    // Show glory modal
+                    ui.showGloryChangeModal(-reward.glory, gameState.glory);
                     
                     setTimeout(() => {
                         this.closeBattleModal();
@@ -13632,6 +13706,22 @@
                     repRank.innerText = rankText;
                 }
 
+                // Update Glory stat
+                const gloryValue = gameState.glory || 0;
+                const gloryValueEl = document.getElementById('glory-value');
+                const gloryRank = document.getElementById('glory-rank');
+                if (gloryValueEl) gloryValueEl.innerText = gloryValue;
+                if (gloryRank) {
+                    let rankText = 'Безвестный';
+                    if (gloryValue >= 500) rankText = 'Великий чемпион';
+                    else if (gloryValue >= 200) rankText = 'Легенда';
+                    else if (gloryValue >= 100) rankText = 'Чемпион';
+                    else if (gloryValue >= 50) rankText = 'Воин';
+                    else if (gloryValue >= 25) rankText = 'Боец';
+                    else if (gloryValue >= 10) rankText = 'Новичок';
+                    gloryRank.innerText = rankText;
+                }
+
                 if (gameState.hp <= 0) {
                     const now = Date.now();
                     if (gameState.unconsciousUntil && gameState.unconsciousUntil > now) {
@@ -14060,6 +14150,117 @@
                 gameState.bookhousePouchResolved = true;
                 game.save();
                 ui.updateStats();
+            },
+
+            // Show glory change modal
+            showGloryChangeModal: function(change, newValue) {
+                const modal = document.getElementById('modal-glory-change');
+                const card = document.getElementById('glory-change-card');
+                if (!modal || !card) return;
+                
+                const changeEl = document.getElementById('glory-change-amount');
+                const newValueEl = document.getElementById('glory-new-value');
+                const titleEl = document.getElementById('glory-change-title');
+                
+                if (changeEl) {
+                    changeEl.textContent = change >= 0 ? `+${change}` : change;
+                    changeEl.style.color = change >= 0 ? '#10b981' : '#ef4444';
+                }
+                if (newValueEl) newValueEl.textContent = newValue;
+                if (titleEl) {
+                    let rankText = 'Безвестный';
+                    if (newValue >= 500) rankText = 'Великий чемпион';
+                    else if (newValue >= 200) rankText = 'Легенда';
+                    else if (newValue >= 100) rankText = 'Чемпион';
+                    else if (newValue >= 50) rankText = 'Воин';
+                    else if (newValue >= 25) rankText = 'Боец';
+                    else if (newValue >= 10) rankText = 'Новичок';
+                    titleEl.textContent = rankText;
+                }
+                
+                // Show with animation
+                modal.style.pointerEvents = 'auto';
+                setTimeout(() => {
+                    card.style.transform = 'scale(1)';
+                    card.style.opacity = '1';
+                    card.style.pointerEvents = 'auto';
+                }, 50);
+                
+                // Auto close after 3 seconds
+                setTimeout(() => {
+                    this.closeGloryModal();
+                }, 3000);
+            },
+
+            closeGloryModal: function() {
+                const modal = document.getElementById('modal-glory-change');
+                const card = document.getElementById('glory-change-card');
+                if (!modal || !card) return;
+                
+                card.style.transform = 'scale(0.85)';
+                card.style.opacity = '0';
+                card.style.pointerEvents = 'none';
+                
+                setTimeout(() => {
+                    modal.style.pointerEvents = 'none';
+                }, 300);
+            },
+
+            // Update tournament UI
+            updateTournamentUI: function() {
+                const cooldownContainer = document.getElementById('tournament-cooldown-info');
+                const cooldownTimer = document.getElementById('tournament-cooldown-timer');
+                
+                if (!cooldownContainer || !cooldownTimer) return;
+                
+                const now = Date.now();
+                const cooldownUntil = gameState.tournamentCooldownUntil || 0;
+                
+                if (cooldownUntil > now) {
+                    const remainingMs = cooldownUntil - now;
+                    const hours = Math.floor(remainingMs / 1000 / 60 / 60);
+                    const minutes = Math.floor((remainingMs / 1000 / 60) % 60);
+                    const seconds = Math.floor((remainingMs / 1000) % 60);
+                    
+                    cooldownTimer.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    cooldownContainer.classList.remove('hidden');
+                    
+                    // Disable all tournament buttons
+                    const buttons = ['btn-tournament-beginner', 'btn-tournament-warrior', 'btn-tournament-champion'];
+                    buttons.forEach(id => {
+                        const btn = document.getElementById(id);
+                        if (btn) {
+                            btn.disabled = true;
+                            btn.classList.add('opacity-50', 'cursor-not-allowed');
+                        }
+                    });
+                } else {
+                    cooldownContainer.classList.add('hidden');
+                    
+                    // Enable tournament buttons based on level requirements
+                    const requirements = {
+                        'btn-tournament-beginner': 1,
+                        'btn-tournament-warrior': 5,
+                        'btn-tournament-champion': 10
+                    };
+                    
+                    Object.entries(requirements).forEach(([id, reqLevel]) => {
+                        const btn = document.getElementById(id);
+                        const card = document.getElementById(id.replace('btn-', '') + '-card');
+                        
+                        if (btn) {
+                            if (gameState.level >= reqLevel) {
+                                btn.disabled = false;
+                                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                                if (card) card.classList.remove('opacity-50', 'filter', 'grayscale');
+                            } else {
+                                btn.disabled = true;
+                                btn.classList.add('opacity-50', 'cursor-not-allowed');
+                                if (card) card.classList.add('opacity-50', 'filter', 'grayscale');
+                            }
+                        }
+                    });
+                }
             }
         };
 
@@ -14476,11 +14677,17 @@
                 }
             },
             navigate: function(screenId) {
+                // Clean up tournament interval when leaving tournament
+                if (window.tournamentInterval) {
+                    clearInterval(window.tournamentInterval);
+                    window.tournamentInterval = null;
+                }
+                
                 // Track action for hunger system (only for location changes, not UI tabs)
                 const locationScreens = ['jobs', 'town-square', 'tavern', 'treasury', 'dark-forest', 
                     'hunter-hut', 'training-camp', 'military-fortress', 'village', 'healer', 'bookhouse', 
                     'royal-castle', 'poor-district', 'noble-quarter', 'refugee-camp', 
-                    'tailor', 'shoemaker', 'livestock-trader', 'bulletin', 'lily-house'];
+                    'tailor', 'shoemaker', 'livestock-trader', 'bulletin', 'lily-house', 'knight-tournament'];
                 
                 if (locationScreens.includes(screenId)) {
                     game.trackAction();
@@ -14524,6 +14731,8 @@
                 if (livestockView) livestockView.classList.add('hidden');
                 const lilyHouseView = document.getElementById('view-lily-house');
                 if (lilyHouseView) lilyHouseView.classList.add('hidden');
+                const knightTournamentView = document.getElementById('view-knight-tournament');
+                if (knightTournamentView) knightTournamentView.classList.add('hidden');
                 
                 const target = document.getElementById(`view-${screenId}`);
                 if (target) target.classList.remove('hidden');
@@ -14575,6 +14784,15 @@
                 if (screenId === 'livestock-farm') {
                     livestockFarm.updateUI();
                     livestockFarm.startTimers();
+                }
+
+                if (screenId === 'knight-tournament') {
+                    ui.updateTournamentUI();
+                    // Update tournament UI every second
+                    if (window.tournamentInterval) clearInterval(window.tournamentInterval);
+                    window.tournamentInterval = setInterval(() => {
+                        ui.updateTournamentUI();
+                    }, 1000);
                 }
 
                 if (screenId === 'treasury') {
