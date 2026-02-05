@@ -2157,6 +2157,7 @@
                                     <button onclick="crafting.switchCategory('food')" id="tab-craft-food" class="sub-tab">Еда</button>
                                     <button onclick="crafting.switchCategory('other')" id="tab-craft-other" class="sub-tab">Другое</button>
                                 </div>
+                                <!-- Контейнер для крафтов -->
                                 <div id="crafting-list" class="space-y-3">
                                     <div class="text-center text-xs text-gray-500 py-4">Нет рецептов</div>
                                 </div>
@@ -3456,7 +3457,6 @@
                             <div>
                                 <div class="text-sm font-bold text-[#e0e0e0]">Рецепт: Жаркое</div>
                                 <div class="text-[10px] text-[#777]">Готовьте еду из мяса. +30 HP</div>
-                                <div class="text-[10px] text-gray-500 mt-1">Требуется: 2 Мяса</div>
                             </div>
                         </div>
                         <div class="text-sm gem-price font-bold">50 <i class="far fa-gem gem-price"></i></div>
@@ -3474,7 +3474,6 @@
                             <div>
                                 <div class="text-sm font-bold text-[#e0e0e0]">Рецепт: Самодельный Меч</div>
                                 <div class="text-[10px] text-[#777]">Создайте простое оружие. +5 Урона</div>
-                                <div class="text-[10px] text-gray-500 mt-1">Требуется: 3 Руды, 2 Палки</div>
                             </div>
                         </div>
                         <div class="text-sm gem-price font-bold">100 <i class="far fa-gem gem-price"></i></div>
@@ -3492,7 +3491,6 @@
                             <div>
                                 <div class="text-sm font-bold text-[#e0e0e0]">Рецепт: Кожаная Броня</div>
                                 <div class="text-[10px] text-[#777]">Защитная броня из кожи. +10 Защиты</div>
-                                <div class="text-[10px] text-gray-500 mt-1">Требуется: 5 Кожи</div>
                             </div>
                         </div>
                         <div class="text-sm gem-price font-bold">150 <i class="far fa-gem gem-price"></i></div>
@@ -3509,8 +3507,7 @@
                             <i class="fas fa-suitcase text-yellow-500 text-xl mt-1"></i>
                             <div>
                                 <div class="text-sm font-bold text-[#e0e0e0]">Рецепт: Улучшенная Сумка</div>
-                                <div class="text-[10px] text-[#777]">Больше места в инвентаре. +8 слотов</div>
-                                <div class="text-[10px] text-gray-500 mt-1">Требуется: 3 Кожи, 2 Палки</div>
+                                <div class="text-[10px] text-[#777]">Увеличивает инвентарь до 200кг</div>
                             </div>
                         </div>
                         <div class="text-sm gem-price font-bold">200 <i class="far fa-gem gem-price"></i></div>
@@ -6139,7 +6136,11 @@
             
             // Channel Subscription Task
             channelSubscribed: false,
-            channelTaskCompleted: false
+            channelTaskCompleted: false,
+            
+            // Crafting System
+            purchasedCrafts: [],
+            completedCrafts: []
         };
 
         // --- NPC DATABASE ---
@@ -10015,7 +10016,14 @@
                     }
                 }
                 
+                // Initialize crafting system
+                if (!gameState.purchasedCrafts) gameState.purchasedCrafts = [];
+                if (!gameState.completedCrafts) gameState.completedCrafts = [];
+                
                 this.updateEffectsLoop();
+                
+                // Update recipe buttons status
+                this.updateRecipeButtons();
 
                 // Telegram Init
                 if (window.Telegram && window.Telegram.WebApp) {
@@ -10938,13 +10946,24 @@
 
             buyRecipe: function(type, cost) {
                 if (!gameState.recipes) gameState.recipes = {};
+                
+                // Проверяем, не куплен ли уже рецепт
+                if (!gameState.purchasedCrafts) gameState.purchasedCrafts = [];
+                if (gameState.purchasedCrafts.includes(type)) {
+                    ui.showFloatText(event.target, "Рецепт уже куплен", "#ff5555");
+                    return;
+                }
 
                 if (gameState.emeralds >= cost) {
                     gameState.emeralds -= cost;
                     gameState.recipes[type] = true;
+                    gameState.purchasedCrafts.push(type);
                     this.save();
                     ui.updateAll();
                     ui.showFloatText(event.target, "Рецепт куплен!", "#34d399");
+                    
+                    // Обновляем кнопку покупки рецепта
+                    this.updateRecipeButtons();
 
                     if (type === 'immortality' || type === 'luck') {
                         document.getElementById('healer-crafting-station').classList.remove('hidden');
@@ -10958,6 +10977,26 @@
                 } else {
                     ui.showFloatText(event.target, "Не хватает изумрудов", "#ff5555");
                 }
+            },
+            
+            updateRecipeButtons: function() {
+                const purchasedCrafts = gameState.purchasedCrafts || [];
+                
+                // Обновляем все кнопки покупки рецептов
+                ['food', 'sword', 'armor', 'bag', 'immortality', 'luck'].forEach(recipeId => {
+                    const btn = document.getElementById(`btn-buy-recipe-${recipeId}`);
+                    if (btn) {
+                        if (purchasedCrafts.includes(recipeId)) {
+                            btn.disabled = true;
+                            btn.classList.add('opacity-50', 'cursor-not-allowed');
+                            btn.innerHTML = 'Куплено';
+                        } else {
+                            btn.disabled = false;
+                            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                            btn.innerHTML = 'Купить Рецепт';
+                        }
+                    }
+                });
             },
 
             getWeightCapacity: function() {
@@ -13102,9 +13141,239 @@
         };
 
         // --- CRAFTING & INVENTORY ---
+        // ====================================
+        // СТАНДАРТНЫЕ КРАФТЫ (многоразовые)
+        // ====================================
+        const standardCrafts = {
+            potions: [
+                { 
+                    id: 'health_potion', 
+                    name: 'Лечебное зелье', 
+                    icon: '🧪', 
+                    requires: { herbs: 5, mushrooms: 5 }, 
+                    produces: { health_potion: 1 },
+                    sellPrice: 50,
+                    effect: 'health',
+                    value: 100
+                }
+            ],
+            tools: [
+                { 
+                    id: 'flour', 
+                    name: 'Мука', 
+                    icon: '🌾', 
+                    requires: { wheat: 10 }, 
+                    produces: { flour: 1 },
+                    sellPrice: 8
+                }
+            ],
+            other: [
+                { 
+                    id: 'wooden_armor', 
+                    name: 'Деревянная броня', 
+                    icon: '🛡️', 
+                    requires: { wood: 50 }, 
+                    produces: { wooden_armor: 1 },
+                    sellPrice: 30,
+                    armor: 3
+                },
+                { 
+                    id: 'lockpick', 
+                    name: 'Отмычка', 
+                    icon: '🔓', 
+                    requires: { ore: 10 }, 
+                    produces: { lockpick: 1 },
+                    sellPrice: 25,
+                    tool: true
+                },
+                { 
+                    id: 'trap', 
+                    name: 'Капкан', 
+                    icon: '🪤', 
+                    requires: { ore: 10, rope: 2, herbs: 5 }, 
+                    produces: { trap: 1 },
+                    sellPrice: 60,
+                    tool: true
+                }
+            ],
+            
+            getByCategory: function(category) {
+                return this[category] || [];
+            },
+            
+            canCraft: function(craft) {
+                for (let [res, amount] of Object.entries(craft.requires)) {
+                    if ((gameState[res] || 0) < amount) {
+                        return false;
+                    }
+                }
+                return true;
+            },
+            
+            craft: function(craftId, category) {
+                const crafts = this.getByCategory(category);
+                const craft = crafts.find(c => c.id === craftId);
+                
+                if (!craft) {
+                    ui.showNotification('Крафт не найден', 'error');
+                    return false;
+                }
+                
+                if (!this.canCraft(craft)) {
+                    ui.showNotification('Недостаточно ресурсов', 'error');
+                    return false;
+                }
+                
+                // Забираем ресурсы
+                for (let [res, amount] of Object.entries(craft.requires)) {
+                    gameState[res] = (gameState[res] || 0) - amount;
+                }
+                
+                // Добавляем результат
+                for (let [item, amount] of Object.entries(craft.produces)) {
+                    if (!gameState.inventory[item]) {
+                        gameState.inventory[item] = { count: 0 };
+                    }
+                    gameState.inventory[item].count += amount;
+                }
+                
+                game.save();
+                ui.updateStats();
+                inventory.render();
+                crafting.render();
+                
+                ui.showNotification(`✅ Создано: ${craft.name}`, 'success');
+                return true;
+            },
+            
+            renderCraft: function(craft, category) {
+                const canCraft = this.canCraft(craft);
+                const reqText = Object.entries(craft.requires)
+                    .map(([res, amt]) => {
+                        const has = gameState[res] || 0;
+                        const color = has >= amt ? 'text-green-400' : 'text-red-400';
+                        const resName = {
+                            wheat: 'Пшеница',
+                            herbs: 'Травы',
+                            mushrooms: 'Грибы',
+                            wood: 'Палки',
+                            ore: 'Руда',
+                            rope: 'Веревки'
+                        }[res] || res;
+                        return `<span class="${color}">${resName}: ${has}/${amt}</span>`;
+                    })
+                    .join(', ');
+                
+                return `
+                    <div class="panel rounded p-3 mb-2 bg-gradient-to-br from-[#1a1a1d] to-[#15151a]">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="text-2xl">${craft.icon}</span>
+                                    <div>
+                                        <div class="font-bold text-sm text-[#c8aa6e]">${craft.name}</div>
+                                        ${Object.entries(craft.produces).map(([item, count]) => 
+                                            `<span class="text-[10px] text-green-400">Результат: +${count}</span>`
+                                        ).join(', ')}
+                                    </div>
+                                </div>
+                                <div class="text-xs text-gray-400 mb-2">
+                                    Требуется: ${reqText}
+                                </div>
+                                ${craft.armor ? `<div class="text-xs text-blue-300">🛡️ Броня: +${craft.armor}</div>` : ''}
+                                ${craft.effect === 'health' ? `<div class="text-xs text-green-300">❤️ Восстановление: +${craft.value} HP</div>` : ''}
+                                ${craft.tool ? `<div class="text-xs text-yellow-300">🔧 Инструмент</div>` : ''}
+                            </div>
+                            <button 
+                                class="btn-medieval px-3 py-1 text-xs rounded"
+                                ${!canCraft ? 'disabled' : ''}
+                                onclick="standardCrafts.craft('${craft.id}', '${category}')"
+                            >
+                                Создать
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+        };
+
         const crafting = {
             mode: 'inventory', 
             currentCategory: 'potions',
+            
+            // Определение всех доступных рецептов крафта
+            craftRecipes: {
+                'bag': {
+                    id: 'bag',
+                    category: 'tools',
+                    title: 'Улучшенная Сумка',
+                    description: 'Увеличивает инвентарь до 200кг',
+                    requires: { leather: 20, rope: 10 },
+                    craftAction: function() {
+                        gameState.bagLevel = (gameState.bagLevel || 0) + 1;
+                        return 'Сумка улучшена! +8 слотов';
+                    }
+                },
+                'food': {
+                    id: 'food',
+                    category: 'food',
+                    title: 'Жаркое',
+                    description: 'Восстанавливает 30 HP',
+                    requires: { meat: 2 },
+                    craftAction: function() {
+                        gameState.hp = Math.min(gameState.maxHp, gameState.hp + 30);
+                        return 'Приготовлено жаркое! +30 HP';
+                    }
+                },
+                'sword': {
+                    id: 'sword',
+                    category: 'tools',
+                    title: 'Самодельный Меч',
+                    description: 'Простое оружие. +5 Урона',
+                    requires: { ore: 3, wood: 2 },
+                    craftAction: function() {
+                        if (!gameState.ownedSwords) gameState.ownedSwords = [];
+                        gameState.ownedSwords.push({ name: 'Самодельный Меч', damage: 5 });
+                        return 'Меч создан! +5 Урона';
+                    }
+                },
+                'armor': {
+                    id: 'armor',
+                    category: 'tools',
+                    title: 'Кожаная Броня',
+                    description: 'Защитная броня. +10 Защиты',
+                    requires: { leather: 5 },
+                    craftAction: function() {
+                        if (!gameState.ownedArmor) gameState.ownedArmor = [];
+                        gameState.ownedArmor.push({ name: 'Кожаная Броня', defense: 10 });
+                        return 'Броня создана! +10 Защиты';
+                    }
+                },
+                'immortality': {
+                    id: 'immortality',
+                    category: 'potions',
+                    title: 'Зелье Бессмертия',
+                    description: 'Увеличивает шанс выживания',
+                    requires: { herbs: 100, mushrooms: 20 },
+                    craftAction: function() {
+                        if (!gameState.effects) gameState.effects = {};
+                        gameState.effects.immortality = (gameState.effects.immortality || 0) + 1;
+                        return 'Зелье создано! Эффект бессмертия +1';
+                    }
+                },
+                'luck': {
+                    id: 'luck',
+                    category: 'potions',
+                    title: 'Зелье Удачи',
+                    description: 'Увеличивает удачу',
+                    requires: { herbs: 50, mushrooms: 10 },
+                    craftAction: function() {
+                        gameState.luck = (gameState.luck || 0) + 1;
+                        return 'Зелье создано! Удача +1';
+                    }
+                }
+            },
+            
             recipesDef: {
                 potions: [
                     { id: 'immortality', title: 'Зелье Бессмертия', req: { herbs: 100, mushrooms: 20 }, effect: { key: 'immortality', inc: 1 } },
@@ -13129,6 +13398,7 @@
                     invUI.classList.add('hidden');
                     craftUI.classList.remove('hidden');
                     btnText.innerText = 'Вернуться в рюкзак';
+                    this.render();
                 } else {
                     this.mode = 'inventory';
                     invUI.classList.remove('hidden');
@@ -13148,13 +13418,14 @@
                     ui.showFloatText(event.target, "Нужен рецепт сумки", "#ff5555");
                     return;
                 }
-                const cost = 3;
-                if ((gameState.leather || 0) < cost || (gameState.wood || 0) < 2) {
-                    ui.showFloatText(event.target, "Нужно 3 кожи и 2 палки", "#ff5555");
+                const leatherCost = 20;
+                const ropeCost = 10;
+                if ((gameState.leather || 0) < leatherCost || (gameState.rope || 0) < ropeCost) {
+                    ui.showFloatText(event.target, "Нужно 20 кожи и 10 веревок", "#ff5555");
                     return;
                 }
-                gameState.leather -= cost;
-                gameState.wood -= 2;
+                gameState.leather -= leatherCost;
+                gameState.rope -= ropeCost;
                 gameState.bagLevel = (gameState.bagLevel || 0) + 1;
                 game.save();
                 ui.updateStats();
@@ -13165,45 +13436,106 @@
                 const list = document.getElementById('crafting-list');
                 if (!list) return;
                 list.innerHTML = '';
+                
                 const cat = this.currentCategory;
-                const defs = this.recipesDef[cat] || [];
-                const owned = gameState.recipes || {};
-                const filtered = defs.filter(d => {
-                    if (cat === 'potions') return owned[d.id];
-                    if (cat === 'charms') return owned[d.id];
-                    if (cat === 'food') return owned['food'];
-                    if (cat === 'tools') return owned['bag'];
-                    if (cat === 'other') return owned[d.id];
-                    return false;
-                });
-                if (filtered.length === 0) {
-                    list.innerHTML = '<div class="text-center text-xs text-gray-500 py-4">Нет рецептов</div>';
+                
+                // Добавляем стандартные крафты для текущей категории
+                const standardCraftsForCategory = standardCrafts.getByCategory(cat);
+                if (standardCraftsForCategory.length > 0) {
+                    standardCraftsForCategory.forEach(craft => {
+                        list.innerHTML += standardCrafts.renderCraft(craft, cat);
+                    });
+                }
+                
+                // Получаем купленные рецепты для текущей категории
+                const purchasedCrafts = gameState.purchasedCrafts || [];
+                const completedCrafts = gameState.completedCrafts || [];
+                
+                // Фильтруем рецепты по категории и статусу покупки
+                const availableRecipes = purchasedCrafts
+                    .map(id => this.craftRecipes[id])
+                    .filter(recipe => recipe && recipe.category === cat);
+                
+                // Если нет ни стандартных крафтов, ни рецептов
+                if (standardCraftsForCategory.length === 0 && availableRecipes.length === 0) {
+                    list.innerHTML = '<div class="text-center text-xs text-gray-500 py-4">Нет доступных рецептов. Посетите Книжный Дом.</div>';
                     return;
                 }
-                filtered.forEach(d => {
+                
+                availableRecipes.forEach(recipe => {
+                    const isCompleted = completedCrafts.includes(recipe.id);
                     const card = document.createElement('div');
-                    card.className = 'recipe-card rounded p-3 flex items-center justify-between';
-                    const reqTexts = Object.keys(d.req).map(k => {
+                    card.className = 'recipe-card rounded p-3 flex items-center justify-between ' + (isCompleted ? 'opacity-50' : '');
+                    
+                    // Проверяем наличие материалов
+                    const reqTexts = Object.keys(recipe.requires).map(k => {
                         const have = gameState[k] || 0;
-                        const need = d.req[k];
+                        const need = recipe.requires[k];
                         const def = RESOURCE_NAMES[k];
                         const ok = have >= need;
                         return `<span class="${ok ? 'text-green-400' : 'text-red-400'}">${def ? def.name : k}: ${have}/${need}</span>`;
                     }).join(' • ');
+                    
                     card.innerHTML = `
-                        <div class="flex items-center gap-3">
+                        <div class="flex items-center gap-3 flex-1">
                             <i class="fas fa-hammer text-[#c8aa6e] text-xl"></i>
                             <div>
-                                <div class="text-sm font-bold text-[#e0e0e0]">${d.title}</div>
-                                <div class="text-[10px] text-[#a0a0a0]">${reqTexts}</div>
+                                <div class="text-sm font-bold text-[#e0e0e0]">${recipe.title}</div>
+                                <div class="text-[10px] text-[#777]">${recipe.description}</div>
+                                <div class="text-[10px] text-[#a0a0a0] mt-1">${reqTexts}</div>
                             </div>
                         </div>
-                        <button class="btn-ghost px-3 py-1 rounded text-[10px]" data-id="${d.id}">Создать</button>
+                        <button class="btn-ghost px-3 py-1 rounded text-[10px]" ${isCompleted ? 'disabled' : ''}>
+                            ${isCompleted ? 'Выполнено' : 'Создать'}
+                        </button>
                     `;
+                    
                     const btn = card.querySelector('button');
-                    btn.onclick = (e) => crafting.craft(d, e);
+                    if (!isCompleted) {
+                        btn.onclick = (e) => this.craftItem(recipe.id, e);
+                    }
+                    
                     list.appendChild(card);
                 });
+            },
+            craftItem: function(recipeId, event) {
+                const recipe = this.craftRecipes[recipeId];
+                if (!recipe) return;
+                
+                // Проверяем, не выполнен ли уже крафт
+                const completedCrafts = gameState.completedCrafts || [];
+                if (completedCrafts.includes(recipeId)) {
+                    ui.showFloatText(event.target, "Уже создано", "#ff5555");
+                    return;
+                }
+                
+                // Проверяем наличие материалов
+                for (const resource in recipe.requires) {
+                    const needed = recipe.requires[resource];
+                    const have = gameState[resource] || 0;
+                    if (have < needed) {
+                        ui.showFloatText(event.target, "Не хватает материалов", "#ff5555");
+                        return;
+                    }
+                }
+                
+                // Списываем материалы
+                for (const resource in recipe.requires) {
+                    gameState[resource] -= recipe.requires[resource];
+                }
+                
+                // Выполняем действие крафта
+                const message = recipe.craftAction();
+                
+                // Помечаем крафт как выполненный
+                if (!gameState.completedCrafts) gameState.completedCrafts = [];
+                gameState.completedCrafts.push(recipeId);
+                
+                // Сохраняем и обновляем UI
+                game.save();
+                ui.updateStats();
+                this.render();
+                ui.showFloatText(event.target, message, "#34d399");
             },
             craft: function(def, e) {
                 const req = def.req;
@@ -14741,6 +15073,9 @@
                     ui.updateAll();
                     if (screenId === 'market') {
                         market.switchTradeMode(market.tradeMode || 'sell');
+                    }
+                    if (screenId === 'healer' || screenId === 'bookhouse') {
+                        game.updateRecipeButtons();
                     }
                 }
                 if (screenId === 'livestock-trader') {
