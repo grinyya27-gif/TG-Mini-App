@@ -386,6 +386,179 @@
             transform: translateY(-2px);
         }
         
+        /* Category Tabs for Materials */
+        .category-tab {
+            white-space: nowrap;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            color: #777;
+            border: 1px solid rgba(200, 170, 110, 0.2);
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(4px);
+            transition: all 0.3s;
+            font-family: 'Cinzel', serif;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .category-tab::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(200, 170, 110, 0.15), transparent);
+            transition: left 0.6s ease;
+        }
+        
+        .category-tab:hover {
+            background: rgba(0,0,0,0.4);
+            border-color: rgba(200, 170, 110, 0.4);
+        }
+        
+        .category-tab:hover::before {
+            left: 100%;
+        }
+        
+        .category-tab.active {
+            color: var(--accent-gold);
+            border-color: var(--accent-gold);
+            background: linear-gradient(135deg, 
+                rgba(200, 170, 110, 0.15) 0%, 
+                rgba(200, 170, 110, 0.25) 50%, 
+                rgba(200, 170, 110, 0.15) 100%);
+        }
+
+        /* Material Cards with Category-Specific Gradients */
+        .material-card {
+            background: linear-gradient(135deg, 
+                rgba(0, 0, 0, 0.6) 0%, 
+                rgba(20, 20, 25, 0.7) 50%, 
+                rgba(0, 0, 0, 0.6) 100%);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(200, 170, 110, 0.3);
+            border-radius: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        .material-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .material-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(200, 170, 110, 0.6);
+            box-shadow: 0 8px 24px rgba(200, 170, 110, 0.2);
+        }
+        
+        .material-card:hover::before {
+            opacity: 1;
+        }
+
+        /* Food Category Cards - Orange gradient */
+        .material-card.food {
+            background: linear-gradient(135deg, 
+                rgba(249, 115, 22, 0.12) 0%, 
+                rgba(20, 20, 25, 0.7) 30%, 
+                rgba(251, 146, 60, 0.12) 100%);
+            border-color: rgba(249, 115, 22, 0.4);
+        }
+        
+        .material-card.food::before {
+            background: linear-gradient(90deg, transparent, #f97316, #fb923c, transparent);
+        }
+        
+        .material-card.food:hover {
+            border-color: rgba(249, 115, 22, 0.7);
+            box-shadow: 0 8px 24px rgba(249, 115, 22, 0.25);
+        }
+
+        /* Metal Category Cards - Silver/Blue gradient */
+        .material-card.metal {
+            background: linear-gradient(135deg, 
+                rgba(148, 163, 184, 0.15) 0%, 
+                rgba(20, 20, 25, 0.7) 30%, 
+                rgba(59, 130, 246, 0.12) 100%);
+            border-color: rgba(148, 163, 184, 0.5);
+        }
+        
+        .material-card.metal::before {
+            background: linear-gradient(90deg, transparent, #94a3b8, #3b82f6, transparent);
+        }
+        
+        .material-card.metal:hover {
+            border-color: rgba(148, 163, 184, 0.8);
+            box-shadow: 0 8px 24px rgba(148, 163, 184, 0.3);
+        }
+
+        /* Other Category Cards - Purple/Pink gradient */
+        .material-card.other {
+            background: linear-gradient(135deg, 
+                rgba(168, 85, 247, 0.12) 0%, 
+                rgba(20, 20, 25, 0.7) 30%, 
+                rgba(236, 72, 153, 0.12) 100%);
+            border-color: rgba(168, 85, 247, 0.4);
+        }
+        
+        .material-card.other::before {
+            background: linear-gradient(90deg, transparent, #a855f7, #ec4899, transparent);
+        }
+        
+        .material-card.other:hover {
+            border-color: rgba(168, 85, 247, 0.7);
+            box-shadow: 0 8px 24px rgba(168, 85, 247, 0.25);
+        }
+
+        /* Icon containers with glow effect */
+        .material-icon-container {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(200, 170, 110, 0.3);
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+        
+        .material-card.food .material-icon-container {
+            background: linear-gradient(135deg, rgba(249, 115, 22, 0.2), rgba(251, 146, 60, 0.2));
+            border-color: rgba(249, 115, 22, 0.5);
+            box-shadow: 0 0 12px rgba(249, 115, 22, 0.15);
+        }
+        
+        .material-card.metal .material-icon-container {
+            background: linear-gradient(135deg, rgba(148, 163, 184, 0.3), rgba(59, 130, 246, 0.2));
+            border-color: rgba(148, 163, 184, 0.6);
+            box-shadow: 0 0 12px rgba(148, 163, 184, 0.2);
+        }
+        
+        .material-card.other .material-icon-container {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(236, 72, 153, 0.2));
+            border-color: rgba(168, 85, 247, 0.5);
+            box-shadow: 0 0 12px rgba(168, 85, 247, 0.15);
+        }
+        
+        .material-card:hover .material-icon-container {
+            transform: scale(1.05);
+        }
+
         /* NPC Cards - Enhanced with gradient */
         .npc-card {
             background: linear-gradient(135deg, 
@@ -2854,16 +3027,6 @@
                         <span>+3 XP</span>
                     </div>
                 </div>
-                        </div>
-                    </div>
-                    <button onclick="locations.forestGather(event)" class="btn-medieval w-full py-2 rounded text-xs border-emerald-900 text-emerald-500 hover:bg-emerald-900/20">
-                        Искать (-5 HP)
-                    </button>
-                    <div class="flex justify-between text-[10px] text-gray-500 px-1">
-                        <span>Награда: Ресурсы</span>
-                        <span>+3 XP</span>
-                    </div>
-                </div>
 
                 <!-- Hunt Monsters -->
                 <div class="p-3 border border-purple-900/50 rounded bg-purple-900/10 flex flex-col gap-2 relative overflow-hidden">
@@ -3302,18 +3465,20 @@
 
             <!-- Tailor NPC -->
             <div class="panel p-4 rounded-lg border-pink-500/40 bg-black/30 backdrop-blur-sm mb-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-full border-2 border-pink-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(236,72,153,0.3), rgba(0,0,0,0.5));">
+                <div class="flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3 flex-1">
+                        <div class="w-12 h-12 rounded-full border-2 border-pink-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(236,72,153,0.3), rgba(0,0,0,0.5));">
                             <img src="https://i.postimg.cc/50MPG1q6/IMG-4667.png" alt="Питер" class="w-full h-full object-cover object-top">
                         </div>
-                    <div>
-                        <div class="text-base text-[#e0e0e0] font-bold medieval-font">Портной Питер</div>
-                        <div class="text-[10px] text-[#a0a0a0]">Портной</div>
+                        <div>
+                            <div class="text-base text-[#e0e0e0] font-bold medieval-font">Портной Питер</div>
+                            <div class="text-[10px] text-[#a0a0a0]">Портной</div>
+                        </div>
                     </div>
+                    <button onclick="dialogue.start('peter')" class="px-4 py-1.5 rounded text-xs border border-pink-700/40 bg-black/30 text-pink-300 hover:bg-pink-900/20 backdrop-blur-sm whitespace-nowrap">
+                        Поговорить
+                    </button>
                 </div>
-                <button onclick="dialogue.start('peter')" class="px-4 py-1.5 rounded text-xs border border-pink-700/40 bg-black/30 text-pink-300 hover:bg-pink-900/20 backdrop-blur-sm">
-                    Говорить
-                </button>
             </div>
 
             <div class="panel rounded p-4 space-y-3">
@@ -3392,18 +3557,20 @@
 
             <!-- Shoemaker NPC -->
             <div class="panel p-4 rounded-lg border-amber-500/40 bg-black/30 backdrop-blur-sm mb-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-full border-2 border-amber-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(146,64,14,0.3), rgba(0,0,0,0.5));">
+                <div class="flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3 flex-1">
+                        <div class="w-12 h-12 rounded-full border-2 border-amber-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(146,64,14,0.3), rgba(0,0,0,0.5));">
                             <img src="https://i.postimg.cc/brymyT5Z/IMG-4668.png" alt="Лорен" class="w-full h-full object-cover object-top">
                         </div>
-                    <div>
-                        <div class="text-base text-[#e0e0e0] font-bold medieval-font">Сапожник Лорен</div>
-                        <div class="text-[10px] text-[#a0a0a0]">Мастер обуви</div>
+                        <div>
+                            <div class="text-base text-[#e0e0e0] font-bold medieval-font">Сапожник Лорен</div>
+                            <div class="text-[10px] text-[#a0a0a0]">Мастер обуви</div>
+                        </div>
                     </div>
+                    <button onclick="dialogue.start('shoemaker')" class="px-4 py-1.5 rounded text-xs border border-amber-700/40 bg-black/30 text-amber-300 hover:bg-amber-900/20 backdrop-blur-sm whitespace-nowrap">
+                        Поговорить
+                    </button>
                 </div>
-                <button onclick="dialogue.start('shoemaker')" class="px-4 py-1.5 rounded text-xs border border-amber-700/40 bg-black/30 text-amber-300 hover:bg-amber-900/20 backdrop-blur-sm">
-                    Говорить
-                </button>
             </div>
 
             <div class="panel rounded p-4 space-y-3">
@@ -3490,18 +3657,20 @@
 
             <!-- Book House NPC -->
             <div class="panel p-4 rounded-lg border-blue-500/40 bg-black/30 backdrop-blur-sm mb-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-full border-2 border-blue-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(59,130,246,0.3), rgba(0,0,0,0.5));">
+                <div class="flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3 flex-1">
+                        <div class="w-12 h-12 rounded-full border-2 border-blue-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(59,130,246,0.3), rgba(0,0,0,0.5));">
                             <img src="https://i.postimg.cc/yxdCDXtp/image-Picsart-Background-Remover.png" alt="Лили" class="w-full h-full object-cover object-top">
                         </div>
-                    <div>
-                        <div class="text-base text-[#e0e0e0] font-bold medieval-font">Лили</div>
-                        <div class="text-[10px] text-[#a0a0a0]">Хранительница знаний</div>
+                        <div>
+                            <div class="text-base text-[#e0e0e0] font-bold medieval-font">Лили</div>
+                            <div class="text-[10px] text-[#a0a0a0]">Хранительница знаний</div>
+                        </div>
                     </div>
+                    <button onclick="dialogue.start('lili')" class="px-4 py-1.5 rounded text-xs border border-blue-700/40 bg-black/30 text-blue-300 hover:bg-blue-900/20 backdrop-blur-sm whitespace-nowrap">
+                        Поговорить
+                    </button>
                 </div>
-                <button onclick="dialogue.start('lili')" class="px-4 py-1.5 rounded text-xs border border-blue-700/40 bg-black/30 text-blue-300 hover:bg-blue-900/20 backdrop-blur-sm">
-                    Говорить
-                </button>
             </div>
 
             <div class="panel rounded p-4 space-y-4">
@@ -3729,65 +3898,111 @@
             </div>
 
             <!-- Bank Info -->
-            <div class="panel rounded-lg p-4 flex items-center justify-between bg-[#101012]">
-                <div>
-                    <div class="text-xs text-[#a0a0a0] uppercase">В сейфе</div>
-                    <div class="text-xl font-bold text-[#c8aa6e]">
-                        <i class="fas fa-lock text-xs mr-1"></i> <span id="bank-display">0</span>
+            <div class="panel rounded-lg p-4 bg-gradient-to-br from-yellow-900/20 to-black/30 backdrop-blur-sm border border-yellow-900/40 relative overflow-hidden">
+                <div class="absolute -right-6 -bottom-6 text-8xl text-yellow-900 opacity-5 pointer-events-none">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="flex items-center justify-between relative z-10">
+                    <div>
+                        <div class="text-xs text-yellow-400/60 uppercase mb-1 flex items-center gap-2">
+                            <i class="fas fa-vault text-yellow-500"></i>
+                            В сейфе
+                        </div>
+                        <div class="text-2xl font-bold text-yellow-300 medieval-font flex items-center gap-2">
+                            <i class="fas fa-lock text-sm"></i> <span id="bank-display">0</span>
+                        </div>
+                    </div>
+                    <div class="w-14 h-14 rounded-full bg-gradient-to-br from-yellow-700/40 to-yellow-950 flex items-center justify-center border-2 border-yellow-600/50 shadow-[0_0_20px_rgba(234,179,8,0.2)]">
+                        <i class="fas fa-shield-alt text-2xl text-yellow-400"></i>
                     </div>
                 </div>
-                <i class="fas fa-shield-alt text-2xl text-[#333]"></i>
             </div>
 
             <!-- Deposit/Withdraw -->
-            <div class="panel rounded-lg p-4 space-y-3">
-                <h3 class="text-sm font-bold text-[#e0e0e0] border-b border-[#333] pb-2">Хранилище</h3>
+            <div class="panel rounded-lg p-4 space-y-4 bg-gradient-to-br from-yellow-900/10 to-black/20 backdrop-blur-sm border border-yellow-900/30">
+                <div class="flex items-center gap-2 border-b border-yellow-900/30 pb-3">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-700/40 to-yellow-950 flex items-center justify-center border border-yellow-600/50">
+                        <i class="fas fa-exchange-alt text-yellow-400"></i>
+                    </div>
+                    <h3 class="text-base font-bold text-yellow-300 medieval-font">Хранилище</h3>
+                </div>
 
-
-                <div class="mt-2 space-y-2">
-                    <div class="flex items-center justify-between text-[10px] text-[#777]">
-                        <div>На руках: <span id="wallet-display" class="text-[#c8aa6e] font-bold">0</span></div>
-                        <div>В сейфе: <span class="text-[#c8aa6e] font-bold" id="bank-display-mini">0</span></div>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between text-xs bg-black/30 p-3 rounded border border-yellow-900/20">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-wallet text-yellow-500"></i>
+                            <span class="text-gray-400">На руках:</span>
+                        </div>
+                        <span id="wallet-display" class="text-yellow-300 font-bold">0</span>
+                    </div>
+                    <div class="flex items-center justify-between text-xs bg-black/30 p-3 rounded border border-yellow-900/20">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-vault text-yellow-500"></i>
+                            <span class="text-gray-400">В сейфе:</span>
+                        </div>
+                        <span class="text-yellow-300 font-bold" id="bank-display-mini">0</span>
                     </div>
 
                     <div class="flex gap-2">
-                        <input id="bank-amount-input" type="number" min="1" step="1" placeholder="Сумма" class="w-full bg-[#111] border border-[#333] text-center text-xs text-white rounded p-2 outline-none focus:border-[#c8aa6e]">
-                        <button onclick="locations.treasurySetMax('deposit', event)" class="px-3 bg-[#222] border border-[#444] rounded text-xs text-gray-400 hover:text-white">Max</button>
+                        <input id="bank-amount-input" type="number" min="1" step="1" placeholder="Введите сумму" class="flex-1 bg-black/40 border border-yellow-900/40 text-center text-sm text-yellow-100 rounded p-2 outline-none focus:border-yellow-600 focus:bg-black/60 transition-all">
+                        <button onclick="locations.treasurySetMax('deposit', event)" class="px-4 bg-yellow-900/30 border border-yellow-700/40 rounded text-xs text-yellow-300 hover:bg-yellow-900/50 hover:text-yellow-200 transition-all">
+                            Max
+                        </button>
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
-                        <button onclick="locations.treasuryDepositAmount(event)" class="btn-medieval py-2 text-xs rounded">
-                            Положить
+                        <button onclick="locations.treasuryDepositAmount(event)" class="btn-medieval py-2.5 text-xs rounded border-yellow-700 text-yellow-300 hover:bg-yellow-900/30">
+                            <i class="fas fa-arrow-down mr-1"></i> Положить
                         </button>
-                        <button onclick="locations.treasuryWithdrawAmount(event)" class="btn-medieval py-2 text-xs rounded">
-                            Снять
+                        <button onclick="locations.treasuryWithdrawAmount(event)" class="btn-medieval py-2.5 text-xs rounded border-yellow-700 text-yellow-300 hover:bg-yellow-900/30">
+                            <i class="fas fa-arrow-up mr-1"></i> Снять
                         </button>
                     </div>
 
                     <div class="flex justify-end">
-                        <button onclick="locations.treasurySetMax('withdraw', event)" class="text-[10px] text-gray-500 underline underline-offset-2 hover:text-[#c8aa6e]">Max для снятия</button>
+                        <button onclick="locations.treasurySetMax('withdraw', event)" class="text-[10px] text-yellow-600 underline underline-offset-2 hover:text-yellow-400 transition-colors">
+                            <i class="fas fa-coins text-[8px] mr-1"></i>Max для снятия
+                        </button>
                     </div>
                 </div>
 
-                <p class="text-[10px] text-center text-[#777]">Деньги в сейфе защищены от краж.</p>
+                <div class="flex items-center gap-2 text-[10px] text-center text-yellow-600/80 bg-yellow-900/10 p-2 rounded border border-yellow-900/20">
+                    <i class="fas fa-shield-alt text-yellow-500"></i>
+                    <span>Деньги в сейфе защищены от краж</span>
+                </div>
             </div>
 
             <!-- Exchange -->
-            <div class="panel rounded-lg p-4 space-y-3">
-                <h3 class="text-sm font-bold text-[#e0e0e0] border-b border-[#333] pb-2">Обмен Валюты</h3>
-                <div class="flex justify-between items-center bg-[#000] p-2 rounded border border-[#333]">
-                    <div class="flex items-center gap-2">
-                        <i class="far fa-gem gem-price"></i>
-                        <span class="font-bold">1</span>
+            <div class="panel rounded-lg p-4 space-y-4 bg-gradient-to-br from-emerald-900/10 to-black/20 backdrop-blur-sm border border-emerald-900/30 relative overflow-hidden">
+                <div class="absolute -right-6 -bottom-6 text-7xl text-emerald-900 opacity-5 pointer-events-none">
+                    <i class="far fa-gem"></i>
+                </div>
+                <div class="flex items-center gap-2 border-b border-emerald-900/30 pb-3 relative z-10">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-700/40 to-emerald-950 flex items-center justify-center border border-emerald-600/50">
+                        <i class="fas fa-exchange-alt text-emerald-400"></i>
                     </div>
-                    <i class="fas fa-arrow-right text-gray-600"></i>
-                    <div class="flex items-center gap-2">
-                        <i class="fas fa-coins text-yellow-500"></i>
-                        <span class="font-bold">1000</span>
+                    <h3 class="text-base font-bold text-emerald-300 medieval-font">Обмен Валюты</h3>
+                </div>
+                <div class="flex items-center justify-between bg-gradient-to-r from-emerald-900/20 to-yellow-900/20 p-4 rounded-lg border border-emerald-900/30 relative z-10">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-700/40 to-emerald-950 flex items-center justify-center border border-emerald-600/50 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                            <i class="far fa-gem text-emerald-400 text-xl"></i>
+                        </div>
+                        <span class="font-bold text-xl text-emerald-300">1</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <i class="fas fa-arrow-right text-gray-500 text-lg"></i>
+                        <span class="text-[8px] text-gray-600 mt-1">обмен</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="font-bold text-xl text-yellow-300">1000</span>
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-700/40 to-yellow-950 flex items-center justify-center border border-yellow-600/50 shadow-[0_0_15px_rgba(234,179,8,0.2)]">
+                            <i class="fas fa-coins text-yellow-400 text-xl"></i>
+                        </div>
                     </div>
                 </div>
-                <button onclick="locations.treasuryExchange(event)" class="btn-medieval w-full py-2 rounded text-sm">
-                    Обменять
+                <button onclick="locations.treasuryExchange(event)" class="btn-medieval w-full py-2.5 rounded text-sm border-emerald-700 text-emerald-300 hover:bg-emerald-900/30 relative z-10">
+                    <i class="fas fa-sync-alt mr-2"></i> Обменять изумруд
                 </button>
             </div>
         </section>
@@ -3826,13 +4041,6 @@
                         Поговорить
                     </button>
                 </div>
-            </div>
-                        <div class="text-[10px] text-[#a0a0a0]">Трактирщик</div>
-                    </div>
-                </div>
-                        <button onclick="dialogue.start('ben')" class="px-4 py-1.5 rounded text-xs border border-orange-700/40 bg-black/30 text-orange-300 hover:bg-orange-900/20 backdrop-blur-sm">
-                    Слухи
-                </button>
             </div>
 
             <!-- Rent Room -->
@@ -4355,14 +4563,9 @@
             </div>
 
             <!-- Resources Trade -->
-            <div class="panel rounded-lg p-4 mt-4 bg-gradient-to-br from-amber-900/10 to-black/20 backdrop-blur-sm border border-amber-700/30">
+            <div class="rounded-lg p-4 mt-4 border border-amber-700/30" >
                 <div class="flex items-center justify-between mb-3">
-                    <div class="flex items-center gap-2">
-                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-700/40 to-amber-950 flex items-center justify-center border border-amber-600/50">
-                            <i class="fas fa-boxes-stacked text-amber-400"></i>
-                        </div>
-                        <h3 class="medieval-font text-base text-[#c8aa6e]">Материалы</h3>
-                    </div>
+                    <h3 class="medieval-font text-sm text-[#c8aa6e]">Материалы</h3>
                     <div class="flex gap-2">
                         <button onclick="market.switchTradeMode('sell')" id="market-trade-sell" class="sub-tab active">Продажа</button>
                         <button onclick="market.switchTradeMode('buy')" id="market-trade-buy" class="sub-tab">Покупка</button>
@@ -4370,115 +4573,421 @@
                 </div>
 
                 <!-- Category Tabs -->
-                <div class="flex items-center gap-2 overflow-x-auto pb-2 mb-3 no-scrollbar">
-                    <button onclick="market.switchResourceCategory('food')" id="tab-resource-food" class="sub-tab active" style="font-size: 10px;">
-                        <i class="fas fa-fish mr-1"></i>Еда
+                <div class="flex gap-2 overflow-x-auto no-scrollbar mb-3">
+                    <button class="category-tab active" onclick="market.switchMaterialCategory('food')">
+                        <i class="fas fa-drumstick-bite" style="margin-right: 4px;"></i>Еда
                     </button>
-                    <button onclick="market.switchResourceCategory('materials')" id="tab-resource-materials" class="sub-tab" style="font-size: 10px;">
-                        <i class="fas fa-cube mr-1"></i>Сырьё
+                    <button class="category-tab" onclick="market.switchMaterialCategory('metal')">
+                        <i class="fas fa-hammer" style="margin-right: 4px;"></i>Металлы
                     </button>
-                    <button onclick="market.switchResourceCategory('nature')" id="tab-resource-nature" class="sub-tab" style="font-size: 10px;">
-                        <i class="fas fa-leaf mr-1"></i>Природа
+                    <button class="category-tab" onclick="market.switchMaterialCategory('other')">
+                        <i class="fas fa-box" style="margin-right: 4px;"></i>Другое
                     </button>
                 </div>
 
                 <!-- Food Category -->
-                <div id="market-resources-food" class="grid grid-cols-2 gap-3">
-                    <div class="resource-card p-2 rounded flex flex-col items-center text-center bg-blue-900/10 border border-blue-900/30">
-                        <i class="fas fa-fish text-blue-400 mb-1 text-lg"></i>
-                        <div class="text-xs text-[#e0e0e0] font-bold">Рыба</div>
-                        <div class="text-[10px] text-[#a0a0a0] mb-1"><span id="price-fish">5</span> <i class="fas fa-coins"></i></div>
-                        <div class="text-[10px] text-blue-300 mb-1">У вас: <span id="market-count-fish">0</span></div>
-                        <div class="flex gap-1 w-full mb-1">
-                            <input id="trade-input-fish" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#444] text-center text-[10px] text-white rounded p-1 outline-none focus:border-blue-500">
-                            <button onclick="market.setMax('fish')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
+                <div id="market-category-food" class="market-category-content">
+                    <div class="grid grid-cols-2 gap-3">
+                        <!-- Fish -->
+                        <div class="material-card food p-2.5">
+                            <div class="flex flex-col gap-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-500/20 to-orange-600/20 border border-orange-500/40 flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-fish text-orange-400 text-lg"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="text-xs font-bold medieval-font text-[#e0e0e0]">Рыба</div>
+                                        <div class="text-[10px] text-[#a0a0a0]">
+                                            <span id="price-fish">5</span> <i class="fas fa-coins text-[#c8aa6e] text-[9px]"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-[10px] text-orange-300/80">У вас: <span id="market-count-fish">0</span></div>
+                                <div class="flex flex-wrap gap-1.5 items-center">
+                                    <input id="trade-input-fish" type="number" min="1" value="1" class="w-14 bg-[#111] border border-[#333] text-center text-[10px] text-white rounded px-1 py-1.5 outline-none focus:border-orange-500">
+                                    <button onclick="market.setMax('fish')" class="px-2 py-1.5 border border-[#444] rounded text-[9px] text-gray-400 hover:text-white hover:border-orange-500/50 transition-colors">Max</button>
+                                    <button onclick="market.sellFromInput('fish')" id="btn-trade-fish" class="w-full mt-1 btn-ghost rounded text-[10px] py-1.5 hover:bg-orange-900/30 hover:border-orange-500/60 transition-colors">Продать</button>
+                                </div>
+                            </div>
                         </div>
-                        <button onclick="market.sellFromInput('fish')" id="btn-trade-fish" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-blue-900/30 transition-colors">Продать</button>
-                    </div>
-                    <div class="resource-card p-2 rounded flex flex-col items-center text-center bg-yellow-900/10 border border-yellow-900/30">
-                        <i class="fas fa-wheat-awn text-yellow-400 mb-1 text-lg"></i>
-                        <div class="text-xs text-[#e0e0e0] font-bold">Пшеница</div>
-                        <div class="text-[10px] text-[#a0a0a0] mb-1"><span id="price-wheat">15</span> <i class="fas fa-coins"></i></div>
-                        <div class="text-[10px] text-blue-300 mb-1">У вас: <span id="market-count-wheat">0</span></div>
-                        <div class="flex gap-1 w-full mb-1">
-                            <input id="trade-input-wheat" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#444] text-center text-[10px] text-white rounded p-1 outline-none focus:border-yellow-500">
-                            <button onclick="market.setMax('wheat')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
+
+                        <!-- Meat -->
+                        <div class="material-card food p-2.5">
+                            <div class="flex flex-col gap-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-500/20 to-orange-600/20 border border-orange-500/40 flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-drumstick-bite text-red-400 text-lg"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="text-xs font-bold medieval-font text-[#e0e0e0]">Мясо</div>
+                                        <div class="text-[10px] text-[#a0a0a0]">
+                                            <span id="price-meat">20</span> <i class="fas fa-coins text-[#c8aa6e] text-[9px]"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-[10px] text-orange-300/80">У вас: <span id="market-count-meat">0</span></div>
+                                <div class="flex flex-wrap gap-1.5 items-center">
+                                    <input id="trade-input-meat" type="number" min="1" value="1" class="w-14 bg-[#111] border border-[#333] text-center text-[10px] text-white rounded px-1 py-1.5 outline-none focus:border-orange-500">
+                                    <button onclick="market.setMax('meat')" class="px-2 py-1.5 border border-[#444] rounded text-[9px] text-gray-400 hover:text-white hover:border-orange-500/50 transition-colors">Max</button>
+                                    <button onclick="market.sellFromInput('meat')" id="btn-trade-meat" class="w-full mt-1 btn-ghost rounded text-[10px] py-1.5 hover:bg-orange-900/30 hover:border-orange-500/60 transition-colors">Продать</button>
+                                </div>
+                            </div>
                         </div>
-                        <button onclick="market.sellFromInput('wheat')" id="btn-trade-wheat" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-yellow-900/30 transition-colors">Продать</button>
+
+                        <!-- Mushrooms -->
+                        <div class="material-card food p-2.5">
+                            <div class="flex flex-col gap-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-500/20 to-orange-600/20 border border-orange-500/40 flex items-center justify-center flex-shrink-0">
+                                        <svg class="icon-svg-fill w-6 h-6 text-purple-400" viewBox="0 0 330.18 330.18"><use href="#icon-mushroom"></use></svg>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="text-xs font-bold medieval-font text-[#e0e0e0]">Грибы</div>
+                                        <div class="text-[10px] text-[#a0a0a0]">
+                                            <span id="price-mushrooms">25</span> <i class="fas fa-coins text-[#c8aa6e] text-[9px]"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-[10px] text-orange-300/80">У вас: <span id="market-count-mushrooms">0</span></div>
+                                <div class="flex flex-wrap gap-1.5 items-center">
+                                    <input id="trade-input-mushrooms" type="number" min="1" value="1" class="w-14 bg-[#111] border border-[#333] text-center text-[10px] text-white rounded px-1 py-1.5 outline-none focus:border-orange-500">
+                                    <button onclick="market.setMax('mushrooms')" class="px-2 py-1.5 border border-[#444] rounded text-[9px] text-gray-400 hover:text-white hover:border-orange-500/50 transition-colors">Max</button>
+                                    <button onclick="market.sellFromInput('mushrooms')" id="btn-trade-mushrooms" class="w-full mt-1 btn-ghost rounded text-[10px] py-1.5 hover:bg-orange-900/30 hover:border-orange-500/60 transition-colors">Продать</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bread -->
+                        <div class="material-card food p-2.5">
+                            <div class="flex flex-col gap-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-500/20 to-orange-600/20 border border-orange-500/40 flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-bread-slice text-amber-400 text-lg"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="text-xs font-bold medieval-font text-[#e0e0e0]">Хлеб</div>
+                                        <div class="text-[10px] text-[#a0a0a0]">
+                                            <span id="price-bread">8</span> <i class="fas fa-coins text-[#c8aa6e] text-[9px]"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-[10px] text-orange-300/80">У вас: <span id="market-count-bread">0</span></div>
+                                <div class="flex flex-wrap gap-1.5 items-center">
+                                    <input id="trade-input-bread" type="number" min="1" value="1" class="w-14 bg-[#111] border border-[#333] text-center text-[10px] text-white rounded px-1 py-1.5 outline-none focus:border-orange-500">
+                                    <button onclick="market.setMax('bread')" class="px-2 py-1.5 border border-[#444] rounded text-[9px] text-gray-400 hover:text-white hover:border-orange-500/50 transition-colors">Max</button>
+                                    <button onclick="market.sellFromInput('bread')" id="btn-trade-bread" class="w-full mt-1 btn-ghost rounded text-[10px] py-1.5 hover:bg-orange-900/30 hover:border-orange-500/60 transition-colors">Продать</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Eggs -->
+                        <div class="material-card food p-2.5">
+                            <div class="flex flex-col gap-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-500/20 to-orange-600/20 border border-orange-500/40 flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-egg text-yellow-200 text-lg"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="text-xs font-bold medieval-font text-[#e0e0e0]">Яйца</div>
+                                        <div class="text-[10px] text-[#a0a0a0]">
+                                            <span id="price-eggs">6</span> <i class="fas fa-coins text-[#c8aa6e] text-[9px]"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-[10px] text-orange-300/80">У вас: <span id="market-count-eggs">0</span></div>
+                                <div class="flex flex-wrap gap-1.5 items-center">
+                                    <input id="trade-input-eggs" type="number" min="1" value="1" class="w-14 bg-[#111] border border-[#333] text-center text-[10px] text-white rounded px-1 py-1.5 outline-none focus:border-orange-500">
+                                    <button onclick="market.setMax('eggs')" class="px-2 py-1.5 border border-[#444] rounded text-[9px] text-gray-400 hover:text-white hover:border-orange-500/50 transition-colors">Max</button>
+                                    <button onclick="market.sellFromInput('eggs')" id="btn-trade-eggs" class="w-full mt-1 btn-ghost rounded text-[10px] py-1.5 hover:bg-orange-900/30 hover:border-orange-500/60 transition-colors">Продать</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Milk -->
+                        <div class="material-card food p-2.5">
+                            <div class="flex flex-col gap-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-500/20 to-orange-600/20 border border-orange-500/40 flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-mug-hot text-white text-xl"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="text-xs font-bold medieval-font text-[#e0e0e0]">Молоко</div>
+                                        <div class="text-[10px] text-[#a0a0a0]">
+                                            <span id="price-milk">12</span> <i class="fas fa-coins text-[#c8aa6e]"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-[10px] text-blue-300">У вас: <span id="market-count-milk">0</span></div>
+                                <div class="flex flex-wrap gap-2 items-center">
+                                    <input id="trade-input-milk" type="number" min="1" value="1" class="w-16 bg-[#111] border border-[#333] text-center text-[10px] text-white rounded px-1 py-1 outline-none focus:border-[#c8aa6e]">
+                                    <button onclick="market.setMax('milk')" class="px-2 py-1 border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
+                                    <button onclick="market.sellFromInput('milk')" id="btn-trade-milk" class="w-full mt-1 btn-ghost rounded text-[10px] py-1 hover:bg-green-900/20 transition-colors">Продать</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Materials Category -->
-                <div id="market-resources-materials" class="hidden grid grid-cols-2 gap-3">
-                    <div class="resource-card p-2 rounded flex flex-col items-center text-center bg-gray-700/10 border border-gray-700/30">
-                        <i class="fas fa-cube text-gray-400 mb-1 text-lg"></i>
-                        <div class="text-xs text-[#e0e0e0] font-bold">Руда</div>
-                        <div class="text-[10px] text-[#a0a0a0] mb-1"><span id="price-ore">40</span> <i class="fas fa-coins"></i></div>
-                        <div class="text-[10px] text-blue-300 mb-1">У вас: <span id="market-count-ore">0</span></div>
-                        <div class="flex gap-1 w-full mb-1">
-                            <input id="trade-input-ore" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#444] text-center text-[10px] text-white rounded p-1 outline-none focus:border-gray-500">
-                            <button onclick="market.setMax('ore')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
+                <!-- Metal Category -->
+                <div id="market-category-metal" class="market-category-content hidden">
+                    <div class="grid grid-cols-2 gap-3">
+                        <!-- Ore -->
+                        <div class="material-card metal p-2.5">
+                            <div class="flex flex-col gap-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-blue-500/40 flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-cube text-slate-300 text-lg"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="text-xs font-bold medieval-font text-[#e0e0e0]">Руда</div>
+                                        <div class="text-[10px] text-[#a0a0a0]">
+                                            <span id="price-ore">40</span> <i class="fas fa-coins text-[#c8aa6e] text-[9px]"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-[10px] text-blue-300/80">У вас: <span id="market-count-ore">0</span></div>
+                                <div class="flex flex-wrap gap-1.5 items-center">
+                                    <input id="trade-input-ore" type="number" min="1" value="1" class="w-14 bg-[#111] border border-[#333] text-center text-[10px] text-white rounded px-1 py-1.5 outline-none focus:border-blue-500">
+                                    <button onclick="market.setMax('ore')" class="px-2 py-1.5 border border-[#444] rounded text-[9px] text-gray-400 hover:text-white hover:border-blue-500/50 transition-colors">Max</button>
+                                    <button onclick="market.sellFromInput('ore')" id="btn-trade-ore" class="w-full mt-1 btn-ghost rounded text-[10px] py-1.5 hover:bg-blue-900/30 hover:border-blue-500/60 transition-colors">Продать</button>
+                                </div>
+                            </div>
                         </div>
-                        <button onclick="market.sellFromInput('ore')" id="btn-trade-ore" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-gray-900/30 transition-colors">Продать</button>
-                    </div>
-                    <div class="resource-card p-2 rounded flex flex-col items-center text-center bg-red-900/10 border border-red-900/30">
-                        <i class="fas fa-scroll text-red-400 mb-1 text-lg"></i>
-                        <div class="text-xs text-[#e0e0e0] font-bold">Кожа</div>
-                        <div class="text-[10px] text-[#a0a0a0] mb-1"><span id="price-leather">100</span> <i class="fas fa-coins"></i></div>
-                        <div class="text-[10px] text-blue-300 mb-1">У вас: <span id="market-count-leather">0</span></div>
-                        <div class="flex gap-1 w-full mb-1">
-                            <input id="trade-input-leather" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#444] text-center text-[10px] text-white rounded p-1 outline-none focus:border-red-500">
-                            <button onclick="market.setMax('leather')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
+
+                        <!-- Bronze -->
+                        <div class="material-card metal p-2.5">
+                            <div class="flex flex-col gap-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-blue-500/40 flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-coins text-orange-400 text-lg"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="text-xs font-bold medieval-font text-[#e0e0e0]">Бронза</div>
+                                        <div class="text-[10px] text-[#a0a0a0]">
+                                            <span id="price-bronze">60</span> <i class="fas fa-coins text-[#c8aa6e] text-[9px]"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-[10px] text-blue-300/80">У вас: <span id="market-count-bronze">0</span></div>
+                                <div class="flex flex-wrap gap-1.5 items-center">
+                                    <input id="trade-input-bronze" type="number" min="1" value="1" class="w-14 bg-[#111] border border-[#333] text-center text-[10px] text-white rounded px-1 py-1.5 outline-none focus:border-blue-500">
+                                    <button onclick="market.setMax('bronze')" class="px-2 py-1.5 border border-[#444] rounded text-[9px] text-gray-400 hover:text-white hover:border-blue-500/50 transition-colors">Max</button>
+                                    <button onclick="market.sellFromInput('bronze')" id="btn-trade-bronze" class="w-full mt-1 btn-ghost rounded text-[10px] py-1.5 hover:bg-blue-900/30 hover:border-blue-500/60 transition-colors">Продать</button>
+                                </div>
+                            </div>
                         </div>
-                        <button onclick="market.sellFromInput('leather')" id="btn-trade-leather" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-red-900/30 transition-colors">Продать</button>
+
+                        <!-- Silver -->
+                        <div class="material-card metal p-2.5">
+                            <div class="flex flex-col gap-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-blue-500/40 flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-ring text-gray-300 text-xl"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="text-xs font-bold medieval-font text-[#e0e0e0]">Серебро</div>
+                                        <div class="text-[10px] text-[#a0a0a0]">
+                                            <span id="price-silver">100</span> <i class="fas fa-coins text-[#c8aa6e]"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-[10px] text-blue-300">У вас: <span id="market-count-silver">0</span></div>
+                                <div class="flex flex-wrap gap-1.5 items-center">
+                                    <input id="trade-input-silver" type="number" min="1" value="1" class="w-14 bg-[#111] border border-[#333] text-center text-[10px] text-white rounded px-1 py-1.5 outline-none focus:border-blue-500">
+                                    <button onclick="market.setMax('silver')" class="px-2 py-1.5 border border-[#444] rounded text-[9px] text-gray-400 hover:text-white hover:border-blue-500/50 transition-colors">Max</button>
+                                    <button onclick="market.sellFromInput('silver')" id="btn-trade-silver" class="w-full mt-1 btn-ghost rounded text-[10px] py-1.5 hover:bg-blue-900/30 hover:border-blue-500/60 transition-colors">Продать</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Nature Category -->
-                <div id="market-resources-nature" class="hidden grid grid-cols-2 gap-3">
-                    <div class="resource-card p-2 rounded flex flex-col items-center text-center bg-amber-900/10 border border-amber-900/30">
-                        <i class="fas fa-tree text-amber-400 mb-1 text-lg"></i>
-                        <div class="text-xs text-[#e0e0e0] font-bold">Палки</div>
-                        <div class="text-[10px] text-[#a0a0a0] mb-1"><span id="price-wood">5</span> <i class="fas fa-coins"></i></div>
-                        <div class="text-[10px] text-blue-300 mb-1">У вас: <span id="market-count-wood">0</span></div>
-                        <div class="flex gap-1 w-full mb-1">
-                            <input id="trade-input-wood" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#444] text-center text-[10px] text-white rounded p-1 outline-none focus:border-amber-500">
-                            <button onclick="market.setMax('wood')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
+                <!-- Other Category -->
+                <div id="market-category-other" class="market-category-content hidden">
+                    <div class="grid grid-cols-2 gap-3">
+                        <!-- Wheat -->
+                        <div class="material-card other p-2.5">
+                            <div class="flex flex-col gap-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/40 flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-wheat-awn text-yellow-400 text-xl"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="text-xs font-bold medieval-font text-[#e0e0e0]">Пшеница</div>
+                                        <div class="text-[10px] text-[#a0a0a0]">
+                                            <span id="price-wheat">15</span> <i class="fas fa-coins text-[#c8aa6e]"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-[10px] text-blue-300">У вас: <span id="market-count-wheat">0</span></div>
+                                <div class="flex flex-wrap gap-2 items-center">
+                                    <input id="trade-input-wheat" type="number" min="1" value="1" class="w-16 bg-[#111] border border-[#333] text-center text-[10px] text-white rounded px-1 py-1 outline-none focus:border-[#c8aa6e]">
+                                    <button onclick="market.setMax('wheat')" class="px-2 py-1 border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
+                                    <button onclick="market.sellFromInput('wheat')" id="btn-trade-wheat" class="w-full mt-1 btn-ghost rounded text-[10px] py-1 hover:bg-purple-900/20 transition-colors">Продать</button>
+                                </div>
+                            </div>
                         </div>
-                        <button onclick="market.sellFromInput('wood')" id="btn-trade-wood" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-amber-900/30 transition-colors">Продать</button>
-                    </div>
-                    <div class="resource-card p-2 rounded flex flex-col items-center text-center bg-gray-600/10 border border-gray-600/30">
-                        <i class="fas fa-shapes text-gray-400 mb-1 text-lg"></i>
-                        <div class="text-xs text-[#e0e0e0] font-bold">Камни</div>
-                        <div class="text-[10px] text-[#a0a0a0] mb-1"><span id="price-stone">5</span> <i class="fas fa-coins"></i></div>
-                        <div class="text-[10px] text-blue-300 mb-1">У вас: <span id="market-count-stone">0</span></div>
-                        <div class="flex gap-1 w-full mb-1">
-                            <input id="trade-input-stone" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#444] text-center text-[10px] text-white rounded p-1 outline-none focus:border-gray-500">
-                            <button onclick="market.setMax('stone')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
+
+                        <!-- Wood (Sticks) -->
+                        <div class="material-card other p-2.5">
+                            <div class="flex flex-col gap-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/40 flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-tree text-amber-600 text-xl"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="text-xs font-bold medieval-font text-[#e0e0e0]">Палки</div>
+                                        <div class="text-[10px] text-[#a0a0a0]">
+                                            <span id="price-wood">5</span> <i class="fas fa-coins text-[#c8aa6e]"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-[10px] text-blue-300">У вас: <span id="market-count-wood">0</span></div>
+                                <div class="flex flex-wrap gap-2 items-center">
+                                    <input id="trade-input-wood" type="number" min="1" value="1" class="w-16 bg-[#111] border border-[#333] text-center text-[10px] text-white rounded px-1 py-1 outline-none focus:border-[#c8aa6e]">
+                                    <button onclick="market.setMax('wood')" class="px-2 py-1 border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
+                                    <button onclick="market.sellFromInput('wood')" id="btn-trade-wood" class="w-full mt-1 btn-ghost rounded text-[10px] py-1 hover:bg-purple-900/20 transition-colors">Продать</button>
+                                </div>
+                            </div>
                         </div>
-                        <button onclick="market.sellFromInput('stone')" id="btn-trade-stone" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-gray-900/30 transition-colors">Продать</button>
-                    </div>
-                    <div class="resource-card p-2 rounded flex flex-col items-center text-center bg-green-900/10 border border-green-900/30">
-                        <i class="fas fa-leaf text-green-400 mb-1 text-lg"></i>
-                        <div class="text-xs text-[#e0e0e0] font-bold">Травы</div>
-                        <div class="text-[10px] text-[#a0a0a0] mb-1"><span id="price-herbs">10</span> <i class="fas fa-coins"></i></div>
-                        <div class="text-[10px] text-blue-300 mb-1">У вас: <span id="market-count-herbs">0</span></div>
-                        <div class="flex gap-1 w-full mb-1">
-                            <input id="trade-input-herbs" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#444] text-center text-[10px] text-white rounded p-1 outline-none focus:border-green-500">
-                            <button onclick="market.setMax('herbs')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
+
+                        <!-- Stone -->
+                        <div class="material-card other p-2.5">
+                            <div class="flex flex-col gap-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/40 flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-shapes text-gray-400 text-xl"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="text-xs font-bold medieval-font text-[#e0e0e0]">Камни</div>
+                                        <div class="text-[10px] text-[#a0a0a0]">
+                                            <span id="price-stone">5</span> <i class="fas fa-coins text-[#c8aa6e]"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-[10px] text-blue-300">У вас: <span id="market-count-stone">0</span></div>
+                                <div class="flex flex-wrap gap-2 items-center">
+                                    <input id="trade-input-stone" type="number" min="1" value="1" class="w-16 bg-[#111] border border-[#333] text-center text-[10px] text-white rounded px-1 py-1 outline-none focus:border-[#c8aa6e]">
+                                    <button onclick="market.setMax('stone')" class="px-2 py-1 border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
+                                    <button onclick="market.sellFromInput('stone')" id="btn-trade-stone" class="w-full mt-1 btn-ghost rounded text-[10px] py-1 hover:bg-purple-900/20 transition-colors">Продать</button>
+                                </div>
+                            </div>
                         </div>
-                        <button onclick="market.sellFromInput('herbs')" id="btn-trade-herbs" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-green-900/30 transition-colors">Продать</button>
-                    </div>
-                    <div class="resource-card p-2 rounded flex flex-col items-center text-center bg-purple-900/10 border border-purple-900/30">
-                        <i class="fas fa-mushroom text-purple-400 mb-1 text-lg"></i>
-                        <div class="text-xs text-[#e0e0e0] font-bold">Грибы</div>
-                        <div class="text-[10px] text-[#a0a0a0] mb-1"><span id="price-mushrooms">25</span> <i class="fas fa-coins"></i></div>
-                        <div class="text-[10px] text-blue-300 mb-1">У вас: <span id="market-count-mushrooms">0</span></div>
-                        <div class="flex gap-1 w-full mb-1">
-                            <input id="trade-input-mushrooms" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#444] text-center text-[10px] text-white rounded p-1 outline-none focus:border-purple-500">
-                            <button onclick="market.setMax('mushrooms')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
+
+                        <!-- Herbs -->
+                        <div class="material-card other p-2.5">
+                            <div class="flex flex-col gap-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/40 flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-leaf text-green-400 text-xl"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="text-xs font-bold medieval-font text-[#e0e0e0]">Травы</div>
+                                        <div class="text-[10px] text-[#a0a0a0]">
+                                            <span id="price-herbs">10</span> <i class="fas fa-coins text-[#c8aa6e]"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-[10px] text-blue-300">У вас: <span id="market-count-herbs">0</span></div>
+                                <div class="flex flex-wrap gap-2 items-center">
+                                    <input id="trade-input-herbs" type="number" min="1" value="1" class="w-16 bg-[#111] border border-[#333] text-center text-[10px] text-white rounded px-1 py-1 outline-none focus:border-[#c8aa6e]">
+                                    <button onclick="market.setMax('herbs')" class="px-2 py-1 border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
+                                    <button onclick="market.sellFromInput('herbs')" id="btn-trade-herbs" class="w-full mt-1 btn-ghost rounded text-[10px] py-1 hover:bg-purple-900/20 transition-colors">Продать</button>
+                                </div>
+                            </div>
                         </div>
-                        <button onclick="market.sellFromInput('mushrooms')" id="btn-trade-mushrooms" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-purple-900/30 transition-colors">Продать</button>
+
+                        <!-- Leather -->
+                        <div class="material-card other p-2.5">
+                            <div class="flex flex-col gap-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/40 flex items-center justify-center flex-shrink-0">
+                                        <svg class="icon-svg-fill w-7 h-7 text-amber-700" viewBox="0 0 467.473 467.473"><use href="#icon-leather"></use></svg>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="text-xs font-bold medieval-font text-[#e0e0e0]">Кожа</div>
+                                        <div class="text-[10px] text-[#a0a0a0]">
+                                            <span id="price-leather">100</span> <i class="fas fa-coins text-[#c8aa6e]"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-[10px] text-blue-300">У вас: <span id="market-count-leather">0</span></div>
+                                <div class="flex flex-wrap gap-2 items-center">
+                                    <input id="trade-input-leather" type="number" min="1" value="1" class="w-16 bg-[#111] border border-[#333] text-center text-[10px] text-white rounded px-1 py-1 outline-none focus:border-[#c8aa6e]">
+                                    <button onclick="market.setMax('leather')" class="px-2 py-1 border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
+                                    <button onclick="market.sellFromInput('leather')" id="btn-trade-leather" class="w-full mt-1 btn-ghost rounded text-[10px] py-1 hover:bg-purple-900/20 transition-colors">Продать</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Wool -->
+                        <div class="material-card other p-2.5">
+                            <div class="flex flex-col gap-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/40 flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-cloud text-white text-xl"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="text-xs font-bold medieval-font text-[#e0e0e0]">Шерсть</div>
+                                        <div class="text-[10px] text-[#a0a0a0]">
+                                            <span id="price-wool">30</span> <i class="fas fa-coins text-[#c8aa6e]"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-[10px] text-blue-300">У вас: <span id="market-count-wool">0</span></div>
+                                <div class="flex flex-wrap gap-2 items-center">
+                                    <input id="trade-input-wool" type="number" min="1" value="1" class="w-16 bg-[#111] border border-[#333] text-center text-[10px] text-white rounded px-1 py-1 outline-none focus:border-[#c8aa6e]">
+                                    <button onclick="market.setMax('wool')" class="px-2 py-1 border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
+                                    <button onclick="market.sellFromInput('wool')" id="btn-trade-wool" class="w-full mt-1 btn-ghost rounded text-[10px] py-1 hover:bg-purple-900/20 transition-colors">Продать</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cloth -->
+                        <div class="material-card other p-2.5">
+                            <div class="flex flex-col gap-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/40 flex items-center justify-center flex-shrink-0">
+                                        <svg class="icon-svg-fill w-7 h-7 text-blue-300" viewBox="0 0 512.001 512.001"><use href="#icon-cloth"></use></svg>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="text-xs font-bold medieval-font text-[#e0e0e0]">Ткань</div>
+                                        <div class="text-[10px] text-[#a0a0a0]">
+                                            <span id="price-cloth">45</span> <i class="fas fa-coins text-[#c8aa6e]"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-[10px] text-blue-300">У вас: <span id="market-count-cloth">0</span></div>
+                                <div class="flex flex-wrap gap-2 items-center">
+                                    <input id="trade-input-cloth" type="number" min="1" value="1" class="w-16 bg-[#111] border border-[#333] text-center text-[10px] text-white rounded px-1 py-1 outline-none focus:border-[#c8aa6e]">
+                                    <button onclick="market.setMax('cloth')" class="px-2 py-1 border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
+                                    <button onclick="market.sellFromInput('cloth')" id="btn-trade-cloth" class="w-full mt-1 btn-ghost rounded text-[10px] py-1 hover:bg-purple-900/20 transition-colors">Продать</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Rope -->
+                        <div class="material-card other p-2.5">
+                            <div class="flex flex-col gap-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/40 flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-link text-amber-500 text-xl"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="text-xs font-bold medieval-font text-[#e0e0e0]">Веревки</div>
+                                        <div class="text-[10px] text-[#a0a0a0]">
+                                            <span id="price-rope">20</span> <i class="fas fa-coins text-[#c8aa6e]"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-[10px] text-blue-300">У вас: <span id="market-count-rope">0</span></div>
+                                <div class="flex flex-wrap gap-2 items-center">
+                                    <input id="trade-input-rope" type="number" min="1" value="1" class="w-16 bg-[#111] border border-[#333] text-center text-[10px] text-white rounded px-1 py-1 outline-none focus:border-[#c8aa6e]">
+                                    <button onclick="market.setMax('rope')" class="px-2 py-1 border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
+                                    <button onclick="market.sellFromInput('rope')" id="btn-trade-rope" class="w-full mt-1 btn-ghost rounded text-[10px] py-1 hover:bg-purple-900/20 transition-colors">Продать</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -5687,57 +6196,96 @@
                         </div>
                         
                         <!-- Tournament Options -->
-                        <div class="space-y-2">
+                        <div class="space-y-3">
                             <!-- Beginner Tournament -->
-                            <div id="tournament-beginner-card" class="border border-green-900/50 rounded p-3 bg-green-900/10">
-                                <div class="flex items-center justify-between mb-2">
+                            <div id="tournament-beginner-card" class="p-4 border border-green-900/50 rounded-lg bg-gradient-to-br from-green-900/20 to-black/30 backdrop-blur-sm relative overflow-hidden">
+                                <div class="absolute -right-4 -top-4 text-6xl text-green-900 opacity-10 pointer-events-none">
+                                    <i class="fas fa-shield"></i>
+                                </div>
+                                <div class="flex items-center justify-between mb-3 relative z-10">
                                     <div class="flex items-center gap-3">
-                                        <i class="fas fa-shield text-green-400 text-xl"></i>
+                                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-green-700/60 to-green-950 flex items-center justify-center border-2 border-green-500/60 shadow-[0_0_15px_rgba(34,197,94,0.3)]">
+                                            <i class="fas fa-shield text-green-400 text-xl"></i>
+                                        </div>
                                         <div>
-                                            <div class="text-sm font-bold text-green-300">Турнир Новичков</div>
-                                            <div class="text-[10px] text-gray-400">Требуется: Ур. 1+</div>
-                                            <div class="text-[10px] text-green-400">Победа: 500 золота, +5 славы</div>
-                                            <div class="text-[10px] text-red-400">Поражение: -5 славы</div>
+                                            <div class="text-base font-bold text-green-300 medieval-font">Турнир Новичков</div>
+                                            <div class="text-[10px] text-gray-400 mt-0.5">Требуется: Ур. 1+</div>
                                         </div>
                                     </div>
                                 </div>
-                                <button id="btn-tournament-beginner" onclick="tournamentBattle.startTournament('beginner')" class="btn-medieval w-full py-2 rounded text-xs">
+                                <div class="space-y-1 mb-3 relative z-10">
+                                    <div class="flex items-center justify-between text-[10px] px-2 py-1 bg-green-900/20 rounded border border-green-900/30">
+                                        <span class="text-gray-400">Победа:</span>
+                                        <span class="text-green-400 font-bold">500 золота, +5 славы</span>
+                                    </div>
+                                    <div class="flex items-center justify-between text-[10px] px-2 py-1 bg-red-900/20 rounded border border-red-900/30">
+                                        <span class="text-gray-400">Поражение:</span>
+                                        <span class="text-red-400 font-bold">-5 славы</span>
+                                    </div>
+                                </div>
+                                <button id="btn-tournament-beginner" onclick="tournamentBattle.startTournament('beginner')" class="btn-medieval w-full py-2 rounded text-xs border-green-700 text-green-300 hover:bg-green-900/30 relative z-10">
                                     <i class="fas fa-swords mr-2"></i> Участвовать
                                 </button>
                             </div>
 
                             <!-- Warrior Tournament -->
-                            <div id="tournament-warrior-card" class="border border-blue-900/50 rounded p-3 bg-blue-900/10">
-                                <div class="flex items-center justify-between mb-2">
+                            <div id="tournament-warrior-card" class="p-4 border border-blue-900/50 rounded-lg bg-gradient-to-br from-blue-900/20 to-black/30 backdrop-blur-sm relative overflow-hidden">
+                                <div class="absolute -right-4 -top-4 text-6xl text-blue-900 opacity-10 pointer-events-none">
+                                    <svg class="w-24 h-24" viewBox="0 0 512.001 512.001" style="fill: currentColor;"><use href="#icon-sword-generic"></use></svg>
+                                </div>
+                                <div class="flex items-center justify-between mb-3 relative z-10">
                                     <div class="flex items-center gap-3">
-                                        <svg class="w-6 h-6 text-blue-400" viewBox="0 0 512.001 512.001" style="fill: currentColor;"><use href="#icon-sword-generic"></use></svg>
+                                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-700/60 to-blue-950 flex items-center justify-center border-2 border-blue-500/60 shadow-[0_0_15px_rgba(59,130,246,0.3)]">
+                                            <svg class="w-6 h-6 text-blue-400" viewBox="0 0 512.001 512.001" style="fill: currentColor;"><use href="#icon-sword-generic"></use></svg>
+                                        </div>
                                         <div>
-                                            <div class="text-sm font-bold text-blue-300">Турнир Воинов</div>
-                                            <div class="text-[10px] text-gray-400">Требуется: Ур. 5+</div>
-                                            <div class="text-[10px] text-green-400">Победа: 2000 золота, +10 славы</div>
-                                            <div class="text-[10px] text-red-400">Поражение: -10 славы</div>
+                                            <div class="text-base font-bold text-blue-300 medieval-font">Турнир Воинов</div>
+                                            <div class="text-[10px] text-gray-400 mt-0.5">Требуется: Ур. 5+</div>
                                         </div>
                                     </div>
                                 </div>
-                                <button id="btn-tournament-warrior" onclick="tournamentBattle.startTournament('warrior')" class="btn-medieval w-full py-2 rounded text-xs">
+                                <div class="space-y-1 mb-3 relative z-10">
+                                    <div class="flex items-center justify-between text-[10px] px-2 py-1 bg-green-900/20 rounded border border-green-900/30">
+                                        <span class="text-gray-400">Победа:</span>
+                                        <span class="text-green-400 font-bold">2000 золота, +10 славы</span>
+                                    </div>
+                                    <div class="flex items-center justify-between text-[10px] px-2 py-1 bg-red-900/20 rounded border border-red-900/30">
+                                        <span class="text-gray-400">Поражение:</span>
+                                        <span class="text-red-400 font-bold">-10 славы</span>
+                                    </div>
+                                </div>
+                                <button id="btn-tournament-warrior" onclick="tournamentBattle.startTournament('warrior')" class="btn-medieval w-full py-2 rounded text-xs border-blue-700 text-blue-300 hover:bg-blue-900/30 relative z-10">
                                     <i class="fas fa-swords mr-2"></i> Участвовать
                                 </button>
                             </div>
 
                             <!-- Champion Tournament -->
-                            <div id="tournament-champion-card" class="border border-red-900/50 rounded p-3 bg-red-900/10">
-                                <div class="flex items-center justify-between mb-2">
+                            <div id="tournament-champion-card" class="p-4 border border-red-900/50 rounded-lg bg-gradient-to-br from-red-900/20 to-black/30 backdrop-blur-sm relative overflow-hidden">
+                                <div class="absolute -right-4 -top-4 text-6xl text-red-900 opacity-10 pointer-events-none">
+                                    <i class="fas fa-trophy"></i>
+                                </div>
+                                <div class="flex items-center justify-between mb-3 relative z-10">
                                     <div class="flex items-center gap-3">
-                                        <i class="fas fa-trophy text-red-400 text-xl"></i>
+                                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-red-700/60 to-red-950 flex items-center justify-center border-2 border-red-500/60 shadow-[0_0_15px_rgba(239,68,68,0.3)]">
+                                            <i class="fas fa-trophy text-red-400 text-xl"></i>
+                                        </div>
                                         <div>
-                                            <div class="text-sm font-bold text-red-300">Турнир Чемпионов</div>
-                                            <div class="text-[10px] text-gray-400">Требуется: Ур. 10+</div>
-                                            <div class="text-[10px] text-green-400">Победа: 5000 золота, +15 славы</div>
-                                            <div class="text-[10px] text-red-400">Поражение: -15 славы</div>
+                                            <div class="text-base font-bold text-red-300 medieval-font">Турнир Чемпионов</div>
+                                            <div class="text-[10px] text-gray-400 mt-0.5">Требуется: Ур. 10+</div>
                                         </div>
                                     </div>
                                 </div>
-                                <button id="btn-tournament-champion" onclick="tournamentBattle.startTournament('champion')" class="btn-medieval w-full py-2 rounded text-xs">
+                                <div class="space-y-1 mb-3 relative z-10">
+                                    <div class="flex items-center justify-between text-[10px] px-2 py-1 bg-green-900/20 rounded border border-green-900/30">
+                                        <span class="text-gray-400">Победа:</span>
+                                        <span class="text-green-400 font-bold">5000 золота, +15 славы</span>
+                                    </div>
+                                    <div class="flex items-center justify-between text-[10px] px-2 py-1 bg-red-900/20 rounded border border-red-900/30">
+                                        <span class="text-gray-400">Поражение:</span>
+                                        <span class="text-red-400 font-bold">-15 славы</span>
+                                    </div>
+                                </div>
+                                <button id="btn-tournament-champion" onclick="tournamentBattle.startTournament('champion')" class="btn-medieval w-full py-2 rounded text-xs border-red-700 text-red-300 hover:bg-red-900/30 relative z-10">
                                     <i class="fas fa-swords mr-2"></i> Участвовать
                                 </button>
                             </div>
@@ -5826,26 +6374,33 @@
                 </div>
 
                 <!-- Escort Work -->
-                <div class="p-3 border border-red-900/50 rounded bg-red-900/10 flex flex-col gap-2">
-                    <div class="flex justify-between items-center">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded bg-[#222] flex items-center justify-center text-red-500 border border-red-900">
-                                <i class="fas fa-route"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-sm text-gray-200">Переправить беженцев</h4>
-                                <p class="text-[10px] text-gray-500">Опасная работа, требует меч</p>
-                            </div>
+                <div class="p-4 border border-red-900/50 rounded-lg bg-gradient-to-br from-red-900/20 to-black/30 backdrop-blur-sm relative overflow-hidden">
+                    <div class="absolute -right-4 -top-4 text-6xl text-red-900 opacity-10 pointer-events-none">
+                        <i class="fas fa-route"></i>
+                    </div>
+                    <div class="flex items-center gap-3 mb-3 relative z-10">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-red-700/60 to-red-950 flex items-center justify-center border-2 border-red-500/60 shadow-[0_0_15px_rgba(239,68,68,0.3)]">
+                            <i class="fas fa-route text-red-400 text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-base text-red-300 medieval-font">Переправить беженцев</h4>
+                            <p class="text-[10px] text-gray-400 mt-0.5">Опасная работа, требует меч</p>
                         </div>
                     </div>
-                    <button id="btn-escort-refugees" onclick="refugeeCamp.startEscort(event)" class="btn-medieval w-full py-2 rounded text-xs border-red-900 text-red-500 hover:bg-red-900/20">
-                        Переправить (Раз в 3 часа)
+                    <button id="btn-escort-refugees" onclick="refugeeCamp.startEscort(event)" class="btn-medieval w-full py-2 rounded text-xs border-red-900 text-red-500 hover:bg-red-900/30 mb-3 relative z-10">
+                        <i class="fas fa-running mr-2"></i> Переправить (Раз в 3 часа)
                     </button>
-                    <div class="flex justify-between text-[10px] text-gray-500 px-1">
-                        <span class="text-red-400">-5 репутация</span>
-                        <span class="text-emerald-400">+8 изумрудов</span>
+                    <div class="flex items-center justify-between text-[10px] relative z-10">
+                        <div class="flex items-center gap-2 px-2 py-1 bg-red-900/20 rounded border border-red-900/30">
+                            <i class="fas fa-arrow-down text-red-400"></i>
+                            <span class="text-red-400 font-bold">-5 репутация</span>
+                        </div>
+                        <div class="flex items-center gap-2 px-2 py-1 bg-emerald-900/20 rounded border border-emerald-900/30">
+                            <i class="far fa-gem text-emerald-400"></i>
+                            <span class="text-emerald-400 font-bold">+8 изумрудов</span>
+                        </div>
                     </div>
-                    <div id="escort-cooldown" class="text-[10px] text-center text-amber-400 hidden"></div>
+                    <div id="escort-cooldown" class="text-[10px] text-center text-amber-400 mt-2 hidden relative z-10"></div>
                 </div>
 
                 <div class="panel p-3 rounded flex items-center justify-between border-gray-600/30 bg-gray-800/10">
@@ -12122,6 +12677,7 @@
                     gameState[resType] = (gameState[resType] || 0) + amount;
                     game.save();
                     ui.updateStats();
+                    this.updateTradePrices(); // Update counts
                     ui.showFloatText(event.target, `-${totalCost} Золота`, "#ff5555");
                 } else {
                     ui.showFloatText(event.target, "Не хватает золота", "#ff5555");
@@ -12144,6 +12700,27 @@
 
             canAddTool: function(toolKey) {
                 return game.hasWeightCapacity(TOOL_WEIGHTS[toolKey] || 0);
+            },
+
+            switchMaterialCategory: function(category) {
+                // Hide all categories
+                document.querySelectorAll('.market-category-content').forEach(el => {
+                    el.classList.add('hidden');
+                });
+                
+                // Remove active from all tabs
+                document.querySelectorAll('.category-tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                
+                // Show selected category
+                const categoryEl = document.getElementById(`market-category-${category}`);
+                if (categoryEl) {
+                    categoryEl.classList.remove('hidden');
+                }
+                
+                // Add active to clicked tab
+                event.target.classList.add('active');
             },
 
             switchTradeMode: function(mode) {
@@ -12171,22 +12748,6 @@
                 this.updateTradePrices();
             },
 
-            switchResourceCategory: function(category) {
-                // Hide all categories
-                document.getElementById('market-resources-food').classList.add('hidden');
-                document.getElementById('market-resources-materials').classList.add('hidden');
-                document.getElementById('market-resources-nature').classList.add('hidden');
-                
-                // Show selected category
-                document.getElementById(`market-resources-${category}`).classList.remove('hidden');
-                
-                // Update tab styles
-                document.querySelectorAll('[id^="tab-resource-"]').forEach(tab => {
-                    tab.classList.remove('active');
-                });
-                document.getElementById(`tab-resource-${category}`).classList.add('active');
-            },
-
             updateTradePrices: function() {
                 const resourceList = Object.keys(RESOURCE_NAMES);
                 resourceList.forEach(resource => {
@@ -12195,6 +12756,12 @@
                         const base = this.getResourcePrice(resource);
                         const price = this.tradeMode === 'buy' ? base * 2 : base;
                         priceEl.innerText = price;
+                    }
+                    
+                    // Update resource count
+                    const countEl = document.getElementById(`market-count-${resource}`);
+                    if (countEl) {
+                        countEl.innerText = gameState[resource] || 0;
                     }
                 });
             },
@@ -12221,6 +12788,7 @@
 
                     game.save();
                     ui.updateStats();
+                    this.updateTradePrices(); // Update counts
                     ui.showFloatText(event.target, `+${totalGain} Золота`, "#c8aa6e");
                 } else {
                     ui.showFloatText(event.target, "Не хватает ресурсов", "#ff5555");
