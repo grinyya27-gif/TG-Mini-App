@@ -1060,7 +1060,7 @@
                     <i class="fas fa-virus text-3xl text-red-400"></i>
                 </div>
                 <h2 class="medieval-font text-2xl text-red-300 mb-2">Вы заболели корью!</h2>
-                <p class="text-sm text-[#a0a0a0] mb-4">Вы подхватили опасную болезнь в Тёмном лесу!</p>
+                <p class="text-sm text-[#a0a0a0] mb-4">Вы подхватили опасную болезнь от старого нищего!</p>
                 <div class="panel p-3 rounded bg-black/40 border border-red-900/50 mb-4 text-left">
                     <div class="text-[10px] text-red-400 uppercase tracking-widest mb-2">⚠️ Опасность</div>
                     <p class="text-xs text-[#e0e0e0] leading-relaxed mb-2">
@@ -1071,6 +1071,33 @@
                     </p>
                 </div>
                 <button onclick="ui.dismissMeaslesWarning()" class="btn-medieval w-full py-2 rounded text-xs border-red-500 text-red-300">
+                    Понял
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tetanus Infected Modal -->
+    <div id="modal-tetanus-infected" class="modal-overlay">
+        <div class="modal-content rounded-lg p-6 text-center relative overflow-hidden border-orange-500">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-orange-400 to-transparent"></div>
+            <div class="absolute inset-0 opacity-20 pointer-events-none bg-[radial-gradient(circle_at_top,rgba(249,115,22,0.2),transparent_60%)]"></div>
+            <div class="relative">
+                <div class="w-16 h-16 rounded-full border border-orange-500/60 bg-[#111] flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-skull-crossbones text-3xl text-orange-400"></i>
+                </div>
+                <h2 class="medieval-font text-2xl text-orange-300 mb-2">Вы заболели столбняком!</h2>
+                <p class="text-sm text-[#a0a0a0] mb-4">Вы подхватили опасную болезнь в Тёмном лесу!</p>
+                <div class="panel p-3 rounded bg-black/40 border border-orange-900/50 mb-4 text-left">
+                    <div class="text-[10px] text-orange-400 uppercase tracking-widest mb-2">⚠️ Критическая опасность</div>
+                    <p class="text-xs text-[#e0e0e0] leading-relaxed mb-2">
+                        Теперь вы будете терять <span class="text-orange-400 font-bold">-1 ХП каждые 10 секунд</span>.
+                    </p>
+                    <p class="text-xs text-[#a0a0a0] leading-relaxed">
+                        Только <span class="text-[#c8aa6e] font-semibold">целитель из Хижины лекаря</span> в Тёмном лесу может вылечить эту болезнь за <span class="text-yellow-400 font-semibold">1000 золотых</span>.
+                    </p>
+                </div>
+                <button onclick="ui.dismissTetanusWarning()" class="btn-medieval w-full py-2 rounded text-xs border-orange-500 text-orange-300">
                     Понял
                 </button>
             </div>
@@ -2804,16 +2831,29 @@
                 </div>
 
                 <!-- Gather Resources -->
-                <div class="p-3 border border-[#333] rounded bg-black/20 flex flex-col gap-2">
-                    <div class="flex justify-between items-center">
+                <div class="p-3 border border-emerald-900/50 rounded bg-emerald-900/10 flex flex-col gap-2 relative overflow-hidden">
+                    <div class="absolute -right-2 -top-2 text-6xl text-emerald-900 opacity-20 pointer-events-none">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <div class="flex justify-between items-center z-10">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded bg-[#222] flex items-center justify-center text-emerald-500">
+                            <div class="w-10 h-10 rounded bg-[#222] flex items-center justify-center text-emerald-500 border border-emerald-900">
                                 <i class="fas fa-leaf"></i>
                             </div>
                             <div>
                                 <h4 class="font-bold text-sm text-gray-200">Собирательство</h4>
                                 <p class="text-[10px] text-gray-500">Палки, камни, травы и грибы.</p>
                             </div>
+                        </div>
+                    </div>
+                    <button onclick="locations.forestGather(event)" class="btn-medieval w-full py-2 rounded text-xs border-emerald-900 text-emerald-500 hover:bg-emerald-900/20 z-10">
+                        Искать (-5 HP)
+                    </button>
+                    <div class="flex justify-between text-[10px] text-gray-500 px-1 z-10">
+                        <span>Награда: Ресурсы</span>
+                        <span>+3 XP</span>
+                    </div>
+                </div>
                         </div>
                     </div>
                     <button onclick="locations.forestGather(event)" class="btn-medieval w-full py-2 rounded text-xs border-emerald-900 text-emerald-500 hover:bg-emerald-900/20">
@@ -2967,6 +3007,24 @@
                                 Купить
                             </button>
                         </div>
+                    </div>
+                </div>
+                
+                <!-- Tetanus Treatment Section -->
+                <div id="tetanus-treatment-section" class="panel p-4 rounded border-orange-700/50 bg-gradient-to-br from-orange-950/30 to-orange-900/20">
+                    <div class="flex items-center gap-2 mb-3">
+                        <i class="fas fa-skull-crossbones text-orange-400"></i>
+                        <h3 class="text-base font-bold text-orange-300 medieval-font">Лечение столбняка</h3>
+                    </div>
+                    <p class="text-xs text-orange-400/80 mb-3">Опасная болезнь из тёмного леса. Требует дорогого лечения.</p>
+                    <div class="flex items-center justify-between">
+                        <div class="text-xs text-yellow-400 flex items-center gap-1">
+                            <i class="fas fa-coins"></i>
+                            <span class="font-bold">1000 золотых</span>
+                        </div>
+                        <button onclick="hunterHut.cureTetanus(event)" class="btn-medieval px-4 py-1.5 rounded text-xs border-orange-700 text-orange-400">
+                            Вылечиться
+                        </button>
                     </div>
                 </div>
             </div>
@@ -3245,7 +3303,7 @@
             <!-- Tailor NPC -->
             <div class="panel p-4 rounded-lg border-pink-500/40 bg-black/30 backdrop-blur-sm mb-4">
                 <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-full border-2 border-purple-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(124,58,237,0.3), rgba(0,0,0,0.5));">
+                    <div class="w-12 h-12 rounded-full border-2 border-pink-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(236,72,153,0.3), rgba(0,0,0,0.5));">
                             <img src="https://i.postimg.cc/50MPG1q6/IMG-4667.png" alt="Питер" class="w-full h-full object-cover object-top">
                         </div>
                     <div>
@@ -3433,7 +3491,7 @@
             <!-- Book House NPC -->
             <div class="panel p-4 rounded-lg border-blue-500/40 bg-black/30 backdrop-blur-sm mb-4">
                 <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-full border-2 border-pink-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(236,72,153,0.3), rgba(0,0,0,0.5));">
+                    <div class="w-12 h-12 rounded-full border-2 border-blue-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(59,130,246,0.3), rgba(0,0,0,0.5));">
                             <img src="https://i.postimg.cc/yxdCDXtp/image-Picsart-Background-Remover.png" alt="Лили" class="w-full h-full object-cover object-top">
                         </div>
                     <div>
@@ -3754,12 +3812,21 @@
 
             <!-- Tavern NPC -->
             <div class="panel p-4 rounded-lg border-orange-500/40 bg-black/30 backdrop-blur-sm mb-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-full border-2 border-orange-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(249,115,22,0.3), rgba(0,0,0,0.5));">
+                <div class="flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3 flex-1">
+                        <div class="w-12 h-12 rounded-full border-2 border-orange-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(249,115,22,0.3), rgba(0,0,0,0.5));">
                             <img src="https://i.postimg.cc/vTr8kPhR/IMG-4620.png" alt="Бен" class="w-full h-full object-cover object-top">
                         </div>
-                    <div>
-                        <div class="text-base text-[#e0e0e0] font-bold medieval-font">Старый Бен</div>
+                        <div>
+                            <div class="text-base text-[#e0e0e0] font-bold medieval-font">Старый Бен</div>
+                            <div class="text-[10px] text-[#a0a0a0]">Трактирщик</div>
+                        </div>
+                    </div>
+                    <button onclick="dialogue.start('ben')" class="px-4 py-1.5 rounded text-xs border border-orange-700/40 bg-black/30 text-orange-300 hover:bg-orange-900/20 backdrop-blur-sm whitespace-nowrap">
+                        Поговорить
+                    </button>
+                </div>
+            </div>
                         <div class="text-[10px] text-[#a0a0a0]">Трактирщик</div>
                     </div>
                 </div>
@@ -4288,103 +4355,130 @@
             </div>
 
             <!-- Resources Trade -->
-            <div class="rounded-lg p-4 mt-4 border border-amber-700/30" >
+            <div class="panel rounded-lg p-4 mt-4 bg-gradient-to-br from-amber-900/10 to-black/20 backdrop-blur-sm border border-amber-700/30">
                 <div class="flex items-center justify-between mb-3">
-                    <h3 class="medieval-font text-sm text-[#c8aa6e]">Материалы</h3>
+                    <div class="flex items-center gap-2">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-700/40 to-amber-950 flex items-center justify-center border border-amber-600/50">
+                            <i class="fas fa-boxes-stacked text-amber-400"></i>
+                        </div>
+                        <h3 class="medieval-font text-base text-[#c8aa6e]">Материалы</h3>
+                    </div>
                     <div class="flex gap-2">
                         <button onclick="market.switchTradeMode('sell')" id="market-trade-sell" class="sub-tab active">Продажа</button>
                         <button onclick="market.switchTradeMode('buy')" id="market-trade-buy" class="sub-tab">Покупка</button>
                     </div>
                 </div>
 
-                <div id="market-trade-grid" class="grid grid-cols-2 gap-3">
-                    <div class="resource-card p-2 rounded flex flex-col items-center text-center border-blue-900/30">
-                        <i class="fas fa-fish text-[#c8aa6e] mb-1"></i>
-                        <div class="text-xs text-[#e0e0e0]">Рыба</div>
+                <!-- Category Tabs -->
+                <div class="flex items-center gap-2 overflow-x-auto pb-2 mb-3 no-scrollbar">
+                    <button onclick="market.switchResourceCategory('food')" id="tab-resource-food" class="sub-tab active" style="font-size: 10px;">
+                        <i class="fas fa-fish mr-1"></i>Еда
+                    </button>
+                    <button onclick="market.switchResourceCategory('materials')" id="tab-resource-materials" class="sub-tab" style="font-size: 10px;">
+                        <i class="fas fa-cube mr-1"></i>Сырьё
+                    </button>
+                    <button onclick="market.switchResourceCategory('nature')" id="tab-resource-nature" class="sub-tab" style="font-size: 10px;">
+                        <i class="fas fa-leaf mr-1"></i>Природа
+                    </button>
+                </div>
+
+                <!-- Food Category -->
+                <div id="market-resources-food" class="grid grid-cols-2 gap-3">
+                    <div class="resource-card p-2 rounded flex flex-col items-center text-center bg-blue-900/10 border border-blue-900/30">
+                        <i class="fas fa-fish text-blue-400 mb-1 text-lg"></i>
+                        <div class="text-xs text-[#e0e0e0] font-bold">Рыба</div>
                         <div class="text-[10px] text-[#a0a0a0] mb-1"><span id="price-fish">5</span> <i class="fas fa-coins"></i></div>
                         <div class="text-[10px] text-blue-300 mb-1">У вас: <span id="market-count-fish">0</span></div>
                         <div class="flex gap-1 w-full mb-1">
-                            <input id="trade-input-fish" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#333] text-center text-[10px] text-white rounded p-0 outline-none focus:border-[#c8aa6e]">
-                            <button onclick="market.setMax('fish')" class="w-auto px-2 border border-[#444] rounded text-[10px] text-gray-400 hover:text-white" >Max</button>
+                            <input id="trade-input-fish" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#444] text-center text-[10px] text-white rounded p-1 outline-none focus:border-blue-500">
+                            <button onclick="market.setMax('fish')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
                         </div>
-                        <button onclick="market.sellFromInput('fish')" id="btn-trade-fish" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-amber-900/20 transition-colors">Продать</button>
+                        <button onclick="market.sellFromInput('fish')" id="btn-trade-fish" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-blue-900/30 transition-colors">Продать</button>
                     </div>
-                    <div class="resource-card p-2 rounded flex flex-col items-center text-center border-yellow-900/30">
-                        <i class="fas fa-wheat-awn text-[#c8aa6e] mb-1"></i>
-                        <div class="text-xs text-[#e0e0e0]">Пшеница</div>
+                    <div class="resource-card p-2 rounded flex flex-col items-center text-center bg-yellow-900/10 border border-yellow-900/30">
+                        <i class="fas fa-wheat-awn text-yellow-400 mb-1 text-lg"></i>
+                        <div class="text-xs text-[#e0e0e0] font-bold">Пшеница</div>
                         <div class="text-[10px] text-[#a0a0a0] mb-1"><span id="price-wheat">15</span> <i class="fas fa-coins"></i></div>
                         <div class="text-[10px] text-blue-300 mb-1">У вас: <span id="market-count-wheat">0</span></div>
                         <div class="flex gap-1 w-full mb-1">
-                            <input id="trade-input-wheat" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#333] text-center text-[10px] text-white rounded p-0 outline-none focus:border-[#c8aa6e]">
-                            <button onclick="market.setMax('wheat')" class="w-auto px-2 border border-[#444] rounded text-[10px] text-gray-400 hover:text-white" >Max</button>
+                            <input id="trade-input-wheat" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#444] text-center text-[10px] text-white rounded p-1 outline-none focus:border-yellow-500">
+                            <button onclick="market.setMax('wheat')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
                         </div>
-                        <button onclick="market.sellFromInput('wheat')" id="btn-trade-wheat" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-amber-900/20 transition-colors">Продать</button>
+                        <button onclick="market.sellFromInput('wheat')" id="btn-trade-wheat" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-yellow-900/30 transition-colors">Продать</button>
                     </div>
-                    <div class="resource-card p-2 rounded flex flex-col items-center text-center border-gray-700/30">
-                        <i class="fas fa-cube text-[#c8aa6e] mb-1"></i>
-                        <div class="text-xs text-[#e0e0e0]">Руда</div>
+                </div>
+
+                <!-- Materials Category -->
+                <div id="market-resources-materials" class="hidden grid grid-cols-2 gap-3">
+                    <div class="resource-card p-2 rounded flex flex-col items-center text-center bg-gray-700/10 border border-gray-700/30">
+                        <i class="fas fa-cube text-gray-400 mb-1 text-lg"></i>
+                        <div class="text-xs text-[#e0e0e0] font-bold">Руда</div>
                         <div class="text-[10px] text-[#a0a0a0] mb-1"><span id="price-ore">40</span> <i class="fas fa-coins"></i></div>
                         <div class="text-[10px] text-blue-300 mb-1">У вас: <span id="market-count-ore">0</span></div>
                         <div class="flex gap-1 w-full mb-1">
-                            <input id="trade-input-ore" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#333] text-center text-[10px] text-white rounded p-0 outline-none focus:border-[#c8aa6e]">
-                            <button onclick="market.setMax('ore')" class="w-auto px-2 border border-[#444] rounded text-[10px] text-gray-400 hover:text-white" >Max</button>
+                            <input id="trade-input-ore" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#444] text-center text-[10px] text-white rounded p-1 outline-none focus:border-gray-500">
+                            <button onclick="market.setMax('ore')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
                         </div>
-                        <button onclick="market.sellFromInput('ore')" id="btn-trade-ore" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-amber-900/20 transition-colors">Продать</button>
+                        <button onclick="market.sellFromInput('ore')" id="btn-trade-ore" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-gray-900/30 transition-colors">Продать</button>
                     </div>
-                    <div class="resource-card p-2 rounded flex flex-col items-center text-center border-red-900/30">
-                        <i class="fas fa-scroll text-[#c8aa6e] mb-1"></i>
-                        <div class="text-xs text-[#e0e0e0]">Кожа</div>
+                    <div class="resource-card p-2 rounded flex flex-col items-center text-center bg-red-900/10 border border-red-900/30">
+                        <i class="fas fa-scroll text-red-400 mb-1 text-lg"></i>
+                        <div class="text-xs text-[#e0e0e0] font-bold">Кожа</div>
                         <div class="text-[10px] text-[#a0a0a0] mb-1"><span id="price-leather">100</span> <i class="fas fa-coins"></i></div>
                         <div class="text-[10px] text-blue-300 mb-1">У вас: <span id="market-count-leather">0</span></div>
                         <div class="flex gap-1 w-full mb-1">
-                            <input id="trade-input-leather" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#333] text-center text-[10px] text-white rounded p-0 outline-none focus:border-[#c8aa6e]">
-                            <button onclick="market.setMax('leather')" class="w-auto px-2 border border-[#444] rounded text-[10px] text-gray-400 hover:text-white" >Max</button>
+                            <input id="trade-input-leather" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#444] text-center text-[10px] text-white rounded p-1 outline-none focus:border-red-500">
+                            <button onclick="market.setMax('leather')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
                         </div>
-                        <button onclick="market.sellFromInput('leather')" id="btn-trade-leather" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-amber-900/20 transition-colors">Продать</button>
+                        <button onclick="market.sellFromInput('leather')" id="btn-trade-leather" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-red-900/30 transition-colors">Продать</button>
                     </div>
-                    <div class="resource-card p-2 rounded flex flex-col items-center text-center border-amber-900/30">
-                        <i class="fas fa-tree text-[#c8aa6e] mb-1"></i>
-                        <div class="text-xs text-[#e0e0e0]">Палки</div>
+                </div>
+
+                <!-- Nature Category -->
+                <div id="market-resources-nature" class="hidden grid grid-cols-2 gap-3">
+                    <div class="resource-card p-2 rounded flex flex-col items-center text-center bg-amber-900/10 border border-amber-900/30">
+                        <i class="fas fa-tree text-amber-400 mb-1 text-lg"></i>
+                        <div class="text-xs text-[#e0e0e0] font-bold">Палки</div>
                         <div class="text-[10px] text-[#a0a0a0] mb-1"><span id="price-wood">5</span> <i class="fas fa-coins"></i></div>
                         <div class="text-[10px] text-blue-300 mb-1">У вас: <span id="market-count-wood">0</span></div>
                         <div class="flex gap-1 w-full mb-1">
-                            <input id="trade-input-wood" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#333] text-center text-[10px] text-white rounded p-0 outline-none focus:border-[#c8aa6e]">
-                            <button onclick="market.setMax('wood')" class="w-auto px-2 border border-[#444] rounded text-[10px] text-gray-400 hover:text-white" >Max</button>
+                            <input id="trade-input-wood" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#444] text-center text-[10px] text-white rounded p-1 outline-none focus:border-amber-500">
+                            <button onclick="market.setMax('wood')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
                         </div>
-                        <button onclick="market.sellFromInput('wood')" id="btn-trade-wood" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-amber-900/20 transition-colors">Продать</button>
+                        <button onclick="market.sellFromInput('wood')" id="btn-trade-wood" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-amber-900/30 transition-colors">Продать</button>
                     </div>
-                    <div class="resource-card p-2 rounded flex flex-col items-center text-center border-gray-600/30">
-                        <i class="fas fa-shapes text-gray-400 mb-1"></i>
-                        <div class="text-xs text-[#e0e0e0]">Камни</div>
+                    <div class="resource-card p-2 rounded flex flex-col items-center text-center bg-gray-600/10 border border-gray-600/30">
+                        <i class="fas fa-shapes text-gray-400 mb-1 text-lg"></i>
+                        <div class="text-xs text-[#e0e0e0] font-bold">Камни</div>
                         <div class="text-[10px] text-[#a0a0a0] mb-1"><span id="price-stone">5</span> <i class="fas fa-coins"></i></div>
                         <div class="text-[10px] text-blue-300 mb-1">У вас: <span id="market-count-stone">0</span></div>
                         <div class="flex gap-1 w-full mb-1">
-                            <input id="trade-input-stone" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#333] text-center text-[10px] text-white rounded p-0 outline-none focus:border-[#c8aa6e]">
-                            <button onclick="market.setMax('stone')" class="w-auto px-2 border border-[#444] rounded text-[10px] text-gray-400 hover:text-white" >Max</button>
+                            <input id="trade-input-stone" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#444] text-center text-[10px] text-white rounded p-1 outline-none focus:border-gray-500">
+                            <button onclick="market.setMax('stone')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
                         </div>
-                        <button onclick="market.sellFromInput('stone')" id="btn-trade-stone" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-amber-900/20 transition-colors">Продать</button>
+                        <button onclick="market.sellFromInput('stone')" id="btn-trade-stone" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-gray-900/30 transition-colors">Продать</button>
                     </div>
-                    <div class="resource-card p-2 rounded flex flex-col items-center text-center border-green-900/30">
-                        <i class="fas fa-leaf text-green-400 mb-1"></i>
-                        <div class="text-xs text-[#e0e0e0]">Травы</div>
+                    <div class="resource-card p-2 rounded flex flex-col items-center text-center bg-green-900/10 border border-green-900/30">
+                        <i class="fas fa-leaf text-green-400 mb-1 text-lg"></i>
+                        <div class="text-xs text-[#e0e0e0] font-bold">Травы</div>
                         <div class="text-[10px] text-[#a0a0a0] mb-1"><span id="price-herbs">10</span> <i class="fas fa-coins"></i></div>
                         <div class="text-[10px] text-blue-300 mb-1">У вас: <span id="market-count-herbs">0</span></div>
                         <div class="flex gap-1 w-full mb-1">
-                            <input id="trade-input-herbs" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#333] text-center text-[10px] text-white rounded p-0 outline-none focus:border-[#c8aa6e]">
-                            <button onclick="market.setMax('herbs')" class="w-auto px-2 border border-[#444] rounded text-[10px] text-gray-400 hover:text-white" >Max</button>
+                            <input id="trade-input-herbs" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#444] text-center text-[10px] text-white rounded p-1 outline-none focus:border-green-500">
+                            <button onclick="market.setMax('herbs')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
                         </div>
-                        <button onclick="market.sellFromInput('herbs')" id="btn-trade-herbs" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-amber-900/20 transition-colors">Продать</button>
+                        <button onclick="market.sellFromInput('herbs')" id="btn-trade-herbs" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-green-900/30 transition-colors">Продать</button>
                     </div>
-                    <div class="resource-card p-2 rounded flex flex-col items-center text-center border-purple-900/30">
-                        <i class="fas fa-spider text-purple-400 mb-1"></i>
-                        <div class="text-xs text-[#e0e0e0]">Грибы</div>
+                    <div class="resource-card p-2 rounded flex flex-col items-center text-center bg-purple-900/10 border border-purple-900/30">
+                        <i class="fas fa-mushroom text-purple-400 mb-1 text-lg"></i>
+                        <div class="text-xs text-[#e0e0e0] font-bold">Грибы</div>
                         <div class="text-[10px] text-[#a0a0a0] mb-1"><span id="price-mushrooms">25</span> <i class="fas fa-coins"></i></div>
                         <div class="text-[10px] text-blue-300 mb-1">У вас: <span id="market-count-mushrooms">0</span></div>
                         <div class="flex gap-1 w-full mb-1">
-                            <input id="trade-input-mushrooms" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#333] text-center text-[10px] text-white rounded p-0 outline-none focus:border-[#c8aa6e]">
-                            <button onclick="market.setMax('mushrooms')" class="w-auto px-2 border border-[#444] rounded text-[10px] text-gray-400 hover:text-white" >Max</button>
+                            <input id="trade-input-mushrooms" type="number" min="1" value="1" class="w-full bg-[#111] border border-[#444] text-center text-[10px] text-white rounded p-1 outline-none focus:border-purple-500">
+                            <button onclick="market.setMax('mushrooms')" class="w-auto px-2 bg-[#222] border border-[#444] rounded text-[10px] text-gray-400 hover:text-white">Max</button>
                         </div>
-                        <button onclick="market.sellFromInput('mushrooms')" id="btn-trade-mushrooms" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-amber-900/20 transition-colors">Продать</button>
+                        <button onclick="market.sellFromInput('mushrooms')" id="btn-trade-mushrooms" class="btn-ghost w-full rounded text-[10px] py-1 hover:bg-purple-900/30 transition-colors">Продать</button>
                     </div>
                 </div>
             </div>
@@ -5616,7 +5710,7 @@
                             <div id="tournament-warrior-card" class="border border-blue-900/50 rounded p-3 bg-blue-900/10">
                                 <div class="flex items-center justify-between mb-2">
                                     <div class="flex items-center gap-3">
-                                        <i class="fas fa-sword text-blue-400 text-xl"></i>
+                                        <svg class="w-6 h-6 text-blue-400" viewBox="0 0 512.001 512.001" style="fill: currentColor;"><use href="#icon-sword-generic"></use></svg>
                                         <div>
                                             <div class="text-sm font-bold text-blue-300">Турнир Воинов</div>
                                             <div class="text-[10px] text-gray-400">Требуется: Ур. 5+</div>
@@ -6957,22 +7051,22 @@
                         ]
                     },
                     about_forest: {
-                        text: "Тёмный лес — место опасное, но и богатое. Здесь можно найти редкие травы, грибы, ценную кожу зверей... Но будь осторожен. Лес таит в себе болезни. Корь — самая распространённая из них. Она медленно забирает жизненные силы. Без лечения долго не протянешь.",
+                        text: "Тёмный лес — место опасное, но и богатое. Здесь можно найти редкие травы, грибы, ценную кожу зверей... Но будь осторожен. Лес таит в себе болезни. Столбняк — самая опасная из них. Она быстро забирает жизненные силы. Без лечения долго не протянешь.",
                         options: [
-                            { text: "Как защититься от кори?", next: "about_measles" },
+                            { text: "Как защититься от столбняка?", next: "about_tetanus" },
                             { text: "Какие ещё опасности тут есть?", next: "about_dangers" },
                             { text: "Понятно, спасибо", next: "regular" }
                         ]
                     },
-                    about_measles: {
-                        text: "Корь распространяется через воздух в глубине леса. Шанс невелик, но он есть. Если заболеешь — найди Эльдара в Деревне. Только он умеет лечить эту хворь. А я тут продаю амулеты, которые помогут тебе в путешествиях.",
+                    about_tetanus: {
+                        text: "Столбняк распространяется через раны и царапины в глубине леса. Шанс невелик, но он есть. Если заболеешь — приходи ко мне в хижину. За 1000 золотых я смогу вылечить тебя. А ещё я продаю амулеты, которые помогут тебе в путешествиях.",
                         options: [
                             { text: "Расскажи про амулеты", next: "about_amulets" },
                             { text: "Хорошо знать", next: "regular" }
                         ]
                     },
                     about_dangers: {
-                        text: "Помимо кори, в лесу водятся волки, медведи и кое-что похуже... Древние создания, о которых лучше не знать. Если у тебя нет арбалета, не углубляйся слишком далеко. И следи за здоровьем — раненый путник привлекает хищников.",
+                        text: "Помимо столбняка, в лесу водятся волки, медведи и кое-что похуже... Древние создания, о которых лучше не знать. Если у тебя нет арбалета, не углубляйся слишком далеко. И следи за здоровьем — раненый путник привлекает хищников.",
                         options: [
                             { text: "Я буду осторожен", next: "regular" },
                             { text: "Расскажи про амулеты", next: "about_amulets" }
@@ -8124,6 +8218,8 @@
                         game.save();
                         ui.updateStats();
                         ui.showFloatText(document.body, "-10 золота", "#fbbf24");
+                        // Шанс заразиться корью при контакте с нищим
+                        disease.infectMeaslesFromBeggar();
                     }
                 }
                 if (action === 'beggar_give_50') {
@@ -8133,6 +8229,8 @@
                         game.save();
                         ui.updateStats();
                         ui.showFloatText(document.body, "-50 золота", "#fbbf24");
+                        // Шанс заразиться корью при контакте с нищим
+                        disease.infectMeaslesFromBeggar();
                     }
                 }
                 if (action === 'beggar_give_100') {
@@ -8142,7 +8240,13 @@
                         game.save();
                         ui.updateStats();
                         ui.showFloatText(document.body, "-100 золота", "#fbbf24");
+                        // Шанс заразиться корью при контакте с нищим
+                        disease.infectMeaslesFromBeggar();
                     }
+                }
+                if (action === 'beggar_refuse') {
+                    // Даже при отказе есть шанс заразиться от контакта
+                    disease.infectMeaslesFromBeggar();
                 }
                 if (action === 'play_dice') {
                     if (gameState.gold >= 500) {
@@ -11614,8 +11718,8 @@
                     quests.onEvent('gather', k, gained[k]);
                 });
                 
-                // Chance to get measles
-                disease.tryInfect();
+                // Шанс заразиться столбняком
+                disease.tryInfectTetanus();
                 
                 // SECRET: Hank's Amulet (0.5% chance, only if quest is active and not found yet)
                 if (gameState.npcStates && gameState.npcStates.hankAmuletActive && 
@@ -12065,6 +12169,22 @@
                     }
                 });
                 this.updateTradePrices();
+            },
+
+            switchResourceCategory: function(category) {
+                // Hide all categories
+                document.getElementById('market-resources-food').classList.add('hidden');
+                document.getElementById('market-resources-materials').classList.add('hidden');
+                document.getElementById('market-resources-nature').classList.add('hidden');
+                
+                // Show selected category
+                document.getElementById(`market-resources-${category}`).classList.remove('hidden');
+                
+                // Update tab styles
+                document.querySelectorAll('[id^="tab-resource-"]').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                document.getElementById(`tab-resource-${category}`).classList.add('active');
             },
 
             updateTradePrices: function() {
@@ -12788,8 +12908,10 @@
         const disease = {
             startTick: function() {
                 setInterval(() => {
+                    const now = Date.now();
+                    
+                    // Корь: -1 HP каждые 20 секунд
                     if (gameState.hasMeasles && gameState.hp > 1) {
-                        const now = Date.now();
                         if (now - (gameState.lastMeaslesTick || 0) >= 20000) {
                             gameState.hp = Math.max(1, gameState.hp - 1);
                             gameState.lastMeaslesTick = now;
@@ -12797,17 +12919,46 @@
                             ui.updateStats();
                         }
                     }
+                    
+                    // Столбняк: -1 HP каждые 10 секунд
+                    if (gameState.hasTetanus && gameState.hp > 1) {
+                        if (now - (gameState.lastTetanusTick || 0) >= 10000) {
+                            gameState.hp = Math.max(1, gameState.hp - 1);
+                            gameState.lastTetanusTick = now;
+                            game.save();
+                            ui.updateStats();
+                        }
+                    }
                 }, 1000);
             },
             
-            tryInfect: function() {
-                // 1% chance to get measles in the forest
+            // Заражение столбняком в темном лесу
+            tryInfectTetanus: function() {
+                // 1% шанс заразиться столбняком в лесу
+                if (!gameState.hasTetanus && Math.random() < 0.01) {
+                    gameState.hasTetanus = true;
+                    gameState.lastTetanusTick = Date.now();
+                    game.save();
+                    
+                    // Показываем модальное окно
+                    const modal = document.getElementById('modal-tetanus-infected');
+                    if (modal) {
+                        modal.classList.add('open');
+                    }
+                    
+                    village.updateUI();
+                }
+            },
+            
+            // Заражение корью от нищего
+            infectMeaslesFromBeggar: function() {
+                // 1% шанс заразиться корью при контакте с нищим
                 if (!gameState.hasMeasles && Math.random() < 0.01) {
                     gameState.hasMeasles = true;
                     gameState.lastMeaslesTick = Date.now();
                     game.save();
                     
-                    // Show modal window
+                    // Показываем модальное окно
                     const modal = document.getElementById('modal-measles-infected');
                     if (modal) {
                         modal.classList.add('open');
@@ -12878,6 +13029,23 @@
                 event.target.textContent = "Куплен";
                 event.target.disabled = true;
                 event.target.classList.add('opacity-50');
+            },
+            
+            cureTetanus: function(event) {
+                if (!gameState.hasTetanus) {
+                    ui.showFloatText(event.target, "Вы не болеете столбняком", "#34d399");
+                    return;
+                }
+                
+                if (gameState.gold >= 1000) {
+                    gameState.gold -= 1000;
+                    gameState.hasTetanus = false;
+                    game.save();
+                    ui.updateStats();
+                    ui.showFloatText(event.target, "Вы исцелены от столбняка!", "#34d399");
+                } else {
+                    ui.showFloatText(event.target, "Нужно 1000 золотых", "#ff5555");
+                }
             }
         };
 
@@ -14395,6 +14563,11 @@
 
             dismissMeaslesWarning: function() {
                 const modal = document.getElementById('modal-measles-infected');
+                if (modal) modal.classList.remove('open');
+            },
+            
+            dismissTetanusWarning: function() {
+                const modal = document.getElementById('modal-tetanus-infected');
                 if (modal) modal.classList.remove('open');
             },
 
