@@ -173,6 +173,12 @@
             z-index: 50;
         }
         
+        @keyframes diceRoll {
+            0% { transform: scale(0.5) rotate(0deg); opacity: 0; }
+            50% { transform: scale(1.1) rotate(180deg); }
+            100% { transform: scale(1) rotate(360deg); opacity: 1; }
+        }
+        
         /* Grid background pattern */
         .bg-pattern {
             background-image: radial-gradient(#2a2a2e 1px, transparent 1px);
@@ -1605,6 +1611,105 @@
         </div>
     </div>
 
+    <!-- Dice Game Modal -->
+    <div id="modal-dice-game" class="modal-overlay">
+        <div class="modal-content rounded-xl p-0 relative overflow-hidden text-left flex flex-col max-h-[90vh] max-w-2xl shadow-2xl" style="background: linear-gradient(135deg, rgba(26,26,29,0.98), rgba(42,42,46,0.98)); width: 95%; max-width: 600px;">
+            <!-- Header -->
+            <div class="relative h-16 overflow-hidden border-b border-yellow-900/30">
+                <div class="absolute inset-0 bg-gradient-to-r from-yellow-900/20 via-yellow-700/20 to-yellow-900/20"></div>
+                <div class="relative z-10 h-full flex items-center justify-between px-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-600/30 to-yellow-900/30 flex items-center justify-center border-2 border-yellow-500/50">
+                            <i class="fas fa-dice text-yellow-400 text-lg"></i>
+                        </div>
+                        <div>
+                            <h2 class="medieval-font text-xl text-yellow-300">Игра в Кости</h2>
+                            <p class="text-[10px] text-yellow-400/70">Испытайте свою удачу</p>
+                        </div>
+                    </div>
+                    <button onclick="diceGame.close()" class="w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm border border-white/10 flex items-center justify-center text-white/70 hover:text-white hover:bg-black/60 transition-all">
+                        <i class="fas fa-times text-sm"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Game Area -->
+            <div class="p-6 space-y-4 overflow-y-auto" style="max-height: calc(90vh - 16rem);">
+                <!-- Player Section -->
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-green-600/30 to-green-900/30 flex items-center justify-center border border-green-500/50">
+                                <i class="fas fa-user text-green-400 text-sm"></i>
+                            </div>
+                            <span class="text-sm text-green-300 medieval-font">Вы</span>
+                        </div>
+                        <div class="text-sm">
+                            <span class="text-gray-400">Сумма: </span>
+                            <span id="player-dice-total" class="text-green-300 font-bold">0</span>
+                        </div>
+                    </div>
+                    <div id="player-dice-area" class="flex gap-3 min-h-[100px] p-4 rounded-lg bg-black/30 border border-green-900/30 items-center justify-center">
+                        <div class="text-gray-500 text-sm">Бросьте кости</div>
+                    </div>
+                </div>
+
+                <!-- Gambler Section -->
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-red-600/30 to-red-900/30 flex items-center justify-center border border-red-500/50">
+                                <i class="fas fa-user-tie text-red-400 text-sm"></i>
+                            </div>
+                            <span class="text-sm text-red-300 medieval-font">Игрок</span>
+                        </div>
+                        <div class="text-sm">
+                            <span class="text-gray-400">Сумма: </span>
+                            <span id="gambler-dice-total" class="text-red-300 font-bold">0</span>
+                        </div>
+                    </div>
+                    <div id="gambler-dice-area" class="flex gap-3 min-h-[100px] p-4 rounded-lg bg-black/30 border border-red-900/30 items-center justify-center">
+                        <div class="text-gray-500 text-sm">Ожидание броска</div>
+                    </div>
+                </div>
+
+                <!-- Game Message -->
+                <div id="dice-game-message" class="text-center py-3 px-4 rounded-lg bg-yellow-900/20 border border-yellow-700/30 min-h-[60px] flex items-center justify-center">
+                    <p class="text-sm text-yellow-300 medieval-font">Сделайте ставку, чтобы начать игру</p>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="p-6 pt-4 border-t border-yellow-900/30 space-y-3" style="background: linear-gradient(to top, rgba(15,15,16,0.8), transparent);">
+                <!-- Bet Controls -->
+                <div id="dice-bet-controls" class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-400">Ваша ставка:</span>
+                        <div class="flex items-center gap-2">
+                            <span id="dice-current-bet" class="text-xl font-bold text-yellow-400 medieval-font">500</span>
+                            <i class="fas fa-coins text-yellow-500"></i>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="diceGame.setBet(500, event)" class="bet-btn py-2 rounded text-xs border border-yellow-700/40 bg-black/30 text-yellow-300 hover:bg-yellow-900/20 transition-all">500</button>
+                        <button onclick="diceGame.setBet(1000, event)" class="bet-btn py-2 rounded text-xs border border-yellow-700/40 bg-black/30 text-yellow-300 hover:bg-yellow-900/20 transition-all">1000</button>
+                        <button onclick="diceGame.setBet(2000, event)" class="bet-btn py-2 rounded text-xs border border-yellow-700/40 bg-black/30 text-yellow-300 hover:bg-yellow-900/20 transition-all">2000</button>
+                    </div>
+                    <button onclick="diceGame.startGame()" class="w-full py-3 rounded font-bold border-2 border-yellow-500/50 bg-gradient-to-r from-yellow-900/40 to-yellow-700/40 text-yellow-200 hover:from-yellow-800/50 hover:to-yellow-600/50 transition-all medieval-font text-sm">
+                        <i class="fas fa-dice mr-2"></i>Бросить кости
+                    </button>
+                </div>
+
+                <!-- Reset Button -->
+                <div id="dice-reset-controls" class="hidden">
+                    <button onclick="diceGame.resetGame()" class="w-full py-2 rounded font-bold border border-gray-700/40 bg-black/30 text-gray-400 hover:bg-gray-900/20 transition-all text-xs">
+                        <i class="fas fa-redo mr-2"></i>Новая игра
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Tournament Battle Modal -->
     <div id="modal-tournament-battle" class="modal-overlay">
         <div class="modal-content rounded-xl p-0 relative overflow-hidden text-left flex flex-col max-h-[90vh] shadow-2xl" style="background: linear-gradient(135deg, rgba(26,26,29,0.98), rgba(42,42,46,0.98)); width: 95%; max-width: 700px;">
@@ -2990,8 +3095,8 @@
                 <!-- Forest NPC -->
                 <div class="panel p-3 rounded flex items-center justify-between border-purple-900/30 bg-purple-900/10">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full border border-purple-500 bg-[#222] flex items-center justify-center">
-                            <i class="fas fa-hood-cloak text-purple-400"></i>
+                        <div class="w-10 h-10 rounded-full border border-purple-500 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(147,51,234,0.3), rgba(0,0,0,0.5));">
+                            <img src="https://i.postimg.cc/fyX4xqGL/IMG-4760.png" alt="Элара" class="w-full h-full object-cover object-top">
                         </div>
                         <div>
                             <div class="text-base text-[#e0e0e0] font-bold medieval-font">Элара</div>
@@ -4260,19 +4365,19 @@
             </div>
 
             <!-- Market NPC -->
-            <div class="p-4 rounded-lg border-gray-500/40 mb-4" >
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-full border-2 border-gray-500 bg-[#222] flex items-center justify-center shadow-[0_0_10px_rgba(107,114,128,0.3)]">
-                            <i class="fas fa-hammer text-gray-400 text-lg"></i>
+            <div class="panel p-4 rounded-lg border-gray-500/40 bg-black/30 backdrop-blur-sm mb-4">
+                <div class="flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3 flex-1">
+                        <div class="w-12 h-12 rounded-full border-2 border-gray-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(107,114,128,0.3), rgba(0,0,0,0.5));">
+                            <img src="https://i.postimg.cc/W3v0NdsZ/IMG-4763.png" alt="Горн" class="w-full h-full object-cover object-top">
                         </div>
                         <div>
                             <div class="text-base text-[#e0e0e0] font-bold medieval-font">Горн</div>
                             <div class="text-[10px] text-[#a0a0a0]">Кузнец</div>
                         </div>
                     </div>
-                    <button onclick="dialogue.start('gorn')" class="btn-medieval px-4 py-2 rounded text-xs">
-                        Говорить
+                    <button onclick="dialogue.start('gorn')" class="px-4 py-1.5 rounded text-xs border border-gray-700/40 bg-black/30 text-gray-300 hover:bg-gray-900/20 backdrop-blur-sm whitespace-nowrap">
+                        Поговорить
                     </button>
                 </div>
             </div>
@@ -5798,8 +5903,8 @@
                 <!-- Старый нищий -->
                 <div class="panel p-3 rounded flex items-center justify-between border-gray-700/30 bg-gray-900/20">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-full border-2 border-gray-500 bg-[#222] flex items-center justify-center shadow-[0_0_10px_rgba(107,114,128,0.3)]">
-                            <i class="fas fa-user-injured text-gray-400"></i>
+                        <div class="w-12 h-12 rounded-full border-2 border-gray-500 overflow-hidden flex-shrink-0 shadow-[0_0_10px_rgba(107,114,128,0.3)]" style="background: linear-gradient(135deg, rgba(107,114,128,0.3), rgba(0,0,0,0.5));">
+                            <img src="https://i.postimg.cc/BZFR7yVR/IMG-4761.png" alt="Старый нищий" class="w-full h-full object-cover object-top">
                         </div>
                         <div>
                             <div class="text-base text-[#e0e0e0] font-bold medieval-font">Старый нищий</div>
@@ -5809,19 +5914,47 @@
                     <button class="btn-medieval px-4 py-1.5 rounded text-xs" onclick="dialogue.start('old_beggar')">Говорить</button>
                 </div>
 
-                <!-- Благотворительная столовая -->
-                <div class="panel p-3 rounded flex items-center justify-between border-green-700/30 bg-green-900/10">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full border border-green-600 bg-[#222] flex items-center justify-center">
-                            <i class="fas fa-bowl-food text-green-500"></i>
+                <!-- Азартный игрок -->
+                <div class="panel p-4 rounded-lg border-yellow-700/40 bg-yellow-900/10 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3 flex-1">
+                            <div class="w-14 h-14 rounded-full border-2 border-yellow-600/50 bg-gradient-to-br from-yellow-900/30 to-yellow-950 flex items-center justify-center shadow-[0_0_15px_rgba(234,179,8,0.3)]">
+                                <i class="fas fa-dice text-yellow-400 text-2xl"></i>
+                            </div>
+                            <div>
+                                <div class="text-lg text-[#e0e0e0] font-bold medieval-font">Азартный игрок</div>
+                                <div class="text-[10px] text-[#a0a0a0]">Игра в кости • Кто больше выбросит?</div>
+                            </div>
                         </div>
-                        <div>
-                            <div class="text-base text-[#e0e0e0] font-bold medieval-font">Столовая для бедных</div>
-                            <div class="text-[10px] text-[#a0a0a0]">+50% сытости • до 7 уровня • 1 раз/день</div>
-                            <div class="text-[10px] text-green-400 mt-1">До следующего бесплатного посещения: <span id="poor-canteen-timer">--:--:--</span></div>
-                        </div>
+                        <button class="px-4 py-2 rounded text-xs border border-yellow-700/40 bg-black/30 text-yellow-300 hover:bg-yellow-900/20 backdrop-blur-sm whitespace-nowrap font-bold" onclick="diceGame.open()">
+                            <i class="fas fa-dice mr-1"></i>Играть
+                        </button>
                     </div>
-                    <button id="btn-poor-canteen" class="btn-medieval px-4 py-1.5 rounded text-xs" onclick="poorDistrict.eatCanteen(event)">Поесть</button>
+                    <div class="text-[10px] text-yellow-400/80 bg-black/20 border border-yellow-900/30 rounded p-2 text-center">
+                        Ставки: 500, 1000, 2000 золота • Выигрыш: x2 от ставки
+                    </div>
+                </div>
+
+                <!-- Благотворительная столовая -->
+                <div class="panel p-4 rounded-lg border-green-700/40 bg-green-900/10 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3 flex-1">
+                            <div class="w-14 h-14 rounded-full border-2 border-green-600/50 bg-gradient-to-br from-green-900/30 to-green-950 flex items-center justify-center shadow-[0_0_15px_rgba(34,197,94,0.3)]">
+                                <i class="fas fa-bowl-food text-green-400 text-2xl"></i>
+                            </div>
+                            <div>
+                                <div class="text-lg text-[#e0e0e0] font-bold medieval-font">Столовая для бедных</div>
+                                <div class="text-[10px] text-[#a0a0a0]">Бесплатная еда для нуждающихся</div>
+                                <div class="text-[10px] text-green-400 mt-1">До следующего посещения: <span id="poor-canteen-timer">--:--:--</span></div>
+                            </div>
+                        </div>
+                        <button id="btn-poor-canteen" class="px-4 py-2 rounded text-xs border border-green-700/40 bg-black/30 text-green-300 hover:bg-green-900/20 backdrop-blur-sm whitespace-nowrap font-bold" onclick="poorDistrict.eatCanteen(event)">
+                            <i class="fas fa-utensils mr-1"></i>Поесть
+                        </button>
+                    </div>
+                    <div class="text-[10px] text-green-400/80 bg-black/20 border border-green-900/30 rounded p-2 text-center">
+                        +50% сытости • Доступно до 7 уровня • 1 раз в день
+                    </div>
                 </div>
 
                 <!-- Ларёк со свежим хлебом -->
@@ -5851,20 +5984,6 @@
                             Купить хлеб
                         </button>
                     </div>
-                </div>
-
-                <!-- Азартный игрок -->
-                <div class="panel p-3 rounded flex items-center justify-between border-yellow-700/30 bg-yellow-900/10">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full border border-yellow-600 bg-[#222] flex items-center justify-center">
-                            <i class="fas fa-dice text-yellow-500"></i>
-                        </div>
-                        <div>
-                            <div class="text-base text-[#e0e0e0] font-bold medieval-font">Азартный игрок</div>
-                            <div class="text-[10px] text-[#a0a0a0]">Предлагает сыграть в кости</div>
-                        </div>
-                    </div>
-                    <button class="btn-medieval px-4 py-1.5 rounded text-xs" onclick="dialogue.start('gambler')">Сыграть</button>
                 </div>
 
                 <!-- Poor House Section -->
@@ -6405,8 +6524,8 @@
 
                 <div class="panel p-3 rounded flex items-center justify-between border-gray-600/30 bg-gray-800/10">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-full border border-gray-500 bg-[#222] flex items-center justify-center">
-                            <i class="fas fa-user-secret text-gray-400"></i>
+                        <div class="w-12 h-12 rounded-full border border-gray-500 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(107,114,128,0.3), rgba(0,0,0,0.5));">
+                            <img src="https://i.postimg.cc/Vv4hByK3/IMG-4765.png" alt="Томас" class="w-full h-full object-cover object-top">
                         </div>
                         <div>
                             <div class="text-base text-[#e0e0e0] font-bold medieval-font">Томас</div>
@@ -8361,11 +8480,12 @@
                 'shoemaker': 'https://i.postimg.cc/brymyT5Z/IMG-4668.png',
                 'castle_guard': 'https://i.postimg.cc/FsKTwTc6/IMG-4669.png',
                 'noble_guard': 'https://i.postimg.cc/QdvqgMK8/image-Picsart-Background-Remover-(8).png',
-                'elara': '',
+                'elara': 'https://i.postimg.cc/fyX4xqGL/IMG-4760.png',
                 'sarah': 'https://i.postimg.cc/fWcmXfxm/IMG-4671.png',
                 'eigan': '',
-                'gorn': '',
-                'thomas': '',
+                'gorn': 'https://i.postimg.cc/W3v0NdsZ/IMG-4763.png',
+                'thomas': 'https://i.postimg.cc/Vv4hByK3/IMG-4765.png',
+                'old_beggar': 'https://i.postimg.cc/BZFR7yVR/IMG-4761.png',
                 'sage': 'https://i.postimg.cc/8PjyXPvd/IMG-4616.png'
             },
             
@@ -8449,6 +8569,8 @@
                     gradientColors = "linear-gradient(135deg, #be123c 0%, #e11d48 50%, #9f1239 100%)"; // Royal Crimson
                 } else if(npcId === 'noble_guard') {
                     gradientColors = "linear-gradient(135deg, #1e3a5f 0%, #2d5a8e 50%, #1a2f4a 100%)"; // Palace Steel Blue
+                } else if(npcId === 'old_beggar') {
+                    gradientColors = "linear-gradient(135deg, #78716c 0%, #57534e 50%, #78716c 100%)"; // Gray-Brown for beggar
                 }
                 
                 bgGradient.style.background = gradientColors;
@@ -8716,6 +8838,10 @@
                     gameState.npcStates.lili_waiting = false;
                     if (!gameState.recipes) gameState.recipes = {};
                     gameState.recipes.saddle = true;
+                    if (!gameState.purchasedCrafts) gameState.purchasedCrafts = [];
+                    if (!gameState.purchasedCrafts.includes('saddle')) {
+                        gameState.purchasedCrafts.push('saddle');
+                    }
                     game.addReputation(2, document.body);
                     game.save();
                     ui.showFloatText(document.body, "Рецепт: Кожаное седло", "#34d399");
@@ -9207,6 +9333,171 @@
                 
                 document.getElementById('bet-controls').classList.remove('hidden');
                 document.getElementById('game-controls').classList.add('hidden');
+            }
+        };
+
+        // --- DICE GAME SYSTEM ---
+        const diceGame = {
+            currentBet: 500,
+            gameInProgress: false,
+            playerDice: [],
+            gamblerDice: [],
+            
+            open: function() {
+                document.getElementById('modal-dice-game').classList.add('open');
+                this.resetGame();
+            },
+            
+            close: function() {
+                document.getElementById('modal-dice-game').classList.remove('open');
+            },
+            
+            setBet: function(amount, event) {
+                if (this.gameInProgress) return;
+                
+                this.currentBet = amount;
+                document.getElementById('dice-current-bet').textContent = amount;
+                
+                // Update active bet button
+                document.querySelectorAll('#dice-bet-controls .bet-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                if (event && event.target) {
+                    event.target.classList.add('active');
+                }
+            },
+            
+            createDiceElement: function(value, color = 'text-yellow-400') {
+                const diceDiv = document.createElement('div');
+                diceDiv.className = `w-16 h-16 rounded-lg border-2 ${color === 'text-green-400' ? 'border-green-500/50 bg-gradient-to-br from-green-900/40 to-green-950/60' : 'border-red-500/50 bg-gradient-to-br from-red-900/40 to-red-950/60'} flex items-center justify-center shadow-lg`;
+                diceDiv.style.animation = 'diceRoll 0.5s ease-out';
+                
+                const diceIcon = document.createElement('div');
+                diceIcon.className = `text-3xl ${color} font-bold medieval-font`;
+                diceIcon.textContent = value;
+                
+                diceDiv.appendChild(diceIcon);
+                return diceDiv;
+            },
+            
+            showMessage: function(message, color = '#facc15') {
+                const messageEl = document.getElementById('dice-game-message');
+                messageEl.innerHTML = `<p class="text-sm medieval-font" style="color: ${color};">${message}</p>`;
+            },
+            
+            rollDice: function() {
+                return Math.floor(Math.random() * 6) + 1;
+            },
+            
+            startGame: function() {
+                if (this.gameInProgress) return;
+                
+                if (gameState.gold < this.currentBet) {
+                    this.showMessage('❌ Недостаточно золота для ставки!', '#ef4444');
+                    return;
+                }
+                
+                // Deduct bet
+                gameState.gold -= this.currentBet;
+                game.save();
+                ui.updateStats();
+                
+                this.gameInProgress = true;
+                
+                this.showMessage('🎲 Бросаем кости...', '#facc15');
+                
+                // Hide bet controls
+                document.getElementById('dice-bet-controls').classList.add('hidden');
+                
+                // Roll dice after short delay
+                setTimeout(() => {
+                    // Player rolls
+                    const playerDice1 = this.rollDice();
+                    const playerDice2 = this.rollDice();
+                    this.playerDice = [playerDice1, playerDice2];
+                    const playerTotal = playerDice1 + playerDice2;
+                    
+                    // Update player display
+                    const playerArea = document.getElementById('player-dice-area');
+                    playerArea.innerHTML = '';
+                    playerArea.appendChild(this.createDiceElement(playerDice1, 'text-green-400'));
+                    playerArea.appendChild(this.createDiceElement(playerDice2, 'text-green-400'));
+                    
+                    document.getElementById('player-dice-total').textContent = playerTotal;
+                    
+                    // Gambler rolls after delay
+                    setTimeout(() => {
+                        const gamblerDice1 = this.rollDice();
+                        const gamblerDice2 = this.rollDice();
+                        this.gamblerDice = [gamblerDice1, gamblerDice2];
+                        const gamblerTotal = gamblerDice1 + gamblerDice2;
+                        
+                        // Update gambler display
+                        const gamblerArea = document.getElementById('gambler-dice-area');
+                        gamblerArea.innerHTML = '';
+                        gamblerArea.appendChild(this.createDiceElement(gamblerDice1, 'text-red-400'));
+                        gamblerArea.appendChild(this.createDiceElement(gamblerDice2, 'text-red-400'));
+                        
+                        document.getElementById('gambler-dice-total').textContent = gamblerTotal;
+                        
+                        // Determine winner
+                        setTimeout(() => {
+                            this.determineWinner(playerTotal, gamblerTotal);
+                        }, 800);
+                    }, 600);
+                }, 500);
+            },
+            
+            determineWinner: function(playerTotal, gamblerTotal) {
+                let message = '';
+                let color = '';
+                let winAmount = 0;
+                
+                if (playerTotal > gamblerTotal) {
+                    // Player wins
+                    winAmount = this.currentBet * 2;
+                    gameState.gold += winAmount;
+                    message = `🎉 Победа! Вы выиграли ${this.currentBet} золота!`;
+                    color = '#22c55e';
+                    ui.showFloatText(document.body, `+${this.currentBet} золота`, '#22c55e');
+                } else if (playerTotal < gamblerTotal) {
+                    // Gambler wins
+                    message = `💔 Проигрыш! Игрок победил.`;
+                    color = '#ef4444';
+                    ui.showFloatText(document.body, `-${this.currentBet} золота`, '#ef4444');
+                } else {
+                    // Draw
+                    gameState.gold += this.currentBet;
+                    message = `🤝 Ничья! Ставка возвращена.`;
+                    color = '#facc15';
+                    ui.showFloatText(document.body, 'Ставка возвращена', '#facc15');
+                }
+                
+                game.save();
+                ui.updateStats();
+                
+                this.showMessage(message, color);
+                
+                // Show reset button
+                document.getElementById('dice-reset-controls').classList.remove('hidden');
+                
+                this.gameInProgress = false;
+            },
+            
+            resetGame: function() {
+                this.playerDice = [];
+                this.gamblerDice = [];
+                this.gameInProgress = false;
+                
+                document.getElementById('player-dice-area').innerHTML = '<div class="text-gray-500 text-sm">Бросьте кости</div>';
+                document.getElementById('gambler-dice-area').innerHTML = '<div class="text-gray-500 text-sm">Ожидание броска</div>';
+                document.getElementById('player-dice-total').textContent = '0';
+                document.getElementById('gambler-dice-total').textContent = '0';
+                
+                this.showMessage('💰 Сделайте ставку, чтобы начать игру', '#facc15');
+                
+                document.getElementById('dice-bet-controls').classList.remove('hidden');
+                document.getElementById('dice-reset-controls').classList.add('hidden');
             }
         };
 
@@ -14107,6 +14398,19 @@
                         gameState.luck = (gameState.luck || 0) + 1;
                         return 'Зелье создано! Удача +1';
                     }
+                },
+                'saddle': {
+                    id: 'saddle',
+                    category: 'other',
+                    title: 'Седло',
+                    description: 'Кожаное седло для лошади',
+                    requires: { leather: 50, rope: 30 },
+                    craftAction: function() {
+                        if (!gameState.tools) gameState.tools = {};
+                        if (!gameState.tools.saddle) gameState.tools.saddle = { owned: false };
+                        gameState.tools.saddle.owned = true;
+                        return 'Седло создано!';
+                    }
                 }
             },
             
@@ -14115,14 +14419,14 @@
                     { id: 'immortality', title: 'Зелье Бессмертия', req: { herbs: 100, mushrooms: 20 }, effect: { key: 'immortality', inc: 1 } },
                     { id: 'luck', title: 'Зелье Удачи', req: { herbs: 50, mushrooms: 10 }, effect: { key: 'luck', inc: 1 } }
                 ],
-                charms: [
-                    { id: 'saddle', title: 'Седло', req: { leather: 5, rope: 2 }, produce: { key: 'saddle', count: 1 } }
-                ],
+                charms: [],
                 food: [
                     { id: 'bread', title: 'Хлеб', req: { wheat: 3 }, produce: { key: 'bread', count: 1 } }
                 ],
                 tools: [],
-                other: []
+                other: [
+                    { id: 'saddle', title: 'Седло', req: { leather: 50, rope: 30 }, produce: { key: 'saddle', count: 1 } }
+                ]
             },
             toggleMode: function() {
                 const invUI = document.getElementById('ui-inventory');
@@ -14270,6 +14574,7 @@
                 // Сохраняем и обновляем UI
                 game.save();
                 ui.updateStats();
+                equipment.updateUI();
                 this.render();
                 ui.showFloatText(event.target, message, "#34d399");
             },
@@ -15454,6 +15759,20 @@
                     } else {
                         if (nameEl) nameEl.innerText = 'Броня';
                         if (subEl) subEl.innerText = 'Не экипирована';
+                    }
+                }
+                // Update Saddle slot display
+                const saddleSlot = document.getElementById('slot-saddle');
+                if (saddleSlot) {
+                    const hasSaddle = gameState.tools && gameState.tools.saddle && gameState.tools.saddle.owned;
+                    const nameEl = saddleSlot.querySelector('.slot-item-name');
+                    const subEl = saddleSlot.querySelector('.slot-item-sub');
+                    if (hasSaddle) {
+                        if (nameEl) nameEl.innerText = 'Седло';
+                        if (subEl) subEl.innerText = 'Экипировано';
+                    } else {
+                        if (nameEl) nameEl.innerText = 'Седло';
+                        if (subEl) subEl.innerText = 'Не создано';
                     }
                 }
             }
