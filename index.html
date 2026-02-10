@@ -136,6 +136,113 @@
             border-color: var(--accent-gold);
             background: rgba(200, 170, 110, 0.15);
         }
+        
+        /* Home Location Card - Game Style */
+        .home-location-card {
+            position: relative;
+            overflow: hidden;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(4px);
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+        
+        .home-location-card:hover {
+            border-color: #6eb045;
+        }
+        
+        /* Color variants for different house types */
+        .home-location-card.poor-house {
+            border-color: #555;
+        }
+        
+        .home-location-card.poor-house:hover {
+            border-color: #777;
+        }
+        
+        .home-location-card.poor-house .home-icon-circle {
+            background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%);
+            border-color: #666 !important;
+            box-shadow: 0 0 20px rgba(100, 100, 100, 0.2) !important;
+        }
+        
+        .home-location-card.poor-house .home-gradient-overlay {
+            background: radial-gradient(circle at 30% 30%, rgba(100, 100, 100, 0.2), transparent 60%);
+        }
+        
+        .home-location-card.poor-house .home-bottom-line {
+            background: linear-gradient(to right, transparent, rgba(100, 100, 100, 0.5), transparent);
+        }
+        
+        .home-location-card.village-house {
+            border-color: #4a7c2d;
+        }
+        
+        .home-location-card.village-house:hover {
+            border-color: #6eb045;
+        }
+        
+        .home-location-card.village-house .home-icon-circle {
+            background: linear-gradient(135deg, #2d5016 0%, #4a7c2d 100%);
+            border-color: #6eb045 !important;
+            box-shadow: 0 0 20px rgba(110, 176, 69, 0.35) !important;
+        }
+        
+        .home-location-card.village-house .home-gradient-overlay {
+            background: radial-gradient(circle at 30% 30%, rgba(90, 149, 56, 0.25), transparent 60%);
+        }
+        
+        .home-location-card.village-house .home-bottom-line {
+            background: linear-gradient(to right, transparent, rgba(110, 176, 69, 0.5), transparent);
+        }
+        
+        .home-location-card.noble-house {
+            border-color: #d4af37;
+        }
+        
+        .home-location-card.noble-house:hover {
+            border-color: #f0c14b;
+        }
+        
+        .home-location-card.noble-house .home-icon-circle {
+            background: linear-gradient(135deg, #9d7b1f 0%, #d4af37 100%);
+            border-color: #f0c14b !important;
+            box-shadow: 0 0 20px rgba(234, 179, 8, 0.4) !important;
+        }
+        
+        .home-location-card.noble-house .home-gradient-overlay {
+            background: radial-gradient(circle at 30% 30%, rgba(234, 179, 8, 0.2), transparent 60%);
+        }
+        
+        .home-location-card.noble-house .home-bottom-line {
+            background: linear-gradient(to right, transparent, rgba(234, 179, 8, 0.5), transparent);
+        }
+        
+        /* Disabled/Locked Home Button */
+        .home-location-card.locked {
+            opacity: 0.5;
+            filter: grayscale(1);
+            cursor: not-allowed;
+        }
+        
+        .home-location-card.locked:hover {
+            border-color: var(--border-color);
+            transform: none;
+        }
+        
+        .home-location-card.locked .home-icon-circle {
+            border-color: #555 !important;
+            box-shadow: none !important;
+        }
+        
+        .home-location-card.locked i {
+            color: #666 !important;
+        }
+        
+        .home-location-card.locked h3,
+        .home-location-card.locked p {
+            color: #666 !important;
+        }
 
         /* Progress Bar */
         .progress-container {
@@ -1035,6 +1142,30 @@
             </div>
 
             <button onclick="game.closeLevelUp()" class="btn-medieval w-full py-3 rounded font-bold text-sm tracking-wider">ПРИНЯТЬ ДАРЫ</button>
+        </div>
+    </div>
+
+    <!-- Already Own House Modal -->
+    <div id="modal-already-own-house" class="modal-overlay">
+        <div class="modal-content rounded-lg p-6 text-center relative overflow-hidden max-w-sm">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-red-600 to-transparent"></div>
+            
+            <div class="mb-4">
+                <i class="fas fa-home-slash text-5xl text-red-500 drop-shadow-lg"></i>
+            </div>
+            
+            <h2 class="medieval-font text-xl text-red-400 mb-3">У вас уже есть дом!</h2>
+            
+            <p class="text-sm text-gray-300 mb-2">
+                Вы уже владеете домом.
+            </p>
+            <p class="text-xs text-gray-500 mb-5">
+                Чтобы купить новый дом, сначала нужно продать текущий. Продать дом можно на странице "Дом" на карте.
+            </p>
+            
+            <button onclick="document.getElementById('modal-already-own-house').classList.remove('open')" class="btn-medieval w-full py-2 rounded text-sm">
+                Понятно
+            </button>
         </div>
     </div>
 
@@ -2532,6 +2663,22 @@
                 </div>
             </div>
             
+            <!-- Support Button -->
+            <div class="text-center mt-6">
+                <a href="https://t.me/medieval_help_bot" target="_blank" rel="noopener noreferrer" class="inline-block">
+                    <div class="panel px-6 py-3 rounded-lg cursor-pointer transition-all hover:scale-105 active:scale-95 border-2 border-blue-500/40 bg-gradient-to-br from-blue-900/40 via-blue-800/30 to-blue-950/40 hover:border-blue-400/60 hover:shadow-lg hover:shadow-blue-500/20 relative overflow-hidden group">
+                        <div class="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-transparent to-blue-600/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div class="relative z-10">
+                            <div class="flex items-center justify-center gap-2 mb-1">
+                                <i class="fas fa-headset text-blue-400 text-lg"></i>
+                                <span class="text-sm font-bold text-blue-300 medieval-font tracking-wide">Поддержка</span>
+                            </div>
+                            <div class="text-[10px] text-blue-400/70">Вопросы и технические проблемы</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            
             <!-- Secret Game Title (10 clicks to open dev panel) -->
             <div class="text-center mt-6 pb-4">
                 <div class="game-title-secret text-[10px] text-gray-700 medieval-font tracking-wider" onclick="devPanel.handleSecretClick()">
@@ -2545,6 +2692,30 @@
             <h2 class="medieval-font text-2xl text-center mb-6 text-[#c8aa6e]">Карта Мира</h2>
             
             <div class="space-y-4">
+                <!-- Home Location -->
+                <button id="home-button" onclick="housing.navigateToHome()" class="home-location-card panel p-0 rounded-lg overflow-hidden group transition-all relative h-28 bg-black/30 backdrop-blur-sm w-full locked">
+                    <img 
+                      id="home-bg-image"
+                      src="https://i.postimg.cc/63cxNZ6p/IMG-4784.jpg"
+                      alt="Дом"
+                      class="absolute inset-0 w-full h-full object-cover opacity-35 witcher-img group-hover:opacity-40 transition-opacity"
+                      onerror="this.onerror=null; this.style.display='none';"
+                    />
+                    <div class="absolute inset-0 bg-gradient-to-b from-black/10 via-black/40 to-black/70"></div>
+                    <div class="home-gradient-overlay absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(90,149,56,0.25),transparent_60%)]"></div>
+                    <div class="absolute top-2 right-2 w-6 h-6 rounded-full bg-[#5a9538]/20 flex items-center justify-center">
+                        <i class="fas fa-lock text-[#666] text-[10px]" id="home-lock-icon"></i>
+                    </div>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center p-3">
+                        <div class="home-icon-circle w-12 h-12 rounded-full bg-gradient-to-br from-[#2d5016]/70 to-[#4a7c2d] flex items-center justify-center border-2 border-[#6eb045]/60 shadow-[0_0_20px_rgba(110,176,69,0.35)] mb-2 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-home text-[#a0d668] text-lg drop-shadow-lg"></i>
+                        </div>
+                        <h3 class="medieval-font text-sm text-white drop-shadow-lg text-center">Дом</h3>
+                        <p class="text-[9px] text-[#d4e8c7]/70 text-center mt-0.5 italic" id="home-location-text">Купите дом</p>
+                    </div>
+                    <div class="home-bottom-line absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#6eb045]/50 to-transparent"></div>
+                </button>
+                
                 <div class="flex items-center gap-2 text-[11px] text-[#c8aa6e] uppercase tracking-[0.3em]">
                     <i class="fas fa-city"></i>
                     Город
@@ -2933,6 +3104,69 @@
                         <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#c8aa6e]/30 to-transparent"></div>
                     </button>
                 </div>
+            </div>
+        </section>
+
+        <!-- SUB-VIEW: HOME -->
+        <section id="view-home" class="hidden space-y-4">
+            <!-- Header with Green Gradient -->
+            <div id="home-header" class="loc-hero h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-black/30 backdrop-blur-sm" data-loc="home" style="--hero-img: none;">
+                <div id="home-header-gradient" class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(90,149,56,0.25),transparent_60%)]"></div>
+                <div id="home-header-line" class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#6eb045]/60 to-transparent"></div>
+                <div class="absolute top-4 left-4">
+                    <button id="home-header-back-btn" onclick="router.navigate('map')" class="w-8 h-8 rounded border border-[#6eb045]/40 bg-black/30 flex items-center justify-center text-[#a0d668] hover:bg-[#6eb045]/20 transition-colors">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                </div>
+                <div class="absolute top-1/2 left-16 -translate-y-1/2 flex items-center gap-4">
+                    <div id="home-header-icon-circle" class="w-12 h-12 rounded-full bg-gradient-to-br from-[#2d5016]/70 to-[#4a7c2d] flex items-center justify-center border-2 border-[#6eb045]/60 shadow-[0_0_15px_rgba(110,176,69,0.35)]">
+                        <i id="home-header-icon" class="fas fa-home text-[#a0d668] text-lg"></i>
+                    </div>
+                    <div>
+                        <h2 id="home-title" class="medieval-font text-2xl text-white drop-shadow-md">Дом</h2>
+                        <p id="home-subtitle" class="text-xs text-[#d4e8c7] italic">Твое личное убежище</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Home Content -->
+            <div id="home-content" class="panel rounded-lg p-4 relative overflow-hidden">
+                <!-- Content will be dynamically generated -->
+            </div>
+        </section>
+
+        <!-- VIEW: HOME CHEST -->
+        <section id="view-home-chest" class="hidden space-y-4 h-full flex flex-col">
+             <div class="flex items-center gap-4 mb-2">
+                <button onclick="router.navigate('home')" class="w-8 h-8 rounded border border-[#333] bg-black/30 flex items-center justify-center text-[#a0a0a0] hover:bg-[#333]">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h2 class="medieval-font text-xl text-[#c8aa6e]">Сундук</h2>
+            </div>
+
+            <div class="flex-1 overflow-hidden grid grid-cols-2 gap-2 h-full">
+                <!-- Inventory Side -->
+                <div class="panel p-2 rounded flex flex-col h-full overflow-hidden">
+                    <h3 class="text-xs font-bold text-[#a0a0a0] mb-2 uppercase text-center border-b border-[#333] pb-1">Инвентарь</h3>
+                    <div id="home-chest-inventory-grid" class="flex-1 overflow-y-auto grid grid-cols-3 gap-1 content-start pr-1">
+                        <!-- Items -->
+                    </div>
+                </div>
+
+                <!-- Chest Side -->
+                <div class="panel p-2 rounded flex flex-col h-full overflow-hidden border border-[#c8aa6e]/30">
+                    <div class="flex justify-between items-center mb-2 border-b border-[#333] pb-1">
+                        <h3 class="text-xs font-bold text-[#c8aa6e] uppercase">Сундук</h3>
+                        <span class="text-[10px] text-[#a0a0a0]"><span id="home-chest-weight">0</span>/<span id="home-chest-capacity">200</span> кг</span>
+                    </div>
+                    <div id="home-chest-storage-grid" class="flex-1 overflow-y-auto grid grid-cols-3 gap-1 content-start pr-1">
+                        <!-- Stored Items -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel p-2 rounded text-[10px] text-[#777] text-center">
+                Нажмите на предмет, чтобы переместить его.
             </div>
         </section>
 
@@ -5360,95 +5594,6 @@
                 </div>
             </div>
 
-            <!-- Your House -->
-            <div class="panel rounded-lg p-4 space-y-3">
-                <div class="flex items-center justify-between">
-                    <h3 class="medieval-font text-lg text-[#c8aa6e]"><i class="fas fa-home mr-2"></i>Ваш Дом</h3>
-                    <span id="house-status" class="text-[10px] text-red-400">Не куплен</span>
-                </div>
-                
-                <div id="house-not-owned" class="text-center py-4">
-                    <i class="fas fa-house-circle-xmark text-4xl text-gray-600 mb-2"></i>
-                    <p class="text-xs text-gray-400 mb-3">Купите дом, чтобы хранить вещи и заниматься хозяйством.</p>
-                    <button onclick="village.buyHouse()" class="btn-medieval w-full py-2 rounded text-sm">
-                        Купить дом <span class="text-emerald-400">1000 <i class="far fa-gem gem-price"></i></span>
-                    </button>
-                </div>
-
-                <div id="house-owned" class="hidden space-y-3">
-                    <!-- Storage -->
-                    <div class="border border-[#333] rounded p-2 bg-black/20">
-                        <div class="flex items-center gap-2 mb-2">
-                            <i class="fas fa-box text-amber-500"></i>
-                            <span class="text-xs text-[#e0e0e0]">Хранилище</span>
-                        </div>
-                        <p class="text-[10px] text-gray-500">Здесь можно хранить ненужные вещи (в разработке)</p>
-                    </div>
-
-                    <!-- Workbench -->
-                    <div class="border border-[#333] rounded p-2 bg-black/20">
-                        <div class="flex items-center gap-2 mb-2">
-                            <i class="fas fa-gavel text-blue-400"></i>
-                            <span class="text-xs text-[#e0e0e0]">Верстак</span>
-                        </div>
-                        <p class="text-[10px] text-gray-500">Создавайте новые предметы (в разработке)</p>
-                    </div>
-
-                    <!-- Stable -->
-                    <div class="border border-[#333] rounded p-2 bg-black/20">
-                        <div class="flex items-center justify-between mb-2">
-                            <div class="flex items-center gap-2">
-                                <i class="fas fa-horse-head text-amber-500"></i>
-                                <span class="text-xs text-[#e0e0e0]">Конюшня (Ур <span id="stable-level">0</span>)</span>
-                            </div>
-                        </div>
-                        <div id="stable-empty" class="text-[10px] text-gray-500 mb-2">Нет лошади</div>
-                        <div id="stable-occupied" class="hidden flex items-center gap-2 mb-2 p-2 bg-[#1a1a1d] rounded border border-[#333]">
-                             <div class="w-8 h-8 flex items-center justify-center bg-black/50 rounded text-[#c8aa6e]">
-                                 <i id="horse-icon" class="fas fa-horse"></i>
-                             </div>
-                             <div>
-                                 <div id="horse-name" class="text-xs text-[#e0e0e0] font-bold">Лошадь</div>
-                                 <div id="horse-desc" class="text-[8px] text-gray-500">Описание</div>
-                             </div>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="village.upgradeStable()" class="flex-1 bg-[#222] border border-amber-600 text-amber-500 py-1 rounded text-[10px] hover:bg-amber-900/30">
-                                Улучшить (2000 <i class="fas fa-coins"></i>)
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Pig Pen -->
-                    <div class="border border-[#333] rounded p-2 bg-black/20">
-                        <div class="flex items-center justify-between mb-2">
-                            <div class="flex items-center gap-2">
-                                <i class="fas fa-piggy-bank text-pink-400"></i>
-                                <span class="text-xs text-[#e0e0e0]">Свинарник (Ур <span id="pig-pen-level">0</span>)</span>
-                            </div>
-                            <span class="text-[10px] text-gray-400">Мясо: <span id="meat-count">0</span></span>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="village.upgradePigPen()" class="flex-1 bg-[#222] border border-pink-500 text-pink-400 py-1 rounded text-[10px] hover:bg-pink-900/30">
-                                Улучшить (100 <i class="fas fa-coins"></i>)
-                            </button>
-                            <button onclick="village.collectMeat()" class="flex-1 bg-[#222] border border-[#c8aa6e] text-[#c8aa6e] py-1 rounded text-[10px] hover:bg-[#c8aa6e]/20">
-                                Собрать мясо
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Stable -->
-                    <div class="border border-[#333] rounded p-2 bg-black/20">
-                        <div class="flex items-center gap-2 mb-2">
-                            <i class="fas fa-horse text-amber-600"></i>
-                            <span class="text-xs text-[#e0e0e0]">Конюшня</span>
-                        </div>
-                        <p class="text-[10px] text-gray-500" id="stable-status">Пусто. Купите коня на рынке.</p>
-                    </div>
-                </div>
-            </div>
-
             <!-- Sage's House -->
             <div class="p-4 rounded-lg border-indigo-500/40 space-y-3 relative" style="background: url('https://i.postimg.cc/KYjjDTKd/IMG-4607.jpg'); background-size: cover; background-position: center; box-shadow: inset 0 0 0 2000px rgba(0,0,0,0.75), 0 4px 6px rgba(0,0,0,0.3);">
                 <!-- Additional overlay for gradient effect -->
@@ -5575,6 +5720,51 @@
                         <span class="text-xs text-gray-500">Ур. 10</span>
                     </div>
                 </button>
+            </div>
+
+            <!-- Your House -->
+            <div class="panel rounded-lg p-4 space-y-2 relative overflow-hidden" style="background: url('https://i.postimg.cc/SxxBWRrx/IMG-4786.jpg'); background-size: cover; background-position: center; box-shadow: inset 0 0 0 2000px rgba(0,0,0,0.75), 0 4px 6px rgba(0,0,0,0.3);">
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(90,149,56,0.25),transparent_60%)]"></div>
+                <div class="relative z-10 flex items-center justify-between">
+                    <h3 class="medieval-font text-base text-[#c8aa6e]"><i class="fas fa-home mr-2"></i>Деревенский Дом</h3>
+                    <span class="text-xs text-[#c8aa6e] gem-price">500 <i class="far fa-gem"></i></span>
+                </div>
+                
+                <div id="house-not-owned" class="space-y-2 relative z-10">
+                    <p class="text-[10px] text-gray-300">Просторный дом в тихой деревне. Хорошие возможности для хозяйства.</p>
+                    <div class="grid grid-cols-3 gap-1.5">
+                        <div class="bg-black/40 rounded p-1.5 text-center border border-[#333]">
+                            <i class="fas fa-bed text-blue-400 text-xs"></i>
+                            <div class="text-[8px] text-gray-400 mt-0.5">Удобная кровать</div>
+                        </div>
+                        <div class="bg-black/40 rounded p-1.5 text-center border border-[#333]">
+                            <i class="fas fa-box text-amber-500 text-xs"></i>
+                            <div class="text-[8px] text-gray-400 mt-0.5">Сундук (300кг)</div>
+                        </div>
+                        <div class="bg-black/40 rounded p-1.5 text-center border border-[#333]">
+                            <i class="fas fa-fire text-orange-500 text-xs"></i>
+                            <div class="text-[8px] text-gray-400 mt-0.5">Хороший камин</div>
+                        </div>
+                        <div class="bg-black/40 rounded p-1.5 text-center border border-[#333]">
+                            <i class="fas fa-gavel text-gray-400 text-xs"></i>
+                            <div class="text-[8px] text-gray-400 mt-0.5">Верстак</div>
+                        </div>
+                        <div class="bg-black/40 rounded p-1.5 text-center border border-[#333]">
+                            <i class="fas fa-piggy-bank text-pink-400 text-xs"></i>
+                            <div class="text-[8px] text-gray-400 mt-0.5">Загон</div>
+                        </div>
+                    </div>
+                    <button onclick="village.buyHouse(event)" class="btn-medieval w-full py-1.5 rounded text-xs">
+                        Купить дом
+                    </button>
+                </div>
+
+                <div id="house-owned" class="hidden text-center py-2 relative z-10">
+                    <div class="text-xs text-green-400 mb-1">
+                        <i class="fas fa-check-circle mr-1"></i>Куплено
+                    </div>
+                    <p class="text-[10px] text-gray-300">Дом доступен на карте</p>
+                </div>
             </div>
         </section>
 
@@ -6013,29 +6203,39 @@
                 </div>
 
                 <!-- Poor House Section -->
-                <div class="panel rounded p-3 space-y-3 border-t border-[#333] bg-black/10">
-                    <h3 class="medieval-font text-sm text-gray-400"><i class="fas fa-home mr-2"></i>Старый Дом</h3>
+                <div class="panel rounded p-3 space-y-2 border-t border-[#333] relative overflow-hidden" style="background: url('https://i.postimg.cc/Y21B7J0M/IMG-4785.jpg'); background-size: cover; background-position: center; box-shadow: inset 0 0 0 2000px rgba(0,0,0,0.8), 0 4px 6px rgba(0,0,0,0.3);">
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(100,100,100,0.2),transparent_60%)]"></div>
+                    <div class="relative z-10 flex items-center justify-between">
+                        <h3 class="medieval-font text-sm text-gray-300"><i class="fas fa-home mr-2"></i>Старая Лачуга</h3>
+                        <span class="text-xs text-yellow-500">100,000 <i class="fas fa-coins"></i></span>
+                    </div>
                     
-                    <div id="poor-house-buy" class="text-center py-2">
-                        <p class="text-xs text-gray-500 mb-2">Ветхая лачуга, но крыша не течёт. Есть хранилище, верстак и печь.</p>
-                        <button onclick="housing.buyPoorHouse()" class="btn-medieval w-full py-2 rounded text-sm text-gray-300 border-gray-600">
-                            Купить (500 <i class="far fa-gem gem-price"></i>)
+                    <div id="poor-house-buy" class="space-y-2 relative z-10">
+                        <p class="text-[10px] text-gray-400">Ветхая лачуга в бедном районе. Самый дешевый вариант.</p>
+                        <div class="grid grid-cols-3 gap-1.5">
+                            <div class="bg-black/40 rounded p-1.5 text-center border border-gray-800">
+                                <i class="fas fa-bed text-gray-400 text-xs"></i>
+                                <div class="text-[8px] text-gray-500 mt-0.5">Старая кровать</div>
+                            </div>
+                            <div class="bg-black/40 rounded p-1.5 text-center border border-gray-800">
+                                <i class="fas fa-box text-amber-600 text-xs"></i>
+                                <div class="text-[8px] text-gray-500 mt-0.5">Сундук (200кг)</div>
+                            </div>
+                            <div class="bg-black/40 rounded p-1.5 text-center border border-gray-800">
+                                <i class="fas fa-fire text-orange-600 text-xs"></i>
+                                <div class="text-[8px] text-gray-500 mt-0.5">Старый камин</div>
+                            </div>
+                        </div>
+                        <button onclick="housing.buyPoorHouse(event)" class="btn-medieval w-full py-1.5 rounded text-xs text-gray-300 border-gray-600">
+                            Купить лачугу
                         </button>
                     </div>
 
-                    <div id="poor-house-owned" class="hidden grid grid-cols-3 gap-2">
-                        <div class="panel p-2 rounded flex flex-col items-center text-center bg-black/20">
-                            <i class="fas fa-box text-amber-700 mb-1"></i>
-                            <div class="text-[10px] text-gray-400">Склад</div>
+                    <div id="poor-house-owned" class="hidden text-center py-2 relative z-10">
+                        <div class="text-xs text-green-400 mb-1">
+                            <i class="fas fa-check-circle mr-1"></i>Куплено
                         </div>
-                        <div class="panel p-2 rounded flex flex-col items-center text-center bg-black/20">
-                            <i class="fas fa-hammer text-gray-500 mb-1"></i>
-                            <div class="text-[10px] text-gray-400">Верстак</div>
-                        </div>
-                        <div class="panel p-2 rounded flex flex-col items-center text-center bg-black/20">
-                            <i class="fas fa-fire text-orange-600 mb-1"></i>
-                            <div class="text-[10px] text-gray-400">Печь</div>
-                        </div>
+                        <p class="text-[10px] text-gray-400">Дом доступен на карте</p>
                     </div>
                 </div>
             </div>
@@ -6076,46 +6276,6 @@
                     <button class="btn-medieval px-4 py-1.5 rounded text-xs" onclick="dialogue.start('leonard')">Говорить</button>
                 </div>
 
-                <!-- Noble House Section -->
-                <div class="panel rounded p-3 space-y-3 border-t border-yellow-600/30">
-                    <h3 class="medieval-font text-sm text-yellow-500"><i class="fas fa-landmark mr-2"></i>Роскошный Особняк</h3>
-                    
-                    <div id="noble-house-buy" class="text-center py-2">
-                        <p class="text-xs text-yellow-700/70 mb-2">Дом для истинной знати. Галерея, конюшня, оружейная.</p>
-                        <button onclick="housing.buyNobleHouse()" class="btn-medieval w-full py-2 rounded text-sm text-yellow-200 border-yellow-600 bg-yellow-900/20">
-                            Купить (10,000 <i class="far fa-gem gem-price"></i>)
-                        </button>
-                    </div>
-
-                    <div id="noble-house-owned" class="hidden space-y-2">
-                        <div class="grid grid-cols-2 gap-2">
-                            <div class="panel p-2 rounded flex items-center gap-2 bg-black/30 border border-yellow-900/30">
-                                <i class="fas fa-palette text-pink-400"></i>
-                                <div class="text-[10px] text-gray-300">Галерея Искусств</div>
-                            </div>
-                            <div class="panel p-2 rounded flex items-center gap-2 bg-black/30 border border-yellow-900/30">
-                                <i class="fas fa-shield-halved text-gray-300"></i>
-                                <div class="text-[10px] text-gray-300">Оружейная</div>
-                            </div>
-                            <div class="panel p-2 rounded flex items-center gap-2 bg-black/30 border border-yellow-900/30">
-                                <i class="fas fa-horse-head text-amber-600"></i>
-                                <div class="text-[10px] text-gray-300">Конюшня (2 места)</div>
-                            </div>
-                            <div class="panel p-2 rounded flex items-center gap-2 bg-black/30 border border-yellow-900/30">
-                                <i class="fas fa-wine-glass text-purple-500"></i>
-                                <div class="text-[10px] text-gray-300">Виноградник</div>
-                            </div>
-                        </div>
-                        <div class="panel p-2 rounded flex items-center justify-between bg-black/30 border border-yellow-900/30">
-                            <div class="flex items-center gap-2">
-                                <i class="fas fa-cow text-white"></i>
-                                <div class="text-[10px] text-gray-300">Хозяйство</div>
-                            </div>
-                            <span class="text-[10px] text-yellow-600">Ур. 1</span>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Lily's House Button -->
                 <div class="mt-4" id="lily-house-btn-wrap" style="display:none;">
                     <button onclick="router.navigate('lily-house')" class="panel w-full p-0 rounded-lg overflow-hidden group hover:border-pink-500 transition-all relative h-20">
@@ -6154,6 +6314,55 @@
                             <i class="fas fa-chevron-right text-gray-500 group-hover:text-purple-500"></i>
                         </div>
                     </button>
+                </div>
+
+                <!-- Noble House Section -->
+                <div class="panel rounded p-3 space-y-2 border-t border-yellow-600/30 relative overflow-hidden" style="background: url('https://i.postimg.cc/W3gC2k20/IMG-4787.jpg'); background-size: cover; background-position: center; box-shadow: inset 0 0 0 2000px rgba(0,0,0,0.75), 0 4px 6px rgba(0,0,0,0.3);">
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(212,175,55,0.2),transparent_60%)]"></div>
+                    <div class="relative z-10 flex items-center justify-between">
+                        <h3 class="medieval-font text-sm text-yellow-400"><i class="fas fa-crown mr-2"></i>Роскошный Особняк</h3>
+                        <span class="text-xs text-yellow-500 gem-price">2,000 <i class="far fa-gem"></i></span>
+                    </div>
+                    
+                    <div id="noble-house-buy" class="space-y-2 relative z-10">
+                        <p class="text-[10px] text-yellow-600">Дом для истинной знати. Максимальный комфорт и возможности.</p>
+                        <div class="grid grid-cols-3 gap-1.5">
+                            <div class="bg-yellow-900/20 rounded p-1.5 text-center border border-yellow-900/40">
+                                <i class="fas fa-bed text-yellow-500 text-xs"></i>
+                                <div class="text-[8px] text-yellow-500/90 mt-0.5">Шикарная кровать</div>
+                            </div>
+                            <div class="bg-yellow-900/20 rounded p-1.5 text-center border border-yellow-900/40">
+                                <i class="fas fa-warehouse text-amber-400 text-xs"></i>
+                                <div class="text-[8px] text-yellow-500/90 mt-0.5">Склад (500кг)</div>
+                            </div>
+                            <div class="bg-yellow-900/20 rounded p-1.5 text-center border border-yellow-900/40">
+                                <i class="fas fa-piggy-bank text-pink-400 text-xs"></i>
+                                <div class="text-[8px] text-yellow-500/90 mt-0.5">Большой загон</div>
+                            </div>
+                            <div class="bg-yellow-900/20 rounded p-1.5 text-center border border-yellow-900/40">
+                                <i class="fas fa-seedling text-green-500 text-xs"></i>
+                                <div class="text-[8px] text-yellow-500/90 mt-0.5">Сад</div>
+                            </div>
+                            <div class="bg-yellow-900/20 rounded p-1.5 text-center border border-yellow-900/40">
+                                <i class="fas fa-hammer text-blue-400 text-xs"></i>
+                                <div class="text-[8px] text-yellow-500/90 mt-0.5">Улучш. верстак</div>
+                            </div>
+                            <div class="bg-yellow-900/20 rounded p-1.5 text-center border border-yellow-900/40">
+                                <i class="fas fa-horse-head text-amber-600 text-xs"></i>
+                                <div class="text-[8px] text-yellow-500/90 mt-0.5">Конюшня x2</div>
+                            </div>
+                        </div>
+                        <button onclick="housing.buyNobleHouse(event)" class="btn-medieval w-full py-1.5 rounded text-xs text-yellow-200 border-yellow-600 bg-yellow-900/30">
+                            Купить особняк
+                        </button>
+                    </div>
+
+                    <div id="noble-house-owned" class="hidden text-center py-2 relative z-10">
+                        <div class="text-xs text-green-400 mb-1">
+                            <i class="fas fa-check-circle mr-1"></i>Куплено
+                        </div>
+                        <p class="text-[10px] text-yellow-600">Особняк доступен на карте</p>
+                    </div>
                 </div>
             </div>
         </section>
@@ -11000,6 +11209,9 @@
                 
                 // Update recipe buttons status
                 this.updateRecipeButtons();
+                
+                // Update home button status
+                housing.updateHomeButton();
 
                 // Telegram Init
                 if (window.Telegram && window.Telegram.WebApp) {
@@ -13238,29 +13450,276 @@
 
         // --- HOUSING CONTROLLER ---
         const housing = {
-            buyPoorHouse: function() {
-                if (gameState.emeralds >= 500) {
-                    gameState.emeralds -= 500;
-                    gameState.hasPoorHouse = true;
-                    game.save();
-                    ui.updateStats();
-                    this.updateUI();
-                    ui.showFloatText(event.target, "Дом куплен!", "#fbbf24");
+            navigateToHome: function() {
+                // Проверяем, куплен ли хоть какой-то дом
+                if (gameState.hasPoorHouse || gameState.hasHouse || gameState.hasNobleHouse) {
+                    router.navigate('home');
                 } else {
-                    ui.showFloatText(event.target, "Нужно 500 изумрудов", "#ff5555");
+                    ui.showFloatText(event.target, "Сначала купите дом!", "#ff5555");
                 }
             },
             
-            buyNobleHouse: function() {
-                if (gameState.emeralds >= 10000) {
-                    gameState.emeralds -= 10000;
-                    gameState.hasNobleHouse = true;
+            getHomeType: function() {
+                if (gameState.hasNobleHouse) return 'noble';
+                if (gameState.hasHouse) return 'village';
+                if (gameState.hasPoorHouse) return 'poor';
+                return null;
+            },
+            
+            getHomeTitle: function() {
+                const type = this.getHomeType();
+                if (type === 'noble') return 'Роскошный особняк';
+                if (type === 'village') return 'Деревенский дом';
+                if (type === 'poor') return 'Старая лачуга';
+                return 'Дом';
+            },
+            
+            getHomeLocation: function() {
+                const type = this.getHomeType();
+                if (type === 'noble') return 'Дворянский квартал';
+                if (type === 'village') return 'Деревня';
+                if (type === 'poor') return 'Район бедняков';
+                return '';
+            },
+            
+            getHomePrice: function() {
+                const type = this.getHomeType();
+                if (type === 'noble') return 2000;
+                if (type === 'village') return 500;
+                if (type === 'poor') return 100000;
+                return 0;
+            },
+            
+            getSellPrice: function() {
+                return Math.floor(this.getHomePrice() * 0.3);
+            },
+            
+            checkExistingHouse: function(newType) {
+                const currentType = this.getHomeType();
+                if (currentType && currentType !== newType) {
+                    return true; // У игрока уже есть другой дом
+                }
+                return false;
+            },
+            
+            showAlreadyOwnHouseModal: function() {
+                const modal = document.getElementById('modal-already-own-house');
+                if (modal) {
+                    modal.classList.add('open');
+                }
+            },
+            
+            sellHouse: function() {
+                const price = this.getSellPrice();
+                const homeType = this.getHomeType();
+                
+                if (!homeType) return;
+                
+                // Продаем дом за 30% от стоимости
+                gameState.emeralds += price;
+                
+                // Убираем дом и все улучшения
+                if (homeType === 'poor') {
+                    gameState.hasPoorHouse = false;
+                } else if (homeType === 'village') {
+                    gameState.hasHouse = false;
+                } else if (homeType === 'noble') {
+                    gameState.hasNobleHouse = false;
+                }
+                
+                // Сбрасываем улучшения
+                if (!gameState.houseUpgrades) gameState.houseUpgrades = {};
+                gameState.houseUpgrades = {};
+                
+                game.save();
+                ui.updateStats();
+                this.updateHomeButton();
+                
+                // Возвращаем на карту
+                router.navigate('map');
+                
+                ui.showNotification('Дом продан за ' + price + ' изумрудов', 'success');
+            },
+            
+            buyPoorHouse: function(event) {
+                // Проверяем, есть ли уже другой дом
+                if (this.checkExistingHouse('poor')) {
+                    this.showAlreadyOwnHouseModal();
+                    return;
+                }
+                
+                if (gameState.gold >= 100000) {
+                    gameState.gold -= 100000;
+                    gameState.hasPoorHouse = true;
+                    if (!gameState.houseUpgrades) gameState.houseUpgrades = {};
                     game.save();
                     ui.updateStats();
                     this.updateUI();
+                    this.updateHomeButton();
+                    ui.showFloatText(event.target, "Дом куплен!", "#fbbf24");
+                } else {
+                    ui.showFloatText(event.target, "Нужно 100,000 золота", "#ff5555");
+                }
+            },
+            
+            buyNobleHouse: function(event) {
+                // Проверяем, есть ли уже другой дом
+                if (this.checkExistingHouse('noble')) {
+                    this.showAlreadyOwnHouseModal();
+                    return;
+                }
+                
+                if (gameState.emeralds >= 2000) {
+                    gameState.emeralds -= 2000;
+                    gameState.hasNobleHouse = true;
+                    if (!gameState.houseUpgrades) gameState.houseUpgrades = {};
+                    game.save();
+                    ui.updateStats();
+                    this.updateUI();
+                    this.updateHomeButton();
                     ui.showFloatText(event.target, "Особняк куплен!", "#fbbf24");
                 } else {
-                    ui.showFloatText(event.target, "Нужно 10,000 изумрудов", "#ff5555");
+                    ui.showFloatText(event.target, "Нужно 2,000 изумрудов", "#ff5555");
+                }
+            },
+            
+            buyUpgrade: function(upgradeName, price, currency) {
+                if (!gameState.houseUpgrades) gameState.houseUpgrades = {};
+                
+                // Проверяем, куплено ли уже
+                if (gameState.houseUpgrades[upgradeName]) {
+                    ui.showNotification('Уже куплено!', 'error');
+                    return;
+                }
+                
+                // Проверяем наличие средств
+                if (currency === 'gold') {
+                    if (gameState.gold >= price) {
+                        gameState.gold -= price;
+                        gameState.houseUpgrades[upgradeName] = true;
+                        game.save();
+                        ui.updateStats();
+                        this.renderHomeContent();
+                        ui.showNotification('Улучшение куплено!', 'success');
+                    } else {
+                        ui.showNotification('Недостаточно золота!', 'error');
+                    }
+                } else if (currency === 'emeralds') {
+                    if (gameState.emeralds >= price) {
+                        gameState.emeralds -= price;
+                        gameState.houseUpgrades[upgradeName] = true;
+                        game.save();
+                        ui.updateStats();
+                        this.renderHomeContent();
+                        ui.showNotification('Улучшение куплено!', 'success');
+                    } else {
+                        ui.showNotification('Недостаточно изумрудов!', 'error');
+                    }
+                }
+            },
+            
+            updateHomeButton: function() {
+                const homeBtn = document.getElementById('home-button');
+                const homeLockIcon = document.getElementById('home-lock-icon');
+                const homeLocationText = document.getElementById('home-location-text');
+                const homeBgImage = document.getElementById('home-bg-image');
+                
+                if (!homeBtn) return;
+                
+                const hasAnyHouse = gameState.hasPoorHouse || gameState.hasHouse || gameState.hasNobleHouse;
+                const homeType = this.getHomeType();
+                
+                // Убираем все классы типов домов
+                homeBtn.classList.remove('poor-house', 'village-house', 'noble-house');
+                
+                // Находим элементы иконки для изменения цвета
+                const iconCircle = homeBtn.querySelector('.home-icon-circle');
+                const homeIcon = homeBtn.querySelector('.home-icon-circle i');
+                
+                if (hasAnyHouse) {
+                    homeBtn.classList.remove('locked');
+                    
+                    // Добавляем класс в зависимости от типа дома
+                    if (homeType === 'poor') {
+                        homeBtn.classList.add('poor-house');
+                        if (homeBgImage) homeBgImage.src = 'https://i.postimg.cc/Y21B7J0M/IMG-4785.jpg';
+                        
+                        // Серая иконка для лачуги
+                        if (iconCircle) {
+                            iconCircle.className = 'home-icon-circle w-12 h-12 rounded-full bg-gradient-to-br from-gray-700/70 to-gray-900 flex items-center justify-center border-2 border-gray-500/60 shadow-[0_0_20px_rgba(136,136,136,0.35)] mb-2 group-hover:scale-110 transition-transform';
+                        }
+                        if (homeIcon) {
+                            homeIcon.className = 'fas fa-home text-gray-400 text-lg drop-shadow-lg';
+                        }
+                        
+                        // Серая стрелочка
+                        if (homeLockIcon) {
+                            homeLockIcon.classList.remove('fa-lock');
+                            homeLockIcon.classList.add('fa-chevron-right');
+                            homeLockIcon.className = 'fas fa-chevron-right text-gray-400/70 text-[10px]';
+                        }
+                    } else if (homeType === 'village') {
+                        homeBtn.classList.add('village-house');
+                        if (homeBgImage) homeBgImage.src = 'https://i.postimg.cc/SxxBWRrx/IMG-4786.jpg';
+                        
+                        // Зеленая иконка для деревенского дома
+                        if (iconCircle) {
+                            iconCircle.className = 'home-icon-circle w-12 h-12 rounded-full bg-gradient-to-br from-[#2d5016]/70 to-[#4a7c2d] flex items-center justify-center border-2 border-[#6eb045]/60 shadow-[0_0_20px_rgba(110,176,69,0.35)] mb-2 group-hover:scale-110 transition-transform';
+                        }
+                        if (homeIcon) {
+                            homeIcon.className = 'fas fa-home text-[#a0d668] text-lg drop-shadow-lg';
+                        }
+                        
+                        // Зеленая стрелочка
+                        if (homeLockIcon) {
+                            homeLockIcon.classList.remove('fa-lock');
+                            homeLockIcon.classList.add('fa-chevron-right');
+                            homeLockIcon.className = 'fas fa-chevron-right text-[#a0d668]/70 text-[10px]';
+                        }
+                    } else if (homeType === 'noble') {
+                        homeBtn.classList.add('noble-house');
+                        if (homeBgImage) homeBgImage.src = 'https://i.postimg.cc/W3gC2k20/IMG-4787.jpg';
+                        
+                        // Золотая иконка для особняка
+                        if (iconCircle) {
+                            iconCircle.className = 'home-icon-circle w-12 h-12 rounded-full bg-gradient-to-br from-yellow-700/70 to-yellow-900 flex items-center justify-center border-2 border-yellow-500/60 shadow-[0_0_20px_rgba(234,179,8,0.35)] mb-2 group-hover:scale-110 transition-transform';
+                        }
+                        if (homeIcon) {
+                            homeIcon.className = 'fas fa-home text-yellow-400 text-lg drop-shadow-lg';
+                        }
+                        
+                        // Золотая стрелочка
+                        if (homeLockIcon) {
+                            homeLockIcon.classList.remove('fa-lock');
+                            homeLockIcon.classList.add('fa-chevron-right');
+                            homeLockIcon.className = 'fas fa-chevron-right text-yellow-400/70 text-[10px]';
+                        }
+                    }
+                    
+                    if (homeLocationText) {
+                        homeLocationText.textContent = 'Твое личное убежище';
+                    }
+                } else {
+                    homeBtn.classList.add('locked');
+                    if (homeBgImage) homeBgImage.src = 'https://i.postimg.cc/63cxNZ6p/IMG-4784.jpg';
+                    
+                    // Возвращаем стандартный зеленый цвет для незакрытого дома
+                    if (iconCircle) {
+                        iconCircle.className = 'home-icon-circle w-12 h-12 rounded-full bg-gradient-to-br from-[#2d5016]/70 to-[#4a7c2d] flex items-center justify-center border-2 border-[#6eb045]/60 shadow-[0_0_20px_rgba(110,176,69,0.35)] mb-2 group-hover:scale-110 transition-transform';
+                    }
+                    if (homeIcon) {
+                        homeIcon.className = 'fas fa-home text-[#a0d668] text-lg drop-shadow-lg';
+                    }
+                    
+                    if (homeLockIcon) {
+                        homeLockIcon.classList.remove('fa-chevron-right');
+                        homeLockIcon.classList.add('fa-lock');
+                        homeLockIcon.classList.remove('text-[#a0d668]/70');
+                        homeLockIcon.classList.add('text-[#666]');
+                    }
+                    if (homeLocationText) {
+                        homeLocationText.textContent = 'Купите дом';
+                    }
                 }
             },
             
@@ -13290,22 +13749,473 @@
                         nobleOwned.classList.add('hidden');
                     }
                 }
+                
+                // Update home button state
+                this.updateHomeButton();
+            },
+            
+            renderHomeContent: function() {
+                const homeContent = document.getElementById('home-content');
+                const homeTitle = document.getElementById('home-title');
+                const homeSubtitle = document.getElementById('home-subtitle');
+                
+                // Элементы заголовка для стилизации
+                const homeHeader = document.getElementById('home-header');
+                const homeHeaderGradient = document.getElementById('home-header-gradient');
+                const homeHeaderLine = document.getElementById('home-header-line');
+                const homeHeaderBackBtn = document.getElementById('home-header-back-btn');
+                const homeHeaderIconCircle = document.getElementById('home-header-icon-circle');
+                const homeHeaderIcon = document.getElementById('home-header-icon');
+                
+                if (!homeContent) return;
+                
+                const homeType = this.getHomeType();
+                const sellPrice = this.getSellPrice();
+                
+                if (!gameState.houseUpgrades) gameState.houseUpgrades = {};
+                
+                if (homeTitle) {
+                    homeTitle.textContent = this.getHomeTitle();
+                }
+                
+                // Обновляем стили заголовка в зависимости от типа дома
+                if (homeType === 'poor') {
+                    // Серый стиль для лачуги
+                    if (homeHeaderGradient) homeHeaderGradient.className = 'absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(100,100,100,0.2),transparent_60%)]';
+                    if (homeHeaderLine) homeHeaderLine.className = 'absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-gray-500/60 to-transparent';
+                    if (homeHeaderBackBtn) homeHeaderBackBtn.className = 'w-8 h-8 rounded border border-gray-500/40 bg-black/30 flex items-center justify-center text-gray-400 hover:bg-gray-500/20 transition-colors';
+                    if (homeHeaderIconCircle) homeHeaderIconCircle.className = 'w-12 h-12 rounded-full bg-gradient-to-br from-gray-700/70 to-gray-900 flex items-center justify-center border-2 border-gray-500/60 shadow-[0_0_15px_rgba(136,136,136,0.35)]';
+                    if (homeHeaderIcon) homeHeaderIcon.className = 'fas fa-home text-gray-400 text-lg';
+                    if (homeHeader && homeHeader.style) homeHeader.style.setProperty('--hero-img', "url('https://i.postimg.cc/Y21B7J0M/IMG-4785.jpg')");
+                } else if (homeType === 'village') {
+                    // Зеленый стиль для деревенского дома
+                    if (homeHeaderGradient) homeHeaderGradient.className = 'absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(90,149,56,0.25),transparent_60%)]';
+                    if (homeHeaderLine) homeHeaderLine.className = 'absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#6eb045]/60 to-transparent';
+                    if (homeHeaderBackBtn) homeHeaderBackBtn.className = 'w-8 h-8 rounded border border-[#6eb045]/40 bg-black/30 flex items-center justify-center text-[#a0d668] hover:bg-[#6eb045]/20 transition-colors';
+                    if (homeHeaderIconCircle) homeHeaderIconCircle.className = 'w-12 h-12 rounded-full bg-gradient-to-br from-[#2d5016]/70 to-[#4a7c2d] flex items-center justify-center border-2 border-[#6eb045]/60 shadow-[0_0_15px_rgba(110,176,69,0.35)]';
+                    if (homeHeaderIcon) homeHeaderIcon.className = 'fas fa-home text-[#a0d668] text-lg';
+                    if (homeHeader && homeHeader.style) homeHeader.style.setProperty('--hero-img', "url('https://i.postimg.cc/SxxBWRrx/IMG-4786.jpg')");
+                } else if (homeType === 'noble') {
+                    // Золотой стиль для особняка
+                    if (homeHeaderGradient) homeHeaderGradient.className = 'absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(234,179,8,0.25),transparent_60%)]';
+                    if (homeHeaderLine) homeHeaderLine.className = 'absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-yellow-500/60 to-transparent';
+                    if (homeHeaderBackBtn) homeHeaderBackBtn.className = 'w-8 h-8 rounded border border-yellow-500/40 bg-black/30 flex items-center justify-center text-yellow-400 hover:bg-yellow-500/20 transition-colors';
+                    if (homeHeaderIconCircle) homeHeaderIconCircle.className = 'w-12 h-12 rounded-full bg-gradient-to-br from-yellow-700/70 to-yellow-900 flex items-center justify-center border-2 border-yellow-500/60 shadow-[0_0_15px_rgba(234,179,8,0.35)]';
+                    if (homeHeaderIcon) homeHeaderIcon.className = 'fas fa-home text-yellow-400 text-lg';
+                    if (homeHeader && homeHeader.style) homeHeader.style.setProperty('--hero-img', "url('https://i.postimg.cc/W3gC2k20/IMG-4787.jpg')");
+                }
+                
+                let content = '';
+                
+                if (homeType === 'poor') {
+                    // Poor house - minimal features
+                    if (homeSubtitle) homeSubtitle.textContent = 'Район бедняков';
+                    content = `
+                        <div class="space-y-3">
+                            <div class="text-center mb-3">
+                                <p class="text-xs text-gray-500">Старая лачуга в бедном районе. Только самое необходимое.</p>
+                            </div>
+                            
+                            <div class="p-3 rounded-lg bg-black/20 border border-gray-700">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <i class="fas fa-bed text-gray-500 text-lg"></i>
+                                    <h4 class="text-sm text-gray-400 font-semibold">Старая кровать</h4>
+                                </div>
+                                <p class="text-[10px] text-gray-600 mb-2">Скрипучая, но спать можно</p>
+                                <button class="btn-medieval px-3 py-1.5 rounded text-xs w-full opacity-50" disabled>
+                                    <i class="fas fa-moon mr-1"></i>Отдохнуть (скоро)
+                                </button>
+                            </div>
+                            
+                            <div class="p-3 rounded-lg bg-black/20 border border-gray-700">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <i class="fas fa-box text-amber-700 text-lg"></i>
+                                    <h4 class="text-sm text-gray-400 font-semibold">Сундук</h4>
+                                </div>
+                                <p class="text-[10px] text-gray-600 mb-2">Небольшое хранилище (200 кг)</p>
+                                <button onclick="housing.openHomeChest()" class="btn-medieval px-3 py-1.5 rounded text-xs w-full">
+                                    <i class="fas fa-archive mr-1"></i>Открыть сундук
+                                </button>
+                            </div>
+                            
+                            <div class="p-3 rounded-lg bg-black/20 border border-gray-700">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <i class="fas fa-fire text-orange-700 text-lg"></i>
+                                    <h4 class="text-sm text-gray-400 font-semibold">Старый камин</h4>
+                                </div>
+                                <p class="text-[10px] text-gray-600 mb-2">Дымит, но греет</p>
+                                <button class="btn-medieval px-3 py-1.5 rounded text-xs w-full opacity-50" disabled>
+                                    <i class="fas fa-utensils mr-1"></i>Готовить (скоро)
+                                </button>
+                            </div>
+                            
+                            <div class="mt-4 p-3 rounded-lg bg-red-900/20 border border-red-700/50 text-center">
+                                <p class="text-xs text-red-400 mb-2">
+                                    <i class="fas fa-info-circle mr-1"></i>Продать дом за ${sellPrice} изумрудов (30%)
+                                </p>
+                                <button onclick="if(confirm('Продать дом за ${sellPrice} изумрудов?')) housing.sellHouse()" class="btn-medieval px-3 py-1.5 rounded text-xs w-full border-red-600 text-red-300">
+                                    <i class="fas fa-hand-holding-dollar mr-1"></i>Продать дом
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                } else if (homeType === 'village') {
+                    // Village house - medium features with upgrades
+                    if (homeSubtitle) homeSubtitle.textContent = 'Деревня';
+                    
+                    const hasWorkbench = gameState.houseUpgrades.workbench;
+                    const hasPen = gameState.houseUpgrades.pen;
+                    
+                    content = `
+                        <div class="space-y-3">
+                            <div class="text-center mb-3">
+                                <p class="text-xs text-gray-400">Просторный дом в деревне. Комфорт и возможности для хозяйства.</p>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="p-3 rounded-lg bg-black/20 border border-[#333]">
+                                    <i class="fas fa-bed text-blue-400 text-lg mb-1"></i>
+                                    <h4 class="text-xs text-gray-300 font-semibold">Удобная кровать</h4>
+                                    <p class="text-[9px] text-gray-600 mt-1">Хороший сон</p>
+                                </div>
+                                <div class="p-3 rounded-lg bg-black/20 border border-[#333]">
+                                    <i class="fas fa-fire text-orange-500 text-lg mb-1"></i>
+                                    <h4 class="text-xs text-gray-300 font-semibold">Хороший камин</h4>
+                                    <p class="text-[9px] text-gray-600 mt-1">Готовка</p>
+                                </div>
+                            </div>
+                            
+                            <div class="p-3 rounded-lg bg-black/20 border border-[#333]">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <i class="fas fa-box text-amber-500 text-lg"></i>
+                                    <h4 class="text-sm text-gray-300 font-semibold">Большой сундук</h4>
+                                </div>
+                                <p class="text-[10px] text-gray-600 mb-2">Хранилище (300 кг)</p>
+                                <button onclick="housing.openHomeChest()" class="btn-medieval px-3 py-1.5 rounded text-xs w-full">
+                                    <i class="fas fa-archive mr-1"></i>Открыть сундук
+                                </button>
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <h4 class="text-xs text-[#c8aa6e] font-semibold uppercase tracking-wider"><i class="fas fa-tools mr-1"></i>Улучшения</h4>
+                                
+                                ${hasWorkbench ? `
+                                    <div class="p-2 rounded-lg bg-green-900/20 border border-green-700/50">
+                                        <div class="flex items-center gap-2">
+                                            <i class="fas fa-check-circle text-green-400 text-sm"></i>
+                                            <span class="text-xs text-green-300">Верстак установлен</span>
+                                        </div>
+                                    </div>
+                                ` : `
+                                    <div class="p-2 rounded-lg bg-black/20 border border-[#333]">
+                                        <div class="flex items-center justify-between mb-1">
+                                            <div class="flex items-center gap-2">
+                                                <i class="fas fa-gavel text-gray-500 text-sm"></i>
+                                                <span class="text-xs text-gray-400">Верстак</span>
+                                            </div>
+                                            <span class="text-xs text-yellow-500">50,000 <i class="fas fa-coins"></i></span>
+                                        </div>
+                                        <button onclick="housing.buyUpgrade('workbench', 50000, 'gold')" class="btn-medieval px-2 py-1 rounded text-[10px] w-full">
+                                            Купить
+                                        </button>
+                                    </div>
+                                `}
+                                
+                                ${hasPen ? `
+                                    <div class="p-2 rounded-lg bg-green-900/20 border border-green-700/50">
+                                        <div class="flex items-center gap-2">
+                                            <i class="fas fa-check-circle text-green-400 text-sm"></i>
+                                            <span class="text-xs text-green-300">Загон для животных построен</span>
+                                        </div>
+                                    </div>
+                                ` : `
+                                    <div class="p-2 rounded-lg bg-black/20 border border-[#333]">
+                                        <div class="flex items-center justify-between mb-1">
+                                            <div class="flex items-center gap-2">
+                                                <i class="fas fa-piggy-bank text-pink-400 text-sm"></i>
+                                                <span class="text-xs text-gray-400">Загон для животных</span>
+                                            </div>
+                                            <span class="text-xs text-yellow-500">60,000 <i class="fas fa-coins"></i></span>
+                                        </div>
+                                        <button onclick="housing.buyUpgrade('pen', 60000, 'gold')" class="btn-medieval px-2 py-1 rounded text-[10px] w-full">
+                                            Купить
+                                        </button>
+                                    </div>
+                                `}
+                            </div>
+                            
+                            <div class="mt-4 p-3 rounded-lg bg-red-900/20 border border-red-700/50 text-center">
+                                <p class="text-xs text-red-400 mb-2">
+                                    <i class="fas fa-info-circle mr-1"></i>Продать дом за ${sellPrice} изумрудов (30%)
+                                </p>
+                                <button onclick="if(confirm('Продать дом за ${sellPrice} изумрудов?')) housing.sellHouse()" class="btn-medieval px-3 py-1.5 rounded text-xs w-full border-red-600 text-red-300">
+                                    <i class="fas fa-hand-holding-dollar mr-1"></i>Продать дом
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                } else if (homeType === 'noble') {
+                    // Noble house - maximum features with premium upgrades
+                    if (homeSubtitle) homeSubtitle.textContent = 'Дворянский квартал';
+                    
+                    const hasAdvancedWorkbench = gameState.houseUpgrades.advancedWorkbench;
+                    const hasLargePen = gameState.houseUpgrades.largePen;
+                    const hasGarden = gameState.houseUpgrades.garden;
+                    
+                    content = `
+                        <div class="space-y-3">
+                            <div class="text-center mb-3">
+                                <p class="text-xs text-yellow-700/70">Роскошный особняк для знати. Максимальный комфорт и возможности.</p>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="p-3 rounded-lg bg-yellow-900/10 border border-yellow-900/30">
+                                    <i class="fas fa-bed text-yellow-500 text-lg mb-1"></i>
+                                    <h4 class="text-xs text-yellow-300 font-semibold">Шикарная кровать</h4>
+                                    <p class="text-[9px] text-yellow-700/70 mt-1">Королевский сон</p>
+                                </div>
+                                <div class="p-3 rounded-lg bg-yellow-900/10 border border-yellow-900/30">
+                                    <i class="fas fa-horse-head text-amber-600 text-lg mb-1"></i>
+                                    <h4 class="text-xs text-yellow-300 font-semibold">Конюшня x2</h4>
+                                    <p class="text-[9px] text-yellow-700/70 mt-1">2 лошади</p>
+                                </div>
+                                <div class="p-3 rounded-lg bg-yellow-900/10 border border-yellow-900/30">
+                                    <i class="fas fa-fire text-orange-500 text-lg mb-1"></i>
+                                    <h4 class="text-xs text-yellow-300 font-semibold">Элитный камин</h4>
+                                    <p class="text-[9px] text-yellow-700/70 mt-1">Отличная готовка</p>
+                                </div>
+                            </div>
+                            
+                            <div class="p-3 rounded-lg bg-yellow-900/10 border border-yellow-900/30">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <i class="fas fa-warehouse text-amber-500 text-lg"></i>
+                                    <h4 class="text-sm text-yellow-300 font-semibold">Склад</h4>
+                                </div>
+                                <p class="text-[10px] text-yellow-700/70 mb-2">Огромное хранилище (500 кг)</p>
+                                <button onclick="housing.openHomeChest()" class="btn-medieval px-3 py-1.5 rounded text-xs w-full border-yellow-600">
+                                    <i class="fas fa-archive mr-1"></i>Открыть склад
+                                </button>
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <h4 class="text-xs text-[#c8aa6e] font-semibold uppercase tracking-wider"><i class="fas fa-crown mr-1"></i>Элитные улучшения</h4>
+                                
+                                ${hasAdvancedWorkbench ? `
+                                    <div class="p-2 rounded-lg bg-green-900/20 border border-green-700/50">
+                                        <div class="flex items-center gap-2">
+                                            <i class="fas fa-check-circle text-green-400 text-sm"></i>
+                                            <span class="text-xs text-green-300">Улучшенный верстак установлен</span>
+                                        </div>
+                                    </div>
+                                ` : `
+                                    <div class="p-2 rounded-lg bg-yellow-900/10 border border-yellow-900/30">
+                                        <div class="flex items-center justify-between mb-1">
+                                            <div class="flex items-center gap-2">
+                                                <i class="fas fa-hammer text-blue-400 text-sm"></i>
+                                                <span class="text-xs text-yellow-300">Улучшенный верстак</span>
+                                            </div>
+                                            <span class="text-xs text-yellow-500">100,000 <i class="fas fa-coins"></i></span>
+                                        </div>
+                                        <button onclick="housing.buyUpgrade('advancedWorkbench', 100000, 'gold')" class="btn-medieval px-2 py-1 rounded text-[10px] w-full border-yellow-600">
+                                            Купить
+                                        </button>
+                                    </div>
+                                `}
+                                
+                                ${hasLargePen ? `
+                                    <div class="p-2 rounded-lg bg-green-900/20 border border-green-700/50">
+                                        <div class="flex items-center gap-2">
+                                            <i class="fas fa-check-circle text-green-400 text-sm"></i>
+                                            <span class="text-xs text-green-300">Большой загон построен</span>
+                                        </div>
+                                    </div>
+                                ` : `
+                                    <div class="p-2 rounded-lg bg-yellow-900/10 border border-yellow-900/30">
+                                        <div class="flex items-center justify-between mb-1">
+                                            <div class="flex items-center gap-2">
+                                                <i class="fas fa-piggy-bank text-pink-400 text-sm"></i>
+                                                <span class="text-xs text-yellow-300">Большой загон для животных</span>
+                                            </div>
+                                            <span class="text-xs text-yellow-500">150,000 <i class="fas fa-coins"></i></span>
+                                        </div>
+                                        <button onclick="housing.buyUpgrade('largePen', 150000, 'gold')" class="btn-medieval px-2 py-1 rounded text-[10px] w-full border-yellow-600">
+                                            Купить
+                                        </button>
+                                    </div>
+                                `}
+                                
+                                ${hasGarden ? `
+                                    <div class="p-2 rounded-lg bg-green-900/20 border border-green-700/50">
+                                        <div class="flex items-center gap-2">
+                                            <i class="fas fa-check-circle text-green-400 text-sm"></i>
+                                            <span class="text-xs text-green-300">Сад разбит</span>
+                                        </div>
+                                    </div>
+                                ` : `
+                                    <div class="p-2 rounded-lg bg-yellow-900/10 border border-yellow-900/30">
+                                        <div class="flex items-center justify-between mb-1">
+                                            <div class="flex items-center gap-2">
+                                                <i class="fas fa-seedling text-green-500 text-sm"></i>
+                                                <span class="text-xs text-yellow-300">Сад</span>
+                                            </div>
+                                            <span class="text-xs gem-price">1,000 <i class="far fa-gem"></i></span>
+                                        </div>
+                                        <button onclick="housing.buyUpgrade('garden', 1000, 'emeralds')" class="btn-medieval px-2 py-1 rounded text-[10px] w-full border-yellow-600">
+                                            Купить
+                                        </button>
+                                    </div>
+                                `}
+                            </div>
+                            
+                            <div class="mt-4 p-3 rounded-lg bg-red-900/20 border border-red-700/50 text-center">
+                                <p class="text-xs text-red-400 mb-2">
+                                    <i class="fas fa-info-circle mr-1"></i>Продать дом за ${sellPrice} изумрудов (30%)
+                                </p>
+                                <button onclick="if(confirm('Продать дом за ${sellPrice} изумрудов?')) housing.sellHouse()" class="btn-medieval px-3 py-1.5 rounded text-xs w-full border-red-600 text-red-300">
+                                    <i class="fas fa-hand-holding-dollar mr-1"></i>Продать дом
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                homeContent.innerHTML = content;
+            },
+            
+            getHomeChestCapacity: function() {
+                const homeType = this.getHomeType();
+                if (homeType === 'noble') return 500;
+                if (homeType === 'village') return 300;
+                if (homeType === 'poor') return 200;
+                return 0;
+            },
+            
+            openHomeChest: function() {
+                router.navigate('home-chest');
+            },
+            
+            renderHomeChest: function() {
+                if (!gameState.homeChest) gameState.homeChest = {};
+                
+                const capacity = this.getHomeChestCapacity();
+                
+                // Inventory
+                const invGrid = document.getElementById('home-chest-inventory-grid');
+                if (invGrid) {
+                    invGrid.innerHTML = '';
+                    Object.keys(RESOURCE_NAMES).forEach(key => {
+                        const count = gameState[key] || 0;
+                        if (count > 0) {
+                            const def = RESOURCE_NAMES[key];
+                            const el = document.createElement('div');
+                            el.className = 'aspect-square bg-[#222] border border-[#444] rounded flex flex-col items-center justify-center relative p-1 cursor-pointer hover:border-[#c8aa6e]';
+                            el.innerHTML = `
+                                ${ui.getIconHtml(def.icon, 'text-lg mb-1')}
+                                <span class="text-[8px] uppercase text-gray-400 truncate w-full text-center">${def.name}</span>
+                                <span class="absolute top-0 right-1 text-[8px] font-bold text-white">${count}</span>
+                            `;
+                            el.onclick = () => this.moveItemToHomeChest(key);
+                            invGrid.appendChild(el);
+                        }
+                    });
+                }
+                
+                // Chest
+                const chestGrid = document.getElementById('home-chest-storage-grid');
+                const weightEl = document.getElementById('home-chest-weight');
+                const capacityEl = document.getElementById('home-chest-capacity');
+                let totalWeight = 0;
+                
+                if (chestGrid) {
+                    chestGrid.innerHTML = '';
+                    Object.keys(gameState.homeChest).forEach(key => {
+                        const count = gameState.homeChest[key];
+                        if (count > 0) {
+                            const def = RESOURCE_NAMES[key];
+                            const w = (RESOURCE_WEIGHTS[key] || 0) * count;
+                            totalWeight += w;
+                            
+                            const el = document.createElement('div');
+                            el.className = 'aspect-square bg-[#2d1810] border border-orange-900 rounded flex flex-col items-center justify-center relative p-1 cursor-pointer hover:border-orange-500';
+                            el.innerHTML = `
+                                ${ui.getIconHtml(def.icon, 'text-lg mb-1')}
+                                <span class="text-[8px] uppercase text-gray-400 truncate w-full text-center">${def.name}</span>
+                                <span class="absolute top-0 right-1 text-[8px] font-bold text-white">${count}</span>
+                            `;
+                            el.onclick = () => this.moveItemFromHomeChest(key);
+                            chestGrid.appendChild(el);
+                        }
+                    });
+                }
+                
+                if (weightEl) weightEl.innerText = totalWeight.toFixed(1);
+                if (capacityEl) capacityEl.innerText = capacity;
+            },
+            
+            moveItemToHomeChest: function(key) {
+                 if (!gameState.homeChest) gameState.homeChest = {};
+                 
+                 if (gameState[key] > 0) {
+                     const weight = RESOURCE_WEIGHTS[key] || 0;
+                     const capacity = this.getHomeChestCapacity();
+                     let currentWeight = 0;
+                     Object.keys(gameState.homeChest).forEach(k => {
+                         currentWeight += (gameState.homeChest[k] || 0) * (RESOURCE_WEIGHTS[k] || 0);
+                     });
+                     
+                     if (currentWeight + weight > capacity) {
+                         ui.showFloatText(event.target, "Сундук полон!", "#ff5555");
+                         return;
+                     }
+                     
+                     gameState[key]--;
+                     if (!gameState.homeChest[key]) gameState.homeChest[key] = 0;
+                     gameState.homeChest[key]++;
+                     
+                     game.save();
+                     this.renderHomeChest();
+                     ui.updateStats();
+                 }
+            },
+            
+            moveItemFromHomeChest: function(key) {
+                if (!gameState.homeChest || !gameState.homeChest[key]) return;
+                
+                if (game.hasWeightCapacity(RESOURCE_WEIGHTS[key] || 0)) {
+                    gameState.homeChest[key]--;
+                    gameState[key]++;
+                    if (gameState.homeChest[key] <= 0) delete gameState.homeChest[key];
+                    
+                    game.save();
+                    this.renderHomeChest();
+                    ui.updateStats();
+                } else {
+                     ui.showFloatText(event.target, "Перегруз!", "#ff5555");
+                }
             }
         };
 
         // --- VILLAGE CONTROLLER ---
         const village = {
-            buyHouse: function() {
-                if (gameState.emeralds >= 1000) {
-                    gameState.emeralds -= 1000;
+            buyHouse: function(event) {
+                // Проверяем, есть ли уже другой дом
+                if (housing.checkExistingHouse('village')) {
+                    housing.showAlreadyOwnHouseModal();
+                    return;
+                }
+                
+                if (gameState.emeralds >= 500) {
+                    gameState.emeralds -= 500;
                     gameState.hasHouse = true;
+                    if (!gameState.houseUpgrades) gameState.houseUpgrades = {};
                     game.save();
                     ui.updateStats();
                     this.updateUI();
+                    housing.updateHomeButton();
                     ui.showFloatText(event.target, "Дом куплен!", "#fbbf24");
                     game.addReputation(6, event.target);
                 } else {
-                    ui.showFloatText(event.target, "Нужно 1000 изумрудов", "#ff5555");
+                    ui.showFloatText(event.target, "Нужно 500 изумрудов", "#ff5555");
                 }
             },
 
@@ -16619,6 +17529,9 @@
                 }
                 
                 document.getElementById('view-map').classList.add('hidden');
+                document.getElementById('view-home').classList.add('hidden');
+                const homeChestView = document.getElementById('view-home-chest');
+                if (homeChestView) homeChestView.classList.add('hidden');
                 document.getElementById('view-jobs').classList.add('hidden');
                 document.getElementById('view-town-square').classList.add('hidden');
                 document.getElementById('view-tavern').classList.add('hidden');
@@ -16661,6 +17574,7 @@
                 
                 const target = document.getElementById(`view-${screenId}`);
                 if (target) target.classList.remove('hidden');
+                if(screenId === 'home') housing.renderHomeContent();
                 if(screenId === 'jobs') ui.updateJobs();
                 if(screenId === 'market' || screenId === 'treasury' || screenId === 'healer' || screenId === 'bookhouse') {
                     ui.updateAll();
@@ -16685,10 +17599,13 @@
                     arthurShop.startEffectTimers();
                 }
                 if (screenId === 'noble-quarter') {
-                    if (!gameState.clothes || !gameState.clothes.peasant) {
+                    // Проверяем, экипирована ли ЛЮБАЯ одежда
+                    const hasAnyClothes = gameState.equippedClothes && gameState.equippedClothes !== 'none';
+                    
+                    if (!hasAnyClothes) {
                         dialogue.start('noble_guard');
                         router.navigate('map');
-                        ui.showFloatText(document.body, "Нужна одежда крестьянина", "#fbbf24");
+                        ui.showFloatText(document.body, "Требуется одежда для входа", "#fbbf24");
                         return;
                     }
                     const lilyWrap = document.getElementById('lily-house-btn-wrap');
@@ -16749,6 +17666,10 @@
                 }
                 if (screenId === 'tavern-chest') {
                     locations.renderChest();
+                }
+                
+                if (screenId === 'home-chest') {
+                    housing.renderHomeChest();
                 }
 
                 // Random Location Quests
@@ -17406,6 +18327,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             const startApp = async () => {
                 const HERO_HEADER_IMAGES = {
+                    'home': 'https://i.postimg.cc/63cxNZ6p/IMG-4784.jpg',
                     'jobs': 'https://i.postimg.cc/zvrrJHQg/IMG-4559.jpg',
                     'town-square': 'https://i.postimg.cc/BnPztnfV/IMG-4542.jpg',
                     'tavern': 'https://i.postimg.cc/kGckq181/IMG-4560.jpg',
