@@ -3412,14 +3412,18 @@
                 </div>
 
                 <!-- Hunter's Hut -->
-                <div class="panel p-3 rounded border-amber-900/30 bg-amber-900/10">
-                    <div class="flex items-center justify-between">
+                <div class="rounded-lg p-4 space-y-3 relative border border-amber-700/40" style="background: url('https://i.postimg.cc/kGXTFn6F/IMG-4563.jpg'); background-size: cover; background-position: center; box-shadow: inset 0 0 0 2000px rgba(0,0,0,0.75), 0 4px 6px rgba(0,0,0,0.3);">
+                    <!-- Additional overlay for gradient effect -->
+                    <div class="absolute inset-0 z-0 pointer-events-none" style="background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.5)); border-radius: 0.5rem;"></div>
+                    <div class="absolute inset-0 z-0 pointer-events-none" style="background: radial-gradient(circle at 30% 30%, rgba(217,119,6,0.2), transparent 60%); border-radius: 0.5rem;"></div>
+                    
+                    <div class="relative z-10 flex items-center justify-between">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full border border-amber-600/60 bg-amber-950/50 flex items-center justify-center">
+                            <div class="w-10 h-10 rounded-full border border-amber-600/60 bg-amber-950/50 flex items-center justify-center shadow-[0_0_15px_rgba(217,119,6,0.3)]">
                                 <i class="fas fa-home text-amber-500"></i>
                             </div>
                             <div>
-                                <div class="text-base text-[#e0e0e0] font-bold">Хижина охотника</div>
+                                <div class="text-base text-[#e0e0e0] font-bold medieval-font">Хижина охотника</div>
                                 <div class="text-[10px] text-amber-400">Тайное убежище</div>
                             </div>
                         </div>
@@ -4483,18 +4487,18 @@
             <!-- Food & Thomas Event -->
             <div class="panel rounded-lg p-4 space-y-3">
                 <h3 class="medieval-font text-lg text-[#c8aa6e]">Горячая еда</h3>
-                <p class="text-xs text-[#a0a0a0]">Восстанавливает 100% здоровья и 100% сытости.</p>
+                <p class="text-xs text-[#a0a0a0]">Восстанавливает 50% сытости.</p>
                 
                 <div class="grid grid-cols-2 gap-3">
                     <button onclick="locations.tavernEat('stew')" class="panel p-2 rounded flex flex-col items-center bg-[#222] border border-[#333] hover:border-[#c8aa6e] transition-colors group">
                         <i class="fas fa-bowl-food text-orange-400 text-2xl mb-2 group-hover:scale-110 transition-transform"></i>
                         <span class="text-xs text-[#e0e0e0] font-bold">Мясное рагу</span>
-                        <span class="text-[10px] text-yellow-500 mt-1">100 <i class="fas fa-coins"></i></span>
+                        <span class="text-[10px] text-yellow-500 mt-1">200 <i class="fas fa-coins"></i></span>
                     </button>
                     <button onclick="locations.tavernEat('soup')" class="panel p-2 rounded flex flex-col items-center bg-[#222] border border-[#333] hover:border-[#c8aa6e] transition-colors group">
                         <i class="fas fa-utensils text-yellow-200 text-2xl mb-2 group-hover:scale-110 transition-transform"></i>
                         <span class="text-xs text-[#e0e0e0] font-bold">Куриный суп</span>
-                        <span class="text-[10px] text-yellow-500 mt-1">100 <i class="fas fa-coins"></i></span>
+                        <span class="text-[10px] text-yellow-500 mt-1">200 <i class="fas fa-coins"></i></span>
                     </button>
                 </div>
             </div>
@@ -5378,19 +5382,25 @@
             </div>
 
             <div class="panel rounded-lg p-4 space-y-4">
-                <div class="panel p-3 rounded flex items-center justify-between border-emerald-900/30 bg-emerald-900/10">
-                    <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-full border-2 border-emerald-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(22,101,52,0.3), rgba(0,0,0,0.5));">
-                            <img src="https://i.postimg.cc/tgFkFwQ1/IMG-4670.png" alt="Хью" class="w-full h-full object-cover object-top">
+                <div class="rounded-lg p-4 space-y-3 relative border border-emerald-700/40" style="background: url('https://i.postimg.cc/zvw13wHX/IMG-4569.jpg'); background-size: cover; background-position: center; box-shadow: inset 0 0 0 2000px rgba(0,0,0,0.75), 0 4px 6px rgba(0,0,0,0.3);">
+                    <!-- Additional overlay for gradient effect -->
+                    <div class="absolute inset-0 z-0 pointer-events-none" style="background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.5)); border-radius: 0.5rem;"></div>
+                    <div class="absolute inset-0 z-0 pointer-events-none" style="background: radial-gradient(circle at 30% 30%, rgba(16,185,129,0.2), transparent 60%); border-radius: 0.5rem;"></div>
+                    
+                    <div class="relative z-10 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-full border-2 border-emerald-600/50 overflow-hidden flex-shrink-0 shadow-[0_0_15px_rgba(16,185,129,0.3)]" style="background: linear-gradient(135deg, rgba(22,101,52,0.3), rgba(0,0,0,0.5));">
+                                <img src="https://i.postimg.cc/tgFkFwQ1/IMG-4670.png" alt="Хью" class="w-full h-full object-cover object-top">
+                            </div>
+                            <div>
+                                <div class="text-base text-[#e0e0e0] font-bold medieval-font">Фермер Хью</div>
+                                <div class="text-[10px] text-[#a0a0a0]">Торговец скотом</div>
+                            </div>
                         </div>
-                        <div>
-                            <div class="text-base text-[#e0e0e0] font-bold medieval-font">Фермер Хью</div>
-                            <div class="text-[10px] text-[#a0a0a0]">Торговец скотом</div>
-                        </div>
+                        <button onclick="dialogue.start('hugh')" class="btn-medieval px-4 py-1.5 rounded text-xs">
+                            Говорить
+                        </button>
                     </div>
-                    <button onclick="dialogue.start('hugh')" class="btn-medieval px-4 py-1.5 rounded text-xs">
-                        Говорить
-                    </button>
                 </div>
 
                 <div class="panel p-3 rounded bg-black/20 border border-[#333] text-[10px] text-[#a0a0a0]">
@@ -5401,60 +5411,80 @@
                 <div class="space-y-3">
                     <h3 class="text-xs text-[#777] uppercase border-b border-[#333] pb-1">Животные</h3>
 
-                    <div class="market-item-card border rounded p-3">
-                        <div class="flex justify-between items-start mb-2">
-                            <div class="flex gap-3">
-                                <i class="fas fa-rabbit text-emerald-300 text-lg mt-1"></i>
-                                <div>
-                                    <div class="text-sm font-bold text-[#e0e0e0]">Кролик</div>
-                                    <div class="text-[10px] text-[#777]">Для хозяйства.</div>
+                    <div class="rounded-lg p-3 relative overflow-hidden border border-emerald-700/40" style="background: url('https://i.postimg.cc/zvw13wHX/IMG-4569.jpg'); background-size: cover; background-position: center; box-shadow: inset 0 0 0 2000px rgba(0,0,0,0.75), 0 4px 6px rgba(0,0,0,0.3);">
+                        <div class="absolute inset-0 z-0 pointer-events-none" style="background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.5)); border-radius: 0.5rem;"></div>
+                        <div class="absolute inset-0 z-0 pointer-events-none" style="background: radial-gradient(circle at 30% 30%, rgba(16,185,129,0.15), transparent 60%); border-radius: 0.5rem;"></div>
+                        
+                        <div class="relative z-10">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="flex gap-3">
+                                    <i class="fas fa-rabbit text-emerald-300 text-lg mt-1"></i>
+                                    <div>
+                                        <div class="text-sm font-bold text-[#e0e0e0]">Кролик</div>
+                                        <div class="text-[10px] text-[#777]">Для хозяйства.</div>
+                                    </div>
                                 </div>
+                                <div class="text-sm text-yellow-400 font-bold">4,000 <i class="fas fa-coins"></i></div>
                             </div>
-                            <div class="text-sm text-yellow-400 font-bold">4,000 <i class="fas fa-coins"></i></div>
+                            <button onclick="livestock.buyAnimal('rabbit')" class="w-full py-1.5 rounded text-[10px] text-emerald-300 border border-emerald-700/40 bg-black/30 hover:bg-emerald-900/30 backdrop-blur-sm transition-all font-bold">Купить</button>
                         </div>
-                        <button onclick="livestock.buyAnimal('rabbit')" class="w-full py-1.5 rounded text-[10px] text-emerald-300 border border-emerald-700/40 hover:bg-emerald-900/30 transition-all" >Купить</button>
                     </div>
 
-                    <div class="market-item-card border rounded p-3">
-                        <div class="flex justify-between items-start mb-2">
-                            <div class="flex gap-3">
-                                <i class="fas fa-kiwi-bird text-amber-300 text-lg mt-1"></i>
-                                <div>
-                                    <div class="text-sm font-bold text-[#e0e0e0]">Курица</div>
-                                    <div class="text-[10px] text-[#777]">Несёт яйца.</div>
+                    <div class="rounded-lg p-3 relative overflow-hidden border border-amber-700/40" style="background: url('https://i.postimg.cc/zvw13wHX/IMG-4569.jpg'); background-size: cover; background-position: center; box-shadow: inset 0 0 0 2000px rgba(0,0,0,0.75), 0 4px 6px rgba(0,0,0,0.3);">
+                        <div class="absolute inset-0 z-0 pointer-events-none" style="background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.5)); border-radius: 0.5rem;"></div>
+                        <div class="absolute inset-0 z-0 pointer-events-none" style="background: radial-gradient(circle at 30% 30%, rgba(217,119,6,0.15), transparent 60%); border-radius: 0.5rem;"></div>
+                        
+                        <div class="relative z-10">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="flex gap-3">
+                                    <i class="fas fa-kiwi-bird text-amber-300 text-lg mt-1"></i>
+                                    <div>
+                                        <div class="text-sm font-bold text-[#e0e0e0]">Курица</div>
+                                        <div class="text-[10px] text-[#777]">Несёт яйца.</div>
+                                    </div>
                                 </div>
+                                <div class="text-sm text-yellow-400 font-bold">5,000 <i class="fas fa-coins"></i></div>
                             </div>
-                            <div class="text-sm text-yellow-400 font-bold">5,000 <i class="fas fa-coins"></i></div>
+                            <button onclick="livestock.buyAnimal('chicken')" class="w-full py-1.5 rounded text-[10px] text-amber-300 border border-amber-700/40 bg-black/30 hover:bg-amber-900/30 backdrop-blur-sm transition-all font-bold">Купить</button>
                         </div>
-                        <button onclick="livestock.buyAnimal('chicken')" class="w-full py-1.5 rounded text-[10px] text-emerald-300 border border-emerald-700/40 hover:bg-emerald-900/30 transition-all" >Купить</button>
                     </div>
 
-                    <div class="market-item-card border rounded p-3">
-                        <div class="flex justify-between items-start mb-2">
-                            <div class="flex gap-3">
-                                <i class="fas fa-piggy-bank text-pink-300 text-lg mt-1"></i>
-                                <div>
-                                    <div class="text-sm font-bold text-[#e0e0e0]">Свинья</div>
-                                    <div class="text-[10px] text-[#777]">Даёт мясо.</div>
+                    <div class="rounded-lg p-3 relative overflow-hidden border border-pink-700/40" style="background: url('https://i.postimg.cc/zvw13wHX/IMG-4569.jpg'); background-size: cover; background-position: center; box-shadow: inset 0 0 0 2000px rgba(0,0,0,0.75), 0 4px 6px rgba(0,0,0,0.3);">
+                        <div class="absolute inset-0 z-0 pointer-events-none" style="background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.5)); border-radius: 0.5rem;"></div>
+                        <div class="absolute inset-0 z-0 pointer-events-none" style="background: radial-gradient(circle at 30% 30%, rgba(236,72,153,0.15), transparent 60%); border-radius: 0.5rem;"></div>
+                        
+                        <div class="relative z-10">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="flex gap-3">
+                                    <i class="fas fa-piggy-bank text-pink-300 text-lg mt-1"></i>
+                                    <div>
+                                        <div class="text-sm font-bold text-[#e0e0e0]">Свинья</div>
+                                        <div class="text-[10px] text-[#777]">Даёт мясо.</div>
+                                    </div>
                                 </div>
+                                <div class="text-sm text-yellow-400 font-bold">10,000 <i class="fas fa-coins"></i></div>
                             </div>
-                            <div class="text-sm text-yellow-400 font-bold">10,000 <i class="fas fa-coins"></i></div>
+                            <button onclick="livestock.buyAnimal('pig')" class="w-full py-1.5 rounded text-[10px] text-pink-300 border border-pink-700/40 bg-black/30 hover:bg-pink-900/30 backdrop-blur-sm transition-all font-bold">Купить</button>
                         </div>
-                        <button onclick="livestock.buyAnimal('pig')" class="w-full py-1.5 rounded text-[10px] text-emerald-300 border border-emerald-700/40 hover:bg-emerald-900/30 transition-all" >Купить</button>
                     </div>
 
-                    <div class="market-item-card border rounded p-3">
-                        <div class="flex justify-between items-start mb-2">
-                            <div class="flex gap-3">
-                                <i class="fas fa-cow text-white text-lg mt-1"></i>
-                                <div>
-                                    <div class="text-sm font-bold text-[#e0e0e0]">Корова</div>
-                                    <div class="text-[10px] text-[#777]">Даёт молоко.</div>
+                    <div class="rounded-lg p-3 relative overflow-hidden border border-slate-500/40" style="background: url('https://i.postimg.cc/zvw13wHX/IMG-4569.jpg'); background-size: cover; background-position: center; box-shadow: inset 0 0 0 2000px rgba(0,0,0,0.75), 0 4px 6px rgba(0,0,0,0.3);">
+                        <div class="absolute inset-0 z-0 pointer-events-none" style="background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.5)); border-radius: 0.5rem;"></div>
+                        <div class="absolute inset-0 z-0 pointer-events-none" style="background: radial-gradient(circle at 30% 30%, rgba(148,163,184,0.15), transparent 60%); border-radius: 0.5rem;"></div>
+                        
+                        <div class="relative z-10">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="flex gap-3">
+                                    <i class="fas fa-cow text-white text-lg mt-1"></i>
+                                    <div>
+                                        <div class="text-sm font-bold text-[#e0e0e0]">Корова</div>
+                                        <div class="text-[10px] text-[#777]">Даёт молоко.</div>
+                                    </div>
                                 </div>
+                                <div class="text-sm text-yellow-400 font-bold">50,000 <i class="fas fa-coins"></i></div>
                             </div>
-                            <div class="text-sm text-yellow-400 font-bold">50,000 <i class="fas fa-coins"></i></div>
+                            <button onclick="livestock.buyAnimal('cow')" class="w-full py-1.5 rounded text-[10px] text-slate-300 border border-slate-500/40 bg-black/30 hover:bg-slate-800/30 backdrop-blur-sm transition-all font-bold">Купить</button>
                         </div>
-                        <button onclick="livestock.buyAnimal('cow')" class="w-full py-1.5 rounded text-[10px] text-emerald-300 border border-emerald-700/40 hover:bg-emerald-900/30 transition-all" >Купить</button>
                     </div>
 
                     <!-- Horses Section -->
@@ -5462,93 +5492,123 @@
                         <h3 class="text-xs text-[#777] uppercase pb-1">Лошади</h3>
                         
                         <!-- Arabian -->
-                        <div class="market-item-card border rounded p-3">
-                            <div class="flex justify-between items-start mb-2">
-                                <div class="flex gap-3">
-                                    <i class="fas fa-horse text-amber-200 text-lg mt-1"></i>
-                                    <div>
-                                        <div class="text-sm font-bold text-[#e0e0e0]">Арабский скакун</div>
-                                        <div class="text-[10px] text-[#777]">Быстрая и выносливая.</div>
+                        <div class="rounded-lg p-3 relative overflow-hidden border border-amber-700/40" style="background: url('https://i.postimg.cc/zvw13wHX/IMG-4569.jpg'); background-size: cover; background-position: center; box-shadow: inset 0 0 0 2000px rgba(0,0,0,0.75), 0 4px 6px rgba(0,0,0,0.3);">
+                            <div class="absolute inset-0 z-0 pointer-events-none" style="background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.5)); border-radius: 0.5rem;"></div>
+                            <div class="absolute inset-0 z-0 pointer-events-none" style="background: radial-gradient(circle at 30% 30%, rgba(251,191,36,0.15), transparent 60%); border-radius: 0.5rem;"></div>
+                            
+                            <div class="relative z-10">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div class="flex gap-3">
+                                        <i class="fas fa-horse text-amber-200 text-lg mt-1"></i>
+                                        <div>
+                                            <div class="text-sm font-bold text-[#e0e0e0]">Арабский скакун</div>
+                                            <div class="text-[10px] text-[#777]">Быстрая и выносливая.</div>
+                                        </div>
                                     </div>
+                                    <div class="text-sm text-yellow-400 font-bold">150,000 <i class="fas fa-coins"></i></div>
                                 </div>
-                                <div class="text-sm text-yellow-400 font-bold">150,000 <i class="fas fa-coins"></i></div>
+                                <button onclick="livestock.buyHorse('arabian')" class="w-full py-1.5 rounded text-[10px] text-amber-300 border border-amber-700/40 bg-black/30 hover:bg-amber-900/30 backdrop-blur-sm transition-all font-bold">Купить</button>
                             </div>
-                            <button onclick="livestock.buyHorse('arabian')" class="w-full py-1.5 rounded text-[10px] text-emerald-300 border border-emerald-700/40 hover:bg-emerald-900/30 transition-all" >Купить</button>
                         </div>
 
                         <!-- Thoroughbred -->
-                        <div class="market-item-card border rounded p-3">
-                            <div class="flex justify-between items-start mb-2">
-                                <div class="flex gap-3">
-                                    <i class="fas fa-horse-head text-orange-300 text-lg mt-1"></i>
-                                    <div>
-                                        <div class="text-sm font-bold text-[#e0e0e0]">Чистокровная</div>
-                                        <div class="text-[10px] text-[#777]">Рождена для скачек.</div>
+                        <div class="rounded-lg p-3 relative overflow-hidden border border-orange-700/40" style="background: url('https://i.postimg.cc/zvw13wHX/IMG-4569.jpg'); background-size: cover; background-position: center; box-shadow: inset 0 0 0 2000px rgba(0,0,0,0.75), 0 4px 6px rgba(0,0,0,0.3);">
+                            <div class="absolute inset-0 z-0 pointer-events-none" style="background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.5)); border-radius: 0.5rem;"></div>
+                            <div class="absolute inset-0 z-0 pointer-events-none" style="background: radial-gradient(circle at 30% 30%, rgba(249,115,22,0.15), transparent 60%); border-radius: 0.5rem;"></div>
+                            
+                            <div class="relative z-10">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div class="flex gap-3">
+                                        <i class="fas fa-horse-head text-orange-300 text-lg mt-1"></i>
+                                        <div>
+                                            <div class="text-sm font-bold text-[#e0e0e0]">Чистокровная</div>
+                                            <div class="text-[10px] text-[#777]">Рождена для скачек.</div>
+                                        </div>
                                     </div>
+                                    <div class="text-sm text-yellow-400 font-bold">120,000 <i class="fas fa-coins"></i></div>
                                 </div>
-                                <div class="text-sm text-yellow-400 font-bold">120,000 <i class="fas fa-coins"></i></div>
+                                <button onclick="livestock.buyHorse('thoroughbred')" class="w-full py-1.5 rounded text-[10px] text-orange-300 border border-orange-700/40 bg-black/30 hover:bg-orange-900/30 backdrop-blur-sm transition-all font-bold">Купить</button>
                             </div>
-                            <button onclick="livestock.buyHorse('thoroughbred')" class="w-full py-1.5 rounded text-[10px] text-emerald-300 border border-emerald-700/40 hover:bg-emerald-900/30 transition-all" >Купить</button>
                         </div>
 
                         <!-- Draft -->
-                        <div class="market-item-card border rounded p-3">
-                            <div class="flex justify-between items-start mb-2">
-                                <div class="flex gap-3">
-                                    <i class="fas fa-weight-hanging text-stone-400 text-lg mt-1"></i>
-                                    <div>
-                                        <div class="text-sm font-bold text-[#e0e0e0]">Тяжеловоз</div>
-                                        <div class="text-[10px] text-[#777]">Мощная. +100кг веса.</div>
+                        <div class="rounded-lg p-3 relative overflow-hidden border border-stone-700/40" style="background: url('https://i.postimg.cc/zvw13wHX/IMG-4569.jpg'); background-size: cover; background-position: center; box-shadow: inset 0 0 0 2000px rgba(0,0,0,0.75), 0 4px 6px rgba(0,0,0,0.3);">
+                            <div class="absolute inset-0 z-0 pointer-events-none" style="background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.5)); border-radius: 0.5rem;"></div>
+                            <div class="absolute inset-0 z-0 pointer-events-none" style="background: radial-gradient(circle at 30% 30%, rgba(120,113,108,0.15), transparent 60%); border-radius: 0.5rem;"></div>
+                            
+                            <div class="relative z-10">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div class="flex gap-3">
+                                        <i class="fas fa-weight-hanging text-stone-400 text-lg mt-1"></i>
+                                        <div>
+                                            <div class="text-sm font-bold text-[#e0e0e0]">Тяжеловоз</div>
+                                            <div class="text-[10px] text-[#777]">Мощная. +100кг веса.</div>
+                                        </div>
                                     </div>
+                                    <div class="text-sm text-yellow-400 font-bold">80,000 <i class="fas fa-coins"></i></div>
                                 </div>
-                                <div class="text-sm text-yellow-400 font-bold">80,000 <i class="fas fa-coins"></i></div>
+                                <button onclick="livestock.buyHorse('draft')" class="w-full py-1.5 rounded text-[10px] text-stone-300 border border-stone-700/40 bg-black/30 hover:bg-stone-800/30 backdrop-blur-sm transition-all font-bold">Купить</button>
                             </div>
-                            <button onclick="livestock.buyHorse('draft')" class="w-full py-1.5 rounded text-[10px] text-emerald-300 border border-emerald-700/40 hover:bg-emerald-900/30 transition-all" >Купить</button>
                         </div>
                         
                          <!-- Pony -->
-                        <div class="market-item-card border rounded p-3">
-                            <div class="flex justify-between items-start mb-2">
-                                <div class="flex gap-3">
-                                    <i class="fas fa-horse text-yellow-600 text-lg mt-1"></i>
-                                    <div>
-                                        <div class="text-sm font-bold text-[#e0e0e0]">Пони</div>
-                                        <div class="text-[10px] text-[#777]">Недорогая.</div>
+                        <div class="rounded-lg p-3 relative overflow-hidden border border-yellow-700/40" style="background: url('https://i.postimg.cc/zvw13wHX/IMG-4569.jpg'); background-size: cover; background-position: center; box-shadow: inset 0 0 0 2000px rgba(0,0,0,0.75), 0 4px 6px rgba(0,0,0,0.3);">
+                            <div class="absolute inset-0 z-0 pointer-events-none" style="background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.5)); border-radius: 0.5rem;"></div>
+                            <div class="absolute inset-0 z-0 pointer-events-none" style="background: radial-gradient(circle at 30% 30%, rgba(202,138,4,0.15), transparent 60%); border-radius: 0.5rem;"></div>
+                            
+                            <div class="relative z-10">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div class="flex gap-3">
+                                        <i class="fas fa-horse text-yellow-600 text-lg mt-1"></i>
+                                        <div>
+                                            <div class="text-sm font-bold text-[#e0e0e0]">Пони</div>
+                                            <div class="text-[10px] text-[#777]">Недорогая.</div>
+                                        </div>
                                     </div>
+                                    <div class="text-sm text-yellow-400 font-bold">30,000 <i class="fas fa-coins"></i></div>
                                 </div>
-                                <div class="text-sm text-yellow-400 font-bold">30,000 <i class="fas fa-coins"></i></div>
+                                <button onclick="livestock.buyHorse('pony')" class="w-full py-1.5 rounded text-[10px] text-yellow-300 border border-yellow-700/40 bg-black/30 hover:bg-yellow-900/30 backdrop-blur-sm transition-all font-bold">Купить</button>
                             </div>
-                            <button onclick="livestock.buyHorse('pony')" class="w-full py-1.5 rounded text-[10px] text-emerald-300 border border-emerald-700/40 hover:bg-emerald-900/30 transition-all" >Купить</button>
                         </div>
 
                         <!-- Mustang -->
-                        <div class="market-item-card border rounded p-3">
-                            <div class="flex justify-between items-start mb-2">
-                                <div class="flex gap-3">
-                                    <i class="fas fa-wind text-slate-400 text-lg mt-1"></i>
-                                    <div>
-                                        <div class="text-sm font-bold text-[#e0e0e0]">Мустанг</div>
-                                        <div class="text-[10px] text-[#777]">Дикая и своенравная.</div>
+                        <div class="rounded-lg p-3 relative overflow-hidden border border-slate-600/40" style="background: url('https://i.postimg.cc/zvw13wHX/IMG-4569.jpg'); background-size: cover; background-position: center; box-shadow: inset 0 0 0 2000px rgba(0,0,0,0.75), 0 4px 6px rgba(0,0,0,0.3);">
+                            <div class="absolute inset-0 z-0 pointer-events-none" style="background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.5)); border-radius: 0.5rem;"></div>
+                            <div class="absolute inset-0 z-0 pointer-events-none" style="background: radial-gradient(circle at 30% 30%, rgba(148,163,184,0.15), transparent 60%); border-radius: 0.5rem;"></div>
+                            
+                            <div class="relative z-10">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div class="flex gap-3">
+                                        <i class="fas fa-wind text-slate-400 text-lg mt-1"></i>
+                                        <div>
+                                            <div class="text-sm font-bold text-[#e0e0e0]">Мустанг</div>
+                                            <div class="text-[10px] text-[#777]">Дикая и своенравная.</div>
+                                        </div>
                                     </div>
+                                    <div class="text-sm text-yellow-400 font-bold">90,000 <i class="fas fa-coins"></i></div>
                                 </div>
-                                <div class="text-sm text-yellow-400 font-bold">90,000 <i class="fas fa-coins"></i></div>
+                                <button onclick="livestock.buyHorse('mustang')" class="w-full py-1.5 rounded text-[10px] text-slate-300 border border-slate-600/40 bg-black/30 hover:bg-slate-800/30 backdrop-blur-sm transition-all font-bold">Купить</button>
                             </div>
-                            <button onclick="livestock.buyHorse('mustang')" class="w-full py-1.5 rounded text-[10px] text-emerald-300 border border-emerald-700/40 hover:bg-emerald-900/30 transition-all" >Купить</button>
                         </div>
 
                         <!-- Warhorse -->
-                        <div class="market-item-card border rounded p-3">
-                            <div class="flex justify-between items-start mb-2">
-                                <div class="flex gap-3">
-                                    <i class="fas fa-chess-knight text-red-500 text-lg mt-1"></i>
-                                    <div>
-                                        <div class="text-sm font-bold text-[#e0e0e0]">Боевой конь</div>
-                                        <div class="text-[10px] text-[#777]">Тренированная для битв.</div>
+                        <div class="rounded-lg p-3 relative overflow-hidden border border-red-700/40" style="background: url('https://i.postimg.cc/zvw13wHX/IMG-4569.jpg'); background-size: cover; background-position: center; box-shadow: inset 0 0 0 2000px rgba(0,0,0,0.75), 0 4px 6px rgba(0,0,0,0.3);">
+                            <div class="absolute inset-0 z-0 pointer-events-none" style="background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.5)); border-radius: 0.5rem;"></div>
+                            <div class="absolute inset-0 z-0 pointer-events-none" style="background: radial-gradient(circle at 30% 30%, rgba(239,68,68,0.15), transparent 60%); border-radius: 0.5rem;"></div>
+                            
+                            <div class="relative z-10">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div class="flex gap-3">
+                                        <i class="fas fa-chess-knight text-red-500 text-lg mt-1"></i>
+                                        <div>
+                                            <div class="text-sm font-bold text-[#e0e0e0]">Боевой конь</div>
+                                            <div class="text-[10px] text-[#777]">Тренированная для битв.</div>
+                                        </div>
                                     </div>
+                                    <div class="text-sm text-yellow-400 font-bold">250,000 <i class="fas fa-coins"></i></div>
                                 </div>
-                                <div class="text-sm text-yellow-400 font-bold">250,000 <i class="fas fa-coins"></i></div>
+                                <button onclick="livestock.buyHorse('warhorse')" class="w-full py-1.5 rounded text-[10px] text-red-300 border border-red-700/40 bg-black/30 hover:bg-red-900/30 backdrop-blur-sm transition-all font-bold">Купить</button>
                             </div>
-                            <button onclick="livestock.buyHorse('warhorse')" class="w-full py-1.5 rounded text-[10px] text-emerald-300 border border-emerald-700/40 hover:bg-emerald-900/30 transition-all" >Купить</button>
                         </div>
                     </div>
                 </div>
@@ -6131,45 +6191,63 @@
                 </div>
 
                 <!-- Азартный игрок -->
-                <div class="panel p-4 rounded-lg border-yellow-700/40 bg-yellow-900/10 space-y-3">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-3 flex-1">
-                            <div class="w-14 h-14 rounded-full border-2 border-yellow-600/50 bg-gradient-to-br from-yellow-900/30 to-yellow-950 flex items-center justify-center shadow-[0_0_15px_rgba(234,179,8,0.3)]">
-                                <i class="fas fa-dice text-yellow-400 text-2xl"></i>
-                            </div>
-                            <div>
-                                <div class="text-lg text-[#e0e0e0] font-bold medieval-font">Азартный игрок</div>
-                                <div class="text-[10px] text-[#a0a0a0]">Игра в кости • Кто больше выбросит?</div>
-                            </div>
-                        </div>
-                        <button class="px-4 py-2 rounded text-xs border border-yellow-700/40 bg-black/30 text-yellow-300 hover:bg-yellow-900/20 backdrop-blur-sm whitespace-nowrap font-bold" onclick="diceGame.open()">
-                            <i class="fas fa-dice mr-1"></i>Играть
-                        </button>
+                <div class="panel rounded-lg p-4 relative overflow-hidden border-yellow-700/40 bg-black/30 backdrop-blur-sm">
+                    <!-- Background Image with Overlay -->
+                    <div class="absolute inset-0 z-0">
+                        <img src="https://i.postimg.cc/B6wvznFS/IMG-4602.jpg" alt="Dice Game" class="w-full h-full object-cover opacity-25">
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80"></div>
+                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(234,179,8,0.2),transparent_60%)]"></div>
                     </div>
-                    <div class="text-[10px] text-yellow-400/80 bg-black/20 border border-yellow-900/30 rounded p-2 text-center">
-                        Ставки: 500, 1000, 2000 золота • Выигрыш: x2 от ставки
+                    
+                    <div class="relative z-10 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3 flex-1">
+                                <div class="w-14 h-14 rounded-full border-2 border-yellow-600/50 bg-gradient-to-br from-yellow-900/30 to-yellow-950 flex items-center justify-center shadow-[0_0_15px_rgba(234,179,8,0.3)]">
+                                    <i class="fas fa-dice text-yellow-400 text-2xl"></i>
+                                </div>
+                                <div>
+                                    <div class="text-lg text-[#e0e0e0] font-bold medieval-font">Азартный игрок</div>
+                                    <div class="text-[10px] text-[#a0a0a0]">Игра в кости • Кто больше выбросит?</div>
+                                </div>
+                            </div>
+                            <button class="px-4 py-2 rounded text-xs border border-yellow-700/40 bg-black/30 text-yellow-300 hover:bg-yellow-900/20 backdrop-blur-sm whitespace-nowrap font-bold" onclick="diceGame.open()">
+                                <i class="fas fa-dice mr-1"></i>Играть
+                            </button>
+                        </div>
+                        <div class="text-[10px] text-yellow-400/80 bg-black/20 border border-yellow-900/30 rounded p-2 text-center">
+                            Ставки: 500, 1000, 2000 золота • Выигрыш: x2 от ставки
+                        </div>
                     </div>
                 </div>
 
                 <!-- Благотворительная столовая -->
-                <div class="panel p-4 rounded-lg border-green-700/40 bg-green-900/10 space-y-3">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-3 flex-1">
-                            <div class="w-14 h-14 rounded-full border-2 border-green-600/50 bg-gradient-to-br from-green-900/30 to-green-950 flex items-center justify-center shadow-[0_0_15px_rgba(34,197,94,0.3)]">
-                                <i class="fas fa-bowl-food text-green-400 text-2xl"></i>
-                            </div>
-                            <div>
-                                <div class="text-lg text-[#e0e0e0] font-bold medieval-font">Столовая для бедных</div>
-                                <div class="text-[10px] text-[#a0a0a0]">Бесплатная еда для нуждающихся</div>
-                                <div class="text-[10px] text-green-400 mt-1">До следующего посещения: <span id="poor-canteen-timer">--:--:--</span></div>
-                            </div>
-                        </div>
-                        <button id="btn-poor-canteen" class="px-4 py-2 rounded text-xs border border-green-700/40 bg-black/30 text-green-300 hover:bg-green-900/20 backdrop-blur-sm whitespace-nowrap font-bold" onclick="poorDistrict.eatCanteen(event)">
-                            <i class="fas fa-utensils mr-1"></i>Поесть
-                        </button>
+                <div class="panel rounded-lg p-4 relative overflow-hidden border-green-700/40 bg-black/30 backdrop-blur-sm">
+                    <!-- Background Image with Overlay -->
+                    <div class="absolute inset-0 z-0">
+                        <img src="https://i.postimg.cc/6QJnHYXF/IMG-4600.jpg" alt="Столовая" class="w-full h-full object-cover opacity-25">
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80"></div>
+                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(34,197,94,0.2),transparent_60%)]"></div>
                     </div>
-                    <div class="text-[10px] text-green-400/80 bg-black/20 border border-green-900/30 rounded p-2 text-center">
-                        +50% сытости • Доступно до 7 уровня • 1 раз в день
+                    
+                    <div class="relative z-10 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3 flex-1">
+                                <div class="w-14 h-14 rounded-full border-2 border-green-600/50 bg-gradient-to-br from-green-900/30 to-green-950 flex items-center justify-center shadow-[0_0_15px_rgba(34,197,94,0.3)]">
+                                    <i class="fas fa-bowl-food text-green-400 text-2xl"></i>
+                                </div>
+                                <div>
+                                    <div class="text-lg text-[#e0e0e0] font-bold medieval-font">Столовая для бедных</div>
+                                    <div class="text-[10px] text-[#a0a0a0]">Бесплатная еда для нуждающихся</div>
+                                    <div class="text-[10px] text-green-400 mt-1">До следующего посещения: <span id="poor-canteen-timer">--:--:--</span></div>
+                                </div>
+                            </div>
+                            <button id="btn-poor-canteen" class="px-4 py-2 rounded text-xs border border-green-700/40 bg-black/30 text-green-300 hover:bg-green-900/20 backdrop-blur-sm whitespace-nowrap font-bold" onclick="poorDistrict.eatCanteen(event)">
+                                <i class="fas fa-utensils mr-1"></i>Поесть
+                            </button>
+                        </div>
+                        <div class="text-[10px] text-green-400/80 bg-black/20 border border-green-900/30 rounded p-2 text-center">
+                            +50% сытости • Доступно до 7 уровня • 1 раз в день
+                        </div>
                     </div>
                 </div>
 
@@ -6394,8 +6472,8 @@
                 <!-- Lily NPC -->
                 <div class="panel p-3 rounded flex items-center justify-between border-pink-900/30">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-full border-2 border-pink-500 bg-gradient-to-br from-pink-900/60 to-pink-950 flex items-center justify-center shadow-[0_0_10px_rgba(236,72,153,0.3)]">
-                            <i class="fas fa-user-crown text-pink-400 text-lg"></i>
+                        <div class="w-12 h-12 rounded-full border-2 border-pink-500/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(236,72,153,0.3), rgba(0,0,0,0.5));">
+                            <img src="https://i.postimg.cc/yxdCDXtp/image-Picsart-Background-Remover.png" alt="Лили" class="w-full h-full object-cover object-top">
                         </div>
                         <div>
                             <div class="text-base text-pink-200 font-bold medieval-font">Лили</div>
@@ -6481,12 +6559,22 @@
 
                 <!-- High Stakes Card Game -->
                 <div class="panel rounded-lg p-4 relative overflow-hidden border-purple-900/30 bg-black/30 backdrop-blur-sm">
+                    <!-- Background Image with Overlay -->
+                    <div class="absolute inset-0 z-0">
+                        <img src="https://i.postimg.cc/B6wvznFS/IMG-4602.jpg" alt="Card Game" class="w-full h-full object-cover opacity-25">
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80"></div>
+                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(168,85,247,0.2),transparent_60%)]"></div>
+                    </div>
+                    
                     <div class="relative z-10">
                         <div class="flex items-center justify-between mb-2">
                             <div>
                                 <h3 class="medieval-font text-lg text-purple-300">Блэкджек</h3>
                                 <p class="text-[10px] text-[#a0a0a0]">Классическая карточная игра. Ставки от 2000 до 25000 золота.</p>
                             </div>
+                        </div>
+                        <div class="panel p-2 rounded bg-black/50 backdrop-blur-sm border border-purple-700/30 text-[10px] text-[#a0a0a0] mb-3">
+                            Собери 21 очко или ближе к нему, чем у дилера. Перебор — проигрыш.
                         </div>
                         
                         <button id="btn-play-cards" onclick="locations.guestHousePlayCards()" class="w-full py-2 rounded font-bold border border-purple-700/40 bg-black/30 text-purple-300 hover:bg-purple-900/20 backdrop-blur-sm transition-all">
@@ -12754,17 +12842,17 @@
             },
 
             tavernEat: function(type) {
-                if (gameState.gold >= 100) {
-                    if (gameState.hp >= gameState.maxHp && gameState.hunger >= gameState.maxHunger) {
+                if (gameState.gold >= 200) {
+                    if (gameState.hunger >= gameState.maxHunger) {
                         ui.showFloatText(event.target, "Вы сыты", "#c8aa6e");
                         return;
                     }
-                    gameState.gold -= 100;
-                    gameState.hp = gameState.maxHp;
-                    gameState.hunger = gameState.maxHunger; // Восстанавливаем голод на 100%
+                    gameState.gold -= 200;
+                    // Восстанавливаем только 50 сытости
+                    gameState.hunger = Math.min(gameState.maxHunger, gameState.hunger + 50);
                     ui.updateStats();
                     game.save();
-                    ui.showFloatText(event.target, "HP и Голод восстановлены!", "#34d399");
+                    ui.showFloatText(event.target, "+50 сытости", "#34d399");
 
                     // Thomas Event Trigger
                     if (!gameState.npcStates) gameState.npcStates = {};
@@ -13516,7 +13604,12 @@
                 if (!homeType) return;
                 
                 // Продаем дом за 30% от стоимости
-                gameState.emeralds += price;
+                // Лачуга продается за золото, остальные за изумруды
+                if (homeType === 'poor') {
+                    gameState.gold += price;
+                } else {
+                    gameState.emeralds += price;
+                }
                 
                 // Убираем дом и все улучшения
                 if (homeType === 'poor') {
@@ -13538,7 +13631,9 @@
                 // Возвращаем на карту
                 router.navigate('map');
                 
-                ui.showNotification('Дом продан за ' + price + ' изумрудов', 'success');
+                // Уведомление в зависимости от валюты
+                const currency = homeType === 'poor' ? 'золота' : 'изумрудов';
+                ui.showNotification('Дом продан за ' + price.toLocaleString() + ' ' + currency, 'success');
             },
             
             buyPoorHouse: function(event) {
@@ -13851,9 +13946,9 @@
                             
                             <div class="mt-4 p-3 rounded-lg bg-red-900/20 border border-red-700/50 text-center">
                                 <p class="text-xs text-red-400 mb-2">
-                                    <i class="fas fa-info-circle mr-1"></i>Продать дом за ${sellPrice} изумрудов (30%)
+                                    <i class="fas fa-info-circle mr-1"></i>Продать дом за ${sellPrice.toLocaleString()} золота (30%)
                                 </p>
-                                <button onclick="if(confirm('Продать дом за ${sellPrice} изумрудов?')) housing.sellHouse()" class="btn-medieval px-3 py-1.5 rounded text-xs w-full border-red-600 text-red-300">
+                                <button onclick="if(confirm('Продать дом за ${sellPrice.toLocaleString()} золота?')) housing.sellHouse()" class="btn-medieval px-3 py-1.5 rounded text-xs w-full border-red-600 text-red-300">
                                     <i class="fas fa-hand-holding-dollar mr-1"></i>Продать дом
                                 </button>
                             </div>
@@ -13946,9 +14041,9 @@
                             
                             <div class="mt-4 p-3 rounded-lg bg-red-900/20 border border-red-700/50 text-center">
                                 <p class="text-xs text-red-400 mb-2">
-                                    <i class="fas fa-info-circle mr-1"></i>Продать дом за ${sellPrice} изумрудов (30%)
+                                    <i class="fas fa-info-circle mr-1"></i>Продать дом за ${sellPrice} золота (30%)
                                 </p>
-                                <button onclick="if(confirm('Продать дом за ${sellPrice} изумрудов?')) housing.sellHouse()" class="btn-medieval px-3 py-1.5 rounded text-xs w-full border-red-600 text-red-300">
+                                <button onclick="if(confirm('Продать дом за ${sellPrice} золота?')) housing.sellHouse()" class="btn-medieval px-3 py-1.5 rounded text-xs w-full border-red-600 text-red-300">
                                     <i class="fas fa-hand-holding-dollar mr-1"></i>Продать дом
                                 </button>
                             </div>
@@ -14069,9 +14164,9 @@
                             
                             <div class="mt-4 p-3 rounded-lg bg-red-900/20 border border-red-700/50 text-center">
                                 <p class="text-xs text-red-400 mb-2">
-                                    <i class="fas fa-info-circle mr-1"></i>Продать дом за ${sellPrice} изумрудов (30%)
+                                    <i class="fas fa-info-circle mr-1"></i>Продать дом за ${sellPrice} золота (30%)
                                 </p>
-                                <button onclick="if(confirm('Продать дом за ${sellPrice} изумрудов?')) housing.sellHouse()" class="btn-medieval px-3 py-1.5 rounded text-xs w-full border-red-600 text-red-300">
+                                <button onclick="if(confirm('Продать дом за ${sellPrice} золота?')) housing.sellHouse()" class="btn-medieval px-3 py-1.5 rounded text-xs w-full border-red-600 text-red-300">
                                     <i class="fas fa-hand-holding-dollar mr-1"></i>Продать дом
                                 </button>
                             </div>
@@ -17460,22 +17555,38 @@
                     return;
                 }
 
-                // Находим и удаляем предмет из инвентаря
-                const index = gameState.inventory.findIndex(invItem => 
-                    invItem.key === item.key && invItem.kind === item.kind
-                );
-
-                if (index !== -1) {
-                    gameState.inventory.splice(index, 1);
-                    gameState.gold += sellPrice;
-                    game.save();
-                    ui.updateStats();
-                    inventory.render();
-                    
-                    ui.showFloatText(document.body, `+${sellPrice} золота`, "#fbbf24");
-                    this.close();
+                // Для инструментов (tool) удаляем из gameState.tools
+                if (item.kind === 'tool') {
+                    if (gameState.tools && gameState.tools[item.key]) {
+                        delete gameState.tools[item.key];
+                        gameState.gold += sellPrice;
+                        game.save();
+                        ui.updateStats();
+                        inventory.render();
+                        
+                        ui.showFloatText(document.body, `+${sellPrice} золота`, "#fbbf24");
+                        this.close();
+                    } else {
+                        ui.showFloatText(document.body, "Инструмент не найден", "#ff5555");
+                    }
                 } else {
-                    ui.showFloatText(document.body, "Предмет не найден", "#ff5555");
+                    // Для мечей и брони ищем в inventory
+                    const index = gameState.inventory.findIndex(invItem => 
+                        invItem.key === item.key && invItem.kind === item.kind
+                    );
+
+                    if (index !== -1) {
+                        gameState.inventory.splice(index, 1);
+                        gameState.gold += sellPrice;
+                        game.save();
+                        ui.updateStats();
+                        inventory.render();
+                        
+                        ui.showFloatText(document.body, `+${sellPrice} золота`, "#fbbf24");
+                        this.close();
+                    } else {
+                        ui.showFloatText(document.body, "Предмет не найден", "#ff5555");
+                    }
                 }
             }
         };
