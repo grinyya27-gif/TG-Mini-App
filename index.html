@@ -6281,29 +6281,179 @@
                 </div>
             </div>
 
-            <div class="panel rounded-lg p-4 space-y-4">
-                <div class="text-center text-xs text-[#777] bg-black/20 border border-[#333] rounded p-3">
-                    За высокими стенами — железная дисциплина, оружейные склады и элитные отряды королевства.
-                </div>
-
-                <div class="panel p-3 rounded flex items-center justify-between border-slate-600/30 bg-slate-900/10">
-                    <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-full border border-slate-500 bg-[#222] flex items-center justify-center">
-                            <i class="fas fa-shield-halved text-slate-300"></i>
+            <!-- Check Access Section -->
+            <div id="fortress-access-check" class="space-y-4">
+                <!-- Requirements Panel -->
+                <div class="relative overflow-hidden rounded-lg p-4 border border-slate-600/30" style="background: linear-gradient(135deg, rgba(148, 163, 184, 0.1) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(148, 163, 184, 0.1) 100%);">
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(148,163,184,0.12),transparent_60%)]"></div>
+                    <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-slate-500/50 to-transparent"></div>
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i class="fas fa-shield-alt text-slate-400"></i>
+                            <h3 class="text-lg font-bold medieval-font text-slate-300">Требования для входа</h3>
                         </div>
-                        <div>
-                            <div class="text-base text-[#e0e0e0] font-bold medieval-font">Капрал</div>
-                            <div class="text-[10px] text-[#a0a0a0]">Страж крепости</div>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex items-center gap-2" id="req-fortress-training">
+                                <i class="fas fa-circle text-red-500 text-xs"></i>
+                                <span class="text-[#a0a0a0]">Пройти все тренировки в учебном лагере</span>
+                            </div>
+                            <div class="flex items-center gap-2" id="req-fortress-reputation">
+                                <i class="fas fa-circle text-red-500 text-xs"></i>
+                                <span class="text-[#a0a0a0]">Репутация: <span id="fortress-rep-value" class="text-[#e0e0e0]">0</span> / 20</span>
+                            </div>
+                            <div class="flex items-center gap-2" id="req-fortress-sword">
+                                <i class="fas fa-circle text-red-500 text-xs"></i>
+                                <span class="text-[#a0a0a0]">Экипировка: <span id="fortress-sword-status" class="text-[#e0e0e0]">Требуется меч</span></span>
+                            </div>
+                            <div class="flex items-center gap-2" id="req-fortress-armor">
+                                <i class="fas fa-circle text-red-500 text-xs"></i>
+                                <span class="text-[#a0a0a0]">Экипировка: <span id="fortress-armor-status" class="text-[#e0e0e0]">Требуется броня</span></span>
+                            </div>
                         </div>
                     </div>
-                    <button onclick="dialogue.start('fortress_guard')" class="btn-medieval px-4 py-1.5 rounded text-xs">
-                        Говорить
-                    </button>
                 </div>
 
-                <div class="panel p-3 rounded bg-black/20 border border-[#333] text-[10px] text-[#a0a0a0]">
-                    <div class="text-[10px] text-slate-300 font-bold uppercase tracking-widest mb-1">Пропуск</div>
-                    Вход сюда разрешён только тем, кто прошёл подготовку в Учебном лагере.
+                <!-- Fortress Guard -->
+                <div class="relative overflow-hidden rounded-lg p-4 border border-slate-600/30" style="background: linear-gradient(135deg, rgba(148, 163, 184, 0.08) 0%, rgba(0, 0, 0, 0.3) 100%);">
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(148,163,184,0.08),transparent)]"></div>
+                    <div class="flex items-center justify-between relative z-10">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-full border-2 border-slate-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(148,163,184,0.3), rgba(0,0,0,0.5));">
+                                <img src="https://i.postimg.cc/FsKTwTc6/IMG-4669.png" alt="Капрал" class="w-full h-full object-cover object-top">
+                            </div>
+                            <div>
+                                <div class="text-base text-[#e0e0e0] font-bold medieval-font">Капрал Маркус</div>
+                                <div class="text-[10px] text-[#a0a0a0]">Страж крепости</div>
+                            </div>
+                        </div>
+                        <button onclick="dialogue.start('fortress_guard')" class="px-4 py-1.5 rounded text-xs border border-slate-700/40 bg-black/30 text-slate-300 hover:bg-slate-800/20 backdrop-blur-sm transition-all">
+                            Говорить
+                        </button>
+                    </div>
+                </div>
+
+                <div class="text-center text-xs text-[#777] bg-black/20 border border-[#333] rounded p-3">
+                    <i class="fas fa-info-circle text-slate-400 mr-1"></i>
+                    Только обученные воины с хорошей репутацией допускаются в крепость
+                </div>
+            </div>
+
+            <!-- Fortress Interior (shown when access granted) -->
+            <div id="fortress-interior" class="hidden space-y-4">
+                
+                <!-- Training Grounds -->
+                <div class="relative overflow-hidden rounded-lg p-4 border border-red-600/30" style="background: linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(220, 38, 38, 0.1) 100%);">
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(220,38,38,0.12),transparent_60%)]"></div>
+                    <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-red-500/50 to-transparent"></div>
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i class="fas fa-dumbbell text-red-400"></i>
+                            <h3 class="text-lg font-bold medieval-font text-red-300">Тренировочный Плац</h3>
+                        </div>
+                        <p class="text-sm text-[#a0a0a0] mb-4">Здесь солдаты совершенствуют боевые навыки. Звон мечей и крики командиров не смолкают с рассвета до заката.</p>
+                        
+                        <!-- Master Trainer -->
+                        <div class="relative overflow-hidden rounded-lg p-3 border border-red-600/30 mb-3" style="background: linear-gradient(135deg, rgba(220, 38, 38, 0.08) 0%, rgba(0, 0, 0, 0.3) 100%);">
+                            <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(220,38,38,0.08),transparent)]"></div>
+                            <div class="flex items-center justify-between relative z-10">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 rounded-full border-2 border-red-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(220,38,38,0.3), rgba(0,0,0,0.5));">
+                                        <img src="https://i.postimg.cc/fRy8FW0W/IMG-4613.png" alt="Инструктор" class="w-full h-full object-cover object-top">
+                                    </div>
+                                    <div>
+                                        <div class="text-base text-[#e0e0e0] font-bold medieval-font">Мастер-сержант Бруно</div>
+                                        <div class="text-[10px] text-[#a0a0a0]">Главный инструктор</div>
+                                    </div>
+                                </div>
+                                <button onclick="dialogue.start('master_trainer')" class="px-4 py-1.5 rounded text-xs border border-red-700/40 bg-black/30 text-red-300 hover:bg-red-900/20 backdrop-blur-sm transition-all">
+                                    Поговорить
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Veteran Soldier -->
+                        <div class="relative overflow-hidden rounded-lg p-3 border border-orange-600/30" style="background: linear-gradient(135deg, rgba(234, 88, 12, 0.08) 0%, rgba(0, 0, 0, 0.3) 100%);">
+                            <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(234,88,12,0.08),transparent)]"></div>
+                            <div class="flex items-center justify-between relative z-10">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 rounded-full border-2 border-orange-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(234,88,12,0.3), rgba(0,0,0,0.5));">
+                                        <img src="https://i.postimg.cc/MpN6WLzw/IMG-4674.png" alt="Ветеран" class="w-full h-full object-cover object-top">
+                                    </div>
+                                    <div>
+                                        <div class="text-base text-[#e0e0e0] font-bold medieval-font">Ветеран Густав</div>
+                                        <div class="text-[10px] text-[#a0a0a0]">Бывалый солдат</div>
+                                    </div>
+                                </div>
+                                <button onclick="dialogue.start('veteran_soldier')" class="px-4 py-1.5 rounded text-xs border border-orange-700/40 bg-black/30 text-orange-300 hover:bg-orange-900/20 backdrop-blur-sm transition-all">
+                                    Поговорить
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Armory -->
+                <div class="relative overflow-hidden rounded-lg p-4 border border-slate-600/30" style="background: linear-gradient(135deg, rgba(100, 116, 139, 0.1) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(100, 116, 139, 0.1) 100%);">
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(100,116,139,0.12),transparent_60%)]"></div>
+                    <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-slate-500/50 to-transparent"></div>
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i class="fas fa-shield text-slate-400"></i>
+                            <h3 class="text-lg font-bold medieval-font text-slate-300">Оружейная</h3>
+                        </div>
+                        <p class="text-sm text-[#a0a0a0] mb-4">Ряды мечей, щитов и доспехов. Здесь хранится лучшее вооружение королевства.</p>
+                        
+                        <!-- Blacksmith -->
+                        <div class="relative overflow-hidden rounded-lg p-3 border border-slate-600/30" style="background: linear-gradient(135deg, rgba(100, 116, 139, 0.08) 0%, rgba(0, 0, 0, 0.3) 100%);">
+                            <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(100,116,139,0.08),transparent)]"></div>
+                            <div class="flex items-center justify-between relative z-10">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 rounded-full border-2 border-slate-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(100,116,139,0.3), rgba(0,0,0,0.5));">
+                                        <img src="https://i.postimg.cc/tTKCLBNZ/IMG-4672.png" alt="Кузнец" class="w-full h-full object-cover object-top">
+                                    </div>
+                                    <div>
+                                        <div class="text-base text-[#e0e0e0] font-bold medieval-font">Мастер-кузнец Торин</div>
+                                        <div class="text-[10px] text-[#a0a0a0]">Оружейный мастер</div>
+                                    </div>
+                                </div>
+                                <button onclick="dialogue.start('fortress_blacksmith')" class="px-4 py-1.5 rounded text-xs border border-slate-700/40 bg-black/30 text-slate-300 hover:bg-slate-800/20 backdrop-blur-sm transition-all">
+                                    Поговорить
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- War Room -->
+                <div class="relative overflow-hidden rounded-lg p-4 border border-blue-600/30" style="background: linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(37, 99, 235, 0.1) 100%);">
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(37,99,235,0.12),transparent_60%)]"></div>
+                    <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-blue-500/50 to-transparent"></div>
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i class="fas fa-map-marked-alt text-blue-400"></i>
+                            <h3 class="text-lg font-bold medieval-font text-blue-300">Штабная</h3>
+                        </div>
+                        <p class="text-sm text-[#a0a0a0] mb-4">Карты, планы сражений и стратегические обсуждения. Отсюда координируются все военные операции.</p>
+                        
+                        <!-- General -->
+                        <div class="relative overflow-hidden rounded-lg p-3 border border-blue-600/30" style="background: linear-gradient(135deg, rgba(37, 99, 235, 0.08) 0%, rgba(0, 0, 0, 0.3) 100%);">
+                            <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(37,99,235,0.08),transparent)]"></div>
+                            <div class="flex items-center justify-between relative z-10">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 rounded-full border-2 border-blue-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(37,99,235,0.3), rgba(0,0,0,0.5));">
+                                        <img src="https://i.postimg.cc/T1qGhM9y/IMG-4670.png" alt="Генерал" class="w-full h-full object-cover object-top">
+                                    </div>
+                                    <div>
+                                        <div class="text-base text-[#e0e0e0] font-bold medieval-font">Генерал Максимилиан</div>
+                                        <div class="text-[10px] text-[#a0a0a0]">Главнокомандующий</div>
+                                    </div>
+                                </div>
+                                <button onclick="dialogue.start('general')" class="px-4 py-1.5 rounded text-xs border border-blue-700/40 bg-black/30 text-blue-300 hover:bg-blue-900/20 backdrop-blur-sm transition-all">
+                                    Поговорить
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -6326,24 +6476,198 @@
                 </div>
             </div>
 
-            <div class="panel rounded-lg p-4 space-y-4">
-                <div class="flex items-center justify-between p-3 bg-purple-900/10 rounded border border-purple-900/30">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full border-2 border-purple-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(190,18,60,0.3), rgba(0,0,0,0.5));">
-                            <img src="https://i.postimg.cc/FsKTwTc6/IMG-4669.png" alt="Стражник" class="w-full h-full object-cover object-top">
+            <!-- Check Access Section -->
+            <div id="castle-access-check" class="space-y-4">
+                <!-- Requirements Panel -->
+                <div class="relative overflow-hidden rounded-lg p-4 border border-indigo-600/30" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(99, 102, 241, 0.1) 100%);">
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(99,102,241,0.12),transparent_60%)]"></div>
+                    <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent"></div>
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i class="fas fa-shield-alt text-indigo-400"></i>
+                            <h3 class="text-lg font-bold medieval-font text-indigo-300">Требования для входа</h3>
                         </div>
-                        <div>
-                            <div class="text-base text-[#e0e0e0] font-bold medieval-font">Стражник</div>
-                            <div class="text-[10px] text-[#a0a0a0]">Королевская стража</div>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex items-center gap-2" id="req-reputation">
+                                <i class="fas fa-circle text-red-500 text-xs"></i>
+                                <span class="text-[#a0a0a0]">Репутация: <span id="castle-rep-value" class="text-[#e0e0e0]">0</span> / 20</span>
+                            </div>
+                            <div class="flex items-center gap-2" id="req-glory">
+                                <i class="fas fa-circle text-red-500 text-xs"></i>
+                                <span class="text-[#a0a0a0]">Слава: <span id="castle-glory-value" class="text-[#e0e0e0]">0</span> / 10</span>
+                            </div>
+                            <div class="flex items-center gap-2" id="req-clothes">
+                                <i class="fas fa-circle text-red-500 text-xs"></i>
+                                <span class="text-[#a0a0a0]">Одежда: <span id="castle-clothes-status" class="text-[#e0e0e0]">Требуется одежда состоятельного</span></span>
+                            </div>
+                            <div class="flex items-center gap-2" id="req-shoes">
+                                <i class="fas fa-circle text-red-500 text-xs"></i>
+                                <span class="text-[#a0a0a0]">Обувь: <span id="castle-shoes-status" class="text-[#e0e0e0]">Требуется качественная обувь</span></span>
+                            </div>
                         </div>
                     </div>
-                    <button onclick="dialogue.start('castle_guard')" class="btn-medieval px-4 py-1.5 rounded text-xs">
-                        Говорить
-                    </button>
+                </div>
+
+                <!-- Castle Guard -->
+                <div class="relative overflow-hidden rounded-lg p-4 border border-purple-600/30" style="background: linear-gradient(135deg, rgba(168, 85, 247, 0.08) 0%, rgba(0, 0, 0, 0.3) 100%);">
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(168,85,247,0.08),transparent)]"></div>
+                    <div class="flex items-center justify-between relative z-10">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-full border-2 border-purple-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(190,18,60,0.3), rgba(0,0,0,0.5));">
+                                <img src="https://i.postimg.cc/FsKTwTc6/IMG-4669.png" alt="Стражник" class="w-full h-full object-cover object-top">
+                            </div>
+                            <div>
+                                <div class="text-base text-[#e0e0e0] font-bold medieval-font">Королевский Стражник</div>
+                                <div class="text-[10px] text-[#a0a0a0]">Охраняет вход в замок</div>
+                            </div>
+                        </div>
+                        <button onclick="dialogue.start('castle_guard')" class="px-4 py-1.5 rounded text-xs border border-purple-700/40 bg-black/30 text-purple-300 hover:bg-purple-900/20 backdrop-blur-sm transition-all">
+                            Говорить
+                        </button>
+                    </div>
                 </div>
 
                 <div class="text-center text-xs text-[#777] bg-black/20 border border-[#333] rounded p-3">
-                    Вход в замок закрыт для простолюдинов.
+                    <i class="fas fa-info-circle text-indigo-400 mr-1"></i>
+                    Выполните все требования, чтобы получить доступ в королевский замок
+                </div>
+            </div>
+
+            <!-- Castle Interior (shown when access granted) -->
+            <div id="castle-interior" class="hidden space-y-4">
+                
+                <!-- Throne Room -->
+                <div class="relative overflow-hidden rounded-lg p-4 border border-indigo-600/30" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(99, 102, 241, 0.1) 100%);">
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(99,102,241,0.15),transparent_60%)]"></div>
+                    <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent"></div>
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i class="fas fa-crown text-amber-400"></i>
+                            <h3 class="text-lg font-bold medieval-font text-indigo-300">Тронный Зал</h3>
+                        </div>
+                        <p class="text-sm text-[#a0a0a0] mb-4">Величественный зал с высокими сводами. Королевский трон возвышается на возвышении, окружённый знамёнами и гербами.</p>
+                        
+                        <!-- King -->
+                        <div class="relative overflow-hidden rounded-lg p-3 border border-amber-600/30 mb-3" style="background: linear-gradient(135deg, rgba(217, 119, 6, 0.08) 0%, rgba(0, 0, 0, 0.3) 100%);">
+                            <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(217,119,6,0.08),transparent)]"></div>
+                            <div class="flex items-center justify-between relative z-10">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 rounded-full border-2 border-amber-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(217,119,6,0.3), rgba(0,0,0,0.5));">
+                                        <img src="https://i.postimg.cc/T1qGhM9y/IMG-4670.png" alt="Король" class="w-full h-full object-cover object-top">
+                                    </div>
+                                    <div>
+                                        <div class="text-base text-[#e0e0e0] font-bold medieval-font">Король Эдвард III</div>
+                                        <div class="text-[10px] text-[#a0a0a0]">Правитель королевства</div>
+                                    </div>
+                                </div>
+                                <button onclick="dialogue.start('king')" class="px-4 py-1.5 rounded text-xs border border-amber-700/40 bg-black/30 text-amber-300 hover:bg-amber-900/20 backdrop-blur-sm transition-all">
+                                    Поговорить
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Queen -->
+                        <div class="relative overflow-hidden rounded-lg p-3 border border-pink-600/30 mb-3" style="background: linear-gradient(135deg, rgba(236, 72, 153, 0.08) 0%, rgba(0, 0, 0, 0.3) 100%);">
+                            <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(236,72,153,0.08),transparent)]"></div>
+                            <div class="flex items-center justify-between relative z-10">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 rounded-full border-2 border-pink-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(236,72,153,0.3), rgba(0,0,0,0.5));">
+                                        <img src="https://i.postimg.cc/L5NyYZkW/IMG-4671.png" alt="Королева" class="w-full h-full object-cover object-top">
+                                    </div>
+                                    <div>
+                                        <div class="text-base text-[#e0e0e0] font-bold medieval-font">Королева Изабелла</div>
+                                        <div class="text-[10px] text-[#a0a0a0]">Королева королевства</div>
+                                    </div>
+                                </div>
+                                <button onclick="dialogue.start('queen')" class="px-4 py-1.5 rounded text-xs border border-pink-700/40 bg-black/30 text-pink-300 hover:bg-pink-900/20 backdrop-blur-sm transition-all">
+                                    Поговорить
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Royal Advisor -->
+                        <div class="relative overflow-hidden rounded-lg p-3 border border-blue-600/30" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(0, 0, 0, 0.3) 100%);">
+                            <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(59,130,246,0.08),transparent)]"></div>
+                            <div class="flex items-center justify-between relative z-10">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 rounded-full border-2 border-blue-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(59,130,246,0.3), rgba(0,0,0,0.5));">
+                                        <img src="https://i.postimg.cc/tTKCLBNZ/IMG-4672.png" alt="Советник" class="w-full h-full object-cover object-top">
+                                    </div>
+                                    <div>
+                                        <div class="text-base text-[#e0e0e0] font-bold medieval-font">Советник Альфред</div>
+                                        <div class="text-[10px] text-[#a0a0a0]">Королевский советник</div>
+                                    </div>
+                                </div>
+                                <button onclick="dialogue.start('advisor')" class="px-4 py-1.5 rounded text-xs border border-blue-700/40 bg-black/30 text-blue-300 hover:bg-blue-900/20 backdrop-blur-sm transition-all">
+                                    Поговорить
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Castle Library -->
+                <div class="relative overflow-hidden rounded-lg p-4 border border-purple-600/30" style="background: linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(168, 85, 247, 0.1) 100%);">
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(168,85,247,0.12),transparent_60%)]"></div>
+                    <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-purple-500/50 to-transparent"></div>
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i class="fas fa-book text-purple-400"></i>
+                            <h3 class="text-lg font-bold medieval-font text-purple-300">Королевская Библиотека</h3>
+                        </div>
+                        <p class="text-sm text-[#a0a0a0] mb-4">Огромное собрание древних манускриптов и редких книг. Здесь хранятся знания веков.</p>
+                        
+                        <!-- Royal Librarian -->
+                        <div class="relative overflow-hidden rounded-lg p-3 border border-purple-600/30" style="background: linear-gradient(135deg, rgba(168, 85, 247, 0.08) 0%, rgba(0, 0, 0, 0.3) 100%);">
+                            <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(168,85,247,0.08),transparent)]"></div>
+                            <div class="flex items-center justify-between relative z-10">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 rounded-full border-2 border-purple-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(168,85,247,0.3), rgba(0,0,0,0.5));">
+                                        <img src="https://i.postimg.cc/N0b5vD7h/IMG-4673.png" alt="Библиотекарь" class="w-full h-full object-cover object-top">
+                                    </div>
+                                    <div>
+                                        <div class="text-base text-[#e0e0e0] font-bold medieval-font">Мудрец Себастьян</div>
+                                        <div class="text-[10px] text-[#a0a0a0]">Хранитель королевской библиотеки</div>
+                                    </div>
+                                </div>
+                                <button onclick="dialogue.start('librarian')" class="px-4 py-1.5 rounded text-xs border border-purple-700/40 bg-black/30 text-purple-300 hover:bg-purple-900/20 backdrop-blur-sm transition-all">
+                                    Поговорить
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Knights' Hall -->
+                <div class="relative overflow-hidden rounded-lg p-4 border border-red-600/30" style="background: linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(220, 38, 38, 0.1) 100%);">
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(220,38,38,0.12),transparent_60%)]"></div>
+                    <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-red-500/50 to-transparent"></div>
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i class="fas fa-shield text-red-400"></i>
+                            <h3 class="text-lg font-bold medieval-font text-red-300">Зал Рыцарей</h3>
+                        </div>
+                        <p class="text-sm text-[#a0a0a0] mb-4">Место сбора королевских рыцарей. На стенах висят доспехи и оружие легендарных воинов.</p>
+                        
+                        <!-- Knight Commander -->
+                        <div class="relative overflow-hidden rounded-lg p-3 border border-red-600/30" style="background: linear-gradient(135deg, rgba(220, 38, 38, 0.08) 0%, rgba(0, 0, 0, 0.3) 100%);">
+                            <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(220,38,38,0.08),transparent)]"></div>
+                            <div class="flex items-center justify-between relative z-10">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 rounded-full border-2 border-red-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(220,38,38,0.3), rgba(0,0,0,0.5));">
+                                        <img src="https://i.postimg.cc/MpN6WLzw/IMG-4674.png" alt="Командир" class="w-full h-full object-cover object-top">
+                                    </div>
+                                    <div>
+                                        <div class="text-base text-[#e0e0e0] font-bold medieval-font">Сэр Ричард Львиное Сердце</div>
+                                        <div class="text-[10px] text-[#a0a0a0]">Командир королевских рыцарей</div>
+                                    </div>
+                                </div>
+                                <button onclick="dialogue.start('knight_commander')" class="px-4 py-1.5 rounded text-xs border border-red-700/40 bg-black/30 text-red-300 hover:bg-red-900/20 backdrop-blur-sm transition-all">
+                                    Поговорить
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -8277,47 +8601,420 @@
                 }
             },
             castle_guard: {
-                name: "Стражник",
-                role: "Королевская стража",
+                name: "Королевский Стражник",
+                role: "Охраняет вход в замок",
                 icon: "fa-shield",
                 dialogue: {
-                    root: {
-                        text: "Эй, стой! Тебе здесь не место. Вход только для рыцарей и знати.",
+                    root: function() {
+                        const hasRep = (gameState.reputation || 0) >= 20;
+                        const hasGlory = (gameState.glory || 0) >= 10;
+                        const hasClothes = gameState.clothes && gameState.clothes.rich === true;
+                        const hasShoes = gameState.shoes && gameState.shoes.quality === true;
+                        
+                        if (hasRep && hasGlory && hasClothes && hasShoes) {
+                            return "access_granted";
+                        }
+                        return "no_access";
+                    },
+                    no_access: {
+                        text: "Стой! Вход в королевский замок разрешён только достойным. Ты должен иметь хорошую репутацию, славу в турнирах, и одеваться подобающе.",
                         options: [
-                            { text: "Я просто посмотреть...", next: "dismiss" },
-                            { text: "А если я рыцарь?", next: "deny" },
-                            { text: "Ухожу", next: "exit" }
+                            { text: "Какие требования?", next: "requirements" },
+                            { text: "Я вернусь", next: "exit" }
                         ]
                     },
-                    dismiss: {
-                        text: "Сказал же — проваливай. Ты не похож ни на одного из них.",
-                        options: [{ text: "Ладно", next: "exit" }]
+                    requirements: {
+                        text: "Слушай внимательно: тебе нужна репутация не менее 20, слава не менее 10, одежда состоятельного человека и качественная обувь. Только тогда я пропущу тебя.",
+                        options: [
+                            { text: "Понятно", next: "exit" }
+                        ]
                     },
-                    deny: {
-                        text: "Рыцарь? Ха. Смотри в свои лохмотья. Тут таким не место.",
-                        options: [{ text: "Понял", next: "exit" }]
+                    access_granted: {
+                        text: "Добро пожаловать в королевский замок! Твоя репутация и облик достойны этих стен. Можешь пройти.",
+                        options: [
+                            { text: "Благодарю", next: "exit" }
+                        ]
+                    }
+                }
+            },
+            king: {
+                name: "Король Эдвард III",
+                role: "Правитель королевства",
+                icon: "fa-crown",
+                dialogue: {
+                    root: {
+                        text: "Подойди ближе, странник. Я слышал о твоих подвигах. Ты заслужил право стоять перед троном.",
+                        options: [
+                            { text: "Ваше величество, это честь", next: "honor" },
+                            { text: "Чем могу служить?", next: "service" },
+                            { text: "Я просто осматриваюсь", next: "looking" }
+                        ]
+                    },
+                    honor: {
+                        text: "Честь? Нет, это ты оказываешь честь своему королевству. Люди вроде тебя делают это место сильнее.",
+                        options: [
+                            { text: "Я старался изо всех сил", next: "advice" },
+                            { text: "Спасибо, ваше величество", next: "exit" }
+                        ]
+                    },
+                    service: {
+                        text: "Пока что королевство спокойно. Но будь готов — когда придёт время, я призову таких как ты на защиту короны.",
+                        options: [
+                            { text: "Я буду готов", next: "exit" }
+                        ]
+                    },
+                    looking: {
+                        text: "Осматривайся. Этот замок видел множество великих событий. Надеюсь, ты станешь частью его истории.",
+                        options: [
+                            { text: "Это было бы честью", next: "exit" }
+                        ]
+                    },
+                    advice: {
+                        text: "Продолжай в том же духе. Королевство нуждается в сильных и достойных людях. Возможно, однажды я призову тебя ко двору.",
+                        options: [
+                            { text: "Благодарю", next: "exit" }
+                        ]
+                    }
+                }
+            },
+            queen: {
+                name: "Королева Изабелла",
+                role: "Королева королевства",
+                icon: "fa-gem",
+                dialogue: {
+                    root: {
+                        text: "Приветствую тебя, путник. Я рада видеть, что простые люди могут достичь таких высот. Расскажи, что привело тебя в наш замок?",
+                        options: [
+                            { text: "Любопытство и стремление", next: "curiosity" },
+                            { text: "Хочу служить короне", next: "serve" },
+                            { text: "Просто смотрю", next: "casual" }
+                        ]
+                    },
+                    curiosity: {
+                        text: "Любопытство — прекрасное качество. Оно двигает миром вперёд. Надеюсь, ты найдёшь здесь вдохновение.",
+                        options: [
+                            { text: "Спасибо, ваше величество", next: "exit" }
+                        ]
+                    },
+                    serve: {
+                        text: "Преданность — редкое качество в наши дни. Король мудр, он замечает таких как ты. Продолжай идти своим путём.",
+                        options: [
+                            { text: "Я не подведу", next: "exit" }
+                        ]
+                    },
+                    casual: {
+                        text: "Хорошо. Замок открыт для достойных. Наслаждайся его величием.",
+                        options: [
+                            { text: "Благодарю", next: "exit" }
+                        ]
+                    }
+                }
+            },
+            advisor: {
+                name: "Советник Альфред",
+                role: "Королевский советник",
+                icon: "fa-scroll",
+                dialogue: {
+                    root: {
+                        text: "Мм, новое лицо при дворе. Скажи мне, каковы твои амбиции? Что привело тебя сюда?",
+                        options: [
+                            { text: "Хочу служить королевству", next: "service" },
+                            { text: "Ищу знания", next: "knowledge" },
+                            { text: "Просто гость", next: "guest" }
+                        ]
+                    },
+                    service: {
+                        text: "Служба королевству — благородная цель. Но знай: здесь ценятся не только сила, но и ум. Будь мудр в своих решениях.",
+                        options: [
+                            { text: "Я запомню это", next: "exit" }
+                        ]
+                    },
+                    knowledge: {
+                        text: "Знание — истинная сила. Посети нашу библиотеку, там много древних текстов. Мудрец Себастьян поможет тебе.",
+                        options: [
+                            { text: "Обязательно загляну", next: "exit" }
+                        ]
+                    },
+                    guest: {
+                        text: "Гость? Что ж, добро пожаловать. Но помни — здесь все имеют своё место и цель. Найди свою.",
+                        options: [
+                            { text: "Спасибо за совет", next: "exit" }
+                        ]
+                    }
+                }
+            },
+            librarian: {
+                name: "Мудрец Себастьян",
+                role: "Хранитель библиотеки",
+                icon: "fa-book",
+                dialogue: {
+                    root: {
+                        text: "Тишина... Добро пожаловать в королевскую библиотеку. Здесь хранятся знания веков. Чем могу помочь?",
+                        options: [
+                            { text: "Что здесь можно найти?", next: "collection" },
+                            { text: "Ищу мудрости", next: "wisdom" },
+                            { text: "Просто смотрю", next: "browsing" }
+                        ]
+                    },
+                    collection: {
+                        text: "У нас есть всё: от древних хроник до алхимических трактатов. История королевства, военные стратегии, философия... Чем интересуешься?",
+                        options: [
+                            { text: "Историей", next: "history" },
+                            { text: "Магией и алхимией", next: "magic" },
+                            { text: "Всем понемногу", next: "exit" }
+                        ]
+                    },
+                    wisdom: {
+                        text: "Мудрость не в книгах — она в применении знаний. Читай, учись, но главное — действуй согласно тому, что узнал.",
+                        options: [
+                            { text: "Мудрые слова", next: "exit" }
+                        ]
+                    },
+                    browsing: {
+                        text: "Смотри сколько хочешь. Но будь аккуратен — некоторые из этих книг старше, чем весь город.",
+                        options: [
+                            { text: "Буду осторожен", next: "exit" }
+                        ]
+                    },
+                    history: {
+                        text: "Отличный выбор. История учит нас не повторять ошибок прошлого. Третья полка слева — там хроники королевства.",
+                        options: [
+                            { text: "Благодарю", next: "exit" }
+                        ]
+                    },
+                    magic: {
+                        text: "Алхимия и магия... Опасные темы. Но знание есть знание. Дальний зал, за красной дверью. Только будь осторожен.",
+                        options: [
+                            { text: "Понял", next: "exit" }
+                        ]
+                    }
+                }
+            },
+            knight_commander: {
+                name: "Сэр Ричард",
+                role: "Командир рыцарей",
+                icon: "fa-shield-alt",
+                dialogue: {
+                    root: {
+                        text: "Воин! Вижу в тебе потенциал. Слава в турнирах — это хорошо, но настоящая доблесть проверяется в бою. Готов ли ты служить?",
+                        options: [
+                            { text: "Да, готов!", next: "ready" },
+                            { text: "Расскажи о рыцарях", next: "about_knights" },
+                            { text: "Пока только смотрю", next: "not_ready" }
+                        ]
+                    },
+                    ready: {
+                        text: "Вот это дух! Но путь рыцаря долог. Продолжай тренироваться, участвуй в турнирах, завоёвывай славу. Когда будешь готов — я найду тебя.",
+                        options: [
+                            { text: "Я не подведу", next: "exit" }
+                        ]
+                    },
+                    about_knights: {
+                        text: "Королевские рыцари — элита королевства. Мы защищаем корону, охраняем границы, сражаемся с врагами. Честь, верность, сила — вот наши ценности.",
+                        options: [
+                            { text: "Впечатляет", next: "training" },
+                            { text: "Понял", next: "exit" }
+                        ]
+                    },
+                    not_ready: {
+                        text: "Мудро. Спешка в таких делах не нужна. Осмотрись, подумай. Дверь всегда открыта для достойных.",
+                        options: [
+                            { text: "Спасибо", next: "exit" }
+                        ]
+                    },
+                    training: {
+                        text: "Если хочешь стать сильнее — иди в учебный лагерь. Рыцарь Джон — мой старый друг, он научит тебя многому.",
+                        options: [
+                            { text: "Обязательно схожу", next: "exit" }
+                        ]
                     }
                 }
             },
             fortress_guard: {
-                name: "Капрал",
+                name: "Капрал Маркус",
                 role: "Страж крепости",
                 icon: "fa-shield-halved",
                 dialogue: {
                     root: function() {
-                        if (gameState.npcStates && gameState.npcStates.campTrained) return "allow";
-                        return "deny";
+                        const allTrainings = [
+                            ...trainingCamp.trainings.combat,
+                            ...trainingCamp.trainings.defense,
+                            ...trainingCamp.trainings.survival,
+                            ...trainingCamp.trainings.advanced
+                        ];
+                        const allCompleted = allTrainings.every(t => gameState.completedTrainings.includes(t.id));
+                        const hasRep = (gameState.reputation || 0) >= 20;
+                        const hasSword = gameState.equippedSword !== null && gameState.equippedSword !== undefined;
+                        const hasArmor = gameState.equippedArmor !== null && gameState.equippedArmor !== undefined;
+                        
+                        if (allCompleted && hasRep && hasSword && hasArmor) {
+                            return "access_granted";
+                        }
+                        return "no_access";
                     },
-                    deny: {
-                        text: "Стой. В крепость пускают только тех, кто прошёл подготовку в Учебном лагере. Ты ещё не готов.",
+                    no_access: {
+                        text: "Стой! В военную крепость вход только для тех, кто прошёл полное обучение в учебном лагере, имеет хорошую репутацию и экипирован для боя.",
                         options: [
-                            { text: "Понял, вернусь позже", next: "exit" }
+                            { text: "Какие требования?", next: "requirements" },
+                            { text: "Я вернусь", next: "exit" }
                         ]
                     },
-                    allow: {
-                        text: "Вижу печать наставника. Проходи. Здесь слабых не держат.",
+                    requirements: {
+                        text: "Слушай: ты должен пройти ВСЕ тренировки в учебном лагере, иметь репутацию не менее 20, и быть экипированным — меч и броня обязательны. Это минимум для солдата.",
+                        options: [
+                            { text: "Понятно", next: "exit" }
+                        ]
+                    },
+                    access_granted: {
+                        text: "Вижу, ты прошёл обучение. Экипировка в порядке. Добро пожаловать в крепость, воин. Тут не место для слабых.",
+                        options: [
+                            { text: "Благодарю", next: "exit" }
+                        ]
+                    }
+                }
+            },
+            master_trainer: {
+                name: "Мастер-сержант Бруно",
+                role: "Главный инструктор",
+                icon: "fa-dumbbell",
+                dialogue: {
+                    root: {
+                        text: "Новенький! Вижу, ты прошёл базовую подготовку у Джона. Неплохо. Но здесь всё серьёзнее. Готов к настоящим испытаниям?",
+                        options: [
+                            { text: "Всегда готов!", next: "ready" },
+                            { text: "Что здесь происходит?", next: "about" },
+                            { text: "Просто смотрю", next: "looking" }
+                        ]
+                    },
+                    ready: {
+                        text: "Вот это дух! Но учти — здесь мы не нянчимся. Каждое задание на грани твоих возможностей. Это закаляет характер и силу.",
+                        options: [
+                            { text: "Я не боюсь трудностей", next: "advice" },
+                            { text: "Понял", next: "exit" }
+                        ]
+                    },
+                    about: {
+                        text: "Тренировки, спарринги, марш-броски. Мы готовим элитных бойцов, а не рядовых солдат. Если выдержишь здесь — выдержишь в любом бою.",
+                        options: [
+                            { text: "Впечатляет", next: "exit" }
+                        ]
+                    },
+                    looking: {
+                        text: "Смотри-смотри. Только не мешай. А если захочешь стать лучше — возвращайся.",
+                        options: [
+                            { text: "Хорошо", next: "exit" }
+                        ]
+                    },
+                    advice: {
+                        text: "Отлично. Запомни главное: тренируйся до изнеможения, а потом ещё немного. Только так станешь настоящим воином.",
+                        options: [
+                            { text: "Запомню", next: "exit" }
+                        ]
+                    }
+                }
+            },
+            veteran_soldier: {
+                name: "Ветеран Густав",
+                role: "Бывалый солдат",
+                icon: "fa-medal",
+                dialogue: {
+                    root: {
+                        text: "Эх, молодёжь... Вижу по глазам — ты ещё не нюхал пороха. Сражения совсем не такие, как тренировки.",
+                        options: [
+                            { text: "Расскажи о войне", next: "war" },
+                            { text: "Какой совет дашь?", next: "advice" },
+                            { text: "Просто здороваюсь", next: "casual" }
+                        ]
+                    },
+                    war: {
+                        text: "Война? Кровь, крики, хаос. Друзья падают рядом, враги идут толпой. Но если умеешь держать строй и не паникуешь — выживешь.",
+                        options: [
+                            { text: "Как ты справлялся?", next: "cope" },
+                            { text: "Понял", next: "exit" }
+                        ]
+                    },
+                    advice: {
+                        text: "Совет? Береги товарищей. В бою они важнее золота. И никогда не недооценивай врага — даже самый слабый может убить, если ты зазевался.",
+                        options: [
+                            { text: "Мудрые слова", next: "exit" }
+                        ]
+                    },
+                    casual: {
+                        text: "И тебе не хворать, молодой. Если нужен совет старика — спрашивай. Тут я ещё пригожусь.",
+                        options: [
+                            { text: "Спасибо", next: "exit" }
+                        ]
+                    },
+                    cope: {
+                        text: "Верил в свои навыки. Помнил, зачем сражаюсь — за родину, за семью. И молился богам, чтоб вернуться живым.",
+                        options: [
+                            { text: "Я постараюсь не забыть это", next: "exit" }
+                        ]
+                    }
+                }
+            },
+            fortress_blacksmith: {
+                name: "Мастер-кузнец Торин",
+                role: "Оружейный мастер",
+                icon: "fa-hammer",
+                dialogue: {
+                    root: {
+                        text: "Качественное оружие спасёт жизнь. Видел я всяких воинов — те, кто экономит на мече, редко возвращаются.",
+                        options: [
+                            { text: "Что ты можешь сделать?", next: "craft" },
+                            { text: "Как ухаживать за оружием?", next: "maintenance" },
+                            { text: "Просто смотрю", next: "browse" }
+                        ]
+                    },
+                    craft: {
+                        text: "Мечи, топоры, доспехи — что угодно. Но материал дорогой, работа тонкая. Если соберёшь нужные ресурсы — приходи.",
+                        options: [
+                            { text: "Обязательно", next: "exit" }
+                        ]
+                    },
+                    maintenance: {
+                        text: "После боя протирай клинок, следи за остротой. Доспехи чисти от крови и грязи, смазывай суставы. Ржавое оружие — смертельный враг.",
+                        options: [
+                            { text: "Буду помнить", next: "exit" }
+                        ]
+                    },
+                    browse: {
+                        text: "Смотри, но не трогай. Это боевое оружие, а не игрушки.",
+                        options: [
+                            { text: "Понял", next: "exit" }
+                        ]
+                    }
+                }
+            },
+            general: {
+                name: "Генерал Максимилиан",
+                role: "Главнокомандующий",
+                icon: "fa-star",
+                dialogue: {
+                    root: {
+                        text: "Солдат. Вижу, ты дошёл до крепости. Это уже говорит о твоих навыках. Чем могу помочь?",
+                        options: [
+                            { text: "Хочу служить в армии", next: "serve" },
+                            { text: "Какова ситуация в королевстве?", next: "situation" },
+                            { text: "Просто осматриваюсь", next: "look" }
+                        ]
+                    },
+                    serve: {
+                        text: "Служба в армии — дело серьёзное. Ты будешь защищать границы, сражаться с врагами, рисковать жизнью. Если готов — продолжай тренироваться и доказывай свою ценность.",
                         options: [
                             { text: "Я готов", next: "exit" }
+                        ]
+                    },
+                    situation: {
+                        text: "Пока спокойно. Но границы всегда под угрозой. Варвары на севере, бандиты в лесах. Мы держим оборону, но готовы к худшему.",
+                        options: [
+                            { text: "Понятно", next: "exit" }
+                        ]
+                    },
+                    look: {
+                        text: "Осматривайся. Но помни — это не музей. Здесь живут и работают солдаты. Уважай их труд.",
+                        options: [
+                            { text: "Конечно", next: "exit" }
                         ]
                     }
                 }
@@ -19712,6 +20409,187 @@
                 setTimeout(() => {
                     trainingCamp.init();
                 }, 100);
+            }
+            
+            if (destination === 'royal-castle') {
+                setTimeout(() => {
+                    royalCastle.checkAccess();
+                }, 100);
+            }
+            
+            if (destination === 'military-fortress') {
+                setTimeout(() => {
+                    militaryFortress.checkAccess();
+                }, 100);
+            }
+        };
+
+        // Royal Castle Access System
+        const royalCastle = {
+            checkAccess: function() {
+                const hasRep = (gameState.reputation || 0) >= 20;
+                const hasGlory = (gameState.glory || 0) >= 10;
+                const hasClothes = gameState.clothes && gameState.clothes.rich === true;
+                const hasShoes = gameState.shoes && gameState.shoes.quality === true;
+                
+                const hasAccess = hasRep && hasGlory && hasClothes && hasShoes;
+                
+                // Update requirements display
+                const repEl = document.getElementById('castle-rep-value');
+                const gloryEl = document.getElementById('castle-glory-value');
+                const clothesStatusEl = document.getElementById('castle-clothes-status');
+                const shoesStatusEl = document.getElementById('castle-shoes-status');
+                
+                if (repEl) repEl.textContent = gameState.reputation || 0;
+                if (gloryEl) gloryEl.textContent = gameState.glory || 0;
+                
+                // Update requirement icons
+                const reqRep = document.getElementById('req-reputation');
+                const reqGlory = document.getElementById('req-glory');
+                const reqClothes = document.getElementById('req-clothes');
+                const reqShoes = document.getElementById('req-shoes');
+                
+                if (reqRep) {
+                    const icon = reqRep.querySelector('i');
+                    if (hasRep) {
+                        icon.className = 'fas fa-circle text-green-500 text-xs';
+                    } else {
+                        icon.className = 'fas fa-circle text-red-500 text-xs';
+                    }
+                }
+                
+                if (reqGlory) {
+                    const icon = reqGlory.querySelector('i');
+                    if (hasGlory) {
+                        icon.className = 'fas fa-circle text-green-500 text-xs';
+                    } else {
+                        icon.className = 'fas fa-circle text-red-500 text-xs';
+                    }
+                }
+                
+                if (reqClothes) {
+                    const icon = reqClothes.querySelector('i');
+                    if (hasClothes) {
+                        icon.className = 'fas fa-circle text-green-500 text-xs';
+                        if (clothesStatusEl) clothesStatusEl.textContent = 'Одежда состоятельного ✓';
+                    } else {
+                        icon.className = 'fas fa-circle text-red-500 text-xs';
+                        if (clothesStatusEl) clothesStatusEl.textContent = 'Требуется одежда состоятельного';
+                    }
+                }
+                
+                if (reqShoes) {
+                    const icon = reqShoes.querySelector('i');
+                    if (hasShoes) {
+                        icon.className = 'fas fa-circle text-green-500 text-xs';
+                        if (shoesStatusEl) shoesStatusEl.textContent = 'Качественная обувь ✓';
+                    } else {
+                        icon.className = 'fas fa-circle text-red-500 text-xs';
+                        if (shoesStatusEl) shoesStatusEl.textContent = 'Требуется качественная обувь';
+                    }
+                }
+                
+                // Show/hide sections
+                const accessCheck = document.getElementById('castle-access-check');
+                const interior = document.getElementById('castle-interior');
+                
+                if (hasAccess) {
+                    if (accessCheck) accessCheck.classList.add('hidden');
+                    if (interior) interior.classList.remove('hidden');
+                } else {
+                    if (accessCheck) accessCheck.classList.remove('hidden');
+                    if (interior) interior.classList.add('hidden');
+                }
+            }
+        };
+
+        // Military Fortress Access System
+        const militaryFortress = {
+            checkAccess: function() {
+                // Check all trainings completed
+                const allTrainings = [
+                    ...trainingCamp.trainings.combat,
+                    ...trainingCamp.trainings.defense,
+                    ...trainingCamp.trainings.survival,
+                    ...trainingCamp.trainings.advanced
+                ];
+                const allCompleted = allTrainings.every(t => gameState.completedTrainings && gameState.completedTrainings.includes(t.id));
+                const hasRep = (gameState.reputation || 0) >= 20;
+                const hasSword = gameState.equippedSword !== null && gameState.equippedSword !== undefined;
+                const hasArmor = gameState.equippedArmor !== null && gameState.equippedArmor !== undefined;
+                
+                const hasAccess = allCompleted && hasRep && hasSword && hasArmor;
+                
+                // Update requirements display
+                const repEl = document.getElementById('fortress-rep-value');
+                const swordStatusEl = document.getElementById('fortress-sword-status');
+                const armorStatusEl = document.getElementById('fortress-armor-status');
+                
+                if (repEl) repEl.textContent = gameState.reputation || 0;
+                
+                // Update requirement icons
+                const reqTraining = document.getElementById('req-fortress-training');
+                const reqRep = document.getElementById('req-fortress-reputation');
+                const reqSword = document.getElementById('req-fortress-sword');
+                const reqArmor = document.getElementById('req-fortress-armor');
+                
+                if (reqTraining) {
+                    const icon = reqTraining.querySelector('i');
+                    if (allCompleted) {
+                        icon.className = 'fas fa-circle text-green-500 text-xs';
+                    } else {
+                        icon.className = 'fas fa-circle text-red-500 text-xs';
+                    }
+                }
+                
+                if (reqRep) {
+                    const icon = reqRep.querySelector('i');
+                    if (hasRep) {
+                        icon.className = 'fas fa-circle text-green-500 text-xs';
+                    } else {
+                        icon.className = 'fas fa-circle text-red-500 text-xs';
+                    }
+                }
+                
+                if (reqSword) {
+                    const icon = reqSword.querySelector('i');
+                    if (hasSword) {
+                        icon.className = 'fas fa-circle text-green-500 text-xs';
+                        if (swordStatusEl) {
+                            const swordName = gameState.equippedSword ? (SWORDS_DB[gameState.equippedSword]?.name || 'Меч') : 'Меч';
+                            swordStatusEl.textContent = `${swordName} ✓`;
+                        }
+                    } else {
+                        icon.className = 'fas fa-circle text-red-500 text-xs';
+                        if (swordStatusEl) swordStatusEl.textContent = 'Требуется меч';
+                    }
+                }
+                
+                if (reqArmor) {
+                    const icon = reqArmor.querySelector('i');
+                    if (hasArmor) {
+                        icon.className = 'fas fa-circle text-green-500 text-xs';
+                        if (armorStatusEl) {
+                            const armorName = gameState.equippedArmor ? (ARMOR_DB[gameState.equippedArmor]?.name || 'Броня') : 'Броня';
+                            armorStatusEl.textContent = `${armorName} ✓`;
+                        }
+                    } else {
+                        icon.className = 'fas fa-circle text-red-500 text-xs';
+                        if (armorStatusEl) armorStatusEl.textContent = 'Требуется броня';
+                    }
+                }
+                
+                // Show/hide sections
+                const accessCheck = document.getElementById('fortress-access-check');
+                const interior = document.getElementById('fortress-interior');
+                
+                if (hasAccess) {
+                    if (accessCheck) accessCheck.classList.add('hidden');
+                    if (interior) interior.classList.remove('hidden');
+                } else {
+                    if (accessCheck) accessCheck.classList.remove('hidden');
+                    if (interior) interior.classList.add('hidden');
+                }
             }
         };
 
