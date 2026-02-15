@@ -6105,28 +6105,160 @@
                 </div>
             </div>
 
-            <div class="panel rounded-lg p-4 space-y-4 text-center">
-                 <p class="text-sm text-[#e0e0e0]">Здесь тренируются лучшие воины королевства.</p>
-
-                 <!-- John NPC -->
-                <div class="panel p-3 rounded flex items-center justify-between border-red-900/30 bg-red-900/10 text-left">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full border-2 border-red-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(239,68,68,0.3), rgba(0,0,0,0.5));">
-                            <img src="https://i.postimg.cc/fRy8FW0W/IMG-4613.png" alt="Джон" class="w-full h-full object-cover object-top">
-                        </div>
-                        <div>
-                            <div class="text-base text-[#e0e0e0] font-bold medieval-font">Рыцарь Джон</div>
-                            <div class="text-[10px] text-[#a0a0a0]">Наставник</div>
-                        </div>
+            <!-- Training Progress Overview -->
+            <div class="relative overflow-hidden rounded-lg p-4 border border-red-600/30" style="background: linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(220, 38, 38, 0.1) 100%);">
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(220,38,38,0.15),transparent_60%)]"></div>
+                <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-red-500/50 to-transparent"></div>
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-lg font-bold medieval-font text-red-300">Прогресс Обучения</h3>
+                        <span id="training-level-badge" class="text-sm px-3 py-1 rounded-full bg-red-500/20 text-red-300 border border-red-500/50 backdrop-blur-sm">
+                            Уровень: 0
+                        </span>
                     </div>
-                    <button onclick="dialogue.start('john')" class="btn-medieval px-4 py-1.5 rounded text-xs">
-                        Говорить
-                    </button>
+                    <div class="h-2 bg-black/40 rounded-full overflow-hidden mb-2 border border-red-900/30">
+                        <div id="training-progress-bar" class="h-full bg-gradient-to-r from-red-500 to-red-400 transition-all duration-500" style="width: 0%;"></div>
+                    </div>
+                    <div class="flex justify-between text-xs text-[#a0a0a0]">
+                        <span>Опыт: <span id="training-xp-current">0</span> / <span id="training-xp-needed">100</span></span>
+                        <span id="training-completed-count">0 / 12 тренировок</span>
+                    </div>
                 </div>
-                
-                <div class="p-4 border border-[#333] rounded bg-black/20">
-                    <i class="fas fa-dumbbell text-3xl text-gray-600 mb-2"></i>
-                    <p class="text-xs text-gray-500">Тренировки временно недоступны.</p>
+            </div>
+
+            <!-- Energy Status (Training Camp Only) -->
+            <div class="relative overflow-hidden rounded-lg p-4 border border-blue-600/30" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(59, 130, 246, 0.1) 100%);">
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(59,130,246,0.15),transparent_60%)]"></div>
+                <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-blue-500/50 to-transparent"></div>
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-lg font-bold medieval-font text-blue-300">Энергия</h3>
+                        <span id="training-energy-text" class="text-sm text-blue-300">100 / 100</span>
+                    </div>
+                    <div class="h-3 bg-black/40 rounded-full overflow-hidden border border-blue-900/30">
+                        <div id="training-energy-bar" class="h-full bg-gradient-to-r from-blue-500 to-blue-400 transition-all duration-500" style="width: 100%;"></div>
+                    </div>
+                    <div class="text-xs text-[#a0a0a0] mt-2 text-center">
+                        <i class="fas fa-info-circle text-blue-400"></i> Энергия восстанавливается со временем
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-3 gap-3">
+                <div class="relative overflow-hidden rounded-lg p-3 text-center border border-red-600/30" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%);">
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(239,68,68,0.1),transparent)]"></div>
+                    <div class="relative z-10">
+                        <i class="fas fa-fire text-xl text-red-400 mb-2"></i>
+                        <div class="text-2xl font-bold text-red-300" id="total-strength-gain">+0</div>
+                        <div class="text-xs text-[#a0a0a0]">Урон</div>
+                    </div>
+                </div>
+                <div class="relative overflow-hidden rounded-lg p-3 text-center border border-green-600/30" style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%);">
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(34,197,94,0.1),transparent)]"></div>
+                    <div class="relative z-10">
+                        <i class="fas fa-running text-xl text-green-400 mb-2"></i>
+                        <div class="text-2xl font-bold text-green-300" id="total-agility-gain">+0</div>
+                        <div class="text-xs text-[#a0a0a0]">Ловкость</div>
+                    </div>
+                </div>
+                <div class="relative overflow-hidden rounded-lg p-3 text-center border border-purple-600/30" style="background: linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%);">
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(168,85,247,0.1),transparent)]"></div>
+                    <div class="relative z-10">
+                        <i class="fas fa-clover text-xl text-purple-400 mb-2"></i>
+                        <div class="text-2xl font-bold text-purple-300" id="total-wisdom-gain">+0</div>
+                        <div class="text-xs text-[#a0a0a0]">Удача</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- John NPC -->
+            <div class="panel p-3 rounded flex items-center justify-between border-red-900/30 bg-red-900/10">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full border-2 border-red-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(239,68,68,0.3), rgba(0,0,0,0.5));">
+                        <img src="https://i.postimg.cc/fRy8FW0W/IMG-4613.png" alt="Джон" class="w-full h-full object-cover object-top">
+                    </div>
+                    <div>
+                        <div class="text-base text-[#e0e0e0] font-bold medieval-font">Рыцарь Джон</div>
+                        <div class="text-[10px] text-[#a0a0a0]">Наставник</div>
+                    </div>
+                </div>
+                <button onclick="dialogue.start('john')" class="btn-medieval px-4 py-1.5 rounded text-xs">
+                    Говорить
+                </button>
+            </div>
+
+            <!-- Combat Training Section -->
+            <div class="space-y-3">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-sword text-xl text-red-500"></i>
+                    <h3 class="text-lg font-bold medieval-font text-[#c8aa6e]">Боевая Подготовка</h3>
+                </div>
+                <div id="combat-trainings-list" class="space-y-3">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Defense Training Section -->
+            <div class="space-y-3">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-shield-alt text-xl text-blue-500"></i>
+                    <h3 class="text-lg font-bold medieval-font text-[#c8aa6e]">Защитная Подготовка</h3>
+                </div>
+                <div id="defense-trainings-list" class="space-y-3">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Survival Training Section -->
+            <div class="space-y-3">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-tree text-xl text-green-500"></i>
+                    <h3 class="text-lg font-bold medieval-font text-[#c8aa6e]">Выживание</h3>
+                </div>
+                <div id="survival-trainings-list" class="space-y-3">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Advanced Training Section -->
+            <div class="space-y-3">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-crown text-xl" style="color: #c8aa6e;"></i>
+                    <h3 class="text-lg font-bold medieval-font text-[#c8aa6e]">Продвинутая Подготовка</h3>
+                </div>
+                <div id="advanced-trainings-list" class="space-y-3">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Instructor's Shop -->
+            <div class="relative overflow-hidden rounded-lg p-4 border border-amber-600/30" style="background: linear-gradient(135deg, rgba(217, 119, 6, 0.1) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(217, 119, 6, 0.1) 100%);">
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(217,119,6,0.12),transparent_60%)]"></div>
+                <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent"></div>
+                <div class="relative z-10">
+                    <div class="flex items-center gap-2 mb-3">
+                        <i class="fas fa-store text-amber-400"></i>
+                        <h3 class="text-lg font-bold medieval-font text-amber-300">Магазин Инструктора</h3>
+                    </div>
+                    <div id="training-shop-list" class="space-y-3">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Training Quests -->
+            <div class="relative overflow-hidden rounded-lg p-4 border border-yellow-600/30" style="background: linear-gradient(135deg, rgba(234, 179, 8, 0.1) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(234, 179, 8, 0.1) 100%);">
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(234,179,8,0.12),transparent_60%)]"></div>
+                <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent"></div>
+                <div class="relative z-10">
+                    <div class="flex items-center gap-2 mb-3">
+                        <i class="fas fa-scroll text-yellow-400"></i>
+                        <h3 class="text-lg font-bold medieval-font text-yellow-300">Задания Лагеря</h3>
+                    </div>
+                    <div id="training-quests-list" class="space-y-2">
+                        <!-- Populated by JS -->
+                    </div>
                 </div>
             </div>
         </section>
@@ -7255,10 +7387,13 @@
             maxHp: 100,
             hunger: 100,
             maxHunger: 100,
+            energy: 100,
+            maxEnergy: 100,
             actionCount: 0,
             skillPoints: 0,
             luck: 0,
             agility: 0,
+            damage: 0,
             reputation: 0,
             glory: 0, // New: Glory stat for tournaments
             craftingLevel: 0,
@@ -7377,7 +7512,15 @@
             
             // Crafting System
             purchasedCrafts: [],
-            completedCrafts: []
+            completedCrafts: [],
+            
+            // Training Camp System
+            trainingLevel: 0,
+            trainingXP: 0,
+            completedTrainings: [],
+            lastTrainingTime: {},
+            trainingShopPurchases: [],
+            trainingQuestsCompleted: []
         };
 
         // --- NPC DATABASE ---
@@ -7768,11 +7911,27 @@
                 role: "Наставник",
                 icon: "fa-user-shield",
                 dialogue: {
-                    root: {
-                        text: "Добро пожаловать в лагерь. Готов к тренировкам?",
+                    root: function() {
+                        // Check if player has completed the initial quest
+                        if (hasStoryQuest('q_john_1') && !isQuestCompleted('q_john_1')) {
+                            return "initial_quest";
+                        }
+                        
+                        // Check training level for different responses
+                        if (gameState.trainingLevel >= 4) {
+                            return "master_greeting";
+                        } else if (gameState.trainingLevel >= 2) {
+                            return "experienced_greeting";
+                        } else if (gameState.completedTrainings && gameState.completedTrainings.length > 0) {
+                            return "trainee_greeting";
+                        }
+                        
+                        return "first_greeting";
+                    },
+                    initial_quest: {
+                        text: "Я пришел по твоему вызову",
                         options: [
-                            { text: "Я пришел по твоему вызову", next: "check_quest" },
-                            { text: "Просто смотрю", next: "exit" }
+                            { text: "Я готов начать обучение", next: "check_quest" }
                         ]
                     },
                     check_quest: function() {
@@ -7781,15 +7940,95 @@
                             game.completeQuest('q_john_1');
                             return "welcome";
                         }
-                        return "training";
+                        return "first_greeting";
                     },
                     welcome: {
-                        text: "Молодец. Ты сдержал слово. Вот тебе награда на первое снаряжение. Скоро начнем муштру.",
+                        text: "Молодец. Ты сдержал слово. Вот тебе награда на первое снаряжение. Добро пожаловать в лагерь.",
                         options: [{ text: "Спасибо", next: "exit" }]
                     },
-                    training: {
-                        text: "Пока что отдыхай. Скоро прибудут новобранцы.",
-                        options: [{ text: "Хорошо", next: "exit" }]
+                    first_greeting: {
+                        text: "Добро пожаловать в учебный лагерь. Я — рыцарь Джон, главный наставник. Здесь мы готовим воинов, достойных защищать королевство. Готов начать обучение?",
+                        options: [
+                            { text: "Расскажи о тренировках", next: "about_training" },
+                            { text: "Какие награды за обучение?", next: "about_rewards" },
+                            { text: "Я готов тренироваться", next: "ready" },
+                            { text: "Пока нет", next: "exit" }
+                        ]
+                    },
+                    trainee_greeting: {
+                        text: "Вижу, ты уже начал тренировки. Неплохо! Но это лишь начало пути. Продолжай в том же духе.",
+                        options: [
+                            { text: "Что ещё мне нужно знать?", next: "about_training" },
+                            { text: "Есть ли особые награды?", next: "about_quests" },
+                            { text: "Спасибо за наставление", next: "exit" }
+                        ]
+                    },
+                    experienced_greeting: {
+                        text: "Твой прогресс впечатляет! Ты уже не новичок. Многие бы позавидовали твоим навыкам. Но путь воина бесконечен.",
+                        options: [
+                            { text: "Расскажи о продвинутых тренировках", next: "about_advanced" },
+                            { text: "Что дальше?", next: "about_path" },
+                            { text: "Благодарю за обучение", next: "exit" }
+                        ]
+                    },
+                    master_greeting: {
+                        text: "Приветствую, воин! Ты достиг высокого уровня мастерства. Немногие доходят так далеко. Я горжусь, что был твоим наставником.",
+                        options: [
+                            { text: "Чему я могу ещё научиться?", next: "master_path" },
+                            { text: "Расскажи о своём пути", next: "about_john" },
+                            { text: "Честь тренироваться с тобой", next: "exit" }
+                        ]
+                    },
+                    about_training: {
+                        text: "У нас четыре категории тренировок: боевая подготовка учит владению оружием, защитная — обороне и уклонению, выживание — навыкам в дикой природе, а продвинутая подготовка — это тактика и мастерство. Каждая тренировка требует энергии и времени, но награды того стоят.",
+                        options: [
+                            { text: "А как насчёт наград?", next: "about_rewards" },
+                            { text: "Понятно, спасибо", next: "exit" }
+                        ]
+                    },
+                    about_rewards: {
+                        text: "За каждую тренировку ты получишь опыт, изумруды и улучшение характеристик — силы, ловкости или мудрости. Чем сложнее тренировка, тем больше награда. Набирай опыт, повышай свой уровень обучения и открывай доступ к более мощным тренировкам.",
+                        options: [
+                            { text: "Есть ли задания?", next: "about_quests" },
+                            { text: "Благодарю за разъяснение", next: "exit" }
+                        ]
+                    },
+                    about_quests: {
+                        text: "Да! У нас есть особые задания лагеря. Завершай определённое количество тренировок или достигай новых уровней — и получишь дополнительные награды. Следи за списком заданий внизу экрана.",
+                        options: [
+                            { text: "Отлично!", next: "exit" }
+                        ]
+                    },
+                    about_advanced: {
+                        text: "Продвинутые тренировки — это венец обучения. Тактическое мышление научит тебя стратегии, конный бой — сражаться верхом, а путь воина-мастера завершит твоё преображение. Но они требуют высокого уровня и выполнения предыдущих тренировок.",
+                        options: [
+                            { text: "Я готов к вызову", next: "ready" },
+                            { text: "Понял", next: "exit" }
+                        ]
+                    },
+                    about_path: {
+                        text: "Путь воина — это не только сила и навыки. Это дисциплина, мудрость и готовность защищать слабых. Продолжай тренироваться, выполняй задания, и однажды ты станешь легендой.",
+                        options: [
+                            { text: "Я не подведу", next: "exit" }
+                        ]
+                    },
+                    master_path: {
+                        text: "На твоём уровне остаётся лишь оттачивать мастерство. Завершай оставшиеся тренировки, стремись к совершенству. Помни: истинный мастер никогда не перестаёт учиться.",
+                        options: [
+                            { text: "Мудрые слова", next: "exit" }
+                        ]
+                    },
+                    about_john: {
+                        text: "Я служу королевству уже тридцать лет. Прошёл много битв, видел и победы, и поражения. Теперь моя задача — передать знания новому поколению. И ты — один из лучших моих учеников.",
+                        options: [
+                            { text: "Это большая честь", next: "exit" }
+                        ]
+                    },
+                    ready: {
+                        text: "Вот это настрой! Выбирай тренировку и приступай. Помни: после каждой тренировки нужно время на восстановление. И не забывай следить за своей энергией.",
+                        options: [
+                            { text: "Начинаю!", next: "exit" }
+                        ]
                     }
                 }
             },
@@ -11391,6 +11630,10 @@
                 if (gameState.maxHp === undefined) gameState.maxHp = 100;
                 if (gameState.hunger === undefined) gameState.hunger = 100;
                 if (gameState.maxHunger === undefined) gameState.maxHunger = 100;
+                if (gameState.energy === undefined) gameState.energy = 100;
+                if (gameState.maxEnergy === undefined) gameState.maxEnergy = 100;
+                if (gameState.damage === undefined) gameState.damage = 0;
+                if (gameState.agility === undefined) gameState.agility = 0;
                 if (gameState.actionCount === undefined) gameState.actionCount = 0;
                 if (gameState.lastHungerWarning === undefined) gameState.lastHungerWarning = 0;
                 if (gameState.skillPoints === undefined) gameState.skillPoints = 0;
@@ -16623,16 +16866,34 @@
                 if (hungerBar) hungerBar.style.width = `${hungerPercent}%`;
                 if (hungerText) hungerText.innerText = `${gameState.hunger} / ${gameState.maxHunger}`;
                 
-                // Update Damage and Armor stats based on equipped items
+                // Update energy bar (Training Camp only)
+                const energyPercent = (gameState.energy / gameState.maxEnergy) * 100;
+                const trainingEnergyBar = document.getElementById('training-energy-bar');
+                const trainingEnergyText = document.getElementById('training-energy-text');
+                if (trainingEnergyBar) trainingEnergyBar.style.width = `${energyPercent}%`;
+                if (trainingEnergyText) trainingEnergyText.innerText = `${gameState.energy} / ${gameState.maxEnergy}`;
+                
+                // Update Damage and Armor stats based on equipped items + training bonuses
                 const equippedDamage = gameState.equippedSword && SWORDS_DB[gameState.equippedSword] ? SWORDS_DB[gameState.equippedSword].damage : 0;
                 const equippedArmor = gameState.equippedArmor && ARMOR_DB[gameState.equippedArmor] ? ARMOR_DB[gameState.equippedArmor].armor : 0;
+                const trainingDamage = gameState.damage || 0;
+                const totalDamage = equippedDamage + trainingDamage;
+                
                 const statDamageEl = document.getElementById('stat-damage');
-                if (statDamageEl) statDamageEl.innerText = equippedDamage;
+                if (statDamageEl) statDamageEl.innerText = totalDamage;
                 const statArmorEl = document.getElementById('stat-armor');
                 if (statArmorEl) statArmorEl.innerText = equippedArmor;
-                // Also keep gameState in sync for combat
-                gameState.damage = equippedDamage;
+                
+                // Save to gameState for combat calculations
+                // Note: gameState.damage stores ONLY training bonus, totalDamage combines both
+                gameState.totalDamage = totalDamage;
                 gameState.armor = equippedArmor;
+                
+                // Update agility and luck from training
+                const statAgilityEl = document.getElementById('stat-agility');
+                if (statAgilityEl) statAgilityEl.innerText = gameState.agility || 0;
+                const statLuckEl = document.getElementById('stat-luck');
+                if (statLuckEl) statLuckEl.innerText = gameState.luck || 0;
 
                 // Update Equipment Slots UI
                 equipment.updateUI();
@@ -18681,6 +18942,13 @@
                 refugeeCamp.updateCooldownUI();
                 channelTask.init(); // Initialize channel subscription task
                 
+                // Start energy regeneration globally (only once)
+                setTimeout(() => {
+                    if (typeof trainingCamp !== 'undefined' && trainingCamp.startEnergyRegen) {
+                        trainingCamp.startEnergyRegen();
+                    }
+                }, 1000);
+                
                 // Обновление кнопок купленной одежды, обуви и рецептов
                 game.updateClothesButtons();
                 game.updateRecipeButtons();
@@ -18743,6 +19011,709 @@
                 startApp();
             }
         });
+
+        // ============================================
+        // TRAINING CAMP SYSTEM
+        // ============================================
+        
+        const trainingCamp = {
+            // Training definitions
+            trainings: {
+                combat: [
+                    {
+                        id: 'basic-sword',
+                        name: 'Основы Фехтования',
+                        description: 'Изучите базовые приёмы владения мечом',
+                        difficulty: 'easy',
+                        energyCost: 10,
+                        duration: 30,
+                        rewards: { damage: 1, xp: 20, emeralds: 5 },
+                        requirements: { level: 0 },
+                        icon: 'fa-sword'
+                    },
+                    {
+                        id: 'advanced-sword',
+                        name: 'Продвинутое Фехтование',
+                        description: 'Совершенствуйте технику владения мечом',
+                        difficulty: 'medium',
+                        energyCost: 20,
+                        duration: 60,
+                        rewards: { damage: 2, agility: 1, xp: 50, emeralds: 15 },
+                        requirements: { level: 1, completed: ['basic-sword'] },
+                        icon: 'fa-sword'
+                    },
+                    {
+                        id: 'axe-mastery',
+                        name: 'Мастерство Топора',
+                        description: 'Научитесь владеть двуручным топором',
+                        difficulty: 'medium',
+                        energyCost: 25,
+                        duration: 45,
+                        rewards: { damage: 3, xp: 45, emeralds: 12 },
+                        requirements: { level: 1 },
+                        icon: 'fa-axe-battle'
+                    }
+                ],
+                defense: [
+                    {
+                        id: 'shield-basics',
+                        name: 'Основы Защиты Щитом',
+                        description: 'Научитесь блокировать удары щитом',
+                        difficulty: 'easy',
+                        energyCost: 10,
+                        duration: 30,
+                        rewards: { agility: 1, xp: 20, emeralds: 5 },
+                        requirements: { level: 0 },
+                        icon: 'fa-shield'
+                    },
+                    {
+                        id: 'armor-training',
+                        name: 'Ношение Доспехов',
+                        description: 'Привыкните к тяжести боевых доспехов',
+                        difficulty: 'medium',
+                        energyCost: 20,
+                        duration: 60,
+                        rewards: { damage: 1, agility: 1, xp: 40, emeralds: 10 },
+                        requirements: { level: 1 },
+                        icon: 'fa-user-shield'
+                    },
+                    {
+                        id: 'dodge-training',
+                        name: 'Тренировка Уклонения',
+                        description: 'Улучшите свою ловкость и рефлексы',
+                        difficulty: 'medium',
+                        energyCost: 15,
+                        duration: 45,
+                        rewards: { agility: 3, xp: 45, emeralds: 12 },
+                        requirements: { level: 1 },
+                        icon: 'fa-running'
+                    }
+                ],
+                survival: [
+                    {
+                        id: 'first-aid',
+                        name: 'Первая Помощь',
+                        description: 'Научитесь лечить раны в полевых условиях',
+                        difficulty: 'easy',
+                        energyCost: 10,
+                        duration: 30,
+                        rewards: { luck: 1, xp: 20, emeralds: 5 },
+                        requirements: { level: 0 },
+                        icon: 'fa-medkit'
+                    },
+                    {
+                        id: 'hunting',
+                        name: 'Охота и Следопытство',
+                        description: 'Изучите навыки выживания в дикой природе',
+                        difficulty: 'medium',
+                        energyCost: 20,
+                        duration: 90,
+                        rewards: { agility: 1, luck: 2, xp: 50, emeralds: 15 },
+                        requirements: { level: 1 },
+                        icon: 'fa-bow-arrow'
+                    },
+                    {
+                        id: 'herbalism',
+                        name: 'Травничество',
+                        description: 'Научитесь собирать и использовать целебные травы',
+                        difficulty: 'easy',
+                        energyCost: 15,
+                        duration: 45,
+                        rewards: { luck: 2, xp: 35, emeralds: 8 },
+                        requirements: { level: 1 },
+                        icon: 'fa-leaf'
+                    }
+                ],
+                advanced: [
+                    {
+                        id: 'tactical-thinking',
+                        name: 'Тактическое Мышление',
+                        description: 'Изучите военную стратегию и тактику',
+                        difficulty: 'hard',
+                        energyCost: 30,
+                        duration: 120,
+                        rewards: { luck: 3, damage: 1, xp: 100, emeralds: 30 },
+                        requirements: { level: 3 },
+                        icon: 'fa-chess'
+                    },
+                    {
+                        id: 'horseback-combat',
+                        name: 'Конный Бой',
+                        description: 'Научитесь сражаться верхом на коне',
+                        difficulty: 'hard',
+                        energyCost: 35,
+                        duration: 90,
+                        rewards: { agility: 2, damage: 2, xp: 90, emeralds: 25 },
+                        requirements: { level: 2, completed: ['advanced-sword'] },
+                        icon: 'fa-horse'
+                    },
+                    {
+                        id: 'master-warrior',
+                        name: 'Путь Воина-Мастера',
+                        description: 'Завершите обучение и станьте истинным воином',
+                        difficulty: 'hard',
+                        energyCost: 50,
+                        duration: 180,
+                        rewards: { damage: 3, agility: 3, luck: 3, xp: 200, emeralds: 50 },
+                        requirements: { level: 4, completed: ['tactical-thinking', 'horseback-combat'] },
+                        icon: 'fa-crown'
+                    }
+                ]
+            },
+            
+            // Quests
+            quests: [
+                {
+                    id: 'first-steps',
+                    name: 'Первые Шаги',
+                    description: 'Завершите любую тренировку',
+                    rewards: { xp: 30, emeralds: 10 },
+                    condition: () => gameState.completedTrainings.length >= 1
+                },
+                {
+                    id: 'dedicated-trainee',
+                    name: 'Целеустремлённый Ученик',
+                    description: 'Завершите 5 тренировок',
+                    rewards: { xp: 50, emeralds: 20, damage: 1 },
+                    condition: () => gameState.completedTrainings.length >= 5
+                },
+                {
+                    id: 'combat-specialist',
+                    name: 'Специалист Боя',
+                    description: 'Завершите все боевые тренировки',
+                    rewards: { xp: 100, emeralds: 40, damage: 2 },
+                    condition: () => trainingCamp.trainings.combat.every(t => gameState.completedTrainings.includes(t.id))
+                },
+                {
+                    id: 'master-of-arms',
+                    name: 'Мастер Оружия',
+                    description: 'Достигните 4 уровня обучения',
+                    rewards: { xp: 150, emeralds: 60, damage: 2, agility: 2 },
+                    condition: () => gameState.trainingLevel >= 4
+                }
+            ],
+            
+            // Shop items
+            shopItems: [
+                {
+                    id: 'energy-potion-small',
+                    name: 'Малое Зелье Энергии',
+                    description: 'Восстанавливает 20 энергии',
+                    price: 15,
+                    icon: 'fa-flask'
+                },
+                {
+                    id: 'energy-potion-large',
+                    name: 'Большое Зелье Энергии',
+                    description: 'Восстанавливает 50 энергии',
+                    price: 30,
+                    icon: 'fa-flask'
+                },
+                {
+                    id: 'training-manual',
+                    name: 'Учебник Боевых Искусств',
+                    description: 'Даёт 100 опыта обучения',
+                    price: 50,
+                    icon: 'fa-book'
+                }
+            ],
+            
+            // Initialize
+            init: function() {
+                if (!gameState.completedTrainings) gameState.completedTrainings = [];
+                if (!gameState.lastTrainingTime) gameState.lastTrainingTime = {};
+                if (!gameState.trainingShopPurchases) gameState.trainingShopPurchases = [];
+                if (!gameState.trainingQuestsCompleted) gameState.trainingQuestsCompleted = [];
+                if (!gameState.trainingLevel) gameState.trainingLevel = 0;
+                if (!gameState.trainingXP) gameState.trainingXP = 0;
+                if (gameState.energy === undefined) gameState.energy = 100;
+                if (gameState.maxEnergy === undefined) gameState.maxEnergy = 100;
+                
+                this.render();
+                this.startCooldownTimer();
+                this.startEnergyRegen();
+            },
+            
+            // Render all training sections
+            render: function() {
+                this.renderProgress();
+                this.renderStats();
+                this.renderTrainings('combat', 'combat-trainings-list');
+                this.renderTrainings('defense', 'defense-trainings-list');
+                this.renderTrainings('survival', 'survival-trainings-list');
+                this.renderTrainings('advanced', 'advanced-trainings-list');
+                this.renderShop();
+                this.renderQuests();
+            },
+            
+            // Render progress bar
+            renderProgress: function() {
+                const levelBadge = document.getElementById('training-level-badge');
+                const progressBar = document.getElementById('training-progress-bar');
+                const xpCurrent = document.getElementById('training-xp-current');
+                const xpNeeded = document.getElementById('training-xp-needed');
+                const completedCount = document.getElementById('training-completed-count');
+                
+                if (!levelBadge) return;
+                
+                const xpForLevel = this.getXPNeeded(gameState.trainingLevel);
+                const progress = (gameState.trainingXP / xpForLevel) * 100;
+                
+                levelBadge.textContent = `Уровень: ${gameState.trainingLevel}`;
+                progressBar.style.width = `${Math.min(progress, 100)}%`;
+                xpCurrent.textContent = gameState.trainingXP;
+                xpNeeded.textContent = xpForLevel;
+                
+                const allTrainings = [
+                    ...this.trainings.combat,
+                    ...this.trainings.defense,
+                    ...this.trainings.survival,
+                    ...this.trainings.advanced
+                ];
+                completedCount.textContent = `${gameState.completedTrainings.length} / ${allTrainings.length} тренировок`;
+            },
+            
+            // Render stats
+            renderStats: function() {
+                let totalDamage = 0, totalAgility = 0, totalLuck = 0;
+                
+                const allTrainings = [
+                    ...this.trainings.combat,
+                    ...this.trainings.defense,
+                    ...this.trainings.survival,
+                    ...this.trainings.advanced
+                ];
+                
+                gameState.completedTrainings.forEach(id => {
+                    const training = allTrainings.find(t => t.id === id);
+                    if (training && training.rewards) {
+                        totalDamage += training.rewards.damage || 0;
+                        totalAgility += training.rewards.agility || 0;
+                        totalLuck += training.rewards.luck || 0;
+                    }
+                });
+                
+                const damageEl = document.getElementById('total-strength-gain');
+                const agilityEl = document.getElementById('total-agility-gain');
+                const luckEl = document.getElementById('total-wisdom-gain');
+                
+                if (damageEl) damageEl.textContent = `+${totalDamage}`;
+                if (agilityEl) agilityEl.textContent = `+${totalAgility}`;
+                if (luckEl) luckEl.textContent = `+${totalLuck}`;
+            },
+            
+            // Render trainings by category
+            renderTrainings: function(category, containerId) {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+                
+                const trainings = this.trainings[category];
+                
+                container.innerHTML = trainings.map(training => {
+                    const isLocked = !this.canStartTraining(training);
+                    const isCompleted = gameState.completedTrainings.includes(training.id);
+                    const isOnCooldown = this.isTrainingOnCooldown(training.id);
+                    const canAfford = gameState.energy >= training.energyCost;
+                    
+                    const difficultyColors = {
+                        'easy': 'text-green-500 border-green-500',
+                        'medium': 'text-orange-500 border-orange-500',
+                        'hard': 'text-red-500 border-red-500'
+                    };
+                    
+                    const difficultyText = {
+                        'easy': 'Легко',
+                        'medium': 'Средне',
+                        'hard': 'Сложно'
+                    };
+                    
+                    return `
+                        <div class="panel rounded-lg p-4 ${isLocked ? 'opacity-50' : ''} ${!isLocked && !isOnCooldown && canAfford ? 'cursor-pointer hover:border-[#c8aa6e]' : ''} transition-all" 
+                             ${!isLocked && !isOnCooldown && canAfford ? `onclick="trainingCamp.startTraining('${training.id}', '${category}')"` : ''}>
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 rounded-full flex items-center justify-center bg-[#c8aa6e]/20 border border-[#c8aa6e]">
+                                        <i class="fas ${training.icon} text-xl text-[#c8aa6e]"></i>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <h4 class="font-bold text-[#e0e0e0]">${training.name}</h4>
+                                            ${isCompleted ? '<i class="fas fa-check-circle text-green-500"></i>' : ''}
+                                        </div>
+                                        <span class="text-xs px-2 py-0.5 rounded-full ${difficultyColors[training.difficulty]} bg-opacity-20 border">
+                                            ${difficultyText[training.difficulty]}
+                                        </span>
+                                    </div>
+                                </div>
+                                ${isLocked ? '<i class="fas fa-lock text-gray-500"></i>' : ''}
+                            </div>
+                            
+                            <p class="text-sm text-[#a0a0a0] mb-3">${training.description}</p>
+                            
+                            <div class="flex items-center gap-4 text-sm flex-wrap">
+                                <div class="flex items-center gap-1 ${!canAfford ? 'text-red-500' : 'text-[#a0a0a0]'}">
+                                    <i class="fas fa-bolt text-yellow-500"></i>
+                                    <span>${training.energyCost}</span>
+                                </div>
+                                <div class="flex items-center gap-1 text-[#a0a0a0]">
+                                    <i class="fas fa-clock text-blue-500"></i>
+                                    <span>${training.duration}с</span>
+                                </div>
+                                ${training.rewards.damage ? `<div class="flex items-center gap-1 px-2 py-0.5 rounded bg-[#c8aa6e]/10 border border-[#c8aa6e]/30"><i class="fas fa-fire text-red-500"></i> <span class="text-[#c8aa6e]">+${training.rewards.damage}</span></div>` : ''}
+                                ${training.rewards.agility ? `<div class="flex items-center gap-1 px-2 py-0.5 rounded bg-[#c8aa6e]/10 border border-[#c8aa6e]/30"><i class="fas fa-running text-green-500"></i> <span class="text-[#c8aa6e]">+${training.rewards.agility}</span></div>` : ''}
+                                ${training.rewards.luck ? `<div class="flex items-center gap-1 px-2 py-0.5 rounded bg-[#c8aa6e]/10 border border-[#c8aa6e]/30"><i class="fas fa-clover text-purple-500"></i> <span class="text-[#c8aa6e]">+${training.rewards.luck}</span></div>` : ''}
+                            </div>
+                            
+                            ${isOnCooldown ? `
+                                <div class="mt-3 flex items-center gap-2 text-sm text-red-500 bg-red-500/10 border border-red-500/30 rounded px-3 py-2">
+                                    <i class="fas fa-hourglass-half"></i>
+                                    <span>Восстановление: <span id="cooldown-${training.id}">${this.getCooldownText(training.id)}</span></span>
+                                </div>
+                            ` : ''}
+                            
+                            ${isLocked && training.requirements.completed ? `
+                                <div class="mt-3 text-xs text-[#a0a0a0]">
+                                    <i class="fas fa-info-circle"></i> Требуется завершить: ${training.requirements.completed.map(id => this.findTrainingById(id).name).join(', ')}
+                                </div>
+                            ` : ''}
+                            
+                            ${!isLocked && !isOnCooldown && !canAfford ? `
+                                <div class="mt-3 text-xs text-red-500">
+                                    <i class="fas fa-exclamation-circle"></i> Недостаточно энергии
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                }).join('');
+            },
+            
+            // Render shop
+            renderShop: function() {
+                const container = document.getElementById('training-shop-list');
+                if (!container) return;
+                
+                container.innerHTML = this.shopItems.map(item => {
+                    const isPurchased = item.singlePurchase && gameState.trainingShopPurchases.includes(item.id);
+                    const canAfford = gameState.emeralds >= item.price;
+                    
+                    return `
+                        <div class="relative overflow-hidden flex items-center justify-between p-3 rounded-lg border border-amber-700/30" style="background: linear-gradient(135deg, rgba(217, 119, 6, 0.08) 0%, rgba(0, 0, 0, 0.3) 100%);">
+                            <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(217,119,6,0.08),transparent)]"></div>
+                            <div class="flex items-center gap-3 relative z-10">
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center bg-amber-500/20 border border-amber-600/40">
+                                    <i class="fas ${item.icon} text-amber-400"></i>
+                                </div>
+                                <div>
+                                    <div class="font-bold text-sm text-[#e0e0e0]">${item.name}</div>
+                                    <div class="text-xs text-[#a0a0a0]">${item.description}</div>
+                                </div>
+                            </div>
+                            <button 
+                                class="relative z-10 px-4 py-2 rounded text-sm border border-amber-700/40 bg-black/30 text-amber-300 hover:bg-amber-900/20 backdrop-blur-sm transition-all ${isPurchased || !canAfford ? 'opacity-50' : ''}" 
+                                onclick="trainingCamp.purchaseItem('${item.id}')"
+                                ${isPurchased || !canAfford ? 'disabled' : ''}
+                            >
+                                ${isPurchased ? 'Куплено' : `<span class="text-emerald-400">${item.price} <i class="fas fa-gem text-emerald-400"></i></span>`}
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+            },
+            
+            // Render quests
+            renderQuests: function() {
+                const container = document.getElementById('training-quests-list');
+                if (!container) return;
+                
+                container.innerHTML = this.quests.map(quest => {
+                    const isCompleted = gameState.trainingQuestsCompleted.includes(quest.id);
+                    const canComplete = !isCompleted && quest.condition();
+                    
+                    const bgStyle = isCompleted 
+                        ? 'background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(0, 0, 0, 0.3) 100%); border-color: rgba(34, 197, 94, 0.3);'
+                        : 'background: linear-gradient(135deg, rgba(234, 179, 8, 0.08) 0%, rgba(0, 0, 0, 0.3) 100%); border-color: rgba(234, 179, 8, 0.2);';
+                    
+                    return `
+                        <div class="relative overflow-hidden p-3 rounded-lg border" style="${bgStyle}">
+                            <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,${isCompleted ? 'rgba(34,197,94,0.1)' : 'rgba(234,179,8,0.08)'},transparent)]"></div>
+                            <div class="relative z-10 flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <h4 class="font-bold text-sm text-[#e0e0e0]">${quest.name}</h4>
+                                        ${isCompleted ? '<i class="fas fa-check-circle text-green-400"></i>' : ''}
+                                    </div>
+                                    <p class="text-xs text-[#a0a0a0] mb-2">${quest.description}</p>
+                                    <div class="flex items-center gap-3 text-xs flex-wrap">
+                                        ${quest.rewards.xp ? `<span class="text-blue-400">+${quest.rewards.xp} опыта</span>` : ''}
+                                        ${quest.rewards.emeralds ? `<span class="text-emerald-400">+${quest.rewards.emeralds} <i class="fas fa-gem text-emerald-400"></i></span>` : ''}
+                                        ${quest.rewards.damage ? `<span class="text-red-400">+${quest.rewards.damage} урона</span>` : ''}
+                                        ${quest.rewards.agility ? `<span class="text-green-400">+${quest.rewards.agility} ловкости</span>` : ''}
+                                        ${quest.rewards.luck ? `<span class="text-purple-400">+${quest.rewards.luck} удачи</span>` : ''}
+                                    </div>
+                                </div>
+                                ${canComplete ? `
+                                    <button class="px-3 py-1 rounded text-xs ml-2 border border-yellow-700/40 bg-black/30 text-yellow-300 hover:bg-yellow-900/20 backdrop-blur-sm transition-all" onclick="trainingCamp.completeQuest('${quest.id}')">
+                                        Получить
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            },
+            
+            // Start training
+            startTraining: function(trainingId, category) {
+                const training = this.trainings[category].find(t => t.id === trainingId);
+                if (!training) return;
+                
+                if (!this.canStartTraining(training)) {
+                    ui.showNotification('Тренировка заблокирована', 'error');
+                    return;
+                }
+                
+                if (gameState.energy < training.energyCost) {
+                    ui.showNotification('Недостаточно энергии!', 'error');
+                    return;
+                }
+                
+                if (this.isTrainingOnCooldown(trainingId)) {
+                    ui.showNotification('Тренировка на восстановлении', 'error');
+                    return;
+                }
+                
+                // Deduct energy
+                gameState.energy -= training.energyCost;
+                ui.updateStats();
+                
+                ui.showNotification(`Начата тренировка: ${training.name}`, 'success');
+                
+                // Simulate training duration
+                setTimeout(() => {
+                    this.completeTraining(training);
+                }, training.duration * 1000);
+            },
+            
+            // Complete training
+            completeTraining: function(training) {
+                // Add to completed if not already there
+                if (!gameState.completedTrainings.includes(training.id)) {
+                    gameState.completedTrainings.push(training.id);
+                }
+                
+                // Apply rewards
+                if (training.rewards.damage) gameState.damage += training.rewards.damage;
+                if (training.rewards.agility) gameState.agility += training.rewards.agility;
+                if (training.rewards.luck) gameState.luck += training.rewards.luck;
+                gameState.emeralds += training.rewards.emeralds || 0;
+                
+                // Add XP
+                this.gainXP(training.rewards.xp);
+                
+                // Set cooldown (5 minutes)
+                gameState.lastTrainingTime[training.id] = Date.now();
+                
+                // Show notification
+                ui.showNotification(`Тренировка завершена! +${training.rewards.xp} опыта`, 'success');
+                
+                // Update UI
+                this.render();
+                ui.updateStats();
+                game.save();
+                
+                // Check quests
+                this.checkQuests();
+            },
+            
+            // Gain XP and level up
+            gainXP: function(amount) {
+                gameState.trainingXP += amount;
+                
+                const xpNeeded = this.getXPNeeded(gameState.trainingLevel);
+                
+                while (gameState.trainingXP >= xpNeeded) {
+                    gameState.trainingXP -= xpNeeded;
+                    gameState.trainingLevel++;
+                    ui.showNotification(`Уровень обучения повышен! Теперь ${gameState.trainingLevel}`, 'success');
+                }
+                
+                this.renderProgress();
+            },
+            
+            // Get XP needed for level
+            getXPNeeded: function(level) {
+                return 100 + (level * 50);
+            },
+            
+            // Purchase shop item
+            purchaseItem: function(itemId) {
+                const item = this.shopItems.find(i => i.id === itemId);
+                if (!item) return;
+                
+                if (gameState.emeralds < item.price) {
+                    ui.showNotification('Недостаточно изумрудов!', 'error');
+                    return;
+                }
+                
+                if (item.singlePurchase && gameState.trainingShopPurchases.includes(itemId)) {
+                    ui.showNotification('Вы уже купили этот предмет!', 'error');
+                    return;
+                }
+                
+                gameState.emeralds -= item.price;
+                
+                if (item.singlePurchase) {
+                    gameState.trainingShopPurchases.push(itemId);
+                }
+                
+                // Apply effect
+                switch(itemId) {
+                    case 'energy-potion-small':
+                        gameState.energy = Math.min(gameState.maxEnergy, gameState.energy + 20);
+                        ui.showNotification('Энергия восстановлена на 20!', 'success');
+                        break;
+                    case 'energy-potion-large':
+                        gameState.energy = Math.min(gameState.maxEnergy, gameState.energy + 50);
+                        ui.showNotification('Энергия восстановлена на 50!', 'success');
+                        break;
+                    case 'training-manual':
+                        this.gainXP(100);
+                        ui.showNotification('Вы изучили учебник! +100 опыта', 'success');
+                        break;
+                }
+                
+                this.renderShop();
+                ui.updateStats();
+                game.save();
+            },
+            
+            // Complete quest
+            completeQuest: function(questId) {
+                const quest = this.quests.find(q => q.id === questId);
+                if (!quest) return;
+                
+                if (gameState.trainingQuestsCompleted.includes(questId)) {
+                    return;
+                }
+                
+                if (!quest.condition()) {
+                    ui.showNotification('Условия задания не выполнены', 'error');
+                    return;
+                }
+                
+                gameState.trainingQuestsCompleted.push(questId);
+                
+                // Apply rewards
+                if (quest.rewards.xp) this.gainXP(quest.rewards.xp);
+                if (quest.rewards.emeralds) gameState.emeralds += quest.rewards.emeralds;
+                if (quest.rewards.damage) gameState.damage += quest.rewards.damage;
+                if (quest.rewards.agility) gameState.agility += quest.rewards.agility;
+                if (quest.rewards.luck) gameState.luck += quest.rewards.luck;
+                
+                ui.showNotification(`Задание выполнено: ${quest.name}! 🎉`, 'success');
+                
+                this.renderQuests();
+                ui.updateStats();
+                game.save();
+            },
+            
+            // Check all quests
+            checkQuests: function() {
+                this.quests.forEach(quest => {
+                    if (!gameState.trainingQuestsCompleted.includes(quest.id) && quest.condition()) {
+                        // Quest can be completed - highlight it
+                        this.renderQuests();
+                    }
+                });
+            },
+            
+            // Helper functions
+            canStartTraining: function(training) {
+                if (training.requirements.level > gameState.trainingLevel) return false;
+                if (training.requirements.completed) {
+                    return training.requirements.completed.every(id => gameState.completedTrainings.includes(id));
+                }
+                return true;
+            },
+            
+            isTrainingOnCooldown: function(trainingId) {
+                const lastTime = gameState.lastTrainingTime[trainingId];
+                if (!lastTime) return false;
+                
+                const cooldownDuration = 5 * 60 * 1000; // 5 minutes
+                return Date.now() - lastTime < cooldownDuration;
+            },
+            
+            getCooldownText: function(trainingId) {
+                const lastTime = gameState.lastTrainingTime[trainingId];
+                if (!lastTime) return '';
+                
+                const cooldownDuration = 5 * 60 * 1000;
+                const remaining = cooldownDuration - (Date.now() - lastTime);
+                
+                if (remaining <= 0) return '';
+                
+                const minutes = Math.floor(remaining / 60000);
+                const seconds = Math.floor((remaining % 60000) / 1000);
+                
+                return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            },
+            
+            findTrainingById: function(id) {
+                for (let category in this.trainings) {
+                    const found = this.trainings[category].find(t => t.id === id);
+                    if (found) return found;
+                }
+                return null;
+            },
+            
+            // Start cooldown timer to update UI
+            startCooldownTimer: function() {
+                setInterval(() => {
+                    const hasCooldowns = Object.keys(gameState.lastTrainingTime).some(id => this.isTrainingOnCooldown(id));
+                    
+                    if (hasCooldowns) {
+                        // Update cooldown displays
+                        Object.keys(gameState.lastTrainingTime).forEach(id => {
+                            const cooldownEl = document.getElementById(`cooldown-${id}`);
+                            if (cooldownEl) {
+                                const text = this.getCooldownText(id);
+                                if (text) {
+                                    cooldownEl.textContent = text;
+                                } else {
+                                    // Cooldown expired, re-render
+                                    this.render();
+                                }
+                            }
+                        });
+                    }
+                }, 1000);
+            },
+            
+            // Start energy regeneration
+            startEnergyRegen: function() {
+                // Regenerate 1 energy every 5 minutes (300 seconds)
+                setInterval(() => {
+                    if (gameState.energy < gameState.maxEnergy) {
+                        gameState.energy = Math.min(gameState.maxEnergy, gameState.energy + 1);
+                        ui.updateStats();
+                        game.save();
+                    }
+                }, 300000); // 5 minutes
+            }
+        };
+
+        // Initialize training camp when navigating to it
+        const originalNavigate = router.navigate;
+        router.navigate = function(destination) {
+            originalNavigate.call(router, destination);
+            
+            if (destination === 'training-camp') {
+                setTimeout(() => {
+                    trainingCamp.init();
+                }, 100);
+            }
+        };
 
     </script>
 </body>
