@@ -3556,13 +3556,16 @@
                 </div>
 
                 <!-- Hunter's Hut -->
-                <div class="rounded-lg p-4 space-y-3 relative border border-amber-700/40" style="background: url('https://i.postimg.cc/kGXTFn6F/IMG-4563.jpg'); background-size: cover; background-position: center; box-shadow: inset 0 0 0 2000px rgba(0,0,0,0.75), 0 4px 6px rgba(0,0,0,0.3);">
-                    <!-- Additional overlay for gradient effect -->
-                    <div class="absolute inset-0 z-0 pointer-events-none" style="background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.5)); border-radius: 0.5rem;"></div>
-                    <div class="absolute inset-0 z-0 pointer-events-none" style="background: radial-gradient(circle at 30% 30%, rgba(217,119,6,0.2), transparent 60%); border-radius: 0.5rem;"></div>
-                    
-                    <div class="relative z-10 flex items-center justify-between">
-                        <div class="flex items-center gap-3">
+                <div class="rounded-lg border border-amber-700/40 overflow-hidden relative" style="height:112px;">
+                    <!-- Фото -->
+                    <img src="https://i.postimg.cc/fT1LMrRV/IMG-4856.jpg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;">
+                    <!-- Градиент слева направо: тёмный слева, прозрачный справа -->
+                    <div style="position:absolute;inset:0;background:linear-gradient(to right, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.70) 50%, rgba(0,0,0,0.10) 100%);"></div>
+                    <!-- Янтарное свечение сверху слева -->
+                    <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%, rgba(217,119,6,0.25) 0%, transparent 65%);"></div>
+                    <!-- Контент -->
+                    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 16px;">
+                        <div style="display:flex;align-items:center;gap:12px;">
                             <div class="w-10 h-10 rounded-full border border-amber-600/60 bg-amber-950/50 flex items-center justify-center shadow-[0_0_15px_rgba(217,119,6,0.3)]">
                                 <i class="fas fa-home text-amber-500"></i>
                             </div>
@@ -4243,8 +4246,10 @@
 
         <!-- VIEW: HEALER -->
         <section id="view-healer" class="hidden space-y-4">
-            <div class="loc-hero h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-black/30 backdrop-blur-sm" data-loc="healer" style="--hero-img: none;">
-                <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(239,68,68,0.15),transparent_60%)]"></div>
+
+            <!-- HERO -->
+            <div class="loc-hero h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-black/30 backdrop-blur-sm" data-loc="healer" style="--hero-img: url('https://i.postimg.cc/rpXgZGRd/IMG-4564.jpg');">
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(239,68,68,0.2),transparent_60%)]"></div>
                 <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-red-500/50 to-transparent"></div>
                 <div class="absolute top-4 left-4">
                     <button onclick="router.navigate('map')" class="w-8 h-8 rounded border border-red-900/50 bg-black/30 flex items-center justify-center text-red-400 hover:bg-red-900/30 transition-colors">
@@ -4260,7 +4265,7 @@
             </div>
 
             <!-- NPC Marius -->
-            <div class="panel p-4 rounded-lg border-red-500/40 bg-black/30 backdrop-blur-sm mb-4">
+            <div class="panel p-4 rounded-lg border-red-900/40 bg-black/30 backdrop-blur-sm">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="w-12 h-12 rounded-full border-2 border-red-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(239,68,68,0.3), rgba(0,0,0,0.5));">
@@ -4268,7 +4273,7 @@
                         </div>
                         <div>
                             <div class="text-base text-[#e0e0e0] font-bold medieval-font">Мариус</div>
-                            <div class="text-[10px] text-[#a0a0a0]">Алхимик</div>
+                            <div class="text-[10px] text-[#a0a0a0]">Травник и алхимик</div>
                         </div>
                     </div>
                     <button onclick="dialogue.start('marius')" class="btn-medieval px-4 py-1.5 rounded text-xs">
@@ -4277,93 +4282,128 @@
                 </div>
             </div>
 
-            <!-- Healing Service -->
-            <div class="panel rounded p-4 space-y-3">
-                <h3 class="medieval-font text-sm text-[#c8aa6e]">Лечение</h3>
-                <div class="flex items-center justify-between">
-                    <div class="text-xs text-[#a0a0a0]">Восстановить здоровье</div>
-                    <div class="text-xs text-yellow-500">50 <i class="fas fa-coins"></i></div>
-                </div>
-                <button onclick="game.heal(50, 50)" class="btn-medieval w-full py-2 rounded text-xs text-red-400 border-red-900 hover:bg-red-900/20">
-                    <i class="fas fa-heart mr-2"></i> +50 HP
-                </button>
-            </div>
-            
-            <!-- Tetanus Treatment Section -->
-            <div id="tetanus-treatment-section" class="panel p-4 rounded border-orange-700/50 bg-gradient-to-br from-orange-950/30 to-orange-900/20">
-                <div class="flex items-center gap-2 mb-3">
-                    <i class="fas fa-skull-crossbones text-orange-400"></i>
-                    <h3 class="text-base font-bold text-orange-300 medieval-font">Лечение столбняка</h3>
-                </div>
-                <p class="text-xs text-orange-400/80 mb-3">Опасная болезнь из тёмного леса. Требует дорогого лечения.</p>
-                <div class="flex items-center justify-between">
-                    <div class="text-xs text-yellow-400 flex items-center gap-1">
-                        <i class="fas fa-coins"></i>
-                        <span class="font-bold">1000 золотых</span>
+            <!-- Healing + Tetanus in one panel -->
+            <div class="panel rounded-lg p-4 space-y-3 bg-gradient-to-br from-red-900/10 to-black/20 backdrop-blur-sm border border-red-900/30">
+                <div class="flex items-center gap-2 border-b border-red-900/30 pb-3">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-red-800/40 to-red-950 flex items-center justify-center border border-red-600/40">
+                        <i class="fas fa-heart text-red-400"></i>
                     </div>
-                    <button id="btn-cure-tetanus" onclick="healer.cureTetanus(event)" class="btn-medieval px-4 py-1.5 rounded text-xs border-orange-700 text-orange-400">
-                        Вылечиться
-                    </button>
+                    <h3 class="text-base font-bold text-red-300 medieval-font">Лечение</h3>
+                </div>
+
+                <!-- Heal button -->
+                <div class="relative overflow-hidden rounded-lg border border-red-800/40" style="background: linear-gradient(135deg, rgba(127,29,29,0.25) 0%, rgba(0,0,0,0.4) 100%);">
+                    <!-- Decorative glow -->
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(239,68,68,0.12),transparent_65%)] pointer-events-none"></div>
+                    <!-- Decorative heart bg -->
+                    <div class="absolute right-3 top-1/2 -translate-y-1/2 text-5xl text-red-900/20 pointer-events-none select-none">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="relative p-3 flex items-center gap-3">
+                        <!-- Flask icon -->
+                        <div class="w-11 h-11 rounded-full bg-gradient-to-br from-red-800/50 to-red-950 border border-red-600/50 flex items-center justify-center shadow-[0_0_12px_rgba(239,68,68,0.25)] flex-shrink-0">
+                            <i class="fas fa-flask text-red-400 text-base"></i>
+                        </div>
+                        <!-- Text -->
+                        <div class="flex-1">
+                            <div class="text-sm text-[#e0e0e0] font-bold medieval-font">Восстановить здоровье</div>
+                            <div class="text-[10px] text-red-400/70 mt-0.5">Снадобье Мариуса</div>
+                            <div class="flex items-center gap-1.5 mt-1">
+                                <span class="text-[10px] bg-red-900/30 border border-red-800/40 text-red-300 px-1.5 py-0.5 rounded">+50 HP</span>
+                                <span class="text-[10px] text-yellow-500">200 <i class="fas fa-coins text-[9px]"></i></span>
+                            </div>
+                        </div>
+                        <!-- Button -->
+                        <button onclick="game.heal(50, 200)" class="btn-medieval px-3 py-2 rounded text-[10px] text-red-400 border-red-700 flex-shrink-0">
+                            <i class="fas fa-heart mr-1"></i>Лечиться
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tetanus -->
+                <div id="tetanus-treatment-section" class="flex items-center justify-between bg-orange-950/20 border border-orange-700/30 rounded p-3">
+                    <div>
+                        <div class="text-xs text-orange-300 font-bold medieval-font"><i class="fas fa-skull-crossbones mr-1.5"></i>Лечение столбняка</div>
+                        <div class="text-[10px] text-[#a0a0a0] mt-0.5">Опасная болезнь из тёмного леса</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs text-yellow-500 mb-1">1000 <i class="fas fa-coins"></i></div>
+                        <button id="btn-cure-tetanus" onclick="healer.cureTetanus(event)" class="btn-medieval px-3 py-1 rounded text-[10px] border-orange-700 text-orange-400">
+                            Вылечить
+                        </button>
+                    </div>
                 </div>
             </div>
 
             <!-- Recipes Shop -->
-            <div class="panel rounded p-4 space-y-4">
+            <div class="panel rounded-lg p-4 space-y-3">
                 <h3 class="medieval-font text-sm text-[#c8aa6e]">Тайные Знания (Рецепты)</h3>
-                
+
                 <!-- Immortality Recipe -->
-                <div class="border border-[#333] rounded p-2 bg-black/20">
-                    <div class="flex justify-between items-start mb-2">
-                        <div class="flex gap-2">
-                            <i class="fas fa-scroll text-purple-400 mt-1"></i>
-                            <div>
-                                <div class="text-xs font-bold text-[#e0e0e0]">Зелье Бессмертия</div>
-                                <div class="text-[10px] text-[#777]">Неуязвимость на 2 минуты.</div>
-                            </div>
+                <div class="border border-purple-900/50 rounded p-3 bg-purple-900/10 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-scroll text-purple-400 text-xl"></i>
+                        <div>
+                            <div class="text-sm font-bold text-purple-300">Зелье Бессмертия</div>
+                            <div class="text-[10px] text-[#a0a0a0]">Неуязвимость на 2 минуты</div>
                         </div>
-                        <div class="text-xs gem-price font-bold">100 <i class="far fa-gem gem-price"></i></div>
                     </div>
-                    <button id="btn-buy-recipe-immortality" onclick="game.buyRecipe('immortality', 100)" class="btn-medieval w-full py-1.5 rounded text-[10px]">
-                        Купить Рецепт
-                    </button>
+                    <div class="text-right">
+                        <div class="text-xs gem-price font-bold mb-1">100 <i class="far fa-gem gem-price"></i></div>
+                        <button id="btn-buy-recipe-immortality" onclick="game.buyRecipe('immortality', 100)" class="btn-medieval px-3 py-1 rounded text-[10px]">
+                            Купить
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Luck Recipe -->
-                <div class="border border-[#333] rounded p-2 bg-black/20">
-                    <div class="flex justify-between items-start mb-2">
-                        <div class="flex gap-2">
-                            <i class="fas fa-scroll text-green-400 mt-1"></i>
-                            <div>
-                                <div class="text-xs font-bold text-[#e0e0e0]">Зелье Удачи</div>
-                                <div class="text-[10px] text-[#777]">x2 Добыча на 2 минуты.</div>
-                            </div>
+                <div class="border border-green-900/50 rounded p-3 bg-green-900/10 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-scroll text-green-400 text-xl"></i>
+                        <div>
+                            <div class="text-sm font-bold text-green-300">Зелье Удачи</div>
+                            <div class="text-[10px] text-[#a0a0a0]">×2 Добыча на 2 минуты</div>
                         </div>
-                        <div class="text-xs gem-price font-bold">50 <i class="far fa-gem gem-price"></i></div>
                     </div>
-                    <button id="btn-buy-recipe-luck" onclick="game.buyRecipe('luck', 50)" class="btn-medieval w-full py-1.5 rounded text-[10px]">
-                        Купить Рецепт
-                    </button>
+                    <div class="text-right">
+                        <div class="text-xs gem-price font-bold mb-1">50 <i class="far fa-gem gem-price"></i></div>
+                        <button id="btn-buy-recipe-luck" onclick="game.buyRecipe('luck', 50)" class="btn-medieval px-3 py-1 rounded text-[10px]">
+                            Купить
+                        </button>
+                    </div>
                 </div>
             </div>
 
             <!-- Crafting Station (Visible if recipes unlocked) -->
-            <div id="healer-crafting-station" class="hidden panel rounded p-4 space-y-3 border-t-2 border-[#c8aa6e]">
-                <h3 class="medieval-font text-sm text-[#c8aa6e]">Алхимический Стол</h3>
-                
-                <div id="craft-action-immortality" class="hidden flex justify-between items-center bg-[#111] p-2 rounded">
-                    <div class="text-xs text-purple-400">Зелье Бессмертия</div>
-                    <button onclick="game.activateEffect('immortality')" class="bg-[#222] border border-purple-500 text-purple-500 px-3 py-1 rounded text-[10px] hover:bg-purple-900/30">
-                        Использовать (10 трав)
+            <div id="healer-crafting-station" class="hidden panel rounded-lg p-4 space-y-3 border-t-2 border-[#c8aa6e]">
+                <div class="flex items-center gap-2">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-700/40 to-yellow-950 flex items-center justify-center border border-yellow-600/40">
+                        <i class="fas fa-flask text-yellow-400"></i>
+                    </div>
+                    <h3 class="medieval-font text-sm text-[#c8aa6e]">Алхимический Стол</h3>
+                </div>
+
+                <div id="craft-action-immortality" class="hidden border border-purple-900/50 rounded p-3 bg-purple-900/10 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-shield-alt text-purple-400"></i>
+                        <div class="text-xs text-purple-300 medieval-font">Зелье Бессмертия</div>
+                    </div>
+                    <button onclick="game.activateEffect('immortality')" class="btn-medieval px-3 py-1 rounded text-[10px] border-purple-700 text-purple-400">
+                        Создать (10 трав)
                     </button>
                 </div>
 
-                <div id="craft-action-luck" class="hidden flex justify-between items-center bg-[#111] p-2 rounded">
-                    <div class="text-xs text-green-400">Зелье Удачи</div>
-                    <button onclick="game.activateEffect('luck')" class="bg-[#222] border border-green-500 text-green-500 px-3 py-1 rounded text-[10px] hover:bg-green-900/30">
-                        Использовать (5 грибов)
+                <div id="craft-action-luck" class="hidden border border-green-900/50 rounded p-3 bg-green-900/10 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-leaf text-green-400"></i>
+                        <div class="text-xs text-green-300 medieval-font">Зелье Удачи</div>
+                    </div>
+                    <button onclick="game.activateEffect('luck')" class="btn-medieval px-3 py-1 rounded text-[10px] border-green-700 text-green-400">
+                        Создать (5 грибов)
                     </button>
                 </div>
             </div>
+
         </section>
 
         <!-- VIEW: TREASURY -->
@@ -4629,7 +4669,13 @@
             </div>
 
             <!-- Food & Thomas Event -->
-            <div class="panel rounded-lg p-4 space-y-3">
+            <div class="panel rounded-lg p-4 space-y-3 relative overflow-hidden">
+                <div class="absolute inset-0 z-0">
+                    <img src="https://i.postimg.cc/ZKFvfZQZ/IMG-4884.jpg" alt="Горячая еда" class="w-full h-full object-cover opacity-35">
+                    <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80"></div>
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(200,170,110,0.2),transparent_60%)]"></div>
+                </div>
+                <div class="relative z-10 space-y-3">
                 <h3 class="medieval-font text-lg text-[#c8aa6e]">Горячая еда</h3>
                 <p class="text-xs text-[#a0a0a0]">Восстанавливает 50% сытости.</p>
                 
@@ -4645,82 +4691,161 @@
                         <span class="text-[10px] text-yellow-500 mt-1">200 <i class="fas fa-coins"></i></span>
                     </button>
                 </div>
+                </div>
             </div>
 
             <!-- Wheel of Fortune -->
-            <div class="panel rounded-lg p-4 text-center space-y-4 overflow-hidden relative">
-                <h3 class="medieval-font text-lg text-[#c8aa6e]">Колесо Удачи</h3>
-                
-                <div class="relative w-56 h-56 mx-auto my-4">
-                    <!-- Wheel -->
-                    <div id="wheel" class="w-full h-full rounded-full border-4 border-[#c8aa6e] relative shadow-[0_0_30px_rgba(200,170,110,0.4)] flex items-center justify-center overflow-hidden wheel-container" style="background: conic-gradient(
-                        from 0deg,
-                        #2d1810 0deg 60deg,
-                        #1a1410 60deg 120deg,
-                        #2d1810 120deg 180deg,
-                        #1a1410 180deg 240deg,
-                        #2d1810 240deg 300deg,
-                        #1a1410 300deg 360deg
-                    );">
-                        <!-- Center circle -->
-                        <div class="absolute inset-0 flex items-center justify-center">
-                            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-[#c8aa6e] to-[#8b733d] border-2 border-[#e0c89b] shadow-[0_0_20px_rgba(200,170,110,0.6)] flex items-center justify-center">
-                                <i class="fas fa-dice text-2xl text-[#1a1410]"></i>
-                            </div>
-                        </div>
+            <div class="rounded-xl overflow-hidden relative" style="background: linear-gradient(160deg, #1a0f05 0%, #0f0a03 50%, #1a0f05 100%); border: 1px solid rgba(200,170,110,0.4); box-shadow: 0 0 40px rgba(200,170,110,0.12), inset 0 0 60px rgba(0,0,0,0.5);">
+                <!-- Decorative top banner -->
+                <div class="relative py-3 px-4 text-center" style="background: linear-gradient(90deg, transparent, rgba(200,170,110,0.15), transparent); border-bottom: 1px solid rgba(200,170,110,0.3);">
+                    <div class="absolute left-3 top-1/2 -translate-y-1/2 text-[#c8aa6e]/40 text-lg">✦</div>
+                    <h3 class="medieval-font text-xl tracking-widest" style="color: #c8aa6e; text-shadow: 0 0 20px rgba(200,170,110,0.5);">КОЛЕСО УДАЧИ</h3>
+                    <div class="absolute right-3 top-1/2 -translate-y-1/2 text-[#c8aa6e]/40 text-lg">✦</div>
+                </div>
+
+                <div class="p-4">
+                    <!-- Wheel Container -->
+                    <div class="relative w-60 h-60 mx-auto my-3">
+                        <!-- Outer glow ring -->
+                        <div class="absolute inset-0 rounded-full" style="background: transparent; border: 3px solid rgba(200,170,110,0.2); box-shadow: 0 0 30px rgba(200,170,110,0.15), inset 0 0 30px rgba(200,170,110,0.05);"></div>
                         
-                        <!-- Prize segments (decorative) -->
-                        <div class="absolute inset-0 flex items-center justify-center">
-                            <!-- Lines dividing segments -->
-                            <div class="absolute w-full h-0.5 bg-[#c8aa6e]/30 rotate-0"></div>
-                            <div class="absolute w-full h-0.5 bg-[#c8aa6e]/30 rotate-60"></div>
-                            <div class="absolute w-full h-0.5 bg-[#c8aa6e]/30 rotate-[120deg]"></div>
+                        <!-- Wheel -->
+                        <div id="wheel" class="absolute inset-1 rounded-full overflow-hidden wheel-container" style="
+                            background: conic-gradient(
+                                from 0deg,
+                                #3d1f08 0deg 60deg,
+                                #1e3a1e 60deg 120deg,
+                                #3d2f08 120deg 180deg,
+                                #1e3a1e 180deg 240deg,
+                                #2a1505 240deg 300deg,
+                                #1a2d1a 300deg 360deg
+                            );
+                            border: 3px solid #c8aa6e;
+                            box-shadow: 0 0 25px rgba(200,170,110,0.4), inset 0 0 40px rgba(0,0,0,0.6);
+                        ">
+                            <!-- Segment dividers with gold lines -->
+                            <div class="absolute inset-0" style="background: conic-gradient(
+                                from 0deg,
+                                rgba(200,170,110,0.6) 0deg 1deg,
+                                transparent 1deg 59deg,
+                                rgba(200,170,110,0.6) 59deg 61deg,
+                                transparent 61deg 119deg,
+                                rgba(200,170,110,0.6) 119deg 121deg,
+                                transparent 121deg 179deg,
+                                rgba(200,170,110,0.6) 179deg 181deg,
+                                transparent 181deg 239deg,
+                                rgba(200,170,110,0.6) 239deg 241deg,
+                                transparent 241deg 299deg,
+                                rgba(200,170,110,0.6) 299deg 301deg,
+                                transparent 301deg 360deg
+                            );"></div>
+
+                            <!-- Segment labels using positioned divs -->
+                            <!-- 🪙 500 - 0-60 (30°) -->
+                            <div class="absolute text-center" style="top: 13%; left: 58%; transform: translate(-50%, -50%) rotate(30deg); font-size: 9px; font-weight: bold; color: #f5c842; text-shadow: 0 0 8px rgba(245,200,66,0.8); width: 44px; line-height: 1.2;">
+                                <div>🪙</div><div>500</div>
+                            </div>
+                            <!-- 💎 5 - 60-120 (90°) -->
+                            <div class="absolute text-center" style="top: 35%; left: 83%; transform: translate(-50%, -50%) rotate(90deg); font-size: 9px; font-weight: bold; color: #34d399; text-shadow: 0 0 8px rgba(52,211,153,0.9); width: 44px; line-height: 1.2;">
+                                <div>💎</div><div>5</div>
+                            </div>
+                            <!-- 🪙 1000 - 120-180 (150°) -->
+                            <div class="absolute text-center" style="top: 72%; left: 78%; transform: translate(-50%, -50%) rotate(150deg); font-size: 9px; font-weight: bold; color: #f5c842; text-shadow: 0 0 8px rgba(245,200,66,0.8); width: 44px; line-height: 1.2;">
+                                <div>🪙</div><div>1000</div>
+                            </div>
+                            <!-- 💎 10 - 180-240 (210°) -->
+                            <div class="absolute text-center" style="top: 87%; left: 42%; transform: translate(-50%, -50%) rotate(210deg); font-size: 9px; font-weight: bold; color: #34d399; text-shadow: 0 0 8px rgba(52,211,153,0.9); width: 44px; line-height: 1.2;">
+                                <div>💎</div><div>10</div>
+                            </div>
+                            <!-- 🪙 5000 - 240-300 (270°) -->
+                            <div class="absolute text-center" style="top: 65%; left: 17%; transform: translate(-50%, -50%) rotate(270deg); font-size: 9px; font-weight: bold; color: #f5c842; text-shadow: 0 0 8px rgba(245,200,66,0.8); width: 44px; line-height: 1.2;">
+                                <div>🪙</div><div>5000</div>
+                            </div>
+                            <!-- 💎 20! - 300-360 (330°) -->
+                            <div class="absolute text-center" style="top: 28%; left: 22%; transform: translate(-50%, -50%) rotate(330deg); font-size: 9px; font-weight: bold; color: #10b981; text-shadow: 0 0 12px rgba(16,185,129,1); width: 44px; line-height: 1.2;">
+                                <div>💎</div><div>20!</div>
+                            </div>
+                            
+                            <!-- Center jewel -->
+                            <div class="absolute inset-0 flex items-center justify-center" style="pointer-events: none;">
+                                <div class="rounded-full flex items-center justify-center" style="width: 52px; height: 52px; background: radial-gradient(circle, #e0c87a 0%, #c8aa6e 40%, #8b6914 100%); border: 3px solid #e8d4a0; box-shadow: 0 0 20px rgba(200,170,110,0.9), 0 0 40px rgba(200,170,110,0.4);">
+                                    <span style="font-size: 22px;">🎲</span>
+                                </div>
+                            </div>
                         </div>
+
+                        <!-- Pointer (top arrow) -->
+                        <div class="absolute top-0 left-1/2 -translate-x-1/2 z-20" style="top: -10px;">
+                            <div style="width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 22px solid #c8aa6e; filter: drop-shadow(0 0 8px rgba(200,170,110,0.9));"></div>
+                        </div>
+
+                        <!-- Decorative corner ornaments -->
+                        <div class="absolute -top-1 -left-1 text-[#c8aa6e]/50 text-sm">✦</div>
+                        <div class="absolute -top-1 -right-1 text-[#c8aa6e]/50 text-sm">✦</div>
+                        <div class="absolute -bottom-1 -left-1 text-[#c8aa6e]/50 text-sm">✦</div>
+                        <div class="absolute -bottom-1 -right-1 text-[#c8aa6e]/50 text-sm">✦</div>
                     </div>
-                    
-                    <!-- Pointer -->
-                    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-3 z-10">
-                        <div class="relative">
-                            <i class="fas fa-caret-down text-4xl text-[#c8aa6e] drop-shadow-[0_0_8px_rgba(200,170,110,0.8)]"></i>
-                            <div class="absolute inset-0 blur-sm">
-                                <i class="fas fa-caret-down text-4xl text-[#c8aa6e]"></i>
+
+                    <!-- Cost -->
+                    <div class="text-center text-sm mb-3 mt-1" style="color: #a0a0a0;">
+                        Ставка: <span class="font-bold text-base" style="color: #34d399;">1 <i class="far fa-gem" style="color: #34d399;"></i></span>
+                    </div>
+
+                    <!-- Prize Table -->
+                    <div class="rounded-lg p-3 mb-3" style="background: rgba(0,0,0,0.5); border: 1px solid rgba(200,170,110,0.25);">
+                        <div class="text-center text-xs font-bold mb-3 tracking-widest" style="color: #c8aa6e; font-family: 'Cinzel', serif;">⚔ ТАБЛИЦА ПРИЗОВ ⚔</div>
+                        <div class="space-y-1.5 text-xs">
+                            <!-- Gold prizes -->
+                            <div class="flex items-center justify-between px-2 py-1.5 rounded" style="background: rgba(245,180,30,0.07); border: 1px solid rgba(245,180,30,0.2);">
+                                <div class="flex items-center gap-2">
+                                    <span>🪙</span>
+                                    <span style="color: #e0e0e0;">500 Золота</span>
+                                </div>
+                                <span class="text-xs px-2 py-0.5 rounded" style="background: rgba(245,180,30,0.15); color: #f5b41e; font-family:'Cinzel',serif;">50%</span>
+                            </div>
+                            <div class="flex items-center justify-between px-2 py-1.5 rounded" style="background: rgba(245,180,30,0.07); border: 1px solid rgba(245,180,30,0.2);">
+                                <div class="flex items-center gap-2">
+                                    <span>🪙</span>
+                                    <span style="color: #e0e0e0;">1,000 Золота</span>
+                                </div>
+                                <span class="text-xs px-2 py-0.5 rounded" style="background: rgba(245,180,30,0.15); color: #f5b41e; font-family:'Cinzel',serif;">30%</span>
+                            </div>
+                            <div class="flex items-center justify-between px-2 py-1.5 rounded" style="background: rgba(245,180,30,0.07); border: 1px solid rgba(245,180,30,0.25);">
+                                <div class="flex items-center gap-2">
+                                    <span>🪙</span>
+                                    <span style="color: #e0e0e0;">5,000 Золота</span>
+                                </div>
+                                <span class="text-xs px-2 py-0.5 rounded" style="background: rgba(245,180,30,0.15); color: #f5b41e; font-family:'Cinzel',serif;">10%</span>
+                            </div>
+                            <!-- Gem prizes -->
+                            <div class="flex items-center justify-between px-2 py-1.5 rounded" style="background: rgba(16,185,129,0.07); border: 1px solid rgba(16,185,129,0.25);">
+                                <div class="flex items-center gap-2">
+                                    <span>💎</span>
+                                    <span style="color: #e0e0e0;">5 Изумрудов</span>
+                                </div>
+                                <span class="text-xs px-2 py-0.5 rounded" style="background: rgba(16,185,129,0.15); color: #34d399; font-family:'Cinzel',serif;">5%</span>
+                            </div>
+                            <div class="flex items-center justify-between px-2 py-1.5 rounded" style="background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.3);">
+                                <div class="flex items-center gap-2">
+                                    <span>💎</span>
+                                    <span style="color: #e0e0e0;">10 Изумрудов</span>
+                                </div>
+                                <span class="text-xs px-2 py-0.5 rounded" style="background: rgba(16,185,129,0.15); color: #34d399; font-family:'Cinzel',serif;">4%</span>
+                            </div>
+                            <div class="flex items-center justify-between px-2 py-1.5 rounded" style="background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.5); box-shadow: 0 0 12px rgba(16,185,129,0.2);">
+                                <div class="flex items-center gap-2">
+                                    <span>💎</span>
+                                    <span class="font-bold" style="color: #10b981;">20 Изумрудов!</span>
+                                </div>
+                                <span class="text-xs px-2 py-0.5 rounded font-bold" style="background: rgba(16,185,129,0.2); color: #10b981; font-family:'Cinzel',serif; box-shadow: 0 0 8px rgba(16,185,129,0.4);">1%</span>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="text-sm text-[#a0a0a0] mb-3">
-                    Цена: <span class="text-emerald-400 font-bold text-lg">1 <i class="far fa-gem gem-price"></i></span>
+                    <button id="btn-spin" onclick="locations.tavernSpin()" class="w-full py-3 rounded-lg font-bold text-base relative overflow-hidden" style="background: linear-gradient(135deg, #8b5e14 0%, #c8aa6e 50%, #8b5e14 100%); color: #1a0f05; font-family: 'Cinzel', serif; letter-spacing: 1px; border: none; box-shadow: 0 4px 20px rgba(200,170,110,0.4), inset 0 1px 0 rgba(255,255,255,0.2); transition: all 0.2s;">
+                        <i class="fas fa-dice-d20 mr-2"></i>ИСПЫТАТЬ УДАЧУ
+                    </button>
                 </div>
-
-                <!-- Prize list -->
-                <div class="bg-black/30 rounded-lg p-3 mb-3 border border-[#c8aa6e]/20">
-                    <div class="text-xs text-[#c8aa6e] font-bold mb-2 uppercase tracking-wider">Возможные призы:</div>
-                    <div class="grid grid-cols-2 gap-2 text-xs">
-                        <div class="bg-[#1a1410] rounded p-2 border border-yellow-600/30">
-                            <i class="fas fa-coins text-yellow-500"></i> <span class="text-[#e0e0e0]">500 золота</span>
-                        </div>
-                        <div class="bg-[#1a1410] rounded p-2 border border-yellow-600/30">
-                            <i class="fas fa-coins text-yellow-500"></i> <span class="text-[#e0e0e0]">1,000 золота</span>
-                        </div>
-                        <div class="bg-[#1a1410] rounded p-2 border border-yellow-600/40">
-                            <i class="fas fa-coins text-yellow-500"></i> <span class="text-[#e0e0e0]">5,000 золота</span>
-                        </div>
-                        <div class="bg-[#1a1410] rounded p-2 border border-emerald-600/30">
-                            <i class="far fa-gem gem-price"></i> <span class="text-[#e0e0e0]">10 изумрудов</span>
-                        </div>
-                        <div class="bg-[#1a1410] rounded p-2 border border-emerald-600/40">
-                            <i class="far fa-gem gem-price"></i> <span class="text-[#e0e0e0]">30 изумрудов</span>
-                        </div>
-                        <div class="bg-[#1a1410] rounded p-2 border border-emerald-600/50 shadow-[0_0_15px_rgba(16,185,129,0.3)]">
-                            <i class="far fa-gem gem-price"></i> <span class="text-[#e0e0e0] font-bold">100 изумрудов!</span>
-                        </div>
-                    </div>
-                </div>
-
-                <button id="btn-spin" onclick="locations.tavernSpin()" class="btn-medieval w-full py-3 rounded font-bold text-base">
-                    <i class="fas fa-dice-d20 mr-2"></i>Испытать удачу!
-                </button>
             </div>
         </section>
 
@@ -6796,7 +6921,7 @@
                 <div class="panel rounded-lg p-4 relative overflow-hidden border-yellow-700/40 bg-black/30 backdrop-blur-sm">
                     <!-- Background Image with Overlay -->
                     <div class="absolute inset-0 z-0">
-                        <img src="https://i.postimg.cc/B6wvznFS/IMG-4602.jpg" alt="Dice Game" class="w-full h-full object-cover opacity-25">
+                        <img src="https://i.postimg.cc/FRhz2kHX/IMG-4855.jpg" alt="Dice Game" class="w-full h-full object-cover opacity-25">
                         <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80"></div>
                         <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(234,179,8,0.2),transparent_60%)]"></div>
                     </div>
@@ -6826,7 +6951,7 @@
                 <div class="panel rounded-lg p-4 relative overflow-hidden border-green-700/40 bg-black/30 backdrop-blur-sm">
                     <!-- Background Image with Overlay -->
                     <div class="absolute inset-0 z-0">
-                        <img src="https://i.postimg.cc/6QJnHYXF/IMG-4600.jpg" alt="Столовая" class="w-full h-full object-cover opacity-25">
+                        <img src="https://i.postimg.cc/6p2z283C/IMG-4883.jpg" alt="Столовая" class="w-full h-full object-cover opacity-35">
                         <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80"></div>
                         <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(34,197,94,0.2),transparent_60%)]"></div>
                     </div>
@@ -6958,7 +7083,10 @@
 
                 <!-- Lily's House Button -->
                 <div class="mt-4" id="lily-house-btn-wrap" style="display:none;">
-                    <button onclick="router.navigate('lily-house')" class="panel w-full p-0 rounded-lg overflow-hidden group hover:border-pink-500 transition-all relative h-20">
+                    <button onclick="router.navigate('lily-house')" class="panel w-full p-0 rounded-lg overflow-hidden group hover:border-pink-500 transition-all relative h-28">
+                        <div class="absolute inset-0 z-0">
+                            <img src="https://i.postimg.cc/bNSyV99c/IMG-4858.jpg" alt="Дом Лили" class="w-full h-full object-cover opacity-40">
+                        </div>
                         <div class="absolute inset-0 bg-gradient-to-b from-pink-900/30 via-purple-900/20 to-black/60"></div>
                         <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(236,72,153,0.2),transparent_60%)]"></div>
                         <div class="absolute inset-0 flex items-center justify-between p-3">
@@ -6978,7 +7106,10 @@
 
                 <!-- Guest House Button -->
                 <div class="mt-4">
-                    <button onclick="router.navigate('guest-house')" class="panel w-full p-0 rounded-lg overflow-hidden group hover:border-purple-500 transition-all relative h-20">
+                    <button onclick="router.navigate('guest-house')" class="panel w-full p-0 rounded-lg overflow-hidden group hover:border-purple-500 transition-all relative h-28">
+                        <div class="absolute inset-0 z-0">
+                            <img src="https://i.postimg.cc/s2rghGSs/IMG-4857.jpg" alt="Гостевой Дом" class="w-full h-full object-cover opacity-40">
+                        </div>
                         <div class="absolute inset-0 bg-gradient-to-b from-purple-900/30 via-indigo-900/20 to-black/60"></div>
                         <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(168,85,247,0.2),transparent_60%)]"></div>
                         <div class="absolute inset-0 flex items-center justify-between p-3">
@@ -7050,6 +7181,7 @@
         <!-- VIEW: LILY'S HOUSE -->
         <section id="view-lily-house" class="hidden space-y-4">
             <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-black/30 backdrop-blur-sm">
+                <img src="https://i.postimg.cc/bNSyV99c/IMG-4858.jpg" alt="Дом Лили" class="absolute inset-0 w-full h-full object-cover opacity-40">
                 <div class="absolute inset-0 bg-gradient-to-b from-pink-900/30 via-purple-900/20 to-black/60"></div>
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(236,72,153,0.25),transparent_60%)]"></div>
                 <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-pink-500/50 to-transparent"></div>
@@ -7103,6 +7235,7 @@
         <!-- VIEW: GUEST HOUSE -->
         <section id="view-guest-house" class="hidden space-y-4">
             <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-black/30 backdrop-blur-sm">
+                <img src="https://i.postimg.cc/s2rghGSs/IMG-4857.jpg" alt="Гостевой Дом" class="absolute inset-0 w-full h-full object-cover opacity-40">
                 <div class="absolute inset-0 bg-gradient-to-b from-purple-900/30 via-indigo-900/20 to-black/60"></div>
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(168,85,247,0.2),transparent_60%)]"></div>
                 <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-purple-500/50 to-transparent"></div>
@@ -7141,7 +7274,13 @@
                 </div>
 
                 <!-- High-End Food -->
-                <div class="panel rounded p-4 space-y-3 border-purple-900/30">
+                <div class="panel rounded-lg p-4 space-y-3 border-purple-900/30 relative overflow-hidden">
+                    <div class="absolute inset-0 z-0">
+                        <img src="https://i.postimg.cc/gjzNn4XH/IMG-4882.jpg" alt="Изысканная Кухня" class="w-full h-full object-cover opacity-35">
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80"></div>
+                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(168,85,247,0.2),transparent_60%)]"></div>
+                    </div>
+                    <div class="relative z-10 space-y-3">
                     <h3 class="medieval-font text-lg text-purple-300">Изысканная Кухня</h3>
                     <p class="text-xs text-[#a0a0a0]">Восстанавливает 100 HP и 100 сытости.</p>
                     
@@ -7157,13 +7296,14 @@
                             <span class="text-[10px] text-yellow-500 mt-1">1000 <i class="fas fa-coins"></i></span>
                         </button>
                     </div>
+                    </div>
                 </div>
 
                 <!-- High Stakes Card Game -->
                 <div class="panel rounded-lg p-4 relative overflow-hidden border-purple-900/30 bg-black/30 backdrop-blur-sm">
                     <!-- Background Image with Overlay -->
                     <div class="absolute inset-0 z-0">
-                        <img src="https://i.postimg.cc/B6wvznFS/IMG-4602.jpg" alt="Card Game" class="w-full h-full object-cover opacity-25">
+                        <img src="https://i.postimg.cc/RZysXc8D/IMG-4881.jpg" alt="Card Game" class="w-full h-full object-cover opacity-40">
                         <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80"></div>
                         <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(168,85,247,0.2),transparent_60%)]"></div>
                     </div>
@@ -13892,13 +14032,13 @@
                 
                 if (rand < 1) {
                     // 1% chance
-                    reward = { type: 'gem', val: 100, text: '100 ИЗУМРУДОВ!' };
+                    reward = { type: 'gem', val: 20, text: '20 ИЗУМРУДОВ!' };
                 } else if (rand < 5) {
                     // 4% chance (1-5)
-                    reward = { type: 'gem', val: 30, text: '30 Изумрудов' };
+                    reward = { type: 'gem', val: 10, text: '10 Изумрудов' };
                 } else if (rand < 10) {
                     // 5% chance (5-10)
-                    reward = { type: 'gem', val: 10, text: '10 Изумрудов' };
+                    reward = { type: 'gem', val: 5, text: '5 Изумрудов' };
                 } else if (rand < 20) {
                     // 10% chance (10-20)
                     reward = { type: 'gold', val: 5000, text: '5,000 Золота' };
