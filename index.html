@@ -10192,7 +10192,7 @@
                 'gorn': 'https://i.postimg.cc/W3v0NdsZ/IMG-4763.png',
                 'thomas': 'https://i.postimg.cc/Vv4hByK3/IMG-4765.png',
                 'old_beggar': 'https://i.postimg.cc/BZFR7yVR/IMG-4761.png',
-                'cornelius': '',
+                'cornelius': 'https://i.postimg.cc/15qZJ955/IMG-4889.png',
                 'sage': 'https://i.postimg.cc/8PjyXPvd/IMG-4616.png'
             },
             
@@ -10471,6 +10471,16 @@
                     if (!gameState.npcStates) gameState.npcStates = {};
                     gameState.npcStates.eiganQuestActive = true;
                     game.save();
+                    if (!hasStoryQuest('q_eigan_totem')) {
+                        this.addQuest(
+                            'q_eigan_totem',
+                            'Древний Тотем',
+                            'Найти древний тотем для Эйгана. Искать в тёмном лесу.',
+                            { type: 'find', target: 'eigan_totem', count: 1 },
+                            { gold: 0, xp: 100 },
+                            { id: 'eigan', name: 'Эйган', img: '' }
+                        );
+                    }
                     ui.showFloatText(document.body, "Новый квест: Древний тотем", "#fbbf24");
                 }
                 if (action === 'return_totem') {
@@ -10479,6 +10489,9 @@
                     gameState.npcStates.eiganQuestComplete = true;
                     gameState.emeralds += 15;
                     gameState.xp += 100;
+                    // Mark storyQuest as claimed
+                    const eiganQ = (gameState.storyQuests || []).find(q => q.id === 'q_eigan_totem');
+                    if (eiganQ) { eiganQ.current = 1; eiganQ.state = 'claimed'; }
                     
                     // Give luck amulet as reward
                     if (!gameState.amulets) gameState.amulets = {};
@@ -10562,6 +10575,16 @@
                     if (!gameState.npcStates) gameState.npcStates = {};
                     gameState.npcStates.hankAmuletActive = true;
                     game.save();
+                    if (!hasStoryQuest('q_hank_amulet')) {
+                        this.addQuest(
+                            'q_hank_amulet',
+                            'Амулет Хэнка',
+                            'Найти потерянный амулет брата Хэнка. Его можно найти, работая в порту.',
+                            { type: 'find', target: 'hank_amulet', count: 1 },
+                            { gold: 0, xp: 50 },
+                            { id: 'hank', name: 'Хэнк', img: 'https://i.postimg.cc/jjVk70L0/IMG-4615.png' }
+                        );
+                    }
                     ui.showFloatText(document.body, "Новый квест: Амулет Хэнка", "#fbbf24");
                 }
                 if (action === 'return_amulet') {
@@ -10570,6 +10593,9 @@
                         gameState.npcStates.hankAmuletActive = false;
                         gameState.emeralds += 10;
                         game.addReputation(3, document.body);
+                        // Mark storyQuest as claimed
+                        const hankQ = (gameState.storyQuests || []).find(q => q.id === 'q_hank_amulet');
+                        if (hankQ) { hankQ.current = 1; hankQ.state = 'claimed'; }
                         game.save();
                         ui.updateStats();
                         ui.showFloatText(document.body, "+10 Изумрудов!", "#34d399");
@@ -12488,7 +12514,8 @@
                                             <div class="h-full rounded-full transition-all duration-500" style="width:${progress}%; background: linear-gradient(90deg, #c8aa6e88, #c8aa6e);"></div>
                                         </div>
                                     </div>
-                                    ${isDone ? `<button onclick="quests.claimStory('${q.id}')" class="btn-medieval w-full py-1.5 text-xs rounded-lg font-bold mt-0.5">✓ Завершить задание</button>` : ''}
+                                    ${isDone && q.goals.type !== 'find' ? `<button onclick="quests.claimStory('${q.id}')" class="btn-medieval w-full py-1.5 text-xs rounded-lg font-bold mt-0.5">✓ Завершить задание</button>` : ''}
+                                    ${isDone && q.goals.type === 'find' ? `<div class="text-center text-[10px] text-amber-400 bg-amber-900/20 border border-amber-700/30 rounded py-1.5 mt-0.5"><i class="fas fa-arrow-right mr-1"></i>Вернитесь к ${npcName}</div>` : ''}
                                 </div>
                             </div>
                         `;
@@ -14390,9 +14417,13 @@
                 if (gameState.npcStates && gameState.npcStates.hankAmuletActive && 
                     !gameState.npcStates.hankAmuletFound && Math.random() < 0.005) {
                     gameState.npcStates.hankAmuletFound = true;
+                    // Update storyQuest progress
+                    const hankQ = (gameState.storyQuests || []).find(q => q.id === 'q_hank_amulet');
+                    if (hankQ) { hankQ.current = 1; }
                     setTimeout(() => {
                         ui.showFloatText(document.body, "✨ Золотой амулет!", "#ffd700");
                         ui.showFloatText(document.body, "Вернитесь к Хэнку!", "#c8aa6e");
+                        if (router.currentTab === 'quests') quests.render();
                     }, 500);
                 }
                 
@@ -14400,10 +14431,14 @@
                 if (gameState.npcStates && gameState.npcStates.eiganQuestActive && 
                     !gameState.npcStates.eiganTotemFound && Math.random() < 0.01) {
                     gameState.npcStates.eiganTotemFound = true;
+                    // Update storyQuest progress
+                    const eiganQ = (gameState.storyQuests || []).find(q => q.id === 'q_eigan_totem');
+                    if (eiganQ) { eiganQ.current = 1; }
                     game.save();
                     setTimeout(() => {
                         ui.showFloatText(document.body, "🗿 Древний тотем!", "#c8aa6e");
                         ui.showFloatText(document.body, "Вернитесь к Эйгану!", "#fbbf24");
+                        if (router.currentTab === 'quests') quests.render();
                     }, 500);
                 }
                 
