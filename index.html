@@ -3713,6 +3713,29 @@
                 </button>
                 <p class="text-[10px] text-gray-600 mb-4">+2 Золота за клик</p>
 
+                <!-- Корнелий - старый музыкант -->
+                <div class="mt-2">
+                    <div class="panel rounded-lg p-0 overflow-hidden relative border-amber-900/40" style="background: linear-gradient(135deg, rgba(20,10,0,0.95), rgba(40,20,0,0.9));">
+                        <div class="absolute inset-0 opacity-15 pointer-events-none bg-[radial-gradient(circle_at_30%_30%,rgba(200,150,50,0.5),transparent_60%)]"></div>
+                        <div class="relative p-4 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-14 h-14 rounded-full border-2 border-amber-700/60 overflow-hidden flex-shrink-0 shadow-[0_0_12px_rgba(180,120,30,0.3)]" style="background: linear-gradient(135deg, rgba(180,120,30,0.3), rgba(0,0,0,0.6));">
+                                    <div class="w-full h-full flex items-center justify-center">
+                                        <i class="fas fa-person-cane text-amber-600 text-2xl"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="text-base text-amber-200 font-bold medieval-font">Корнелий</div>
+                                    <div class="text-[10px] text-amber-600/80">Старый Бродяга</div>
+                                </div>
+                            </div>
+                            <button onclick="dialogue.start('cornelius')" class="px-4 py-2 rounded text-xs border border-amber-700/40 bg-black/30 text-amber-300 hover:bg-amber-900/20 backdrop-blur-sm whitespace-nowrap font-bold">
+                                <i class="fas fa-comments mr-1"></i>Говорить
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Bulletin Board - Large Button -->
                 <div class="mt-4">
                     <button onclick="router.navigate('bulletin')" class="w-full p-0 rounded-lg overflow-hidden group hover:border-amber-500 transition-all relative h-24 border border-amber-700/30" >
@@ -4512,11 +4535,7 @@
                         </button>
                     </div>
 
-                    <div class="flex justify-end">
-                        <button onclick="locations.treasurySetMax('withdraw', event)" class="text-[10px] text-yellow-600 underline underline-offset-2 hover:text-yellow-400 transition-colors">
-                            <i class="fas fa-coins text-[8px] mr-1"></i>Max для снятия
-                        </button>
-                    </div>
+
                 </div>
 
                 <div class="flex items-center gap-2 text-[10px] text-center text-yellow-600/80 bg-yellow-900/10 p-2 rounded border border-yellow-900/20">
@@ -6634,11 +6653,11 @@
                 </div>
 
                 <!-- Castle Guard -->
-                <div class="relative overflow-hidden rounded-lg p-4 border border-purple-600/30" style="background: linear-gradient(135deg, rgba(168, 85, 247, 0.08) 0%, rgba(0, 0, 0, 0.3) 100%);">
-                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(168,85,247,0.08),transparent)]"></div>
+                <div class="relative overflow-hidden rounded-lg p-4 border border-indigo-600/30" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(0, 0, 0, 0.3) 100%);">
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(99,102,241,0.08),transparent)]"></div>
                     <div class="flex items-center justify-between relative z-10">
                         <div class="flex items-center gap-3">
-                            <div class="w-12 h-12 rounded-full border-2 border-purple-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(190,18,60,0.3), rgba(0,0,0,0.5));">
+                            <div class="w-12 h-12 rounded-full border-2 border-indigo-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(99,102,241,0.3), rgba(0,0,0,0.5));">
                                 <img src="https://i.postimg.cc/FsKTwTc6/IMG-4669.png" alt="Стражник" class="w-full h-full object-cover object-top">
                             </div>
                             <div>
@@ -6646,7 +6665,7 @@
                                 <div class="text-[10px] text-[#a0a0a0]">Охраняет вход в замок</div>
                             </div>
                         </div>
-                        <button onclick="dialogue.start('castle_guard')" class="px-4 py-1.5 rounded text-xs border border-purple-700/40 bg-black/30 text-purple-300 hover:bg-purple-900/20 backdrop-blur-sm transition-all">
+                        <button onclick="dialogue.start('castle_guard')" class="px-4 py-1.5 rounded text-xs border border-indigo-700/40 bg-black/30 text-indigo-300 hover:bg-indigo-900/20 backdrop-blur-sm transition-all">
                             Говорить
                         </button>
                     </div>
@@ -6818,6 +6837,26 @@
             <div class="panel rounded-lg p-4 space-y-4">
                 <div class="text-center text-xs text-[#777] bg-black/20 border border-[#333] rounded p-3">
                     Узкие грязные улочки, старые лачуги и отчаянные люди. Здесь выживают, а не живут.
+                </div>
+
+                <!-- Старый Дом (квест Корнелия) -->
+                <div id="btn-old-house-container" class="hidden">
+                    <button onclick="router.navigate('old-house')" class="w-full p-0 rounded-lg overflow-hidden group hover:border-stone-500 transition-all relative h-20 border border-stone-700/50 bg-black/40">
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80"></div>
+                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(120,100,80,0.2),transparent_60%)]"></div>
+                        <div class="absolute inset-0 flex items-center justify-between p-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-[#111] border border-stone-600 flex items-center justify-center">
+                                    <i class="fas fa-house-crack text-stone-400"></i>
+                                </div>
+                                <div class="text-left">
+                                    <div class="text-sm font-bold text-stone-300">Старый Дом</div>
+                                    <div class="text-[10px] text-stone-500">Заброшенное здание • Требует отмычку</div>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-500 group-hover:text-stone-400"></i>
+                        </div>
+                    </button>
                 </div>
 
                 <!-- Дом Артура -->
@@ -7043,6 +7082,29 @@
                         <p class="text-[10px] text-gray-400">Дом доступен на карте</p>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <!-- VIEW: OLD HOUSE (Quest) -->
+        <section id="view-old-house" class="hidden space-y-4">
+            <div class="h-20 w-full relative rounded-lg mb-4 overflow-hidden bg-black/30 backdrop-blur-sm">
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(100,80,60,0.2),transparent_60%)]"></div>
+                <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-stone-600/50 to-transparent"></div>
+                <div class="absolute top-4 left-4">
+                    <button onclick="router.navigate('poor-district')" class="w-8 h-8 rounded border border-stone-700/50 bg-black/30 flex items-center justify-center text-stone-400 hover:bg-stone-800/30 transition-colors">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                </div>
+                <div class="absolute top-1/2 left-16 -translate-y-1/2 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-stone-800/60 to-stone-950 flex items-center justify-center border-2 border-stone-600/60">
+                        <i class="fas fa-house-crack text-stone-400 text-lg"></i>
+                    </div>
+                    <h2 class="medieval-font text-2xl text-stone-300 drop-shadow-md">Старый Дом</h2>
+                </div>
+            </div>
+
+            <div id="old-house-content" class="panel rounded-lg p-5 space-y-4">
+                <!-- Контент подставляется скриптом -->
             </div>
         </section>
 
@@ -8749,7 +8811,7 @@
                         const hasRep = (gameState.reputation || 0) >= 20;
                         const hasGlory = (gameState.glory || 0) >= 10;
                         const hasClothes = gameState.clothes && gameState.clothes.rich === true;
-                        const hasShoes = gameState.shoes && gameState.shoes.quality === true;
+                        const hasShoes = gameState.equippedShoes === 'quality' || gameState.equippedShoes === 'elite';
                         
                         if (hasRep && hasGlory && hasClothes && hasShoes) {
                             return "access_granted";
@@ -9192,6 +9254,105 @@
                     advice: {
                         text: "Чем качественнее обувь, тем больше уважения от горожан. А грязные сапоги — путь к насмешкам.",
                         options: [{ text: "Понял", next: "exit" }]
+                    }
+                }
+            },
+            cornelius: {
+                name: "Корнелий",
+                role: "Старый бродяга",
+                icon: "fa-person-cane",
+                dialogue: {
+                    root: function() {
+                        if (!gameState.npcStates) gameState.npcStates = {};
+                        if (gameState.npcStates.corneliusGuitarReturned) return "quest_done";
+                        if (gameState.npcStates.corneliusQuestActive) {
+                            if (gameState.npcStates.corneliusGuitarFound) return "quest_guitar_ready";
+                            return "quest_active";
+                        }
+                        if (!gameState.npcStates.corneliusMet) {
+                            gameState.npcStates.corneliusMet = true;
+                            game.save();
+                            return "first_meet";
+                        }
+                        // Quest already done or not yet taken — show regular but no quest option if quest was declined and met
+                        return "regular";
+                    },
+                    first_meet: {
+                        text: "Хм... Новое лицо на площади. Давно не видел таких... потерянных глаз. Присядь, друг. Я Корнелий. Когда-то был странствующим музыкантом, теперь вот — бродяга на площади. Жизнь — интересная штука, не правда ли?",
+                        options: [
+                            { text: "Расскажи, как выжить в этом городе", next: "survival_tips" },
+                            { text: "Ты был музыкантом?", next: "musician_story" },
+                            { text: "Пока, старик", next: "exit" }
+                        ]
+                    },
+                    regular: {
+                        text: "А, снова ты. Хорошо, что зашёл. Как продвигаются твои дела в городе?",
+                        options: [
+                            { text: "Расскажи о выживании", next: "survival_tips" },
+                            { text: "Есть задание?", next: "pre_quest" },
+                            { text: "Просто мимо проходил", next: "exit" }
+                        ]
+                    },
+                    survival_tips: {
+                        text: "Слушай внимательно. Первое — никогда не ходи в бой с пустым желудком. Второе — в районе бедняков есть столовая, там дают еду бесплатно до 7 уровня. Третье — тёмный лес богат ресурсами, но там болезни. Четвёртое — порт и казна дают работу даже нищему. И главное: крафти всё что можешь — каждый предмет может спасти жизнь.",
+                        options: [
+                            { text: "Что стоит скрафтить в первую очередь?", next: "craft_tips" },
+                            { text: "Спасибо за советы", next: "regular" }
+                        ]
+                    },
+                    craft_tips: {
+                        text: "Начни с лечебных зелий — травы и грибы из леса. Если нужно взломать замок, сделай отмычку: во вкладке 'Герой', раздел 'Другое' в крафте. Нужно 3 руды и 1 палка. Броня из кожи тоже не помешает. Не пренебрегай этим!",
+                        options: [
+                            { text: "Ценный совет", next: "regular" },
+                            { text: "Есть задание для меня?", next: "pre_quest" }
+                        ]
+                    },
+                    musician_story: {
+                        text: "О да... Я объездил полмира с гитарой. Играл в тавернах, на свадьбах, на рыночных площадях. Но однажды меня ограбили прямо здесь, в районе бедняков. Унесли кошелёк, вещи... Гитару я успел спрятать в старом доме, пока убегал. Больше не смог вернуться за ней — замок, да и ноги уже не те.",
+                        options: [
+                            { text: "Я мог бы достать её для тебя", next: "quest_offer" },
+                            { text: "Грустная история...", next: "pre_quest" }
+                        ]
+                    },
+                    pre_quest: {
+                        text: "Есть одна просьба... Моя старая гитара застряла в заброшенном доме в районе бедняков. Я слишком стар, чтобы лазить туда. Но молодому авантюристу это, возможно, под силу.",
+                        options: [
+                            { text: "Расскажи подробнее", next: "quest_offer" },
+                            { text: "Нет, не сейчас", next: "exit" }
+                        ]
+                    },
+                    quest_offer: {
+                        text: "Старый дом в самом конце улицы бедняков — с прогнившей крышей. Дверь заперта на замок. Понадобится отмычка — скрафти её во вкладке 'Герой', раздел крафт → 'Другое'. Внутри найдёшь мою гитару на стене. Принеси её, и я дам тебе 200 золотых. Соглашаешься?",
+                        options: [
+                            { text: "Да, возьму квест!", action: "cornelius_accept_quest", next: "quest_accepted" },
+                            { text: "Подумаю позже", next: "exit" }
+                        ]
+                    },
+                    quest_accepted: {
+                        text: "Отлично! Ищи Старый Дом в районе бедняков — он появится на карте района. Не забудь отмычку! И будь осторожен там. Старые дома — ненадёжные постройки...",
+                        options: [
+                            { text: "Найду гитару!", next: "exit" }
+                        ]
+                    },
+                    quest_active: {
+                        text: "Ну как, нашёл Старый Дом? Не забудь — нужна отмычка. Гитара ждёт тебя там. Верю, что справишься!",
+                        options: [
+                            { text: "Ещё иду", next: "exit" },
+                            { text: "Расскажи о выживании", next: "survival_tips" }
+                        ]
+                    },
+                    quest_guitar_ready: {
+                        text: "Боже мой... Ты нашёл её! Мою гитару! Я думал, что никогда её больше не увижу... *слёзы на глазах* Спасибо тебе, странник. Вот твоя награда — 200 золотых. Помни: в этом мире друзья важнее золота.",
+                        options: [
+                            { text: "Рад помочь, Корнелий", action: "cornelius_complete_quest", next: "quest_done" }
+                        ]
+                    },
+                    quest_done: {
+                        text: "Снова ты! Знаешь, я каждый день берю гитару в руки и думаю о тебе с благодарностью. Ты вернул мне самое дорогое. Если нужен совет — я всегда здесь.",
+                        options: [
+                            { text: "Расскажи о выживании", next: "survival_tips" },
+                            { text: "До свидания, Корнелий", next: "exit" }
+                        ]
                     }
                 }
             },
@@ -10031,6 +10192,7 @@
                 'gorn': 'https://i.postimg.cc/W3v0NdsZ/IMG-4763.png',
                 'thomas': 'https://i.postimg.cc/Vv4hByK3/IMG-4765.png',
                 'old_beggar': 'https://i.postimg.cc/BZFR7yVR/IMG-4761.png',
+                'cornelius': '',
                 'sage': 'https://i.postimg.cc/8PjyXPvd/IMG-4616.png'
             },
             
@@ -10083,7 +10245,7 @@
                 } else if(npcId === 'john') {
                     gradientColors = "linear-gradient(135deg, #ef4444 0%, #b91c1c 50%, #ef4444 100%)"; // Warrior Red
                 } else if(npcId === 'marius') {
-                    gradientColors = "linear-gradient(135deg, #10b981 0%, #059669 50%, #10b981 100%)"; // Healer Green
+                    gradientColors = "linear-gradient(135deg, #dc2626 0%, #991b1b 50%, #dc2626 100%)"; // Healer Red
                 } else if(npcId === 'hank') {
                     gradientColors = "linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #f59e0b 100%)"; // Merchant Amber
                 } else if(npcId === 'sage') {
@@ -10111,11 +10273,13 @@
                 } else if(npcId === 'shoemaker') {
                     gradientColors = "linear-gradient(135deg, #92400e 0%, #b45309 50%, #78350f 100%)"; // Leather Brown
                 } else if(npcId === 'castle_guard') {
-                    gradientColors = "linear-gradient(135deg, #be123c 0%, #e11d48 50%, #9f1239 100%)"; // Royal Crimson
+                    gradientColors = "linear-gradient(135deg, #4338ca 0%, #6366f1 50%, #3730a3 100%)"; // Castle Indigo
                 } else if(npcId === 'noble_guard') {
                     gradientColors = "linear-gradient(135deg, #1e3a5f 0%, #2d5a8e 50%, #1a2f4a 100%)"; // Palace Steel Blue
                 } else if(npcId === 'old_beggar') {
                     gradientColors = "linear-gradient(135deg, #78716c 0%, #57534e 50%, #78716c 100%)"; // Gray-Brown for beggar
+                } else if(npcId === 'cornelius') {
+                    gradientColors = "linear-gradient(135deg, #92400e 0%, #78350f 50%, #b45309 100%)"; // Warm brown for old musician
                 }
                 
                 bgGradient.style.background = gradientColors;
@@ -10227,19 +10391,19 @@
             
             handleAction: function(action) {
                 if (action === 'start_q_arthur_1') {
-                    this.addQuest('q_arthur_1', 'Просьба Артура', 'Принести 3 рыбы Артуру.', {type: 'gather', target: 'fish', count: 3}, {gold: 50, xp: 10});
+                    this.addQuest('q_arthur_1', 'Просьба Артура', 'Принести 3 рыбы Артуру.', {type: 'gather', target: 'fish', count: 3}, {gold: 50, xp: 10}, {id:'arthur', name:'Артур', img:'https://i.postimg.cc/Y9Yn3XLD/IMG-4611.png'});
                 }
                 if (action === 'start_q_gorn_1') {
-                    this.addQuest('q_gorn_1', 'Руда для Кузнеца', 'Добыть 5 руды для Горна.', {type: 'gather', target: 'ore', count: 5}, {gold: 250, xp: 50});
+                    this.addQuest('q_gorn_1', 'Руда для Кузнеца', 'Добыть 5 руды для Горна.', {type: 'gather', target: 'ore', count: 5}, {gold: 250, xp: 50}, {id:'gorn', name:'Горн', img:'https://i.postimg.cc/W3v0NdsZ/IMG-4763.png'});
                 }
                 if (action === 'start_q_elara_1') {
-                    this.addQuest('q_elara_1', 'Лесные травы', 'Собрать 5 трав для Элары.', {type: 'gather', target: 'herbs', count: 5}, {gold: 100, xp: 30});
+                    this.addQuest('q_elara_1', 'Лесные травы', 'Собрать 5 трав для Элары.', {type: 'gather', target: 'herbs', count: 5}, {gold: 100, xp: 30}, {id:'elara', name:'Элара', img:'https://i.postimg.cc/fyX4xqGL/IMG-4760.png'});
                 }
                 if (action === 'start_q_john_1') {
-                    this.addQuest('q_john_1', 'Путь Воина', 'Достичь 15 уровня и прийти в Учебный лагерь.', {type: 'visit', target: 'camp', count: 1}, {gold: 500, xp: 100});
+                    this.addQuest('q_john_1', 'Путь Воина', 'Достичь 15 уровня и прийти в Учебный лагерь.', {type: 'visit', target: 'camp', count: 1}, {gold: 500, xp: 100}, {id:'john', name:'Джон', img:'https://i.postimg.cc/fRy8FW0W/IMG-4613.png'});
                 }
                 if (action === 'start_q_marius_1') {
-                    this.addQuest('q_marius_1', 'Травы для Мариуса', 'Собрать 5 трав.', {type: 'gather', target: 'herbs', count: 5}, {gold: 75, xp: 25});
+                    this.addQuest('q_marius_1', 'Травы для Мариуса', 'Собрать 5 трав.', {type: 'gather', target: 'herbs', count: 5}, {gold: 75, xp: 25}, {id:'marius', name:'Мариус', img:'https://i.postimg.cc/65gZWBmZ/IMG-4614.png'});
                 }
                 if (action === 'set_player_name') {
                     const name = prompt('Как тебя зовут?').trim();
@@ -10249,7 +10413,7 @@
                         ui.updateStats();
                         ui.showFloatText(document.body, `Имя обновлено: ${gameState.playerName}`, "#34d399");
                     }
-                    this.addQuest('q_arthur_1', 'Просьба Артура', 'Принести 3 рыбы Артуру.', {type: 'gather', target: 'fish', count: 3}, {gold: 50, xp: 10});
+                    this.addQuest('q_arthur_1', 'Просьба Артура', 'Принести 3 рыбы Артуру.', {type: 'gather', target: 'fish', count: 3}, {gold: 50, xp: 10}, {id:'arthur', name:'Артур', img:'https://i.postimg.cc/Y9Yn3XLD/IMG-4611.png'});
                 }
                 if (action === 'accept_oldman') {
                     const stolenGold = gameState.gold;
@@ -10301,7 +10465,7 @@
                     game.buyClothes('noble', 500);
                 }
                 if (action === 'start_q_sage_1') {
-                    this.addQuest('q_sage_1', 'Грибы для Мудреца', 'Собрать 20 грибов для Эльдара.', {type: 'gather', target: 'mushrooms', count: 20}, {gold: 300, xp: 80});
+                    this.addQuest('q_sage_1', 'Грибы для Мудреца', 'Собрать 20 грибов для Эльдара.', {type: 'gather', target: 'mushrooms', count: 20}, {gold: 300, xp: 80}, {id:'sage', name:'Эльдар', img:'https://i.postimg.cc/8PjyXPvd/IMG-4616.png'});
                 }
                 if (action === 'start_eigan_quest') {
                     if (!gameState.npcStates) gameState.npcStates = {};
@@ -10392,7 +10556,7 @@
                     ui.showFloatText(document.body, "Рецепт: Кожаное седло", "#34d399");
                 }
                 if (action === 'start_q_lili_visit') {
-                    this.addQuest('q_lili_visit', 'Приглашение Лили', 'Навестить Лили в Дворянском квартале.', {type: 'visit', target: 'noble-quarter', count: 1}, {gold: 0, xp: 50});
+                    this.addQuest('q_lili_visit', 'Приглашение Лили', 'Навестить Лили в Дворянском квартале.', {type: 'visit', target: 'noble-quarter', count: 1}, {gold: 0, xp: 50}, {id:'lili', name:'Лили', img:'https://i.postimg.cc/yxdCDXtp/image-Picsart-Background-Remover.png'});
                 }
                 if (action === 'accept_hank_quest') {
                     if (!gameState.npcStates) gameState.npcStates = {};
@@ -10516,18 +10680,37 @@
                         }, 500);
                     }
                 }
+                if (action === 'cornelius_accept_quest') {
+                    if (!gameState.npcStates) gameState.npcStates = {};
+                    gameState.npcStates.corneliusQuestActive = true;
+                    game.save();
+                    ui.showFloatText(document.body, "Квест принят: Гитара Корнелия!", "#fbbf24");
+                    // Показываем кнопку Старого Дома в районе бедняков
+                    const el = document.getElementById('btn-old-house-container');
+                    if (el) el.classList.remove('hidden');
+                }
+                if (action === 'cornelius_complete_quest') {
+                    if (!gameState.npcStates) gameState.npcStates = {};
+                    gameState.npcStates.corneliusGuitarReturned = true;
+                    gameState.npcStates.corneliusGuitarFound = false;
+                    gameState.gold += 200;
+                    game.save();
+                    ui.updateStats();
+                    ui.showFloatText(document.body, "+200 золота! Квест завершён!", "#34d399");
+                }
             },
             
-            addQuest: function(id, title, desc, goals, reward) {
+            addQuest: function(id, title, desc, goals, reward, npc) {
                 if (!gameState.storyQuests) gameState.storyQuests = [];
                 gameState.storyQuests.push({
                     id: id,
                     title: title,
                     desc: desc,
-                    goals: goals, // Using 'sell' type logic for gathering just for tracking simplicity or create new type
+                    goals: goals,
                     current: 0,
                     reward: reward,
-                    state: 'active'
+                    state: 'active',
+                    npc: npc || null
                 });
                 game.save();
                 ui.showFloatText(document.body, "Новое задание!", "#fbbf24");
@@ -11815,6 +11998,20 @@
 
             generateDailyQuests: function() {
                 const newQuests = [];
+                
+                // NPC assignments for daily quests by type+target
+                const npcForQuest = function(type, target) {
+                    if (target === 'fish' || target === 'port') return { id: 'alex', name: 'Алекс', img: 'https://i.postimg.cc/tCDLx1dM/IMG-4665.png' };
+                    if (target === 'herbs' || target === 'mushrooms') return { id: 'elara', name: 'Элара', img: 'https://i.postimg.cc/fyX4xqGL/IMG-4760.png' };
+                    if (target === 'ore' || target === 'mine') return { id: 'gorn', name: 'Горн', img: 'https://i.postimg.cc/W3v0NdsZ/IMG-4763.png' };
+                    if (target === 'wood' || target === 'stone') return { id: 'hugh', name: 'Хью', img: 'https://i.postimg.cc/tgFkFwQ1/IMG-4670.png' };
+                    if (target === 'wheat' || target === 'field') return { id: 'hugh', name: 'Хью', img: 'https://i.postimg.cc/tgFkFwQ1/IMG-4670.png' };
+                    if (target === 'leather' || target === 'crossbow') return { id: 'eigan', name: 'Эйган', img: '' };
+                    if (target === 'loader') return { id: 'oldman_port', name: 'Старый Марк', img: 'https://i.postimg.cc/ncVWpF8k/IMG-4666.png' };
+                    if (type === 'upgrade') return { id: 'gorn', name: 'Горн', img: 'https://i.postimg.cc/W3v0NdsZ/IMG-4763.png' };
+                    return { id: 'hank', name: 'Хэнк', img: 'https://i.postimg.cc/jjVk70L0/IMG-4615.png' };
+                };
+                
                 const tiers = [
                     { pool: this.questPool.easy,   reward: 2, xp: 50  },
                     { pool: this.questPool.medium, reward: 5, xp: 100 },
@@ -11836,6 +12033,7 @@
                     }
                     if (!picked) picked = tier.pool[Math.floor(Math.random() * tier.pool.length)];
                     const goal = picked.goalRange[0] + Math.floor(Math.random() * (picked.goalRange[1] - picked.goalRange[0] + 1));
+                    const npc = npcForQuest(picked.type, picked.target);
                     newQuests.push({
                         id: Date.now() + i,
                         text: picked.textFn(goal),
@@ -11845,7 +12043,8 @@
                         current: 0,
                         reward: tier.reward,
                         xp: tier.xp,
-                        claimed: false
+                        claimed: false,
+                        npc: npc
                     });
                 });
                 gameState.activeQuests = newQuests;
@@ -12116,34 +12315,48 @@
                     gameState.activeQuests.forEach(q => {
                         const progress = Math.min(100, (q.current / q.goal) * 100);
                         const isDone = q.current >= q.goal;
+                        const tierColors = q.reward <= 2 ? {
+                            border: 'border-emerald-700/50', accent: '#34d399', glow: 'rgba(52,211,153,0.15)', label: 'Легко', labelColor: 'text-emerald-400 bg-emerald-900/30 border-emerald-700/50'
+                        } : q.reward <= 5 ? {
+                            border: 'border-amber-600/50', accent: '#c8aa6e', glow: 'rgba(200,170,110,0.18)', label: 'Средне', labelColor: 'text-amber-400 bg-amber-900/30 border-amber-700/50'
+                        } : {
+                            border: 'border-red-700/50', accent: '#ef4444', glow: 'rgba(239,68,68,0.15)', label: 'Сложно', labelColor: 'text-red-400 bg-red-900/30 border-red-700/50'
+                        };
 
                         const el = document.createElement('div');
-                        el.className = `quest-card panel p-3 rounded flex flex-col gap-2 ${q.claimed ? 'opacity-50' : ''}`;
+                        el.className = `quest-card rounded-xl overflow-hidden relative ${q.claimed ? 'opacity-60' : ''} ${tierColors.border} border`;
+                        el.style.cssText = `background: linear-gradient(135deg, rgba(10,8,5,0.97) 0%, rgba(20,15,8,0.95) 100%); box-shadow: 0 2px 16px ${tierColors.glow}, 0 1px 0 rgba(255,255,255,0.03);`;
                         el.innerHTML = `
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <div class="text-base text-[#e0e0e0] font-bold medieval-font">${q.text}</div>
-                                    <div class="text-xs text-[#a0a0a0]">${q.current} / ${q.goal}</div>
-                                </div>
-                                <div class="flex flex-col items-end gap-0.5">
-                                    <div class="text-[10px] gem-price font-bold border border-emerald-900 bg-emerald-900/20 px-2 py-0.5 rounded">
-                                        +${q.reward} <i class="far fa-gem gem-price"></i>
+                            <div class="p-3 flex flex-col gap-2">
+                                <div class="flex items-start justify-between gap-2">
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center gap-1.5 mb-1">
+                                            <span class="text-[9px] px-1.5 py-0.5 rounded border font-bold uppercase tracking-wider ${tierColors.labelColor}">${tierColors.label}</span>
+                                        </div>
+                                        <div class="text-sm text-[#e8dcc8] font-bold leading-snug">${q.text}</div>
                                     </div>
-                                    <div class="text-[9px] text-blue-400 font-bold">+${q.xp || 0} XP</div>
+                                    <div class="flex-shrink-0 text-right">
+                                        <div class="text-[11px] gem-price font-bold border border-emerald-900/60 bg-emerald-900/20 px-2 py-0.5 rounded-full whitespace-nowrap">+${q.reward} <i class="far fa-gem gem-price"></i></div>
+                                        <div class="text-[9px] text-blue-400 font-bold mt-0.5 text-right">+${q.xp || 0} XP</div>
+                                    </div>
                                 </div>
+                                <div>
+                                    <div class="flex justify-between text-[9px] text-gray-500 mb-1">
+                                        <span>Прогресс</span>
+                                        <span style="color:${tierColors.accent}">${q.current} / ${q.goal}</span>
+                                    </div>
+                                    <div class="w-full h-1.5 bg-black/60 rounded-full overflow-hidden border border-white/5">
+                                        <div class="h-full rounded-full transition-all duration-500" style="width:${progress}%; background: linear-gradient(90deg, ${tierColors.accent}88, ${tierColors.accent});"></div>
+                                    </div>
+                                </div>
+                                ${isDone && !q.claimed ? `<button onclick="quests.claim(${q.id})" class="btn-medieval w-full py-1.5 text-xs rounded-lg mt-0.5 font-bold" style="border-color:${tierColors.accent};color:${tierColors.accent};">✓ Забрать награду</button>` : ''}
+                                ${q.claimed ? '<div class="text-center text-[10px] text-green-500 uppercase font-bold flex items-center justify-center gap-1"><i class="fas fa-check-circle"></i> Выполнено</div>' : ''}
                             </div>
-                            <div class="w-full h-1.5 bg-[#000] rounded-full overflow-hidden border border-[#333]">
-                                <div class="h-full bg-[#c8aa6e] transition-all duration-300" style="width: ${progress}%"></div>
-                            </div>
-                            ${isDone && !q.claimed ?
-                                `<button onclick="quests.claim(${q.id})" class="btn-medieval w-full py-1 text-xs rounded mt-1">Забрать награду</button>` :
-                                ''}
-                            ${q.claimed ? '<div class="text-center text-[10px] text-green-500 uppercase">Выполнено</div>' : ''}
                         `;
                         list.appendChild(el);
                     });
 
-                    // Разделитель между ежедневными заданиями и заданием на подписку
+                    // Разделитель
                     const dividerWrap = document.createElement('div');
                     dividerWrap.className = "text-center text-[11px] text-[#555] mt-4 mb-3 flex items-center gap-2";
                     dividerWrap.innerHTML = `
@@ -12153,7 +12366,7 @@
                     `;
                     list.appendChild(dividerWrap);
 
-                    // Задание на подписку на канал
+                    // Задание на подписку
                     if (!gameState.channelTaskCompleted) {
                         const channelTaskEl = document.createElement('div');
                         channelTaskEl.id = 'task-channel-sub';
@@ -12185,7 +12398,6 @@
                         `;
                         list.appendChild(channelTaskEl);
                     } else {
-                        // Показываем выполненное задание
                         const channelTaskEl = document.createElement('div');
                         channelTaskEl.className = 'quest-card panel p-3 rounded flex flex-col gap-2 opacity-50 border-l-2 border-green-500';
                         channelTaskEl.innerHTML = `
@@ -12210,7 +12422,6 @@
                         list.appendChild(channelTaskEl);
                     }
 
-                    // Countdown to next reset (00:00 MSK)
                     const timerWrap = document.createElement('div');
                     timerWrap.className = "text-center text-[11px] text-[#777] mt-4";
                     timerWrap.innerHTML = `До обновления (00:00 МСК): <span id="quest-timer" class="text-[#c8aa6e] font-mono">--:--:--</span>`;
@@ -12230,31 +12441,56 @@
                     }
 
                     gameState.storyQuests.forEach(q => {
-                        if (q.state === 'claimed') return; // Hide completed/claimed logic for now or move to separate list
+                        if (q.state === 'claimed') return;
 
                         const progress = Math.min(100, (q.current / q.goals.count) * 100);
                         const isDone = q.current >= q.goals.count;
+                        const npc = q.npc || null;
+                        const npcImg = npc && npc.img ? npc.img : '';
+                        const npcName = npc ? npc.name : 'Персонаж';
 
                         const el = document.createElement('div');
-                        el.className = "quest-card panel p-3 rounded flex flex-col gap-2 border-l-2 border-[#c8aa6e]";
+                        el.className = "quest-card rounded-xl overflow-hidden relative border border-amber-700/50";
+                        el.style.cssText = `background: linear-gradient(135deg, rgba(10,7,2,0.97) 0%, rgba(22,14,5,0.96) 100%); box-shadow: 0 2px 20px rgba(200,170,110,0.12), 0 1px 0 rgba(255,255,255,0.03);`;
                         el.innerHTML = `
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <div class="text-sm text-[#c8aa6e] font-bold">${q.title}</div>
-                                    <div class="text-[10px] text-[#a0a0a0] mb-1">${q.desc}</div>
-                                    <div class="text-xs text-[#e0e0e0]">${q.current} / ${q.goals.count}</div>
+                            <div class="flex">
+                                <!-- NPC portrait -->
+                                <div class="relative flex-shrink-0 w-16 overflow-hidden" style="min-height:130px;">
+                                    ${npcImg ? `<img src="${npcImg}" alt="${npcName}" class="absolute inset-0 w-full h-full object-cover object-top" style="filter:brightness(0.7) saturate(0.9);">` : `<div class="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-amber-900/40 to-stone-900/80"><i class="fas fa-user text-amber-700 text-2xl"></i></div>`}
+                                    <div class="absolute inset-0" style="background: linear-gradient(to right, transparent 30%, rgba(10,7,2,0.97) 100%);"></div>
+                                    <div class="absolute top-0 left-0 right-0 h-0.5" style="background: linear-gradient(90deg, transparent, #c8aa6e, transparent);"></div>
+                                    <div class="absolute bottom-0 left-0 right-0 p-1 text-center">
+                                        <div class="text-[8px] text-amber-500/80 truncate leading-tight font-bold">${npcName}</div>
+                                    </div>
                                 </div>
-                                <div class="text-right">
-                                     <div class="text-[10px] text-yellow-500 font-bold">+${q.reward.gold} <i class="fas fa-coins"></i></div>
-                                     <div class="text-[10px] text-blue-400 font-bold">+${q.reward.xp} XP</div>
+                                <!-- Content -->
+                                <div class="flex-1 p-3 flex flex-col gap-2 min-w-0">
+                                    <div class="flex items-start justify-between gap-2">
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-center gap-1.5 mb-1">
+                                                <span class="text-[9px] px-1.5 py-0.5 rounded border font-bold uppercase tracking-wider text-amber-400 bg-amber-900/30 border-amber-700/50">📜 Сюжет</span>
+                                            </div>
+                                            <div class="text-sm text-[#e8dcc8] font-bold leading-snug medieval-font">${q.title}</div>
+                                            <div class="text-[10px] text-[#a0a0a0] mt-0.5 leading-relaxed">${q.desc}</div>
+                                        </div>
+                                        <div class="flex-shrink-0 text-right">
+                                            <div class="text-[11px] text-yellow-400 font-bold whitespace-nowrap">+${q.reward.gold} <i class="fas fa-coins"></i></div>
+                                            <div class="text-[9px] text-blue-400 font-bold mt-0.5">+${q.reward.xp} XP</div>
+                                        </div>
+                                    </div>
+                                    <!-- Progress -->
+                                    <div>
+                                        <div class="flex justify-between text-[9px] text-gray-500 mb-1">
+                                            <span>Прогресс</span>
+                                            <span class="text-amber-500">${q.current} / ${q.goals.count}</span>
+                                        </div>
+                                        <div class="w-full h-1.5 bg-black/60 rounded-full overflow-hidden border border-white/5">
+                                            <div class="h-full rounded-full transition-all duration-500" style="width:${progress}%; background: linear-gradient(90deg, #c8aa6e88, #c8aa6e);"></div>
+                                        </div>
+                                    </div>
+                                    ${isDone ? `<button onclick="quests.claimStory('${q.id}')" class="btn-medieval w-full py-1.5 text-xs rounded-lg font-bold mt-0.5">✓ Завершить задание</button>` : ''}
                                 </div>
                             </div>
-                            <div class="w-full h-1.5 bg-[#000] rounded-full overflow-hidden border border-[#333]">
-                                <div class="h-full bg-[#c8aa6e] transition-all duration-300" style="width: ${progress}%"></div>
-                            </div>
-                            ${isDone ?
-                                `<button onclick="quests.claimStory('${q.id}')" class="btn-medieval w-full py-1 text-xs rounded mt-1">Завершить</button>` :
-                                ''}
                         `;
                         list.appendChild(el);
                     });
@@ -15980,6 +16216,146 @@
             }
         }
 
+        // --- OLD HOUSE CONTROLLER (Cornelius Quest) ---
+        const oldHouse = {
+            render: function() {
+                const container = document.getElementById('old-house-content');
+                if (!container) return;
+                if (!gameState.npcStates) gameState.npcStates = {};
+                
+                const hasPicked = gameState.npcStates.oldHouseDoorUnlocked;
+                const guitarTaken = gameState.npcStates.corneliusGuitarFound;
+                
+                if (guitarTaken || gameState.npcStates.corneliusGuitarReturned) {
+                    // Guitar already taken
+                    container.innerHTML = `
+                        <div class="text-center space-y-4">
+                            <i class="fas fa-guitar text-5xl text-amber-700/50"></i>
+                            <p class="text-sm text-gray-400">Комната пуста. Гитары больше нет — ты уже её забрал.</p>
+                            <button onclick="router.navigate('poor-district')" class="btn-medieval w-full py-2 rounded text-sm">
+                                <i class="fas fa-arrow-left mr-2"></i>Уйти
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                if (!hasPicked) {
+                    // Door is locked — need lockpick
+                    const hasLockpick = (gameState.lockpicks || 0) > 0;
+                    container.innerHTML = `
+                        <div class="space-y-4">
+                            <div class="text-center space-y-2">
+                                <div class="w-20 h-20 rounded-full bg-stone-900/60 border-2 border-stone-700 mx-auto flex items-center justify-center">
+                                    <i class="fas fa-lock text-4xl text-stone-500"></i>
+                                </div>
+                                <h3 class="medieval-font text-lg text-stone-300">Заперто</h3>
+                                <p class="text-sm text-gray-400">Ржавый замок крепко держит дверь. Чтобы войти, нужна отмычка.</p>
+                            </div>
+                            <div class="bg-black/30 border border-stone-700/40 rounded p-3 text-center">
+                                <span class="text-xs text-stone-400">Отмычек в инвентаре: </span>
+                                <span class="text-sm font-bold ${hasLockpick ? 'text-green-400' : 'text-red-400'}">${gameState.lockpicks || 0}</span>
+                            </div>
+                            ${hasLockpick ? `
+                                <div class="text-xs text-amber-500/80 bg-amber-900/10 border border-amber-900/30 rounded p-2 text-center">
+                                    <i class="fas fa-exclamation-triangle mr-1"></i>Старые дома опасны. Будь осторожен.
+                                </div>
+                                <button onclick="oldHouse.useLockpick()" class="btn-medieval w-full py-3 rounded font-bold">
+                                    <i class="fas fa-key mr-2"></i>Использовать отмычку
+                                </button>
+                            ` : `
+                                <div class="text-xs text-red-500/80 bg-red-900/10 border border-red-900/30 rounded p-2 text-center">
+                                    Нет отмычки! Скрафти её в разделе "Герой" → Крафт → Другое (3 руды + 1 палка)
+                                </div>
+                            `}
+                            <button onclick="router.navigate('poor-district')" class="btn-ghost w-full py-2 rounded text-sm">
+                                Уйти прочь
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    // Inside the house — show guitar
+                    container.innerHTML = `
+                        <div class="space-y-4">
+                            <div class="text-center space-y-2">
+                                <div class="w-20 h-20 rounded-full bg-amber-900/30 border-2 border-amber-700/50 mx-auto flex items-center justify-center shadow-[0_0_15px_rgba(180,120,30,0.3)]">
+                                    <i class="fas fa-guitar text-4xl text-amber-500"></i>
+                                </div>
+                                <h3 class="medieval-font text-lg text-amber-300">Внутри старого дома</h3>
+                            </div>
+                            <div class="text-sm text-gray-300 bg-black/20 border border-stone-700/30 rounded p-3 leading-relaxed">
+                                Внутри темно и пахнет сыростью. Скрипят рассохшиеся половицы. На стене, покрытой паутиной, висит старая гитара — именно та, о которой говорил Корнелий.
+                            </div>
+                            <div class="bg-amber-900/10 border border-amber-700/30 rounded p-3 text-center space-y-1">
+                                <div class="text-amber-400 font-bold text-sm">🎸 Гитара Корнелия</div>
+                                <div class="text-xs text-gray-400">Старая, но целая. Струны покрыты пылью.</div>
+                            </div>
+                            <div class="text-xs text-red-400/80 bg-red-900/10 border border-red-900/30 rounded p-2 text-center">
+                                <i class="fas fa-exclamation-triangle mr-1"></i>Потолок скрипит. Опасно задерживаться...
+                            </div>
+                            <button onclick="oldHouse.takeGuitar()" class="btn-medieval w-full py-3 rounded font-bold text-amber-300 border-amber-600">
+                                <i class="fas fa-hand-grab mr-2"></i>Взять гитару
+                            </button>
+                            <button onclick="router.navigate('poor-district')" class="btn-ghost w-full py-2 rounded text-sm">
+                                Выйти без гитары
+                            </button>
+                        </div>
+                    `;
+                }
+            },
+            
+            useLockpick: function() {
+                if ((gameState.lockpicks || 0) <= 0) {
+                    ui.showFloatText(document.body, "Нет отмычки!", "#ff5555");
+                    return;
+                }
+                // Simulate lockpicking animation
+                const btn = document.querySelector('#old-house-content button');
+                if (btn) btn.disabled = true;
+                
+                ui.showFloatText(document.body, "Взламываю замок...", "#fbbf24");
+                setTimeout(() => {
+                    gameState.lockpicks = (gameState.lockpicks || 1) - 1;
+                    if (!gameState.npcStates) gameState.npcStates = {};
+                    gameState.npcStates.oldHouseDoorUnlocked = true;
+                    game.save();
+                    ui.updateStats();
+                    inventory.render();
+                    ui.showFloatText(document.body, "Замок открыт! ✓", "#34d399");
+                    setTimeout(() => {
+                        this.render();
+                    }, 600);
+                }, 1200);
+            },
+            
+            takeGuitar: function() {
+                // Taking the guitar causes a beam to fall — deal 35 damage
+                if (!gameState.npcStates) gameState.npcStates = {};
+                gameState.npcStates.corneliusGuitarFound = true;
+                
+                const btn = document.querySelector('#old-house-content .btn-medieval');
+                if (btn) btn.disabled = true;
+                
+                ui.showFloatText(document.body, "Берёшь гитару...", "#fbbf24");
+                setTimeout(() => {
+                    // Beam falls!
+                    const dmg = 35;
+                    gameState.hp = Math.max(0, gameState.hp - dmg);
+                    game.save();
+                    ui.updateStats();
+                    ui.showFloatText(document.body, `💥 Деревянная опора падает! -${dmg} HP!`, "#ef4444");
+                    setTimeout(() => {
+                        ui.showFloatText(document.body, "Гитара получена! Верни её Корнелию!", "#c8aa6e");
+                        if (gameState.hp <= 0) {
+                            game.checkDeath();
+                        } else {
+                            this.render();
+                        }
+                    }, 800);
+                }, 900);
+            }
+        };
+
         // --- POOR DISTRICT CONTROLLER ---
         const poorDistrict = {
             buyBread: function(event) {
@@ -16186,9 +16562,9 @@
         // --- BULLETIN BOARD CONTROLLER ---
         const bulletin = {
             quests: {
-                fish_delivery: { id: 'fish_delivery', title: 'Рыба для таверны', target: 'fish', count: 10, reward: { gold: 100, xp: 15 } },
-                herbs_delivery: { id: 'herbs_delivery', title: 'Травы для лекаря', target: 'herbs', count: 8, reward: { gold: 80, xp: 10 } },
-                ore_delivery: { id: 'ore_delivery', title: 'Руда для кузнеца', target: 'ore', count: 5, reward: { gold: 200, xp: 25 } }
+                fish_delivery: { id: 'fish_delivery', title: 'Рыба для таверны', target: 'fish', count: 10, reward: { gold: 100, xp: 15 }, npc: {id:'alex', name:'Алекс', img:'https://i.postimg.cc/tCDLx1dM/IMG-4665.png'} },
+                herbs_delivery: { id: 'herbs_delivery', title: 'Травы для лекаря', target: 'herbs', count: 8, reward: { gold: 80, xp: 10 }, npc: {id:'elara', name:'Элара', img:'https://i.postimg.cc/fyX4xqGL/IMG-4760.png'} },
+                ore_delivery: { id: 'ore_delivery', title: 'Руда для кузнеца', target: 'ore', count: 5, reward: { gold: 200, xp: 25 }, npc: {id:'gorn', name:'Горн', img:'https://i.postimg.cc/W3v0NdsZ/IMG-4763.png'} }
             },
             
             acceptQuest: function(questId) {
@@ -16220,7 +16596,8 @@
                         quest.title,
                         `Принести ${quest.count} ${RESOURCE_NAMES[quest.target].name}`,
                         { type: 'gather', target: quest.target, count: quest.count },
-                        quest.reward
+                        quest.reward,
+                        quest.npc
                     );
                 }
             },
@@ -16725,10 +17102,18 @@
                     id: 'lockpick', 
                     name: 'Отмычка', 
                     icon: '🔓', 
-                    requires: { ore: 10 }, 
+                    requires: { ore: 3, wood: 1 }, 
                     produces: { lockpick: 1 },
                     sellPrice: 25,
-                    tool: true
+                    tool: true,
+                    customCraft: function() {
+                        gameState.lockpicks = (gameState.lockpicks || 0) + 1;
+                        game.save();
+                        ui.updateStats();
+                        inventory.render();
+                        crafting.render();
+                        ui.showNotification('✅ Создана: Отмычка', 'success');
+                    }
                 },
                 { 
                     id: 'trap', 
@@ -16771,6 +17156,12 @@
                 // Забираем ресурсы
                 for (let [res, amount] of Object.entries(craft.requires)) {
                     gameState[res] = (gameState[res] || 0) - amount;
+                }
+                
+                // Если есть кастомный крафт - используем его
+                if (craft.customCraft) {
+                    craft.customCraft();
+                    return true;
                 }
                 
                 // Добавляем результат
@@ -18926,7 +19317,8 @@
                 const locationScreens = ['jobs', 'town-square', 'tavern', 'treasury', 'dark-forest', 
                     'hunter-hut', 'training-camp', 'military-fortress', 'village', 'healer', 'bookhouse', 
                     'royal-castle', 'poor-district', 'noble-quarter', 'refugee-camp', 
-                    'tailor', 'shoemaker', 'livestock-trader', 'bulletin', 'lily-house', 'knight-tournament'];
+                    'tailor', 'shoemaker', 'livestock-trader', 'bulletin', 'lily-house', 'knight-tournament',
+                    'old-house'];
                 
                 if (locationScreens.includes(screenId)) {
                     game.trackAction();
@@ -18975,6 +19367,8 @@
                 if (lilyHouseView) lilyHouseView.classList.add('hidden');
                 const knightTournamentView = document.getElementById('view-knight-tournament');
                 if (knightTournamentView) knightTournamentView.classList.add('hidden');
+                const oldHouseView = document.getElementById('view-old-house');
+                if (oldHouseView) oldHouseView.classList.add('hidden');
                 
                 const target = document.getElementById(`view-${screenId}`);
                 if (target) target.classList.remove('hidden');
@@ -19001,6 +19395,18 @@
                     poorDistrict.startCanteenTimer();
                     arthurShop.updateHerbQuestUI();
                     arthurShop.startEffectTimers();
+                    // Show Old House button if quest is active
+                    const ohContainer = document.getElementById('btn-old-house-container');
+                    if (ohContainer) {
+                        if (gameState.npcStates && gameState.npcStates.corneliusQuestActive && !gameState.npcStates.corneliusGuitarReturned) {
+                            ohContainer.classList.remove('hidden');
+                        } else {
+                            ohContainer.classList.add('hidden');
+                        }
+                    }
+                }
+                if (screenId === 'old-house') {
+                    oldHouse.render();
                 }
                 if (screenId === 'noble-quarter') {
                     // Проверяем, экипирована ли ЛЮБАЯ одежда
@@ -20570,7 +20976,7 @@
                 const hasRep = (gameState.reputation || 0) >= 20;
                 const hasGlory = (gameState.glory || 0) >= 10;
                 const hasClothes = gameState.clothes && gameState.clothes.rich === true;
-                const hasShoes = gameState.shoes && gameState.shoes.quality === true;
+                const hasShoes = gameState.equippedShoes === 'quality' || gameState.equippedShoes === 'elite';
                 
                 const hasAccess = hasRep && hasGlory && hasClothes && hasShoes;
                 
