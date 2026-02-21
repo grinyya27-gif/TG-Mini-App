@@ -2490,96 +2490,89 @@
                         <span>Голод</span>
                         <span id="hunger-text" class="text-amber-400">100 / 100</span>
                     </div>
-                    <div class="h-2 bg-[#000] border border-[#333] rounded-full overflow-hidden relative">
-                        <div id="hunger-bar" class="h-full bg-amber-500 w-full transition-all duration-300"></div>
+                    <div class="h-2 border border-[#333] rounded-full overflow-hidden relative" style="background: linear-gradient(90deg, #7f1d1d, #b45309, #15803d);">
+                        <div id="hunger-bar" class="h-full transition-all duration-300 absolute top-0 right-0" style="width: 0%; background: #000;"></div>
                     </div>
                 </div>
             </div>
 
             <!-- Equipment Slots -->
             <div class="panel rounded p-4 relative overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-br from-amber-900/5 via-transparent to-purple-900/5 pointer-events-none"></div>
-                <h3 class="medieval-font text-sm text-[#c8aa6e] mb-4 text-center relative z-10">Экипировка</h3>
+                <div class="absolute inset-0 bg-gradient-to-br from-[#c8aa6e]/8 via-transparent to-[#c8aa6e]/4 pointer-events-none"></div>
+                <h3 class="medieval-font text-sm text-[#c8aa6e] mb-4 text-center relative z-10" style="text-shadow: 0 0 20px rgba(200,170,110,0.5);">⚔ Экипировка ⚔</h3>
                 
                 <div class="flex gap-3 relative z-10">
                     <!-- Left: ALL Equipment buttons -->
                     <div class="flex-1 space-y-2">
                         <!-- Armor Slot -->
-                        <div id="slot-armor" onclick="equipment.openSlot('armor')" class="cursor-pointer rounded-lg border-2 border-blue-600/40 backdrop-blur-sm p-3 flex items-center gap-3 hover:border-blue-500/80 hover:shadow-lg hover:shadow-blue-500/20 transition-all relative overflow-hidden group" style="background: linear-gradient(135deg, rgba(30, 58, 138, 0.15) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(30, 58, 138, 0.15) 100%);">
-                            <div class="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                            <div class="w-12 h-12 rounded-full border-2 border-blue-500/40 flex items-center justify-center flex-shrink-0 relative z-10" style="background: linear-gradient(135deg, rgba(30, 58, 138, 0.3), rgba(0, 0, 0, 0.5));">
-                                <i class="fas fa-shield-halved text-blue-400 text-xl drop-shadow-lg"></i>
+                        <div id="slot-armor" onclick="equipment.openSlot('armor')" class="cursor-pointer rounded border border-[#c8aa6e]/30 backdrop-blur-sm p-3 flex items-center gap-3 hover:border-[#c8aa6e] hover:shadow-lg transition-all relative overflow-hidden group" style="background: linear-gradient(135deg, rgba(200,170,110,0.12) 0%, rgba(0,0,0,0.5) 100%); box-shadow: inset 0 1px 0 rgba(200,170,110,0.1);">
+                            <div class="absolute inset-0 bg-gradient-to-r from-[#c8aa6e]/15 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div class="w-10 h-10 rounded border border-[#c8aa6e]/50 flex items-center justify-center flex-shrink-0 relative z-10 transition-all group-hover:border-[#c8aa6e] group-hover:shadow-[0_0_12px_rgba(200,170,110,0.4)]" style="background: linear-gradient(135deg, rgba(200,170,110,0.2), rgba(0,0,0,0.6));">
+                                <i class="fas fa-shield-halved text-[#c8aa6e] text-lg" style="filter: drop-shadow(0 0 6px rgba(200,170,110,0.7));"></i>
                             </div>
                             <div class="flex-1 relative z-10">
-                                <div class="text-sm text-blue-300 font-bold medieval-font slot-item-name">Броня</div>
-                                <div class="text-[10px] text-blue-400/70 slot-item-sub">Не экипирована</div>
+                                <div class="text-[9px] text-[#c8aa6e]/60 uppercase tracking-widest mb-0.5">Броня</div>
+                                <div class="text-sm text-white font-bold medieval-font slot-item-name leading-tight">Не экипирована</div>
+                                <div class="text-[9px] text-[#c8aa6e]/70 slot-item-sub mt-0.5">нажмите для выбора</div>
                             </div>
-                            <i class="fas fa-chevron-right text-blue-500/50 group-hover:text-blue-400/80 transition-colors relative z-10"></i>
+                            <i class="fas fa-chevron-right text-[#c8aa6e]/40 group-hover:text-[#c8aa6e] transition-colors relative z-10 text-xs"></i>
                         </div>
                         
                         <!-- Sword Slot -->
-                        <div id="slot-sword" onclick="equipment.openSlot('sword')" class="cursor-pointer rounded-lg border-2 border-red-600/40 backdrop-blur-sm p-3 flex items-center gap-3 hover:border-red-500/80 hover:shadow-lg hover:shadow-red-500/20 transition-all relative overflow-hidden group" style="background: linear-gradient(135deg, rgba(153, 27, 27, 0.15) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(153, 27, 27, 0.15) 100%);">
-                            <div class="absolute inset-0 bg-gradient-to-r from-red-600/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                            <div class="w-12 h-12 rounded-full border-2 border-red-500/40 flex items-center justify-center flex-shrink-0 relative z-10 slot-icon-wrap" style="background: linear-gradient(135deg, rgba(153, 27, 27, 0.3), rgba(0, 0, 0, 0.5));">
-                                <i class="fas fa-khanda text-red-400 text-xl drop-shadow-lg"></i>
+                        <div id="slot-sword" onclick="equipment.openSlot('sword')" class="cursor-pointer rounded border border-[#c8aa6e]/30 backdrop-blur-sm p-3 flex items-center gap-3 hover:border-[#c8aa6e] hover:shadow-lg transition-all relative overflow-hidden group" style="background: linear-gradient(135deg, rgba(200,170,110,0.12) 0%, rgba(0,0,0,0.5) 100%); box-shadow: inset 0 1px 0 rgba(200,170,110,0.1);">
+                            <div class="absolute inset-0 bg-gradient-to-r from-[#c8aa6e]/15 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div class="w-10 h-10 rounded border border-[#c8aa6e]/50 flex items-center justify-center flex-shrink-0 relative z-10 slot-icon-wrap transition-all group-hover:border-[#c8aa6e] group-hover:shadow-[0_0_12px_rgba(200,170,110,0.4)]" style="background: linear-gradient(135deg, rgba(200,170,110,0.2), rgba(0,0,0,0.6));">
+                                <i class="fas fa-khanda text-lg" style="color: #c8aa6e; filter: drop-shadow(0 0 6px rgba(200,170,110,0.7));"></i>
                             </div>
                             <div class="flex-1 relative z-10">
-                                <div class="text-sm text-red-300 font-bold medieval-font slot-item-name">Меч</div>
-                                <div class="text-[10px] text-red-400/70 slot-item-sub">Не экипирован</div>
+                                <div class="text-[9px] text-[#c8aa6e]/60 uppercase tracking-widest mb-0.5">Оружие</div>
+                                <div class="text-sm text-white font-bold medieval-font slot-item-name leading-tight">Не экипировано</div>
+                                <div class="text-[9px] text-[#c8aa6e]/70 slot-item-sub mt-0.5">нажмите для выбора</div>
                             </div>
-                            <i class="fas fa-chevron-right text-red-500/50 group-hover:text-red-400/80 transition-colors relative z-10"></i>
+                            <i class="fas fa-chevron-right text-[#c8aa6e]/40 group-hover:text-[#c8aa6e] transition-colors relative z-10 text-xs"></i>
                         </div>
                         
-                        <!-- Clothes & Shoes Combined Slot -->
-                        <div class="rounded-lg border-2 border-green-600/40 backdrop-blur-sm overflow-hidden" style="background: linear-gradient(135deg, rgba(22, 101, 52, 0.15) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(22, 101, 52, 0.15) 100%);">
-                            <!-- Clothes (Top Half) -->
-                            <div id="slot-clothes" onclick="equipment.openSlot('clothes')" class="cursor-pointer p-2 flex items-center gap-2 hover:bg-green-600/10 transition-all relative group border-b border-green-600/20">
-                                <div class="w-10 h-10 rounded-full border-2 border-green-500/40 flex items-center justify-center flex-shrink-0 relative z-10" style="background: linear-gradient(135deg, rgba(22, 101, 52, 0.3), rgba(0, 0, 0, 0.5));">
-                                    <i class="fas fa-shirt text-green-400 text-lg drop-shadow-lg"></i>
-                                </div>
-                                <div class="flex-1 relative z-10 min-w-0">
-                                    <div class="text-xs text-green-300 font-bold medieval-font slot-item-name">Одежда</div>
-                                    <div class="text-[9px] text-green-400/70 slot-item-sub truncate">Не экипирована</div>
-                                </div>
-                            </div>
-                            <!-- Shoes (Bottom Half) -->
-                            <div id="slot-shoes" onclick="equipment.openSlot('shoes')" class="cursor-pointer p-2 flex items-center gap-2 hover:bg-amber-600/10 transition-all relative group">
-                                <div class="w-10 h-10 rounded-full border-2 border-amber-500/40 flex items-center justify-center flex-shrink-0 relative z-10" style="background: linear-gradient(135deg, rgba(146, 64, 14, 0.3), rgba(0, 0, 0, 0.5));">
-                                    <i class="fas fa-shoe-prints text-amber-400 text-lg drop-shadow-lg"></i>
-                                </div>
-                                <div class="flex-1 relative z-10 min-w-0">
-                                    <div class="text-xs text-amber-300 font-bold medieval-font slot-item-name">Обувь</div>
-                                    <div class="text-[9px] text-amber-400/70 slot-item-sub truncate">Не экипирована</div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Saddle Slot -->
-                        <div id="slot-saddle" onclick="equipment.openSlot('saddle')" class="cursor-pointer rounded-lg border-2 border-purple-600/40 backdrop-blur-sm p-3 flex items-center gap-3 hover:border-purple-500/80 hover:shadow-lg hover:shadow-purple-500/20 transition-all relative overflow-hidden group" style="background: linear-gradient(135deg, rgba(107, 33, 168, 0.15) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(107, 33, 168, 0.15) 100%);">
-                            <div class="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                            <div class="w-12 h-12 rounded-full border-2 border-purple-500/40 flex items-center justify-center flex-shrink-0 relative z-10" style="background: linear-gradient(135deg, rgba(107, 33, 168, 0.3), rgba(0, 0, 0, 0.5));">
-                                <i class="fas fa-horse-head text-purple-400 text-xl drop-shadow-lg"></i>
+                        <!-- Clothes Slot -->
+                        <div id="slot-clothes" onclick="equipment.openSlot('clothes')" class="cursor-pointer rounded border border-[#c8aa6e]/30 backdrop-blur-sm p-3 flex items-center gap-3 hover:border-[#c8aa6e] hover:shadow-lg transition-all relative overflow-hidden group" style="background: linear-gradient(135deg, rgba(200,170,110,0.12) 0%, rgba(0,0,0,0.5) 100%); box-shadow: inset 0 1px 0 rgba(200,170,110,0.1);">
+                            <div class="absolute inset-0 bg-gradient-to-r from-[#c8aa6e]/15 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div class="w-10 h-10 rounded border border-[#c8aa6e]/50 flex items-center justify-center flex-shrink-0 relative z-10 transition-all group-hover:border-[#c8aa6e] group-hover:shadow-[0_0_12px_rgba(200,170,110,0.4)]" style="background: linear-gradient(135deg, rgba(200,170,110,0.2), rgba(0,0,0,0.6));">
+                                <i class="fas fa-shirt text-lg" style="color: #c8aa6e; filter: drop-shadow(0 0 6px rgba(200,170,110,0.7));"></i>
                             </div>
                             <div class="flex-1 relative z-10">
-                                <div class="text-sm text-purple-300 font-bold medieval-font">Седло</div>
-                                <div class="text-[10px] text-purple-400/70">Не экипировано</div>
+                                <div class="text-[9px] text-[#c8aa6e]/60 uppercase tracking-widest mb-0.5">Одежда</div>
+                                <div class="text-sm text-white font-bold medieval-font slot-item-name leading-tight">Не экипирована</div>
+                                <div class="text-[9px] text-[#c8aa6e]/70 slot-item-sub mt-0.5">нажмите для выбора</div>
                             </div>
-                            <i class="fas fa-chevron-right text-purple-500/50 group-hover:text-purple-400/80 transition-colors relative z-10"></i>
+                            <i class="fas fa-chevron-right text-[#c8aa6e]/40 group-hover:text-[#c8aa6e] transition-colors relative z-10 text-xs"></i>
+                        </div>
+
+                        <!-- Shoes Slot -->
+                        <div id="slot-shoes" onclick="equipment.openSlot('shoes')" class="cursor-pointer rounded border border-[#c8aa6e]/30 backdrop-blur-sm p-3 flex items-center gap-3 hover:border-[#c8aa6e] hover:shadow-lg transition-all relative overflow-hidden group" style="background: linear-gradient(135deg, rgba(200,170,110,0.12) 0%, rgba(0,0,0,0.5) 100%); box-shadow: inset 0 1px 0 rgba(200,170,110,0.1);">
+                            <div class="absolute inset-0 bg-gradient-to-r from-[#c8aa6e]/15 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div class="w-10 h-10 rounded border border-[#c8aa6e]/50 flex items-center justify-center flex-shrink-0 relative z-10 transition-all group-hover:border-[#c8aa6e] group-hover:shadow-[0_0_12px_rgba(200,170,110,0.4)]" style="background: linear-gradient(135deg, rgba(200,170,110,0.2), rgba(0,0,0,0.6));">
+                                <i class="fas fa-shoe-prints text-lg" style="color: #c8aa6e; filter: drop-shadow(0 0 6px rgba(200,170,110,0.7));"></i>
+                            </div>
+                            <div class="flex-1 relative z-10">
+                                <div class="text-[9px] text-[#c8aa6e]/60 uppercase tracking-widest mb-0.5">Обувь</div>
+                                <div class="text-sm text-white font-bold medieval-font slot-item-name leading-tight">Не экипирована</div>
+                                <div class="text-[9px] text-[#c8aa6e]/70 slot-item-sub mt-0.5">нажмите для выбора</div>
+                            </div>
+                            <i class="fas fa-chevron-right text-[#c8aa6e]/40 group-hover:text-[#c8aa6e] transition-colors relative z-10 text-xs"></i>
                         </div>
                     </div>
                     
                     <!-- Right: Character Display -->
                     <div class="flex-shrink-0" style="width: 160px;">
-                        <div class="w-full rounded-lg border-2 border-amber-600/40 backdrop-blur-sm overflow-hidden relative hover:border-amber-500/60 transition-all" style="height: 100%; background: linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(20, 20, 25, 0.7) 50%, rgba(0, 0, 0, 0.6) 100%);">
+                        <div class="w-full rounded border border-[#c8aa6e]/30 overflow-hidden relative transition-all hover:border-[#c8aa6e] hover:shadow-lg" style="height: 100%; background: linear-gradient(135deg, rgba(200,170,110,0.12) 0%, rgba(0,0,0,0.5) 100%); box-shadow: inset 0 1px 0 rgba(200,170,110,0.1);">
                             <img src="https://i.postimg.cc/RF2Bf1CP/IMG-4647.png" alt="Персонаж" class="w-full h-full object-cover object-center opacity-90">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20"></div>
-                            <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(200,170,110,0.15),transparent_70%)]"></div>
+                            <div class="absolute inset-0" style="background: radial-gradient(circle at 50% 120%, rgba(200,170,110,0.18), transparent 70%);"></div>
                             <div class="absolute bottom-0 left-0 right-0 p-2 text-center">
-                                <div class="text-xs text-amber-300 font-bold medieval-font drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]" id="char-panel-title">Странник</div>
-                                <div class="text-[9px] text-amber-500/90 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" id="char-panel-level">Уровень 1</div>
+                                <div class="text-xs font-bold medieval-font drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]" id="char-panel-title" style="color: #c8aa6e; text-shadow: 0 0 12px rgba(200,170,110,0.6);">Странник</div>
+                                <div class="text-[9px] drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" id="char-panel-level" style="color: rgba(200,170,110,0.7);">Уровень 1</div>
                             </div>
-                            <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent"></div>
-                            <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent"></div>
+                            <div class="absolute top-0 left-0 right-0 h-px" style="background: linear-gradient(to right, transparent, rgba(200,170,110,0.6), transparent);"></div>
+                            <div class="absolute bottom-0 left-0 right-0 h-px" style="background: linear-gradient(to right, transparent, rgba(200,170,110,0.6), transparent);"></div>
                         </div>
                     </div>
                 </div>
@@ -18126,7 +18119,7 @@
                 const hungerPercent = (gameState.hunger / gameState.maxHunger) * 100;
                 const hungerBar = document.getElementById('hunger-bar');
                 const hungerText = document.getElementById('hunger-text');
-                if (hungerBar) hungerBar.style.width = `${hungerPercent}%`;
+                if (hungerBar) hungerBar.style.width = `${100 - hungerPercent}%`;
                 if (hungerText) hungerText.innerText = `${gameState.hunger} / ${gameState.maxHunger}`;
                 
                 // Update energy bar (Training Camp only)
@@ -18854,10 +18847,10 @@
                             iconEl.innerHTML = `<svg class="w-6 h-6" viewBox="0 0 512.001 512.001" style="fill: ${sw.color};"><use href="#icon-sword-generic"></use></svg>`;
                         }
                     } else {
-                        if (nameEl) nameEl.innerText = 'Меч';
-                        if (subEl) subEl.innerText = 'Не экипирован';
+                        if (nameEl) nameEl.innerText = 'Не экипировано';
+                        if (subEl) subEl.innerText = 'нажмите для выбора';
                         if (iconEl) {
-                            iconEl.innerHTML = `<i class="fas fa-khanda text-red-400 text-xl drop-shadow-lg"></i>`;
+                            iconEl.innerHTML = `<i class="fas fa-khanda text-lg" style="color: #c8aa6e; filter: drop-shadow(0 0 6px rgba(200,170,110,0.7));"></i>`;
                         }
                     }
                 }
