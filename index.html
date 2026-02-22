@@ -7656,6 +7656,179 @@
                         Говорить
                     </button>
                 </div>
+
+                <!-- NPC: Марта - Знахарка -->
+                <div class="panel p-3 rounded flex items-center justify-between border-amber-700/30 bg-amber-900/5">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-full border border-amber-600/50 overflow-hidden flex-shrink-0" style="background: linear-gradient(135deg, rgba(217,119,6,0.3), rgba(0,0,0,0.5));">
+                            <div class="w-full h-full flex items-center justify-center">
+                                <i class="fas fa-hand-holding-medical text-amber-400 text-xl"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="text-base text-[#e0e0e0] font-bold medieval-font">Марта</div>
+                            <div class="text-[10px] text-amber-400/70">Знахарка-беженка</div>
+                        </div>
+                    </div>
+                    <button onclick="dialogue.start('marta_refugee')" class="btn-medieval px-4 py-1.5 rounded text-xs">
+                        Говорить
+                    </button>
+                </div>
+
+                <!-- Слухи Беженцев -->
+                <div class="p-4 border border-cyan-900/50 rounded-lg bg-gradient-to-br from-cyan-900/20 to-black/30 backdrop-blur-sm relative overflow-hidden">
+                    <div class="absolute -right-4 -top-4 text-6xl text-cyan-900 opacity-10 pointer-events-none">
+                        <i class="fas fa-ear-listen"></i>
+                    </div>
+                    <div class="flex items-center gap-3 mb-3 relative z-10">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-700/60 to-cyan-950 flex items-center justify-center border-2 border-cyan-500/60 shadow-[0_0_15px_rgba(6,182,212,0.3)]">
+                            <i class="fas fa-ear-listen text-cyan-400 text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-base text-cyan-300 medieval-font">Слухи беженцев</h4>
+                            <p class="text-[10px] text-gray-400 mt-0.5">Послушай, о чем шепчутся люди</p>
+                        </div>
+                    </div>
+                    <div class="panel p-2 rounded bg-black/40 border border-cyan-900/30 text-[10px] text-gray-400 mb-3 relative z-10">
+                        Беженцы знают многое. За небольшую плату можно узнать ценные сведения о торговых путях, тайниках и опасностях.
+                    </div>
+                    <button id="btn-gather-rumors" onclick="refugeeCamp.gatherRumors(event)" class="btn-medieval w-full py-2 rounded text-xs border-cyan-900 text-cyan-400 hover:bg-cyan-900/30 mb-3 relative z-10">
+                        <i class="fas fa-comments mr-2"></i> Узнать слухи (50 золота)
+                    </button>
+                    <div class="flex items-center justify-between text-[10px] relative z-10">
+                        <div class="flex items-center gap-2 px-2 py-1 bg-cyan-900/20 rounded border border-cyan-900/30">
+                            <i class="fas fa-clock text-cyan-400"></i>
+                            <span class="text-cyan-400 font-bold">Раз в 30 мин</span>
+                        </div>
+                        <div class="flex items-center gap-2 px-2 py-1 bg-yellow-900/20 rounded border border-yellow-900/30">
+                            <i class="fas fa-star text-yellow-400"></i>
+                            <span class="text-yellow-400 font-bold">+XP, Золото, Ресурсы</span>
+                        </div>
+                    </div>
+                    <div id="rumors-cooldown" class="text-[10px] text-center text-amber-400 mt-2 hidden relative z-10"></div>
+                    <div id="rumors-result" class="hidden mt-3 relative z-10">
+                        <div class="panel p-3 rounded bg-black/50 border border-cyan-700/40">
+                            <div class="flex items-center gap-2 mb-2">
+                                <i class="fas fa-scroll text-cyan-400 text-sm"></i>
+                                <span class="text-xs text-cyan-300 font-bold medieval-font">Последний слух:</span>
+                            </div>
+                            <p id="rumors-text" class="text-xs text-gray-300 leading-relaxed italic"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Помочь Беженцам -->
+                <div class="p-4 border border-emerald-900/50 rounded-lg bg-gradient-to-br from-emerald-900/20 to-black/30 backdrop-blur-sm relative overflow-hidden">
+                    <div class="absolute -right-4 -top-4 text-6xl text-emerald-900 opacity-10 pointer-events-none">
+                        <i class="fas fa-hand-holding-heart"></i>
+                    </div>
+                    <div class="flex items-center gap-3 mb-3 relative z-10">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-700/60 to-emerald-950 flex items-center justify-center border-2 border-emerald-500/60 shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+                            <i class="fas fa-hand-holding-heart text-emerald-400 text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-base text-emerald-300 medieval-font">Помочь беженцам</h4>
+                            <p class="text-[10px] text-gray-400 mt-0.5">Пожертвуй еду нуждающимся</p>
+                        </div>
+                    </div>
+                    <div class="panel p-2 rounded bg-black/40 border border-emerald-900/30 text-[10px] text-gray-400 mb-3 relative z-10">
+                        Голодные семьи нуждаются в еде. Пожертвуйте хлеб, мясо или рыбу — заслужите уважение и опыт.
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 mb-3 relative z-10">
+                        <button onclick="refugeeCamp.donateFood('bread', event)" class="p-2 rounded border border-emerald-900/40 bg-black/30 text-center hover:bg-emerald-900/20 transition-all group">
+                            <i class="fas fa-bread-slice text-amber-400 text-lg mb-1 group-hover:scale-110 transition-transform block"></i>
+                            <div class="text-[10px] text-gray-300 font-bold">Хлеб</div>
+                            <div class="text-[9px] text-emerald-400">x5</div>
+                        </button>
+                        <button onclick="refugeeCamp.donateFood('meat', event)" class="p-2 rounded border border-emerald-900/40 bg-black/30 text-center hover:bg-emerald-900/20 transition-all group">
+                            <i class="fas fa-drumstick-bite text-red-400 text-lg mb-1 group-hover:scale-110 transition-transform block"></i>
+                            <div class="text-[10px] text-gray-300 font-bold">Мясо</div>
+                            <div class="text-[9px] text-emerald-400">x3</div>
+                        </button>
+                        <button onclick="refugeeCamp.donateFood('fish', event)" class="p-2 rounded border border-emerald-900/40 bg-black/30 text-center hover:bg-emerald-900/20 transition-all group">
+                            <i class="fas fa-fish text-blue-400 text-lg mb-1 group-hover:scale-110 transition-transform block"></i>
+                            <div class="text-[10px] text-gray-300 font-bold">Рыба</div>
+                            <div class="text-[9px] text-emerald-400">x5</div>
+                        </button>
+                    </div>
+                    <div class="flex items-center justify-between text-[10px] relative z-10">
+                        <div class="flex items-center gap-2 px-2 py-1 bg-emerald-900/20 rounded border border-emerald-900/30">
+                            <i class="fas fa-arrow-up text-emerald-400"></i>
+                            <span class="text-emerald-400 font-bold">+3 репутация</span>
+                        </div>
+                        <div class="flex items-center gap-2 px-2 py-1 bg-blue-900/20 rounded border border-blue-900/30">
+                            <i class="fas fa-star text-blue-400"></i>
+                            <span class="text-blue-400 font-bold">+15 XP</span>
+                        </div>
+                    </div>
+                    <div id="donate-cooldown" class="text-[10px] text-center text-amber-400 mt-2 hidden relative z-10"></div>
+                </div>
+
+                <!-- Чёрный Рынок -->
+                <div class="p-4 border border-purple-900/50 rounded-lg bg-gradient-to-br from-purple-900/20 to-black/30 backdrop-blur-sm relative overflow-hidden">
+                    <div class="absolute -right-4 -top-4 text-6xl text-purple-900 opacity-10 pointer-events-none">
+                        <i class="fas fa-mask"></i>
+                    </div>
+                    <div class="flex items-center gap-3 mb-3 relative z-10">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-700/60 to-purple-950 flex items-center justify-center border-2 border-purple-500/60 shadow-[0_0_15px_rgba(168,85,247,0.3)]">
+                            <i class="fas fa-mask text-purple-400 text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-base text-purple-300 medieval-font">Чёрный рынок</h4>
+                            <p class="text-[10px] text-gray-400 mt-0.5">Теневая торговля контрабандой</p>
+                        </div>
+                    </div>
+                    <div class="panel p-2 rounded bg-black/40 border border-purple-900/30 text-[10px] text-gray-400 mb-3 relative z-10">
+                        Тут можно купить редкие вещи по завышенным ценам или продать краденое без вопросов. Репутация страдает.
+                    </div>
+                    <div id="black-market-items" class="space-y-2 relative z-10">
+                        <!-- Generated by JS -->
+                    </div>
+                    <div class="mt-3 relative z-10">
+                        <button id="btn-refresh-black-market" onclick="refugeeCamp.refreshBlackMarket(event)" class="btn-medieval w-full py-2 rounded text-xs border-purple-900 text-purple-400 hover:bg-purple-900/30">
+                            <i class="fas fa-sync-alt mr-2"></i> Обновить товары (1 час)
+                        </button>
+                        <div id="black-market-cooldown" class="text-[10px] text-center text-amber-400 mt-2 hidden"></div>
+                    </div>
+                </div>
+
+                <!-- Азартные кости -->
+                <div class="p-4 border border-yellow-900/50 rounded-lg bg-gradient-to-br from-yellow-900/20 to-black/30 backdrop-blur-sm relative overflow-hidden">
+                    <div class="absolute -right-4 -top-4 text-6xl text-yellow-900 opacity-10 pointer-events-none">
+                        <i class="fas fa-dice"></i>
+                    </div>
+                    <div class="flex items-center gap-3 mb-3 relative z-10">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-700/60 to-yellow-950 flex items-center justify-center border-2 border-yellow-500/60 shadow-[0_0_15px_rgba(234,179,8,0.3)]">
+                            <i class="fas fa-dice text-yellow-400 text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-base text-yellow-300 medieval-font">Кости судьбы</h4>
+                            <p class="text-[10px] text-gray-400 mt-0.5">Испытай удачу в азартной игре</p>
+                        </div>
+                    </div>
+                    <div class="panel p-2 rounded bg-black/40 border border-yellow-900/30 text-[10px] text-gray-400 mb-3 relative z-10">
+                        Поставь золото и брось кости. Выпадет больше 7 — выиграешь вдвойне. Меньше — потеряешь ставку.
+                    </div>
+                    <div class="flex items-center gap-2 mb-3 relative z-10">
+                        <div class="flex-1">
+                            <input type="number" id="dice-bet-amount" min="10" max="500" value="50" placeholder="Ставка" 
+                                class="w-full bg-black/50 border border-yellow-900/40 rounded px-3 py-2 text-sm text-yellow-300 focus:outline-none focus:border-yellow-500/60" style="font-family: 'Cinzel', serif;">
+                        </div>
+                        <button onclick="refugeeCamp.setDiceBet(50)" class="px-2 py-2 bg-yellow-900/30 border border-yellow-700/40 rounded text-[10px] text-yellow-300 hover:bg-yellow-900/50">50</button>
+                        <button onclick="refugeeCamp.setDiceBet(100)" class="px-2 py-2 bg-yellow-900/30 border border-yellow-700/40 rounded text-[10px] text-yellow-300 hover:bg-yellow-900/50">100</button>
+                        <button onclick="refugeeCamp.setDiceBet(250)" class="px-2 py-2 bg-yellow-900/30 border border-yellow-700/40 rounded text-[10px] text-yellow-300 hover:bg-yellow-900/50">250</button>
+                    </div>
+                    <button id="btn-roll-dice" onclick="refugeeCamp.rollDice(event)" class="btn-medieval w-full py-2.5 rounded text-sm border-yellow-700 text-yellow-300 hover:bg-yellow-900/30 relative z-10">
+                        <i class="fas fa-dice mr-2"></i> Бросить кости
+                    </button>
+                    <div id="dice-result" class="hidden mt-3 relative z-10">
+                        <div class="panel p-3 rounded bg-black/50 border border-yellow-700/40 text-center">
+                            <div id="dice-roll-display" class="text-4xl mb-2" style="font-family: 'Cinzel', serif;"></div>
+                            <div id="dice-result-text" class="text-sm font-bold"></div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </section>
 
@@ -8600,6 +8773,57 @@
                     job_start: {
                         text: "Отлично. Меч при тебе. Скоро выдвигаемся. (Продолжение следует...)",
                         options: [{ text: "Жду", next: "exit" }]
+                    }
+                }
+            },
+            marta_refugee: {
+                name: "Марта",
+                role: "Знахарка-беженка",
+                icon: "fa-hand-holding-medical",
+                dialogue: {
+                    root: {
+                        text: "Ты не похож на беженца. Чужак? Или просто заблудился? Я Марта. Была знахаркой в деревне за перевалом, пока война не пришла к нашему порогу.",
+                        options: [
+                            { text: "Можешь подлечить?", next: "heal_offer" },
+                            { text: "Расскажи о себе", next: "backstory" },
+                            { text: "Прощай", next: "exit" }
+                        ]
+                    },
+                    heal_offer: function() {
+                        if (gameState.herbs >= 3) {
+                            return "heal_available";
+                        }
+                        return "heal_no_herbs";
+                    },
+                    heal_available: {
+                        text: "У тебя есть травы. Отдай мне 3 пучка — я приготовлю отвар, который восстановит тебе здоровье. Дело мастера боится.",
+                        options: [
+                            { text: "Согласен (3 травы = +40 HP)", action: "marta_heal", next: "heal_done" },
+                            { text: "Не сейчас", next: "exit" }
+                        ]
+                    },
+                    heal_no_herbs: {
+                        text: "Без трав я бессильна. Собери хотя бы 3 пучка в лесу и приходи — я сделаю отвар, который поставит на ноги.",
+                        options: [{ text: "Понятно", next: "exit" }]
+                    },
+                    heal_done: {
+                        text: "Вот, выпей. Горькое, но действенное. Береги себя, чужак.",
+                        options: [{ text: "Спасибо, Марта", next: "exit" }]
+                    },
+                    backstory: {
+                        text: "Была знахаркой. Лечила людей, принимала роды, варила зелья. А потом пришли солдаты — сожгли деревню дотла. Мы бежали с детьми через перевал. Многие не дошли. Теперь живём тут, под рваными шатрами, и молимся, чтобы завтра было лучше, чем вчера.",
+                        options: [
+                            { text: "Мне жаль", next: "sympathy" },
+                            { text: "Чем могу помочь?", next: "help_options" }
+                        ]
+                    },
+                    sympathy: {
+                        text: "Жалость нас не накормит, но спасибо за слова. Если хочешь помочь — принеси еду. Здесь есть семьи, которые не ели три дня.",
+                        options: [{ text: "Я постараюсь", next: "exit" }]
+                    },
+                    help_options: {
+                        text: "Еда — самое ценное тут. Хлеб, мясо, рыба — всё принимаем с благодарностью. А если ты в беде — я всегда готова помочь отваром за травы.",
+                        options: [{ text: "Буду иметь в виду", next: "exit" }]
                     }
                 }
             },
@@ -10273,6 +10497,8 @@
                     gradientColors = "linear-gradient(135deg, #78716c 0%, #57534e 50%, #78716c 100%)"; // Gray-Brown for beggar
                 } else if(npcId === 'cornelius') {
                     gradientColors = "linear-gradient(135deg, #92400e 0%, #78350f 50%, #b45309 100%)"; // Warm brown for old musician
+                } else if(npcId === 'marta_refugee') {
+                    gradientColors = "linear-gradient(135deg, #92400e 0%, #d97706 50%, #b45309 100%)"; // Warm amber for healer
                 }
                 
                 bgGradient.style.background = gradientColors;
@@ -10506,6 +10732,18 @@
                     game.save();
                     ui.updateLocations();
                     ui.showFloatText(document.body, "Лагерь беженцев открыт", "#fbbf24");
+                }
+                if (action === 'marta_heal') {
+                    if (gameState.herbs >= 3) {
+                        gameState.herbs -= 3;
+                        gameState.hp = Math.min(gameState.maxHp, gameState.hp + 40);
+                        game.save();
+                        ui.updateStats();
+                        ui.showFloatText(document.body, "+40 HP", "#34d399");
+                        setTimeout(() => {
+                            ui.showFloatText(document.body, "-3 травы", "#ef4444");
+                        }, 300);
+                    }
                 }
                 if (action === 'leonard_accept_quest') {
                     if (!gameState.npcStates) gameState.npcStates = {};
@@ -16832,6 +17070,36 @@
 
         // --- REFUGEE CAMP CONTROLLER ---
         const refugeeCamp = {
+            // === RUMORS DATA ===
+            rumors: [
+                { text: "Говорят, в Тёмном лесу видели караван с серебром. Может, стоит проверить?", reward: { gold: 30, xp: 10 } },
+                { text: "Беженец из-за гор шепнул: скоро в порту будет большая поставка руды. Цены упадут.", reward: { gold: 20, xp: 15 } },
+                { text: "Один из наших видел, как стражники прятали мешок у старого дуба. Золото?", reward: { gold: 50, xp: 5 } },
+                { text: "Знахарка сказала: если собирать травы на рассвете, их втрое больше. Проверьте!", reward: { herbs: 3, xp: 10 } },
+                { text: "Старик-рыбак бормотал, что в озере у деревни видели огромную рыбу. Удача рыбакам!", reward: { fish: 3, xp: 10 } },
+                { text: "Торговец из столицы шептал: спрос на кожу вырос. Охотники будут при деньгах.", reward: { gold: 40, xp: 8 } },
+                { text: "Солдат-дезертир рассказал: казна крепости плохо охраняется по ночам...", reward: { gold: 60, xp: 5 } },
+                { text: "Беженка нашла грибную поляну недалеко от лагеря. Набери, пока не разобрали!", reward: { mushrooms: 4, xp: 10 } },
+                { text: "Ходят слухи, что кузнец из деревни берёт в два раза дешевле за ремонт, если прийти на рассвете.", reward: { gold: 25, xp: 12 } },
+                { text: "Один беженец клянётся, что видел в лесу древний алтарь. Может, там есть сокровища?", reward: { gold: 45, xp: 15 } },
+                { text: "Перевозчики говорят: через неделю границу закроют. Кто не успел — тот опоздал.", reward: { gold: 35, xp: 8 } },
+                { text: "Дети нашли тайник под мостом — горсть монет и кусок хлеба.", reward: { gold: 20, bread: 2, xp: 5 } },
+            ],
+
+            // === BLACK MARKET DATA ===
+            blackMarketGoods: [
+                { name: "Кинжал наёмника", icon: "fa-dagger", desc: "Острый как бритва", price: 150, reward: { type: 'gold_later', amount: 300 }, rarity: 'rare' },
+                { name: "Зелье теней", icon: "fa-flask-vial", desc: "+25 HP мгновенно", price: 80, reward: { type: 'hp', amount: 25 }, rarity: 'common' },
+                { name: "Мешок с рудой", icon: "fa-gem", desc: "Контрабандная руда", price: 120, reward: { type: 'ore', amount: 5 }, rarity: 'common' },
+                { name: "Карта тайника", icon: "fa-map", desc: "Ведёт к спрятанному золоту", price: 200, reward: { type: 'gold_instant', amount: 350 }, rarity: 'rare' },
+                { name: "Краденая кожа", icon: "fa-scroll", desc: "Качественная, но краденая", price: 60, reward: { type: 'leather', amount: 4 }, rarity: 'common' },
+                { name: "Травяной сбор", icon: "fa-leaf", desc: "Редкие целебные травы", price: 90, reward: { type: 'herbs', amount: 5 }, rarity: 'common' },
+                { name: "Контрабандный шёлк", icon: "fa-hat-wizard", desc: "Стоит целое состояние", price: 300, reward: { type: 'gold_instant', amount: 500 }, rarity: 'epic' },
+                { name: "Фальшивые документы", icon: "fa-file-alt", desc: "+5 репутации (обман)", price: 250, reward: { type: 'reputation', amount: 5 }, rarity: 'rare' },
+                { name: "Мешок грибов", icon: "fa-mushroom", desc: "Свежие лесные грибы", price: 40, reward: { type: 'mushrooms', amount: 6 }, rarity: 'common' },
+                { name: "Бочонок мёда", icon: "fa-jar", desc: "Можно дорого продать", price: 100, reward: { type: 'gold_instant', amount: 180 }, rarity: 'common' },
+            ],
+
             startEscort: function(event) {
                 // Check if has any sword
                 const hasSword = gameState.ownedSwords && gameState.ownedSwords.length > 0;
@@ -16958,6 +17226,431 @@
                     btn.classList.remove('opacity-50');
                     cooldownEl.classList.add('hidden');
                 }
+            },
+
+            // === GATHER RUMORS ===
+            gatherRumors: function(event) {
+                const now = Date.now();
+                const cooldown = 30 * 60 * 1000; // 30 min
+                
+                if (gameState.lastRumorTime && (now - gameState.lastRumorTime) < cooldown) {
+                    const remaining = cooldown - (now - gameState.lastRumorTime);
+                    const minutes = Math.floor(remaining / 60000);
+                    const seconds = Math.floor((remaining % 60000) / 1000);
+                    ui.showFloatText(event.target, `Подожди ${minutes}м ${seconds}с`, "#ff5555");
+                    return;
+                }
+
+                if (gameState.gold < 50) {
+                    ui.showFloatText(event.target, "Не хватает золота (50)", "#ff5555");
+                    return;
+                }
+
+                gameState.gold -= 50;
+                gameState.lastRumorTime = Date.now();
+
+                // Pick a random rumor
+                const rumor = this.rumors[Math.floor(Math.random() * this.rumors.length)];
+                
+                // Apply rewards
+                let rewardText = [];
+                Object.keys(rumor.reward).forEach(key => {
+                    const amount = rumor.reward[key];
+                    if (key === 'gold') { gameState.gold += amount; rewardText.push(`+${amount} золота`); }
+                    else if (key === 'xp') { gameState.xp += amount; rewardText.push(`+${amount} XP`); }
+                    else if (key === 'herbs') { gameState.herbs += amount; rewardText.push(`+${amount} трав`); }
+                    else if (key === 'fish') { gameState.fish += amount; rewardText.push(`+${amount} рыбы`); }
+                    else if (key === 'mushrooms') { gameState.mushrooms += amount; rewardText.push(`+${amount} грибов`); }
+                    else if (key === 'bread') { gameState.bread += amount; rewardText.push(`+${amount} хлеба`); }
+                });
+
+                game.save();
+                ui.updateStats();
+
+                // Show rumor result
+                const resultEl = document.getElementById('rumors-result');
+                const textEl = document.getElementById('rumors-text');
+                textEl.textContent = rumor.text;
+                resultEl.classList.remove('hidden');
+
+                ui.showFloatText(event.target, rewardText.join(', '), "#06b6d4");
+                this.updateRumorsCooldownUI();
+            },
+
+            updateRumorsCooldownUI: function() {
+                const btn = document.getElementById('btn-gather-rumors');
+                const cooldownEl = document.getElementById('rumors-cooldown');
+                if (!btn || !cooldownEl) return;
+
+                if (!gameState.lastRumorTime) {
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-50');
+                    cooldownEl.classList.add('hidden');
+                    return;
+                }
+
+                const now = Date.now();
+                const cooldown = 30 * 60 * 1000;
+                const remaining = cooldown - (now - gameState.lastRumorTime);
+
+                if (remaining > 0) {
+                    btn.disabled = true;
+                    btn.classList.add('opacity-50');
+                    const minutes = Math.floor(remaining / 60000);
+                    const seconds = Math.floor((remaining % 60000) / 1000);
+                    cooldownEl.textContent = `Доступно через: ${minutes}м ${seconds}с`;
+                    cooldownEl.classList.remove('hidden');
+                    setTimeout(() => this.updateRumorsCooldownUI(), 1000);
+                } else {
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-50');
+                    cooldownEl.classList.add('hidden');
+                }
+            },
+
+            // === DONATE FOOD ===
+            donateFood: function(type, event) {
+                const requirements = { bread: 5, meat: 3, fish: 5 };
+                const needed = requirements[type] || 5;
+                const names = { bread: 'хлеба', meat: 'мяса', fish: 'рыбы' };
+
+                // Check cooldown (1 hour)
+                const now = Date.now();
+                const cooldown = 60 * 60 * 1000;
+                if (gameState.lastDonateTime && (now - gameState.lastDonateTime) < cooldown) {
+                    const remaining = cooldown - (now - gameState.lastDonateTime);
+                    const minutes = Math.floor(remaining / 60000);
+                    ui.showFloatText(event.target, `Подожди ${minutes} мин`, "#ff5555");
+                    return;
+                }
+
+                if (gameState[type] < needed) {
+                    ui.showFloatText(event.target, `Нужно ${needed} ${names[type]}`, "#ff5555");
+                    return;
+                }
+
+                gameState[type] -= needed;
+                gameState.lastDonateTime = Date.now();
+                gameState.xp += 15;
+                game.addReputation(3, event.target);
+
+                // Track donation stats
+                if (!gameState.refugeeDonations) gameState.refugeeDonations = 0;
+                gameState.refugeeDonations++;
+
+                game.save();
+                ui.updateStats();
+
+                ui.showFloatText(event.target, `+3 репутация, +15 XP`, "#34d399");
+                
+                // Update donate cooldown
+                this.updateDonateCooldownUI();
+            },
+
+            updateDonateCooldownUI: function() {
+                const cooldownEl = document.getElementById('donate-cooldown');
+                if (!cooldownEl) return;
+
+                if (!gameState.lastDonateTime) {
+                    cooldownEl.classList.add('hidden');
+                    return;
+                }
+
+                const now = Date.now();
+                const cooldown = 60 * 60 * 1000;
+                const remaining = cooldown - (now - gameState.lastDonateTime);
+
+                if (remaining > 0) {
+                    const minutes = Math.floor(remaining / 60000);
+                    const seconds = Math.floor((remaining % 60000) / 1000);
+                    cooldownEl.textContent = `Можно помочь снова через: ${minutes}м ${seconds}с`;
+                    cooldownEl.classList.remove('hidden');
+                    setTimeout(() => this.updateDonateCooldownUI(), 1000);
+                } else {
+                    cooldownEl.classList.add('hidden');
+                }
+            },
+
+            // === BLACK MARKET ===
+            currentBlackMarketItems: [],
+
+            generateBlackMarketItems: function() {
+                // Pick 3 random items
+                const shuffled = [...this.blackMarketGoods].sort(() => Math.random() - 0.5);
+                this.currentBlackMarketItems = shuffled.slice(0, 3).map(item => ({
+                    ...item,
+                    // Randomize price +/- 20%
+                    price: Math.round(item.price * (0.8 + Math.random() * 0.4))
+                }));
+
+                if (!gameState.blackMarketItems) {
+                    gameState.blackMarketItems = this.currentBlackMarketItems;
+                    gameState.lastBlackMarketRefresh = Date.now();
+                    game.save();
+                }
+            },
+
+            renderBlackMarket: function() {
+                const container = document.getElementById('black-market-items');
+                if (!container) return;
+
+                // Load saved items or generate new ones
+                if (gameState.blackMarketItems && gameState.blackMarketItems.length > 0) {
+                    this.currentBlackMarketItems = gameState.blackMarketItems;
+                } else {
+                    this.generateBlackMarketItems();
+                }
+
+                const rarityColors = {
+                    common: { border: 'border-gray-600/40', text: 'text-gray-400', bg: 'bg-gray-900/20', label: 'Обычный' },
+                    rare: { border: 'border-blue-600/40', text: 'text-blue-400', bg: 'bg-blue-900/20', label: 'Редкий' },
+                    epic: { border: 'border-purple-600/40', text: 'text-purple-400', bg: 'bg-purple-900/20', label: 'Эпический' }
+                };
+
+                container.innerHTML = this.currentBlackMarketItems.map((item, idx) => {
+                    const r = rarityColors[item.rarity] || rarityColors.common;
+                    const sold = item.sold ? 'opacity-40 pointer-events-none' : '';
+                    return `
+                        <div class="flex items-center justify-between p-3 rounded-lg ${r.border} border ${r.bg} backdrop-blur-sm ${sold} transition-all">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-black/40 flex items-center justify-center border ${r.border}">
+                                    <i class="fas ${item.icon} ${r.text} text-lg"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm text-gray-200 font-bold">${item.name}</div>
+                                    <div class="text-[10px] text-gray-500">${item.desc}</div>
+                                    <div class="text-[9px] ${r.text} mt-0.5">${r.label}</div>
+                                </div>
+                            </div>
+                            <button onclick="refugeeCamp.buyBlackMarketItem(${idx}, event)" class="px-3 py-1.5 rounded text-xs border ${r.border} bg-black/30 ${r.text} hover:bg-purple-900/20 transition-all whitespace-nowrap ${item.sold ? 'line-through' : ''}">
+                                ${item.sold ? 'Продано' : '<i class="fas fa-coins text-yellow-500 mr-1"></i>' + item.price}
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+
+                this.updateBlackMarketCooldownUI();
+            },
+
+            buyBlackMarketItem: function(idx, event) {
+                const item = this.currentBlackMarketItems[idx];
+                if (!item || item.sold) return;
+
+                if (gameState.gold < item.price) {
+                    ui.showFloatText(event.target, "Не хватает золота", "#ff5555");
+                    return;
+                }
+
+                gameState.gold -= item.price;
+                item.sold = true;
+
+                // Apply reward
+                const reward = item.reward;
+                let rewardMsg = '';
+                switch(reward.type) {
+                    case 'hp':
+                        gameState.hp = Math.min(gameState.maxHp, gameState.hp + reward.amount);
+                        rewardMsg = `+${reward.amount} HP`;
+                        break;
+                    case 'gold_instant':
+                        gameState.gold += reward.amount;
+                        rewardMsg = `+${reward.amount} золота`;
+                        break;
+                    case 'gold_later':
+                        gameState.gold += reward.amount;
+                        rewardMsg = `+${reward.amount} золота (перепродажа)`;
+                        break;
+                    case 'ore':
+                        gameState.ore += reward.amount;
+                        rewardMsg = `+${reward.amount} руды`;
+                        break;
+                    case 'leather':
+                        gameState.leather += reward.amount;
+                        rewardMsg = `+${reward.amount} кожи`;
+                        break;
+                    case 'herbs':
+                        gameState.herbs += reward.amount;
+                        rewardMsg = `+${reward.amount} трав`;
+                        break;
+                    case 'mushrooms':
+                        gameState.mushrooms += reward.amount;
+                        rewardMsg = `+${reward.amount} грибов`;
+                        break;
+                    case 'reputation':
+                        game.addReputation(reward.amount, event.target);
+                        rewardMsg = `+${reward.amount} репутация`;
+                        break;
+                }
+
+                // Lose 1 reputation for black market dealings
+                game.addReputation(-1, event.target);
+
+                gameState.blackMarketItems = this.currentBlackMarketItems;
+                game.save();
+                ui.updateStats();
+
+                ui.showFloatText(event.target, rewardMsg, "#a855f7");
+                setTimeout(() => {
+                    ui.showFloatText(event.target, "-1 репутация", "#ef4444");
+                }, 400);
+
+                this.renderBlackMarket();
+            },
+
+            refreshBlackMarket: function(event) {
+                const now = Date.now();
+                const cooldown = 60 * 60 * 1000; // 1 hour
+                if (gameState.lastBlackMarketRefresh && (now - gameState.lastBlackMarketRefresh) < cooldown) {
+                    const remaining = cooldown - (now - gameState.lastBlackMarketRefresh);
+                    const minutes = Math.floor(remaining / 60000);
+                    ui.showFloatText(event.target, `Подожди ${minutes} мин`, "#ff5555");
+                    return;
+                }
+
+                gameState.blackMarketItems = null;
+                gameState.lastBlackMarketRefresh = Date.now();
+                game.save();
+                this.generateBlackMarketItems();
+                this.renderBlackMarket();
+                ui.showFloatText(event.target, "Товары обновлены!", "#a855f7");
+            },
+
+            updateBlackMarketCooldownUI: function() {
+                const btn = document.getElementById('btn-refresh-black-market');
+                const cooldownEl = document.getElementById('black-market-cooldown');
+                if (!btn || !cooldownEl) return;
+
+                if (!gameState.lastBlackMarketRefresh) {
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-50');
+                    cooldownEl.classList.add('hidden');
+                    return;
+                }
+
+                const now = Date.now();
+                const cooldown = 60 * 60 * 1000;
+                const remaining = cooldown - (now - gameState.lastBlackMarketRefresh);
+
+                if (remaining > 0) {
+                    btn.disabled = true;
+                    btn.classList.add('opacity-50');
+                    const minutes = Math.floor(remaining / 60000);
+                    cooldownEl.textContent = `Обновление через: ${minutes} мин`;
+                    cooldownEl.classList.remove('hidden');
+                    setTimeout(() => this.updateBlackMarketCooldownUI(), 60000);
+                } else {
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-50');
+                    cooldownEl.classList.add('hidden');
+                }
+            },
+
+            // === DICE GAME ===
+            setDiceBet: function(amount) {
+                const input = document.getElementById('dice-bet-amount');
+                if (input) input.value = amount;
+            },
+
+            rollDice: function(event) {
+                const input = document.getElementById('dice-bet-amount');
+                const bet = parseInt(input.value) || 0;
+
+                if (bet < 10) {
+                    ui.showFloatText(event.target, "Минимальная ставка: 10", "#ff5555");
+                    return;
+                }
+                if (bet > 500) {
+                    ui.showFloatText(event.target, "Максимум: 500", "#ff5555");
+                    return;
+                }
+                if (gameState.gold < bet) {
+                    ui.showFloatText(event.target, "Не хватает золота!", "#ff5555");
+                    return;
+                }
+
+                gameState.gold -= bet;
+
+                // Roll two dice (1-6 each)
+                const die1 = Math.floor(Math.random() * 6) + 1;
+                const die2 = Math.floor(Math.random() * 6) + 1;
+                const total = die1 + die2;
+
+                const diceEmojis = ['', '\u2680', '\u2681', '\u2682', '\u2683', '\u2684', '\u2685'];
+                
+                const displayEl = document.getElementById('dice-roll-display');
+                const resultTextEl = document.getElementById('dice-result-text');
+                const resultContainer = document.getElementById('dice-result');
+
+                // Disable button during animation
+                const btn = document.getElementById('btn-roll-dice');
+                btn.disabled = true;
+                btn.classList.add('opacity-50');
+
+                // Animate dice roll
+                resultContainer.classList.remove('hidden');
+                let rollCount = 0;
+                const rollAnimation = setInterval(() => {
+                    const r1 = Math.floor(Math.random() * 6) + 1;
+                    const r2 = Math.floor(Math.random() * 6) + 1;
+                    displayEl.textContent = diceEmojis[r1] + ' ' + diceEmojis[r2];
+                    displayEl.style.color = '#c8aa6e';
+                    rollCount++;
+                    if (rollCount >= 15) {
+                        clearInterval(rollAnimation);
+                        
+                        // Show final result
+                        displayEl.textContent = diceEmojis[die1] + ' ' + diceEmojis[die2];
+                        
+                        let won = false;
+                        let winAmount = 0;
+
+                        if (total === 12) {
+                            // Double six = triple payout
+                            winAmount = bet * 3;
+                            resultTextEl.textContent = `ДЖЕКПОТ! ${total} = +${winAmount} золота!`;
+                            resultTextEl.style.color = '#fbbf24';
+                            displayEl.style.color = '#fbbf24';
+                            won = true;
+                        } else if (total >= 7) {
+                            // Win = double payout
+                            winAmount = bet * 2;
+                            resultTextEl.textContent = `Победа! ${total} = +${winAmount} золота!`;
+                            resultTextEl.style.color = '#34d399';
+                            displayEl.style.color = '#34d399';
+                            won = true;
+                        } else if (total === 2) {
+                            // Snake eyes = lose double
+                            resultTextEl.textContent = `Змеиные глаза! ${total}. Потеряно: ${bet} золота`;
+                            resultTextEl.style.color = '#ef4444';
+                            displayEl.style.color = '#ef4444';
+                        } else {
+                            resultTextEl.textContent = `Проигрыш. ${total} < 7. Потеряно: ${bet} золота`;
+                            resultTextEl.style.color = '#ef4444';
+                            displayEl.style.color = '#ef4444';
+                        }
+
+                        if (won) {
+                            gameState.gold += winAmount;
+                            ui.showFloatText(event.target, `+${winAmount} золота!`, "#34d399");
+                        } else {
+                            ui.showFloatText(event.target, `-${bet} золота`, "#ef4444");
+                        }
+
+                        game.save();
+                        ui.updateStats();
+
+                        btn.disabled = false;
+                        btn.classList.remove('opacity-50');
+                    }
+                }, 100);
+            },
+
+            // === INIT ON NAVIGATE ===
+            onEnter: function() {
+                this.updateCooldownUI();
+                this.updateRumorsCooldownUI();
+                this.updateDonateCooldownUI();
+                this.renderBlackMarket();
             }
         };
 
@@ -19506,6 +20199,10 @@
                     locations.renderChest();
                 }
                 
+                if (screenId === 'refugee-camp') {
+                    refugeeCamp.onEnter();
+                }
+                
                 if (screenId === 'home-chest') {
                     housing.renderHomeChest();
                 }
@@ -20210,7 +20907,7 @@
                 await game.init();
                 router.switchTab('map');
                 disease.startTick();
-                refugeeCamp.updateCooldownUI();
+                refugeeCamp.onEnter();
                 channelTask.init(); // Initialize channel subscription task
                 
                 // Start energy regeneration globally (only once)
